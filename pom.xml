@@ -7,9 +7,9 @@
   <version>1.0.0-SNAPSHOT</version>
   <parent>
     <groupId>com.twitter</groupId>
-    <artifactId>service-292</artifactId>
+    <artifactId>scala-parent-292</artifactId>
     <version>0.0.4</version>
-    <relativePath>../parents/service-292/pom.xml</relativePath>
+    <relativePath>../parents/scala-parent-292/pom.xml</relativePath>
   </parent>
   <properties>
     <git.dir>${project.basedir}/../.git</git.dir>
