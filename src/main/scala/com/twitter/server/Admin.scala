@@ -11,16 +11,14 @@ trait Admin { self: App =>
   def defaultAdminPort = 9900
   val adminPort = flag("admin.port", new InetSocketAddress(defaultAdminPort), "Service admin port")
 
-  @volatile private[this] var adminServer: ListeningServer = new ListeningServer {
-    val boundAddress = new SocketAddress{}
-    def close(deadline: Time) = Future.Done
-  }
+  @volatile private[this] var adminServer: ListeningServer = _
 
   premain {
     adminServer = Http.serve(adminPort(), HttpMuxer)
   }
 
   onExit {
+    assert(adminServer != null)
     adminServer.close()
   }
 }
