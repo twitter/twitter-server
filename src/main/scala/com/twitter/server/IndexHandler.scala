@@ -6,9 +6,9 @@ import com.twitter.util.Future
 import org.jboss.netty.buffer.ChannelBuffers
 import org.jboss.netty.handler.codec.http._
 
-class IndexHandler extends Service[HttpRequest, HttpResponse] {
+class IndexHandler(prefix: String = "/") extends Service[HttpRequest, HttpResponse] {
   def apply(req: HttpRequest) = {
-    val links = HttpMuxer.patterns filter { _ != "//" } map { p =>
+    val links = HttpMuxer.patterns filter(_.startsWith(prefix)) map { p =>
       "<a href='%s'>%s</a>".format(p, p)
     }
     val msg = "<html><body>\n%s\n</body></html>".format(links.mkString("<br />\n"))
