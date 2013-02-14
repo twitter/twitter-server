@@ -7,6 +7,7 @@ import com.twitter.finagle.http.HttpMuxer
 trait TwitterServer extends App
   with Admin
   with Logging
+  with Stats
 {
   HttpMuxer.addHandler("/", new IndexHandler)
   HttpMuxer.addHandler("/abortabortabort", new MesosAbortHandler)
