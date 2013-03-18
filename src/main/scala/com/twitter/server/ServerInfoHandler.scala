@@ -14,7 +14,7 @@ class ServerInfoHandler(obj: AnyRef) extends Service[HttpRequest, HttpResponse] 
   try {
     buildProperties.load(obj.getClass.getResource("build.properties").openStream)
   } catch {
-    case _ =>
+    case _: Throwable =>
   }
 
   case class ServerInfo(

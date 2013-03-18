@@ -1,10 +1,9 @@
 package com.twitter.server
 
-import com.twitter.finagle.Service
 import com.twitter.finagle.http.Request
+import com.twitter.finagle.Service
 import com.twitter.util.Future
 import java.util.logging.Logger
-import org.jboss.netty.buffer.{ChannelBuffers, ChannelBufferOutputStream}
 import org.jboss.netty.handler.codec.http._
 
 class FinagleTracing(klass: Class[_]) {
@@ -17,9 +16,10 @@ class FinagleTracing(klass: Class[_]) {
 
 object FinagleTracing {
   val instance: Option[FinagleTracing] = {
-    val loader = ClassLoader.getSystemClassLoader()
+    val loader = Thread.currentThread().getContextClassLoader
     try {
-      Some(new FinagleTracing(loader.loadClass("com.twitter.finagle.tracing.Trace")))
+      val klass = loader.loadClass("com.twitter.finagle.tracing.Trace")
+      Some(new FinagleTracing(klass))
     } catch {
       case _: ClassNotFoundException =>
         None
@@ -67,4 +67,3 @@ class TracingHandler extends Service[HttpRequest, HttpResponse] {
     ret
   }
 }
-
