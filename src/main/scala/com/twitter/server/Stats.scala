@@ -1,17 +1,23 @@
 package com.twitter.server
 
 import com.twitter.app.App
-import com.twitter.finagle.stats.LoadedStatsReceiver
+import com.twitter.finagle.stats.{LoadedStatsReceiver, StatsReceiver}
 import java.lang.management.ManagementFactory
 import scala.collection.mutable
 
 trait Stats { app: App =>
-  import com.twitter.conversions.string._
-  import scala.collection.JavaConverters._
-
   val statsReceiver = LoadedStatsReceiver
 
   premain {
+    JvmStats.register(statsReceiver)
+  }
+}
+
+object JvmStats {
+  import com.twitter.conversions.string._
+  import scala.collection.JavaConverters._
+
+  def register(statsReceiver: StatsReceiver) = {
     val stats = statsReceiver.scope("jvm")
 
     val mem = ManagementFactory.getMemoryMXBean()
