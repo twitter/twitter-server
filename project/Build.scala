@@ -5,8 +5,8 @@ import com.typesafe.sbt.SbtSite.site
 import com.typesafe.sbt.site.SphinxSupport.Sphinx
 
 object TwitterServer extends Build {
-  val utilVersion = "6.2.0-SNAPSHOT"
-  val finagleVersion = "6.1.1-SNAPSHOT"
+  val utilVersion = "6.3.0"
+  val finagleVersion = "6.3.0"
 
   def util(which: String) = "com.twitter" % ("util-"+which) % utilVersion
   def finagle(which: String) = "com.twitter" % ("finagle-"+which) % finagleVersion
@@ -16,10 +16,6 @@ object TwitterServer extends Build {
     organization := "com.twitter",
     crossScalaVersions := Seq("2.9.2", "2.10.0"),
     libraryDependencies ++= Seq(
-      "org.scala-tools.testing" %% "specs" % "1.6.9" % "test" withSources() cross CrossVersion.binaryMapped {
-        case "2.10.0" => "2.10"
-        case x => x
-      },
       "org.mockito" % "mockito-all" % "1.8.5" % "test",
       "junit" % "junit" % "4.8.1" % "test"
     ),
