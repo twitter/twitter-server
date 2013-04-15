@@ -8,11 +8,11 @@ object TwitterServer extends Build {
   val utilVersion = "6.3.0"
   val finagleVersion = "6.3.0"
 
-  def util(which: String) = "com.twitter" % ("util-"+which) % utilVersion
-  def finagle(which: String) = "com.twitter" % ("finagle-"+which) % finagleVersion
+  def util(which: String) = "com.twitter" %% ("util-"+which) % utilVersion
+  def finagle(which: String) = "com.twitter" %% ("finagle-"+which) % finagleVersion
 
   val sharedSettings = Seq(
-    version := "1.0.0-SNAPSHOT",
+    version := "1.0.1",
     organization := "com.twitter",
     crossScalaVersions := Seq("2.9.2", "2.10.0"),
     libraryDependencies ++= Seq(
