@@ -1,0 +1,384 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Features &mdash; Twitter-Server 1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Twitter-Server 1.0.1 documentation" href="index.html" />
+    <link rel="next" title="Migration from Ostrich" href="Migration.html" />
+    <link rel="prev" title="Twitter-server" href="index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Migration.html" title="Migration from Ostrich"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Twitter-server"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Twitter-server</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="features">
+<h1>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h1>
+<p>We’ll walk through the features provided by twitter-server by examining a slightly more advanced version of the example shown in the introduction.</p>
+<div class="highlight-text"><div class="highlight"><pre>import com.twitter.conversions.time._
+import com.twitter.finagle.http.HttpMuxer
+import com.twitter.finagle.{Http, Service}
+import com.twitter.server.TwitterServer
+import com.twitter.util.{Await, Duration, Future, Time}
+import java.net.InetSocketAddress
+import org.jboss.netty.buffer.ChannelBuffers.copiedBuffer
+import org.jboss.netty.handler.codec.http._
+import org.jboss.netty.util.CharsetUtil.UTF_8
+
+object AdvancedServer extends TwitterServer {
+
+  val what = flag(&quot;what&quot;, &quot;hello&quot;, &quot;String to return&quot;)
+  val addr = flag(&quot;bind&quot;, new InetSocketAddress(0), &quot;Bind address&quot;)
+  val durations = flag(&quot;alarms&quot;, (1.second, 5.second), &quot;2 alarm durations&quot;)
+  val counter = statsReceiver.counter(&quot;requests_counter&quot;)
+
+  val service = new Service[HttpRequest, HttpResponse] {
+    def apply(request: HttpRequest) = {
+      log.debug(&quot;Received a request at &quot; + Time.now)
+      counter.incr()
+      val response =
+        new DefaultHttpResponse(request.getProtocolVersion, HttpResponseStatus.OK)
+      val content = copiedBuffer(what() + &quot;\n&quot;, UTF_8)
+      response.setContent(content)
+      Future.value(response)
+    }
+  }
+
+  def main() {
+    // We can create a new http server but in that case we profit from the
+    // one already started for /admin/*
+    // The `TwitterServer` trait exposes a `httpServer` that serve all routes
+    // registered in the HttpMuxer object, we just have to add our own.
+    HttpMuxer.addHandler(&quot;/echo&quot;, service)
+    // And wait on the server
+    Await.ready(httpServer)
+  }
+}
+</pre></div>
+</div>
+<div class="section" id="flags">
+<h2>Flags<a class="headerlink" href="#flags" title="Permalink to this headline">¶</a></h2>
+<p>The flags implementation, <a class="reference external" href="https://github.com/twitter/util/blob/master/util-app/src/main/scala/com/twitter/app/Flag.scala">found in Twitter&#8217;s util library</a>, focuses on simplicity and type safety, parsing flags into Scala values.</p>
+<p>You define your flag like this, in that case the flag type is <cite>String</cite>:</p>
+<div class="highlight-text"><div class="highlight"><pre>val what = flag(&quot;what&quot;, &quot;hello&quot;, &quot;String to return&quot;)
+</pre></div>
+</div>
+<p>But you can also define flags of composite type:</p>
+<div class="highlight-text"><div class="highlight"><pre>val addr = flag(&quot;bind&quot;, new InetSocketAddress(0), &quot;Bind address&quot;)
+val durations = flag(&quot;alarms&quot;, (1.second, 5.second), &quot;2 alarm durations&quot;)
+</pre></div>
+</div>
+<p>We also provide automatic help entry that display information about all the flags defined.</p>
+<div class="highlight-text"><div class="highlight"><pre>$ java -jar target/myserver-1.0.0-SNAPSHOT.jar -help
+AdvancedServer
+  -alarm_durations=&#39;1.seconds,5.seconds&#39;: 2 alarm durations
+  -help=&#39;false&#39;: Show this help
+  -http.port=&#39;:8080&#39;: Http server port
+  -bind=&#39;:0&#39;: Network interface to use
+  -log.level=&#39;INFO&#39;: Log level
+  -log.output=&#39;/dev/stderr&#39;: Output file
+  -what=&#39;hello&#39;: String to return
+</pre></div>
+</div>
+</div>
+<div class="section" id="logging">
+<h2>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h2>
+<p>Trait <cite>TwitterServer</cite> provides a logger named <cite>log</cite>. It is configured via default command line flags: <cite>-log.level</cite> and <cite>-log.output</cite>. As you can see from the above <cite>-help</cite> output, it logs to <cite>stderr</cite> by default with a log level of <cite>INFO</cite>.</p>
+<div class="highlight-text"><div class="highlight"><pre>log.debug(&quot;Received a request at &quot; + Time.now)
+</pre></div>
+</div>
+</div>
+<div class="section" id="metrics">
+<span id="metrics-label"></span><h2>Metrics<a class="headerlink" href="#metrics" title="Permalink to this headline">¶</a></h2>
+<p><cite>statsReceiver</cite>, defined by <cite>TwitterServer</cite>, defines a sink for metrics. With it you can update counters and stats (histograms) or define gauges (instantaneous values).</p>
+<p>For instance, you define your stats:</p>
+<div class="highlight-text"><div class="highlight"><pre>val counter = statsReceiver.counter(&quot;requests_counter&quot;)
+</pre></div>
+</div>
+<p>And update the value:</p>
+<div class="highlight-text"><div class="highlight"><pre>counter.incr()
+</pre></div>
+</div>
+<p>The value of this counter will be exported by the HTTP server and accessible at /admin/metrics.json</p>
+<div class="highlight-text"><div class="highlight"><pre>{
+  &quot;requests_counter&quot;: 234,
+  &quot;finagle/closechans&quot;: 592,
+  &quot;finagle/closed&quot;: 592,
+  &quot;finagle/closes&quot;: 575,
+  &quot;finagle/connection_duration.avg&quot;: 561,
+  &quot;finagle/connection_duration.count&quot;: 592,
+  &quot;finagle/connection_duration.max&quot;: 299986,
+  &quot;finagle/connection_duration.min&quot;: 3,
+  &quot;finagle/connection_duration.p25&quot;: 29,
+  &quot;finagle/connection_duration.p50&quot;: 31,
+  &quot;finagle/connection_duration.p75&quot;: 58,
+  &quot;finagle/connection_duration.p90&quot;: 111,
+  &quot;finagle/connection_duration.p95&quot;: 120,
+  &quot;finagle/connection_duration.p99&quot;: 197,
+  &quot;finagle/connection_duration.p9990&quot;: 2038,
+  &quot;finagle/connection_duration.p9999&quot;: 2038,
+  &quot;finagle/connection_duration.sum&quot;: 332690,
+  &quot;finagle/connections&quot;: 2,
+  &quot;finagle/http/failfast/unhealthy_for_ms&quot;: 0,
+  &quot;finagle/http/failfast/unhealthy_num_tries&quot;: 0,
+  &quot;finagle/success&quot;: 0
+  ...
+}
+</pre></div>
+</div>
+</div>
+<div class="section" id="http-admin-interface">
+<h2>HTTP Admin interface<a class="headerlink" href="#http-admin-interface" title="Permalink to this headline">¶</a></h2>
+<p>Twitter-server starts an HTTP server (it binds to the port defined by the flag <cite>-http.port</cite>; port 8080 by default). It exports an HttpMuxer object in which endpoints are registered. The library defines a series of default endpoints:</p>
+<div class="highlight-text"><div class="highlight"><pre>$ curl localhost:8080/admin
+&lt;html&gt;&lt;body&gt;
+&lt;a href=&#39;/admin/pprof/contention&#39;&gt;/admin/pprof/contention&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&#39;/admin/pprof/profile&#39;&gt;/admin/pprof/profile&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&#39;/admin/metrics.json&#39;&gt;/admin/metrics.json&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&#39;/admin/server_info&#39;&gt;/admin/server_info&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&#39;/admin/pprof/heap&#39;&gt;/admin/pprof/heap&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&#39;/admin/contention&#39;&gt;/admin/contention&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&#39;/admin/shutdown&#39;&gt;/admin/shutdown&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&#39;/admin/tracing&#39;&gt;/admin/tracing&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&#39;/admin/threads&#39;&gt;/admin/threads&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&#39;/admin/ping&#39;&gt;/admin/ping&lt;/a&gt;
+</pre></div>
+</div>
+<dl class="docutils">
+<dt><strong>/admin/pprof/contention</strong></dt>
+<dd>Returns a CPU contention profile. The output is in <a class="reference external" href="http://code.google.com/p/gperftools/">pprof</a> format.</dd>
+<dt><strong>/admin/pprof/profile</strong></dt>
+<dd>Returns a CPU usage profile. The output is in <a class="reference external" href="http://code.google.com/p/gperftools/">pprof</a> format.</dd>
+</dl>
+<div class="highlight-text"><div class="highlight"><pre>$ curl -s localhost:8080/admin/pprof/profile &gt; /tmp/cpu_profiling
+$ pprof --text /tmp/cpu_profiling
+Using local file /tmp/cpu_profiling.
+Using local file /tmp/cpu_profiling.
+Total: 48 samples
+      47  97.9%  97.9%       47  97.9% sun.nio.ch.KQueueArrayWrapper.kevent0
+       1   2.1% 100.0%        1   2.1% java.lang.System.arraycopy
+       0   0.0% 100.0%        1   2.1% com.twitter.concurrent.AsyncQueue.offer
+       0   0.0% 100.0%        1   2.1% com.twitter.concurrent.Scheduler$.submit
+       0   0.0% 100.0%        1   2.1% com.twitter.concurrent.Scheduler$LocalScheduler.run
+       0   0.0% 100.0%        1   2.1% com.twitter.concurrent.Scheduler$LocalScheduler.submit
+       0   0.0% 100.0%        1   2.1% com.twitter.finagle.Filter$$anon$2.apply
+       ...
+</pre></div>
+</div>
+<dl class="docutils">
+<dt><strong>/admin/pprof/heap</strong></dt>
+<dd>Returns a heap profile computed by the <a class="reference external" href="https://github.com/mariusaeriksen/heapster">heapster agent</a>. The output is in <a class="reference external" href="http://code.google.com/p/gperftools/">pprof</a> format.</dd>
+</dl>
+<div class="highlight-text"><div class="highlight"><pre>$ java -agentlib:heapster -jar target/myserver-1.0.0-SNAPSHOT.jar
+$ pprof /tmp/heapster_profile
+Welcome to pprof!  For help, type &#39;help&#39;.
+(pprof) top
+Total: 2001520 samples
+ 2000024  99.9%  99.9%  2000048  99.9% LTest;main
+    1056   0.1% 100.0%     1056   0.1% Ljava/lang/Object;
+     296   0.0% 100.0%      296   0.0% Ljava/lang/String;toCharArray
+     104   0.0% 100.0%      136   0.0% Ljava/lang/Shutdown;
+</pre></div>
+</div>
+<dl class="docutils">
+<dt><strong>/admin/metrics.json</strong></dt>
+<dd>Export a snapshot of the current statistics of the program. You can use the StatsReceiver in your application for add new counters/gauges/histograms, simply use the <cite>statsReceiver</cite> variable provided by TwitterServer.</dd>
+</dl>
+<p>See the <a class="reference internal" href="#metrics-label"><em>metrics</em></a> section for more information.</p>
+<dl class="docutils">
+<dt><strong>/admin/server_info</strong></dt>
+<dd>Return build informations about this server</dd>
+</dl>
+<div class="highlight-text"><div class="highlight"><pre>{
+  &quot;name&quot; : &quot;myserver&quot;,
+  &quot;version&quot; : &quot;1.0.0-SNAPSHOT&quot;,
+  &quot;build&quot; : &quot;20130221-105425&quot;,
+  &quot;build_revision&quot; : &quot;694299d640d337c58fadf668e44322b17fd0562e&quot;,
+  &quot;build_branch_name&quot; : &quot;refs/heads/twitter-server!doc&quot;,
+  &quot;build_last_few_commits&quot; : [
+    &quot;694299d (HEAD, origin/twitter-server!doc, twitter-server!doc) Merge branch &#39;master&#39; into twitter-server!doc&quot;,
+    &quot;ba1c062 Fix test for sbt + Jeff&#39;s comments&quot;,
+  ],
+  &quot;start_time&quot; : &quot;Thu Feb 21 13:43:32 PST 2013&quot;,
+  &quot;uptime&quot; : 22458
+}
+</pre></div>
+</div>
+<dl class="docutils">
+<dt><strong>/admin/contention</strong></dt>
+<dd>Show call stack of blocked and waiting threads.</dd>
+</dl>
+<div class="highlight-text"><div class="highlight"><pre>$ curl localhost:8080/admin/contention
+Blocked:
+&quot;util-jvm-timer-1&quot; Id=11 TIMED_WAITING on java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject@33aac3c
+        at sun.misc.Unsafe.park(Native Method)
+        -  waiting on java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject@33aac3c
+        at java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:226)
+        at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:2082)
+        at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:1090)
+        at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:807)
+        at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1043)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1103)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)
+        ...
+</pre></div>
+</div>
+<dl class="docutils">
+<dt><strong>/admin/shutdown</strong></dt>
+<dd>Stop the process gracefully.</dd>
+<dt><strong>/admin/tracing</strong></dt>
+<dd>Enable (/admin/tracing?enable=true) or disable tracing (/admin/tracing?disable=true)</dd>
+</dl>
+<p>See <a class="reference external" href="https://github.com/twitter/zipkin">zipkin</a> documentation for more info.</p>
+<dl class="docutils">
+<dt><strong>/admin/threads</strong></dt>
+<dd>Dumps the call stacks of all the threads (JSON output).</dd>
+</dl>
+<div class="highlight-text"><div class="highlight"><pre>{
+  &quot;threads&quot; : {
+    &quot;12&quot; : {
+      &quot;priority&quot; : 5,
+      &quot;state&quot; : &quot;TIMED_WAITING&quot;,
+      &quot;daemon&quot; : true,
+      &quot;thread&quot; : &quot;util-jvm-timer-1&quot;,
+      &quot;stack&quot; : [
+        &quot;sun.misc.Unsafe.park(Native Method)&quot;,
+        &quot;java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:226)&quot;,
+        &quot;java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:2082)&quot;,
+        &quot;java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:1090)&quot;,
+        &quot;java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:807)&quot;,
+        &quot;java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1043)&quot;,
+        &quot;java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1103)&quot;,
+        &quot;java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)&quot;,
+        &quot;java.lang.Thread.run(Thread.java:722)&quot;
+      ]
+    },
+    ...
+  }
+}
+</pre></div>
+</div>
+<dl class="docutils">
+<dt><strong>/admin/ping</strong></dt>
+<dd>Return pong (used for monitoring)</dd>
+</dl>
+</div>
+<div class="section" id="mesos">
+<h2>Mesos<a class="headerlink" href="#mesos" title="Permalink to this headline">¶</a></h2>
+<p>Twitter-server is compatible with running on Twitter’s Mesos clusters, which interfaces with the process through 3 additional handlers:</p>
+<dl class="docutils">
+<dt><strong>/abortabortabort</strong></dt>
+<dd>Abort the process.</dd>
+<dt><strong>/health</strong></dt>
+<dd>Return OK (identical to /admin/ping).</dd>
+<dt><strong>/quitquitquit</strong></dt>
+<dd>Quit the process.</dd>
+</dl>
+<p>These entries are the default, but if you need you can add your own handler to this HTTP server:</p>
+<div class="highlight-text"><div class="highlight"><pre>HttpMuxer.addHandler(&quot;/echo&quot;, service)
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><a href="index.html"><h3>Twitter-server</h3></a>
+<p>
+  Twitter-server is a library upon which servers are built to run in the Twitter production environment.
+</p>
+
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="http://github.com/twitter/twitter-server">Twitter-server @ GitHub</a></li>
+  <li><a href="http://github.com/twitter/twitter-server/issues">Issue Tracker</a></li>
+</ul>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Features</a><ul>
+<li><a class="reference internal" href="#flags">Flags</a></li>
+<li><a class="reference internal" href="#logging">Logging</a></li>
+<li><a class="reference internal" href="#metrics">Metrics</a></li>
+<li><a class="reference internal" href="#http-admin-interface">HTTP Admin interface</a></li>
+<li><a class="reference internal" href="#mesos">Mesos</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Twitter-server</a></li>
+      <li>Next: <a href="Migration.html" title="next chapter">Migration from Ostrich</a></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Search the contents of this site.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2013 Twitter, Inc.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

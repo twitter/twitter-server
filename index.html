@@ -1,0 +1,183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Twitter-server &mdash; Twitter-Server 1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Twitter-Server 1.0.1 documentation" href="#" />
+    <link rel="next" title="Features" href="Features.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+  <div class=indexwrapper>
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Features.html" title="Features"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">Twitter-server</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="twitter-server">
+<h1>Twitter-server<a class="headerlink" href="#twitter-server" title="Permalink to this headline">¶</a></h1>
+<p>Twitter-server defines a template from which servers at Twitter are built. Twitter-server ensures that common components like an administrative HTTP server, tracing, stats, etc. are wired in correctly for production use at Twitter.</p>
+<div class="section" id="quick-start">
+<h2>Quick-start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
+<p>Twitter-server is published with Maven:</p>
+<div class="highlight-text"><div class="highlight"><pre>&lt;dependency&gt;
+        &lt;groupId&gt;com.twitter&lt;/groupId&gt;
+        &lt;artifactId&gt;twitter-server&lt;/artifactId&gt;
+        &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;
+</pre></div>
+</div>
+<p>or, with sbt:</p>
+<div class="highlight-text"><div class="highlight"><pre>libraryDependencies += &quot;com.twitter&quot; %% &quot;twitter-server&quot; % &quot;1.0.0-SNAPSHOT&quot;
+</pre></div>
+</div>
+<p>First we’ll need to import a few things into our namespace.</p>
+<div class="highlight-text"><div class="highlight"><pre>import com.twitter.finagle.{Http, ListeningServer, NullServer, Service}
+import com.twitter.server.TwitterServer
+import com.twitter.util.{Await, Future}
+import org.jboss.netty.buffer.ChannelBuffers.copiedBuffer
+import org.jboss.netty.handler.codec.http._
+import org.jboss.netty.util.CharsetUtil.UTF_8
+</pre></div>
+</div>
+<p>Twitter-server defines its own version of the standard <cite>main</cite>. To use it, create an object extended with <cite>com.twitter.server.TwitterServer</cite>, and define the <cite>main()</cite> method (no arguments).</p>
+<p>In this example, we use the finagle HTTP server to start a server on port 8888, the service bound to this port is a simple hello service.</p>
+<div class="highlight-text"><div class="highlight"><pre>object BasicServer extends TwitterServer {
+  val service = new Service[HttpRequest, HttpResponse] {
+    def apply(request: HttpRequest) = {
+      val response =
+        new DefaultHttpResponse(request.getProtocolVersion, HttpResponseStatus.OK)
+      response.setContent(copiedBuffer(&quot;hello&quot;, UTF_8))
+      Future.value(response)
+    }
+  }
+
+  def main() {
+    val server = Http.serve(&quot;:8888&quot;, service)
+    onExit {
+      server.close()
+    }
+    Await.ready(server)
+  }
+}
+</pre></div>
+</div>
+<p><cite>onExit</cite> is used to register code to be run when the process shutdown is requested.</p>
+<p>After compiling, we can start the server like any other java or scala process.</p>
+<div class="highlight-text"><div class="highlight"><pre>$ java -jar target/myserver-1.0.0-SNAPSHOT.jar &amp;
+[1] 66569
+Feb 21, 2013 10:55:57 AM com.twitter.finagle.http.HttpMuxer$$anonfun$5 apply
+INFO: HttpMuxer[/admin/metrics.json] = com.twitter.finagle.stats.MetricsExporter(&lt;function1&gt;)
+Feb 21, 2013 10:55:57 AM com.twitter.finagle.http.HttpMuxer$$anonfun$5 apply
+INFO: HttpMuxer[/stats] = com.twitter.finagle.stats.OstrichExporter(&lt;function1&gt;)
+
+$ curl localhost:8888
+hello
+</pre></div>
+</div>
+<p>This server is fully configured to run in Twitter&#8217;s production environment; see <a class="reference internal" href="Features.html"><em>features</em></a> for more details.</p>
+</div>
+<div class="section" id="user-s-guide">
+<h2>User&#8217;s guide<a class="headerlink" href="#user-s-guide" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Features.html">Features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Features.html#flags">Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Features.html#logging">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Features.html#metrics">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Features.html#http-admin-interface">HTTP Admin interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Features.html#mesos">Mesos</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Migration.html">Migration from Ostrich</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Migration.html#stats-format">Stats format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Migration.html#step-by-step-guide">Step by step guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Migration.html#problem">Problem</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><a href="index.html"><h3>Twitter-server</h3></a>
+<p>
+  Twitter-server is a library upon which servers are built to run in the Twitter production environment.
+</p>
+
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="http://github.com/twitter/twitter-server">Twitter-server @ GitHub</a></li>
+  <li><a href="http://github.com/twitter/twitter-server/issues">Issue Tracker</a></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Search the contents of this site.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2013 Twitter, Inc.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </div>
+  
+  </body>
+</html>
