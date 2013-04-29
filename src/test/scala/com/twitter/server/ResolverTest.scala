@@ -22,7 +22,7 @@ class ResolverTest extends FunSuite {
     val flag = new Flags("my", includeGlobal=true)
     flag.parse(Array("-com.twitter.server.announcerMap", "foo=local!foo"))
 
-    assert(Await.ready(Announcer.announce(addr, "flag!foo")).isReturn)
-    assert(Await.ready(Announcer.announce(addr, "twitter!foo")).isReturn)
+    assert(Await.ready(Await.ready(Announcer.announce(addr, "flag!foo"))).poll.get.isReturn)
+    assert(Await.ready(Await.ready(Announcer.announce(addr, "twitter!foo"))).poll.get.isReturn)
   }
 }

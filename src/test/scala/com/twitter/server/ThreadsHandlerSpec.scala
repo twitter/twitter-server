@@ -1,9 +1,10 @@
 package com.twitter.server
 
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.twitter.finagle.http.{Response, Request}
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.tracing.{Trace, Tracer}
+import com.twitter.util.Await
 import org.jboss.netty.handler.codec.http.HttpResponseStatus
 import org.specs.SpecificationWithJUnit
 import scala.collection.JavaConversions._
@@ -18,7 +19,7 @@ class ThreadsHandlerSpec extends SpecificationWithJUnit {
 
       val handler = new ThreadsHandler
       val req = Request("/")
-      val res = Response(handler(req)())
+      val res = Response(Await.result(handler(req)))
 
       val threads = reader.readValue(res.contentString, classOf[Threads])
       val stacks = threads("threads")

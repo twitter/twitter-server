@@ -1,7 +1,8 @@
 package com.twitter.server
 
-import com.twitter.finagle.http.{Response, Request}
+import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.tracing.{Trace, Tracer}
+import com.twitter.util.Await
 import org.jboss.netty.handler.codec.http.HttpResponseStatus
 import org.specs.SpecificationWithJUnit
 import org.specs.mock.Mockito
@@ -21,7 +22,7 @@ class TracingHandlerSpec extends SpecificationWithJUnit with Mockito {
         there was no(tracer).record(any)
 
         val request = Request("/", ("enable", "true"))
-        Response(service(request)()).status must be_==(HttpResponseStatus.OK)
+        Response(Await.result(service(request))).status must be_==(HttpResponseStatus.OK)
 
         Trace.record("msg")
         there was one(tracer).record(any)
@@ -41,7 +42,7 @@ class TracingHandlerSpec extends SpecificationWithJUnit with Mockito {
         Trace.pushTracer(tracer2)
 
         val request = Request("/", ("disable", "true"))
-        Response(service(request)()).status must be_==(HttpResponseStatus.OK)
+        Response(Await.result(service(request))).status must be_==(HttpResponseStatus.OK)
 
         Trace.record("msg")
         there was no(tracer2).record(any)
