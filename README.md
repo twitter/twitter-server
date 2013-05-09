@@ -21,4 +21,4 @@ or, with sbt:
 Full Documentation
 ------------------
 
-<https://twitter.github.io/twitterserver>
+<http://twitter.github.io/twitter-server/>
