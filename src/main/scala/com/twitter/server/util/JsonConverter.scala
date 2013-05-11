@@ -1,4 +1,4 @@
-package com.twitter.server
+package com.twitter.server.util
 
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.ObjectMapper

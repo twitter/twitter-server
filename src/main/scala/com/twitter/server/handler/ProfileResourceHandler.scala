@@ -1,4 +1,4 @@
-package com.twitter.server
+package com.twitter.server.handler
 
 import com.twitter.conversions.time._
 import com.twitter.finagle.Service

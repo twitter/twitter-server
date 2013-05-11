@@ -1,4 +1,4 @@
-package com.twitter.server
+package com.twitter.server.handler
 
 import com.twitter.finagle.{Announcer, Service}
 import com.twitter.util.Future

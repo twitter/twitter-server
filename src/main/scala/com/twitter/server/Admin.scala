@@ -2,6 +2,7 @@ package com.twitter.server
 
 import com.twitter.app.App
 import com.twitter.finagle.http.HttpMuxer
+import com.twitter.server.handler._
 
 trait Admin { self: App =>
   HttpMuxer.addHandler("/abortabortabort", new MesosAbortHandler)

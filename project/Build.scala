@@ -16,8 +16,8 @@ object TwitterServer extends Build {
     organization := "com.twitter",
     crossScalaVersions := Seq("2.9.2", "2.10.0"),
     libraryDependencies ++= Seq(
-      "org.mockito" % "mockito-all" % "1.8.5" % "test",
-      "junit" % "junit" % "4.8.1" % "test"
+      "org.scalatest" %% "scalatest" %"1.9.1" % "test",
+      "org.mockito" % "mockito-all" % "1.8.5" % "test"
     ),
     resolvers ++= Seq(
       "twitter-repo" at "http://maven.twttr.com",

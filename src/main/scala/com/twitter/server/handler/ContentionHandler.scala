@@ -1,4 +1,4 @@
-package com.twitter.server
+package com.twitter.server.handler
 
 import com.twitter.finagle.Service
 import com.twitter.jvm.ContentionSnapshot

@@ -1,6 +1,7 @@
-package com.twitter.server
+package com.twitter.server.handler
 
 import com.twitter.finagle.Service
+import com.twitter.server.util.JsonConverter
 import com.twitter.util.Future
 import java.lang.management.ManagementFactory
 import java.util.{Date, Properties}
