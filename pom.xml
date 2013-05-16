@@ -25,22 +25,22 @@
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>finagle-http</artifactId>
-      <version>6.3.1-SNAPSHOT</version>
+      <version>6.4.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>finagle-stats</artifactId>
-      <version>6.3.1-SNAPSHOT</version>
+      <version>6.4.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>finagle-thrift</artifactId>
-      <version>6.3.1-SNAPSHOT</version>
+      <version>6.4.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>finagle-mdns</artifactId>
-      <version>6.3.1-SNAPSHOT</version>
+      <version>6.4.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
