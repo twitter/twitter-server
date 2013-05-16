@@ -14,7 +14,6 @@ class ResolverTest extends FunSuite {
     flag.parse(Array("-com.twitter.server.resolverMap", "foo=:8080"))
 
     assert(Resolver.resolve("flag!foo").isReturn)
-    assert(Resolver.resolve("twitter!foo").isReturn)
   }
 
   test("announcers resolve from the main announcer") {
@@ -22,7 +21,7 @@ class ResolverTest extends FunSuite {
     val flag = new Flags("my", includeGlobal=true)
     flag.parse(Array("-com.twitter.server.announcerMap", "foo=local!foo"))
 
-    assert(Await.ready(Await.ready(Announcer.announce(addr, "flag!foo"))).poll.get.isReturn)
-    assert(Await.ready(Await.ready(Announcer.announce(addr, "twitter!foo"))).poll.get.isReturn)
+    // checks for non-exceptional
+    Await.result(Announcer.announce(addr, "flag!foo"))
   }
 }
