@@ -17,17 +17,13 @@ object TwitterServer extends Build {
     crossScalaVersions := Seq("2.9.2", "2.10.0"),
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "1.9.1" % "test",
+      "junit" % "junit" % "4.8.1" % "test",
       "org.mockito" % "mockito-all" % "1.8.5" % "test"
     ),
     resolvers ++= Seq(
       "twitter-repo" at "http://maven.twttr.com",
       "maven-local" at ("file:" + System.getProperty("user.home") + "/.m2/repository/")
     ),
-
-    testOptions in Test <<= scalaVersion map {
-      case "2.10" | "2.10.0" => Seq(Tests.Filter(_ => false))
-      case _ => Seq()
-    },
 
     ivyXML :=
       <dependencies>
@@ -49,7 +45,7 @@ object TwitterServer extends Build {
     pomIncludeRepository := { _ => false },
     publishMavenStyle := true,
     pomExtra := (
-      <url>https://github.com/twitter/util</url>
+      <url>https://github.com/twitter/twitter-server</url>
       <licenses>
         <license>
           <name>Apache License, Version 2.0</name>

@@ -42,7 +42,7 @@ class TracingHandler extends Service[HttpRequest, HttpResponse] {
         return ret
       }
     } catch {
-      case _ =>
+      case _: Throwable =>
         res.statusCode = 500
         res.contentString =
           "Could not initialize Finagle tracing classes. Possibly old version of Finagle."
