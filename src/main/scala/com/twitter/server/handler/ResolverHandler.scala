@@ -25,6 +25,7 @@ class ResolverHandler extends Service[HttpRequest, HttpResponse] {
 
       val response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK)
       val msg = resolveHTML.format(group().map(_.toString).mkString("<br />"))
+      response.setHeader("Content-Language", "en")
       response.setContent(ChannelBuffers.wrappedBuffer(msg.getBytes))
       Future.value(response)
 
@@ -52,6 +53,7 @@ class ResolutionsHandler(resolvePath: String) extends Service[HttpRequest, HttpR
     } mkString("<br /><br />")
 
     val response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK)
+    response.setHeader("Content-Language", "en")
     response.setContent(ChannelBuffers.wrappedBuffer(html.format(resolutions).getBytes))
     Future.value(response)
   }
