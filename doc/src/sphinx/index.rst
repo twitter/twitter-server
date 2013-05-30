@@ -10,17 +10,17 @@ Twitter-server is published with Maven:
 
 ::
 
-	<dependency>
-		<groupId>com.twitter</groupId>
-		<artifactId>twitter-server</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
-	</dependency>
+  <dependency>
+    <groupId>com.twitter</groupId>
+    <artifactId>twitter-server</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </dependency>
 
 or, with sbt:
 
 ::
 
-	libraryDependencies += "com.twitter" %% "twitter-server" % "1.0.0-SNAPSHOT"
+  libraryDependencies += "com.twitter" %% "twitter-server" % "1.0.0-SNAPSHOT"
 
 
 First we’ll need to import a few things into our namespace.
@@ -39,15 +39,15 @@ After compiling, we can start the server like any other java or scala process.
 
 ::
 
-	$ java -jar target/myserver-1.0.0-SNAPSHOT.jar &
-	[1] 66569
-	Feb 21, 2013 10:55:57 AM com.twitter.finagle.http.HttpMuxer$$anonfun$5 apply
-	INFO: HttpMuxer[/admin/metrics.json] = com.twitter.finagle.stats.MetricsExporter(<function1>)
-	Feb 21, 2013 10:55:57 AM com.twitter.finagle.http.HttpMuxer$$anonfun$5 apply
-	INFO: HttpMuxer[/stats] = com.twitter.finagle.stats.OstrichExporter(<function1>)
+  $ java -jar target/myserver-1.0.0-SNAPSHOT.jar &
+  [1] 66569
+  Feb 21, 2013 10:55:57 AM com.twitter.finagle.http.HttpMuxer$$anonfun$5 apply
+  INFO: HttpMuxer[/admin/metrics.json] = com.twitter.finagle.stats.MetricsExporter(<function1>)
+  Feb 21, 2013 10:55:57 AM com.twitter.finagle.http.HttpMuxer$$anonfun$5 apply
+  INFO: HttpMuxer[/stats] = com.twitter.finagle.stats.OstrichExporter(<function1>)
 
-	$ curl localhost:8888
-	hello
+  $ curl localhost:8888
+  hello
 
 This server is fully configured to run in Twitter's production environment; see :doc:`features <Features>` for more details.
 
