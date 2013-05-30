@@ -20,10 +20,7 @@ object TwitterServer extends Build {
       "junit" % "junit" % "4.8.1" % "test",
       "org.mockito" % "mockito-all" % "1.8.5" % "test"
     ),
-    resolvers ++= Seq(
-      "twitter-repo" at "http://maven.twttr.com",
-      "maven-local" at ("file:" + System.getProperty("user.home") + "/.m2/repository/")
-    ),
+    resolvers += "twitter-repo" at "http://maven.twttr.com",
 
     ivyXML :=
       <dependencies>
