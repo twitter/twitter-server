@@ -20,6 +20,7 @@ class IndexHandler(prefix: String = "/") extends Service[HttpRequest, HttpRespon
     }
 
     val response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK)
+    response.setHeader("Content-Language", "en")
     response.setContent(ChannelBuffers.wrappedBuffer(msg.getBytes))
     Future.value(response)
   }
