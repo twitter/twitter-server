@@ -25,32 +25,32 @@
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>finagle-http</artifactId>
-      <version>6.4.1-SNAPSHOT</version>
+      <version>6.4.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>finagle-stats</artifactId>
-      <version>6.4.1-SNAPSHOT</version>
+      <version>6.4.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>finagle-thrift</artifactId>
-      <version>6.4.1-SNAPSHOT</version>
+      <version>6.4.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>util-app</artifactId>
-      <version>6.3.5-SNAPSHOT</version>
+      <version>6.3.6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>util-logging</artifactId>
-      <version>6.3.5-SNAPSHOT</version>
+      <version>6.3.6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>util-jvm</artifactId>
-      <version>6.3.5-SNAPSHOT</version>
+      <version>6.3.6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.scalatest</groupId>

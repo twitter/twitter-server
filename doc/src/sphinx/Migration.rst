@@ -7,7 +7,7 @@ Migration from Ostrich
 
 .. note::
 
-	Ostrich stats are still present on /stats if `finagle-ostrich4` is in your runtime classpath.
+  Ostrich stats are still present on /stats if `finagle-ostrich4` is in your runtime classpath.
 
 While ostrich provided several different primitives for process statistics (stats, counters, and gauges), metrics provides just one: a gauge. Gauges are instantaneous measurements — they are an exported variable. Metrics provides counters and histograms as well, but these just export gauges.
 
@@ -82,7 +82,7 @@ E.g. (metrics):
 
 .. note::
 
-	The stats exported by Ostrich will also be computed by the Ostrich library. It's not a format conversion but a real dual collection/export of stats. You can compare both stats, but note than you can have different results in histogram values because metrics is *far* more precise than Ostrich.
+  The stats exported by Ostrich will also be computed by the Ostrich library. It's not a format conversion but a real dual collection/export of stats. You can compare both stats, but note than you can have different results in histogram values because metrics is *far* more precise than Ostrich.
 
 For example, here are the difference between the two libraries for 10k random numbers between 1 and 10,000:
 
