@@ -23,15 +23,15 @@ We also provide automatic help entry that display information about all the flag
 
 ::
 
-	$ java -jar target/myserver-1.0.0-SNAPSHOT.jar -help
-	AdvancedServer
-	  -alarm_durations='1.seconds,5.seconds': 2 alarm durations
-	  -help='false': Show this help
-	  -http.port=':8080': Http server port
-	  -bind=':0': Network interface to use
-	  -log.level='INFO': Log level
-	  -log.output='/dev/stderr': Output file
-	  -what='hello': String to return
+  $ java -jar target/myserver-1.0.0-SNAPSHOT.jar -help
+  AdvancedServer
+    -alarm_durations='1.seconds,5.seconds': 2 alarm durations
+    -help='false': Show this help
+    -http.port=':8080': Http server port
+    -bind=':0': Network interface to use
+    -log.level='INFO': Log level
+    -log.output='/dev/stderr': Output file
+    -what='hello': String to return
 
 Logging
 -------
@@ -92,24 +92,32 @@ Twitter-server starts an HTTP server (it binds to the port defined by the flag `
 
 ::
 
-	$ curl localhost:8080/admin
-	<html><body>
-	<a href='/admin/pprof/contention'>/admin/pprof/contention</a><br />
-	<a href='/admin/pprof/profile'>/admin/pprof/profile</a><br />
-	<a href='/admin/metrics.json'>/admin/metrics.json</a><br />
-	<a href='/admin/server_info'>/admin/server_info</a><br />
-	<a href='/admin/pprof/heap'>/admin/pprof/heap</a><br />
-	<a href='/admin/contention'>/admin/contention</a><br />
-	<a href='/admin/shutdown'>/admin/shutdown</a><br />
-	<a href='/admin/tracing'>/admin/tracing</a><br />
-	<a href='/admin/threads'>/admin/threads</a><br />
-	<a href='/admin/ping'>/admin/ping</a>
+  $ curl localhost:8080/admin
+  /admin/pprof/contention
+  /admin/pprof/profile
+  /admin/metrics.json
+  /admin/server_info
+  /admin/resolutions
+  /admin/pprof/heap
+  /admin/contention
+  /admin/announcer
+  /admin/shutdown
+  /admin/resolver
+  /admin/tracing
+  /admin/threads
+  /admin/ping
+
+**/admin/resolutions**
+  Returns a set of resolution chains that have run through Resolver. This allows one to see how a particular target is being resolved.
+
+**/admin/announcer**
+  Returns a set of announcement chains that have run through the Announcer. This allows one ot see how a particular target is being announced.
 
 **/admin/pprof/contention**
-	Returns a CPU contention profile. The output is in `pprof <http://code.google.com/p/gperftools/>`_ format.
+  Returns a CPU contention profile. The output is in `pprof <http://code.google.com/p/gperftools/>`_ format.
 
 **/admin/pprof/profile**
-	Returns a CPU usage profile. The output is in `pprof <http://code.google.com/p/gperftools/>`_ format.
+  Returns a CPU usage profile. The output is in `pprof <http://code.google.com/p/gperftools/>`_ format.
 
 ::
 
@@ -128,27 +136,27 @@ Twitter-server starts an HTTP server (it binds to the port defined by the flag `
          ...
 
 **/admin/pprof/heap**
-	Returns a heap profile computed by the `heapster agent <https://github.com/mariusaeriksen/heapster>`_. The output is in `pprof <http://code.google.com/p/gperftools/>`_ format.
+  Returns a heap profile computed by the `heapster agent <https://github.com/mariusaeriksen/heapster>`_. The output is in `pprof <http://code.google.com/p/gperftools/>`_ format.
 
 ::
 
-	$ java -agentlib:heapster -jar target/myserver-1.0.0-SNAPSHOT.jar
-	$ pprof /tmp/heapster_profile
-	Welcome to pprof!  For help, type 'help'.
-	(pprof) top
-	Total: 2001520 samples
-	 2000024  99.9%  99.9%  2000048  99.9% LTest;main
-	    1056   0.1% 100.0%     1056   0.1% Ljava/lang/Object;
-	     296   0.0% 100.0%      296   0.0% Ljava/lang/String;toCharArray
-	     104   0.0% 100.0%      136   0.0% Ljava/lang/Shutdown;
+  $ java -agentlib:heapster -jar target/myserver-1.0.0-SNAPSHOT.jar
+  $ pprof /tmp/heapster_profile
+  Welcome to pprof!  For help, type 'help'.
+  (pprof) top
+  Total: 2001520 samples
+   2000024  99.9%  99.9%  2000048  99.9% LTest;main
+      1056   0.1% 100.0%     1056   0.1% Ljava/lang/Object;
+       296   0.0% 100.0%      296   0.0% Ljava/lang/String;toCharArray
+       104   0.0% 100.0%      136   0.0% Ljava/lang/Shutdown;
 
 **/admin/metrics.json**
-	Export a snapshot of the current statistics of the program. You can use the StatsReceiver in your application for add new counters/gauges/histograms, simply use the `statsReceiver` variable provided by TwitterServer.
+  Export a snapshot of the current statistics of the program. You can use the StatsReceiver in your application for add new counters/gauges/histograms, simply use the `statsReceiver` variable provided by TwitterServer.
 
 See the :ref:`metrics <metrics_label>` section for more information.
 
 **/admin/server_info**
-	Return build informations about this server
+  Return build informations about this server
 
 ::
 
@@ -167,35 +175,35 @@ See the :ref:`metrics <metrics_label>` section for more information.
   }
 
 **/admin/contention**
-	Show call stack of blocked and waiting threads.
+  Show call stack of blocked and waiting threads.
 
 ::
 
-	$ curl localhost:8080/admin/contention
-	Blocked:
-	"util-jvm-timer-1" Id=11 TIMED_WAITING on java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject@33aac3c
-		at sun.misc.Unsafe.park(Native Method)
-		-  waiting on java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject@33aac3c
-		at java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:226)
-		at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:2082)
-		at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:1090)
-		at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:807)
-		at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1043)
-		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1103)
-		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)
-		...
+  $ curl localhost:8080/admin/contention
+  Blocked:
+  "util-jvm-timer-1" Id=11 TIMED_WAITING on java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject@33aac3c
+    at sun.misc.Unsafe.park(Native Method)
+    -  waiting on java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject@33aac3c
+    at java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:226)
+    at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:2082)
+    at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:1090)
+    at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:807)
+    at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1043)
+    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1103)
+    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)
+    ...
 
 
 **/admin/shutdown**
-	Stop the process gracefully.
+  Stop the process gracefully.
 
 **/admin/tracing**
-	Enable (/admin/tracing?enable=true) or disable tracing (/admin/tracing?disable=true)
+  Enable (/admin/tracing?enable=true) or disable tracing (/admin/tracing?disable=true)
 
 See `zipkin <https://github.com/twitter/zipkin>`_ documentation for more info.
 
 **/admin/threads**
-	Dumps the call stacks of all the threads (JSON output).
+  Dumps the call stacks of all the threads (JSON output).
 
 ::
 
@@ -223,7 +231,7 @@ See `zipkin <https://github.com/twitter/zipkin>`_ documentation for more info.
   }
 
 **/admin/ping**
-	Return pong (used for monitoring)
+  Return pong (used for monitoring)
 
 
 Mesos
@@ -232,13 +240,13 @@ Mesos
 Twitter-server is compatible with running on Twitter’s Mesos clusters, which interfaces with the process through 3 additional handlers:
 
 **/abortabortabort**
-	Abort the process.
+  Abort the process.
 
 **/health**
-	Return OK (identical to /admin/ping).
+  Return OK (identical to /admin/ping).
 
 **/quitquitquit**
-	Quit the process.
+  Quit the process.
 
 
 These entries are the default, but if you need you can add your own handler to this HTTP server:

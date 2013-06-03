@@ -175,20 +175,26 @@ AdvancedServer
 <h2>HTTP Admin interface<a class="headerlink" href="#http-admin-interface" title="Permalink to this headline">¶</a></h2>
 <p>Twitter-server starts an HTTP server (it binds to the port defined by the flag <cite>-http.port</cite>; port 8080 by default). It exports an HttpMuxer object in which endpoints are registered. The library defines a series of default endpoints:</p>
 <div class="highlight-text"><div class="highlight"><pre>$ curl localhost:8080/admin
-&lt;html&gt;&lt;body&gt;
-&lt;a href=&#39;/admin/pprof/contention&#39;&gt;/admin/pprof/contention&lt;/a&gt;&lt;br /&gt;
-&lt;a href=&#39;/admin/pprof/profile&#39;&gt;/admin/pprof/profile&lt;/a&gt;&lt;br /&gt;
-&lt;a href=&#39;/admin/metrics.json&#39;&gt;/admin/metrics.json&lt;/a&gt;&lt;br /&gt;
-&lt;a href=&#39;/admin/server_info&#39;&gt;/admin/server_info&lt;/a&gt;&lt;br /&gt;
-&lt;a href=&#39;/admin/pprof/heap&#39;&gt;/admin/pprof/heap&lt;/a&gt;&lt;br /&gt;
-&lt;a href=&#39;/admin/contention&#39;&gt;/admin/contention&lt;/a&gt;&lt;br /&gt;
-&lt;a href=&#39;/admin/shutdown&#39;&gt;/admin/shutdown&lt;/a&gt;&lt;br /&gt;
-&lt;a href=&#39;/admin/tracing&#39;&gt;/admin/tracing&lt;/a&gt;&lt;br /&gt;
-&lt;a href=&#39;/admin/threads&#39;&gt;/admin/threads&lt;/a&gt;&lt;br /&gt;
-&lt;a href=&#39;/admin/ping&#39;&gt;/admin/ping&lt;/a&gt;
+/admin/pprof/contention
+/admin/pprof/profile
+/admin/metrics.json
+/admin/server_info
+/admin/resolutions
+/admin/pprof/heap
+/admin/contention
+/admin/announcer
+/admin/shutdown
+/admin/resolver
+/admin/tracing
+/admin/threads
+/admin/ping
 </pre></div>
 </div>
 <dl class="docutils">
+<dt><strong>/admin/resolutions</strong></dt>
+<dd>Returns a set of resolution chains that have run through Resolver. This allows one to see how a particular target is being resolved.</dd>
+<dt><strong>/admin/announcer</strong></dt>
+<dd>Returns a set of announcement chains that have run through the Announcer. This allows one ot see how a particular target is being announced.</dd>
 <dt><strong>/admin/pprof/contention</strong></dt>
 <dd>Returns a CPU contention profile. The output is in <a class="reference external" href="http://code.google.com/p/gperftools/">pprof</a> format.</dd>
 <dt><strong>/admin/pprof/profile</strong></dt>
@@ -255,16 +261,16 @@ Total: 2001520 samples
 <div class="highlight-text"><div class="highlight"><pre>$ curl localhost:8080/admin/contention
 Blocked:
 &quot;util-jvm-timer-1&quot; Id=11 TIMED_WAITING on java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject@33aac3c
-        at sun.misc.Unsafe.park(Native Method)
-        -  waiting on java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject@33aac3c
-        at java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:226)
-        at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:2082)
-        at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:1090)
-        at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:807)
-        at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1043)
-        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1103)
-        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)
-        ...
+  at sun.misc.Unsafe.park(Native Method)
+  -  waiting on java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject@33aac3c
+  at java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:226)
+  at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:2082)
+  at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:1090)
+  at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:807)
+  at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1043)
+  at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1103)
+  at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)
+  ...
 </pre></div>
 </div>
 <dl class="docutils">
