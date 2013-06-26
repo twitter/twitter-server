@@ -12,15 +12,15 @@ Twitter-server is published with Maven:
 
   <dependency>
     <groupId>com.twitter</groupId>
-    <artifactId>twitter-server</artifactId>
-    <version>1.0.1</version>
+    <artifactId>twitter-server_2.9.2</artifactId>
+    <version>1.0.2</version>
   </dependency>
 
 or, with sbt:
 
 ::
 
-  libraryDependencies += "com.twitter" %% "twitter-server" % "1.0.1"
+  libraryDependencies += "com.twitter" %% "twitter-server" % "1.0.2"
 
 
 First we’ll need to import a few things into our namespace.
