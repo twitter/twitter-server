@@ -30,17 +30,17 @@
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>finagle-core</artifactId>
-      <version>6.5.2-SNAPSHOT</version>
+      <version>6.5.3-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>finagle-http</artifactId>
-      <version>6.5.2-SNAPSHOT</version>
+      <version>6.5.3-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>finagle-stats</artifactId>
-      <version>6.5.2-SNAPSHOT</version>
+      <version>6.5.3-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
@@ -62,9 +62,7 @@
       <artifactId>util-logging</artifactId>
       <version>6.3.8-SNAPSHOT</version>
     </dependency>
-
     <!-- testing -->
-
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
