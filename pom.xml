@@ -4,7 +4,7 @@
   <groupId>com.twitter</groupId>
   <artifactId>twitter-server</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.3-SNAPSHOT</version>
+  <version>1.0.4-SNAPSHOT</version>
   <parent>
     <groupId>com.twitter</groupId>
     <artifactId>scala-parent-292</artifactId>
@@ -60,7 +60,7 @@
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>util-logging</artifactId>
-      <version>6.3.8-SNAPSHOT</version>
+      <version>6.3.9-SNAPSHOT</version>
     </dependency>
     <!-- testing -->
     <dependency>
