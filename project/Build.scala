@@ -5,20 +5,20 @@ import com.typesafe.sbt.SbtSite.site
 import com.typesafe.sbt.site.SphinxSupport.Sphinx
 
 object TwitterServer extends Build {
-  val utilVersion = "6.3.7"
-  val finagleVersion = "6.5.1"
+  val utilVersion = "6.3.8"
+  val finagleVersion = "6.5.2"
 
   def util(which: String) = "com.twitter" %% ("util-"+which) % utilVersion
   def finagle(which: String) = "com.twitter" %% ("finagle-"+which) % finagleVersion
 
   val sharedSettings = Seq(
-    version := "1.0.2",
+    version := "1.0.3",
     organization := "com.twitter",
     crossScalaVersions := Seq("2.9.2", "2.10.0"),
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "1.9.1" % "test",
-      "junit" % "junit" % "4.8.1" % "test",
-      "org.mockito" % "mockito-all" % "1.8.5" % "test"
+      "junit" % "junit" % "4.10" % "test",
+      "org.mockito" % "mockito-all" % "1.9.5" % "test"
     ),
     resolvers += "twitter-repo" at "http://maven.twttr.com",
 
@@ -78,12 +78,15 @@ object TwitterServer extends Build {
   ).settings(
     name := "twitter-server",
     libraryDependencies ++= Seq(
-      util("app"),
-      util("jvm"),
+      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.1.3",
+      "io.netty" % "netty" % "3.6.6.Final",
+      finagle("core"),
       finagle("http"),
+      util("logging"),
       finagle("stats"),
-      finagle("thrift"),
-      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.1.3"
+      util("app"),
+      util("core"),
+      util("jvm")
     )
   )
 
