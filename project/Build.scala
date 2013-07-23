@@ -79,10 +79,10 @@ object TwitterServer extends Build {
     name := "twitter-server",
     libraryDependencies ++= Seq(
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.1.3",
-      "io.netty" %% "netty" % "3.6.6.Final",
+      "io.netty" % "netty" % "3.6.6.Final",
       finagle("core"),
       finagle("http"),
-      finagle("logging"),
+      util("logging"),
       finagle("stats"),
       util("app"),
       util("core"),
