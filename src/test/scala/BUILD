@@ -2,6 +2,7 @@
 
 junit_tests(name='scala',
   dependencies=[
+    pants('3rdparty:jackson-databind'),
     pants('3rdparty:jackson-module-scala'),
     pants('3rdparty:junit'),
     pants('3rdparty:mockito-all'),

@@ -2,6 +2,8 @@
 
 scala_library(name='scala',
   dependencies=[
+    pants('3rdparty:jackson-core'),
+    pants('3rdparty:jackson-databind'),
     pants('3rdparty:jackson-module-scala'),
     pants('3rdparty:netty'),
     pants('finagle/finagle-core'),
