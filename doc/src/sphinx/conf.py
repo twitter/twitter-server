@@ -18,7 +18,6 @@ sys.path.append(os.path.abspath('_themes'))
 html_theme_path = ['_themes']
 html_theme = 'flask'
 html_short_title = 'Twitter-server'
-html_static_path = ['_static']
 html_sidebars = {
    'index':    ['sidebarintro.html', 'searchbox.html'],
     '**':      ['sidebarintro.html', 'localtoc.html', 'relations.html', 'searchbox.html']

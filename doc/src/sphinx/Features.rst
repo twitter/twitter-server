@@ -234,16 +234,16 @@ See `zipkin <https://github.com/twitter/zipkin>`_ documentation for more info.
   Return pong (used for monitoring)
 
 
-Mesos
------
+Lifecycle Management
+--------------------
 
-Twitter-server is compatible with running on Twitter’s Mesos clusters, which interfaces with the process through 3 additional handlers:
+Twitter-server exposes endpoints to manage server lifecycle that are compatible with `Mesos's <http://mesos.apache.org/>`_ job manager:
 
 **/abortabortabort**
   Abort the process.
 
 **/health**
-  Return OK (identical to /admin/ping).
+  By default, respond with content-body "OK". This endpoint can be managed manually by mixing in the Lifecycle.Warmup trait with your server.
 
 **/quitquitquit**
   Quit the process.

@@ -5,9 +5,9 @@ import com.twitter.finagle.http.HttpMuxer
 import com.twitter.finagle.{ListeningServer, Http, NullServer}
 import java.net.InetSocketAddress
 
-trait HttpServer { self: App =>
+trait AdminHttpServer { self: App =>
   def defaultHttpPort = 8080
-  val httpPort = flag("http.port", new InetSocketAddress(defaultHttpPort), "Http server port")
+  val httpPort = flag("http.port", new InetSocketAddress(defaultHttpPort), "Admin http server port")
 
   @volatile protected var httpServer: ListeningServer = NullServer
 

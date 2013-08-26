@@ -5,10 +5,6 @@ import com.twitter.finagle.http.HttpMuxer
 import com.twitter.server.handler._
 
 trait Admin { self: App =>
-  HttpMuxer.addHandler("/abortabortabort", new MesosAbortHandler)
-  HttpMuxer.addHandler("/health", new ReplyHandler("OK\n"))
-  HttpMuxer.addHandler("/quitquitquit", new ShutdownHandler)
-
   HttpMuxer.addHandler("/admin", new IndexHandler("/admin/"))
   HttpMuxer.addHandler("/admin/announcer", new AnnouncerHandler)
   HttpMuxer.addHandler("/admin/contention", new ContentionHandler)

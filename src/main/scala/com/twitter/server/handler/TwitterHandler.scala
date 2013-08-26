@@ -30,7 +30,7 @@ class ShutdownHandler extends TwitterHandler {
   }
 }
 
-class MesosAbortHandler extends TwitterHandler {
+class AbortHandler extends TwitterHandler {
   def apply(req: HttpRequest) = {
     background { Runtime.getRuntime.halt(0) }
     respond("aborting\n")
