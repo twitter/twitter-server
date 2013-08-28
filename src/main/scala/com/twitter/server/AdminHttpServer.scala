@@ -6,16 +6,16 @@ import com.twitter.finagle.{ListeningServer, Http, NullServer}
 import java.net.InetSocketAddress
 
 trait AdminHttpServer { self: App =>
-  def defaultHttpPort = 8080
-  val httpPort = flag("http.port", new InetSocketAddress(defaultHttpPort), "Admin http server port")
+  def defaultHttpPort = 9990
+  val adminPort = flag("admin.port", new InetSocketAddress(defaultHttpPort), "Admin http server port")
 
-  @volatile protected var httpServer: ListeningServer = NullServer
+  @volatile protected var adminHttpServer: ListeningServer = NullServer
 
   premain {
-    httpServer = Http.serve(httpPort(), HttpMuxer)
+    adminHttpServer = Http.serve(adminPort(), HttpMuxer)
   }
 
   onExit {
-    httpServer.close()
+    adminHttpServer.close()
   }
 }

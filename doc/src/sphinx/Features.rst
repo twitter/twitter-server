@@ -27,7 +27,7 @@ We also provide automatic help entry that display information about all the flag
   AdvancedServer
     -alarm_durations='1.seconds,5.seconds': 2 alarm durations
     -help='false': Show this help
-    -http.port=':8080': Http server port
+    -admin.port=':8080': Admin http server port
     -bind=':0': Network interface to use
     -log.level='INFO': Log level
     -log.output='/dev/stderr': Output file
@@ -88,7 +88,7 @@ The value of this counter will be exported by the HTTP server and accessible at 
 HTTP Admin interface
 --------------------
 
-Twitter-server starts an HTTP server (it binds to the port defined by the flag `-http.port`; port 8080 by default). It exports an HttpMuxer object in which endpoints are registered. The library defines a series of default endpoints:
+Twitter-server starts an HTTP server (it binds to the port defined by the flag `-admin.port`; port 8080 by default). It exports an HttpMuxer object in which endpoints are registered. The library defines a series of default endpoints:
 
 ::
 
