@@ -9,5 +9,6 @@ trait Stats { app: App =>
 
   premain {
     JvmStats.register(statsReceiver)
+    TwitterStats.register(statsReceiver)
   }
 }
