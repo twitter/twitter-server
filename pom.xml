@@ -54,6 +54,11 @@
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
+      <artifactId>finagle-zipkin</artifactId>
+      <version>6.5.3-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.twitter</groupId>
       <artifactId>util-app</artifactId>
       <version>6.4.1-SNAPSHOT</version>
     </dependency>
