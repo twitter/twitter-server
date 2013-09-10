@@ -6,7 +6,7 @@ import com.typesafe.sbt.site.SphinxSupport.Sphinx
 
 object TwitterServer extends Build {
   val libVersion = "1.0.3"
-  val utilVersion = "6.4.0"
+  val utilVersion = "6.5.0"
   val finagleVersion = "6.5.2"
 
   def util(which: String) = "com.twitter" %% ("util-"+which) % utilVersion
