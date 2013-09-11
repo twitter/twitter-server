@@ -1,6 +1,6 @@
 package com.twitter.server.util
 
-import com.twitter.finagle.stats.StatsReceiver
+import com.twitter.finagle.stats.{BroadcastStatsReceiver, StatsReceiver}
 import java.lang.management.ManagementFactory
 import scala.collection.mutable
 
@@ -45,17 +45,28 @@ object JvmStats {
     }
 
     val memPool = ManagementFactory.getMemoryPoolMXBeans.asScala
-    val postGCStats = stats.scope("postGC")
+    val memStats = stats.scope("mem")
+    val currentMem = memStats.scope("current")
+    // TODO: Refactor postGCStats when we confirmed that no one is using this stats anymore
+    // val postGCStats = memStats.scope("postGC")
+    val postGCMem = memStats.scope("postGC")
+    val postGCStats = BroadcastStatsReceiver(Seq(stats.scope("postGC"), postGCMem))
     memPool foreach { pool =>
       val name = pool.getName.regexSub("""[^\w]""".r) { m => "_" }
-      Option(pool.getCollectionUsage).foreach { usage =>
+      Option(pool.getCollectionUsage) foreach { usage =>
         postGCStats.addGauge(name, "used") { usage.getUsed }
         postGCStats.addGauge(name, "max") { usage.getMax }
       }
+      Option(pool.getUsage) foreach { usage =>
+        currentMem.addGauge(name, "used") { usage.getUsed }
+        currentMem.addGauge(name, "max") { usage.getMax }
+      }
     }
-
     postGCStats.addGauge("used") {
-      memPool map(_.getCollectionUsage) filter(_ != null) map(_.getUsed) sum
+      memPool flatMap(p => Option(p.getCollectionUsage)) map(_.getUsed) sum
+    }
+    currentMem.addGauge("used") {
+      memPool flatMap(p => Option(p.getUsage)) map(_.getUsed) sum
     }
 
     val gcPool = ManagementFactory.getGarbageCollectorMXBeans.asScala
