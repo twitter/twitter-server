@@ -40,6 +40,8 @@ Trait `TwitterServer` provides a logger named `log`. It is configured via defaul
 
 .. includecode:: code/AdvancedServer.scala#log_usage
 
+For more complicated logging schemes, you can extend the Logging trait and mix it back into twitter-server.
+
 .. _metrics_label:
 
 Metrics
@@ -252,3 +254,10 @@ Twitter-server exposes endpoints to manage server lifecycle that are compatible 
 These entries are the default, but if you need you can add your own handler to this HTTP server:
 
 .. includecode:: code/AdvancedServer.scala#registering_http_service
+
+Extension
+---------
+
+Twitter-server can be extended modularly by mixing in more traits.  If you want to alter the behavior of a trait that is already mixed into twitter-server, you can override methods that you want to have different behavior and then mix it in again.  For example, in the `Logging <https://github.com/twitter/util/blob/master/util-logging/src/main/scala/com/twitter/logging/App.scala>`_ trait, you can override loggers to change where you send logs.
+
+If you want finer grained control over your server, you can remix traits however you like in the same way that the `TwitterServer <https://github.com/twitter/twitter-server/blob/master/src/main/scala/com/twitter/server/TwitterServer.scala>`_ trait is built.
