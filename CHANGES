@@ -6,6 +6,16 @@ as it is included in TwitterServer's user's guide.
 1.x
 -----
 
+1.1.0
+~~~~~
+
+- Add ability to defer /health endpoint registration
+- Add new stats for current memory usage.
+- Change twitter-server admin http server flag and symbol name
+- Enable zipkin
+- Make Logging trait more flexible for easy extension
+- New scheduler "productivity" stats, dispatches.
+
 1.0.3
 ~~~~~
 
