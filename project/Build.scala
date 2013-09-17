@@ -5,14 +5,15 @@ import com.typesafe.sbt.SbtSite.site
 import com.typesafe.sbt.site.SphinxSupport.Sphinx
 
 object TwitterServer extends Build {
-  val utilVersion = "6.3.8"
-  val finagleVersion = "6.5.2"
+  val libVersion = "1.1.0"
+  val utilVersion = "6.5.0"
+  val finagleVersion = "6.6.2"
 
   def util(which: String) = "com.twitter" %% ("util-"+which) % utilVersion
   def finagle(which: String) = "com.twitter" %% ("finagle-"+which) % finagleVersion
 
   val sharedSettings = Seq(
-    version := "1.0.3",
+    version := libVersion,
     organization := "com.twitter",
     crossScalaVersions := Seq("2.9.2", "2.10.0"),
     libraryDependencies ++= Seq(
@@ -84,6 +85,7 @@ object TwitterServer extends Build {
       finagle("http"),
       util("logging"),
       finagle("stats"),
+      finagle("zipkin"),
       util("app"),
       util("core"),
       util("jvm")

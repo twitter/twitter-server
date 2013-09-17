@@ -1,0 +1,34 @@
+.. Author notes: this file is formatted with restructured text
+
+(http://docutils.sourceforge.net/docs/user/rst/quickstart.html)
+as it is included in TwitterServer's user's guide.
+
+1.x
+-----
+
+1.1.0
+~~~~~
+
+- Add ability to defer /health endpoint registration
+- Add new stats for current memory usage.
+- Change twitter-server admin http server flag and symbol name
+- Enable zipkin
+- Make Logging trait more flexible for easy extension
+- New scheduler "productivity" stats, dispatches.
+
+1.0.3
+~~~~~
+
+- bump finagle to 6.5.2
+- bump util to 6.3.8
+
+1.0.2
+~~~~~
+
+- bump finagle to 6.5.1
+- bump util to 6.3.7
+
+1.0.1
+~~~~~
+
+- Initial Release

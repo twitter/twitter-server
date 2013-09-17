@@ -7,6 +7,13 @@ import java.lang.management.ManagementFactory
 import java.util.{Date, Properties}
 import org.jboss.netty.handler.codec.http._
 
+/**
+ * A simple http service for serving up information pulled from a build.properties
+ * file. The ClassLoader for the given object is used to load the buid.properties file,
+ * which is first searched for relative to the given object's class's package
+ * (class-package-name/build.properties), and if not found there, then it is searched for
+ * with an absolute path ("/build.properties").
+ */
 class ServerInfoHandler(obj: AnyRef) extends Service[HttpRequest, HttpResponse] {
   private[this] val mxRuntime = ManagementFactory.getRuntimeMXBean
 
@@ -16,6 +23,11 @@ class ServerInfoHandler(obj: AnyRef) extends Service[HttpRequest, HttpResponse] 
     buildProperties.load(obj.getClass.getResource("build.properties").openStream)
   } catch {
     case _: Throwable =>
+      try {
+        buildProperties.load(obj.getClass.getResource("/build.properties").openStream)
+      } catch {
+        case _: Throwable =>
+      }
   }
 
   case class ServerInfo(
