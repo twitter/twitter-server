@@ -9,3 +9,4 @@ trait TwitterServer extends App
   with Lifecycle
   with Stats
   with Logging
+  with Closer
