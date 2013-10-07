@@ -12,8 +12,6 @@ trait Admin { self: App =>
   HttpMuxer.addHandler("/admin/pprof/contention", new ProfileResourceHandler(Thread.State.BLOCKED))
   HttpMuxer.addHandler("/admin/pprof/heap", new HeapResourceHandler)
   HttpMuxer.addHandler("/admin/pprof/profile", new ProfileResourceHandler(Thread.State.RUNNABLE))
-  HttpMuxer.addHandler("/admin/resolver", new ResolverHandler)
-  HttpMuxer.addHandler("/admin/resolutions", new ResolutionsHandler("/admin/resolver"))
   HttpMuxer.addHandler("/admin/server_info", new ServerInfoHandler(this))
   HttpMuxer.addHandler("/admin/shutdown", new ShutdownHandler)
   HttpMuxer.addHandler("/admin/threads", new ThreadsHandler)
