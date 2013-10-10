@@ -6,6 +6,14 @@ as it is included in TwitterServer's user's guide.
 1.x
 -----
 
+1.2.0
+~~~~~
+
+- Support staged names introduced in Finagle
+- Add glog-style log formatting
+- Remove finagle-stats as a dependency
+- Don't stat admin endpoints
+
 1.1.0
 ~~~~~
 
