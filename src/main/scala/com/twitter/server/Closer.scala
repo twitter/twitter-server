@@ -16,7 +16,7 @@ import com.twitter.util.TimeConversions._
 trait Closer { self: App =>
   private[this] val closeGracePeriod = flag("close.gracePeriod", 5.seconds, "Closable grace period")
 
-  private[this] val log: Logger = self match {
+  private[this] lazy val log: Logger = self match {
     case logging: Logging => logging.log
     case _ => NullLogger
   }
