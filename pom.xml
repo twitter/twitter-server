@@ -35,17 +35,17 @@
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>finagle-core</artifactId>
-      <version>6.7.3-SNAPSHOT</version>
+      <version>6.7.4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>finagle-http</artifactId>
-      <version>6.7.3-SNAPSHOT</version>
+      <version>6.7.4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>finagle-zipkin</artifactId>
-      <version>6.7.3-SNAPSHOT</version>
+      <version>6.7.4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
