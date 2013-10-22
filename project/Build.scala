@@ -8,6 +8,13 @@ object TwitterServer extends Build {
   val libVersion = "1.2.0"
   val utilVersion = "6.7.0"
   val finagleVersion = "6.7.4"
+  val jacksonVersion = "2.2.2"
+
+  val jacksonLibs = Seq(
+    "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
+    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
+    "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion
+  )
 
   def util(which: String) = "com.twitter" %% ("util-"+which) % utilVersion
   def finagle(which: String) = "com.twitter" %% ("finagle-"+which) % finagleVersion
@@ -79,8 +86,6 @@ object TwitterServer extends Build {
   ).settings(
     name := "twitter-server",
     libraryDependencies ++= Seq(
-      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.1.3",
-      "io.netty" % "netty" % "3.6.6.Final",
       finagle("core"),
       finagle("http"),
       util("logging"),
@@ -89,7 +94,7 @@ object TwitterServer extends Build {
       util("app"),
       util("core"),
       util("jvm")
-    )
+    ) ++ jacksonLibs
   )
 
   lazy val twitterServerDoc = Project(
