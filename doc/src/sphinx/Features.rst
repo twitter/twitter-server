@@ -61,6 +61,8 @@ And update the value:
 
 The value of this counter will be exported by the HTTP server and accessible at /admin/metrics.json
 
+If you would like a pretty version of the json output, add the parameter pretty=true or pretty=1, eg /admin/metrics.json?pretty=true
+
 ::
 
   {

@@ -44,6 +44,7 @@ object AdvancedServer extends TwitterServer {
     // registered in the HttpMuxer object, we just have to add our own.
     //#registering_http_service
     HttpMuxer.addHandler("/echo", service)
+    HttpMuxer.addHandler("/echo/", service)
     //#registering_http_service
     // And wait on the server
     Await.ready(httpServer)
