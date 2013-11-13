@@ -6,6 +6,17 @@ as it is included in TwitterServer's user's guide.
 1.x
 -----
 
+1.3.0
+~~~~~
+
+- Upgrade finagle to 6.8.0
+- Upgrade util to 6.8.0
+- Adds a cautious registration to HttpMuxer / adds a default metrics endpoint to twitter-server
+- Docs: Pointed out that you need the finagle-stats jar on your classpath
+- Sync jackson versions in twitter-server
+- Revert ordering of TwitterServer mixins.
+- Mix in Closer by default... again.
+
 1.2.0
 ~~~~~
 
