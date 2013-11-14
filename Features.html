@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Features &mdash; Twitter-Server 1.0.1 documentation</title>
+    <title>Features &mdash; Twitter-Server 1.3.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.0.1',
+        VERSION:     '1.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Twitter-Server 1.0.1 documentation" href="index.html" />
+    <link rel="top" title="Twitter-Server 1.3.0 documentation" href="index.html" />
     <link rel="next" title="Migration from Ostrich" href="Migration.html" />
     <link rel="prev" title="Twitter-server" href="index.html" />
    
@@ -94,6 +94,7 @@ object AdvancedServer extends TwitterServer {
     // The `TwitterServer` trait exposes a `httpServer` that serve all routes
     // registered in the HttpMuxer object, we just have to add our own.
     HttpMuxer.addHandler(&quot;/echo&quot;, service)
+    HttpMuxer.addHandler(&quot;/echo/&quot;, service)
     // And wait on the server
     Await.ready(httpServer)
   }
@@ -117,7 +118,7 @@ val durations = flag(&quot;alarms&quot;, (1.second, 5.second), &quot;2 alarm dur
 AdvancedServer
   -alarm_durations=&#39;1.seconds,5.seconds&#39;: 2 alarm durations
   -help=&#39;false&#39;: Show this help
-  -http.port=&#39;:8080&#39;: Http server port
+  -admin.port=&#39;:8080&#39;: Admin http server port
   -bind=&#39;:0&#39;: Network interface to use
   -log.level=&#39;INFO&#39;: Log level
   -log.output=&#39;/dev/stderr&#39;: Output file
@@ -131,9 +132,11 @@ AdvancedServer
 <div class="highlight-text"><div class="highlight"><pre>log.debug(&quot;Received a request at &quot; + Time.now)
 </pre></div>
 </div>
+<p>For more complicated logging schemes, you can extend the Logging trait and mix it back into twitter-server.</p>
 </div>
 <div class="section" id="metrics">
 <span id="metrics-label"></span><h2>Metrics<a class="headerlink" href="#metrics" title="Permalink to this headline">¶</a></h2>
+<p>Note: in order to turn on metrics, you must have the finagle-stats jar on your classpath.</p>
 <p><cite>statsReceiver</cite>, defined by <cite>TwitterServer</cite>, defines a sink for metrics. With it you can update counters and stats (histograms) or define gauges (instantaneous values).</p>
 <p>For instance, you define your stats:</p>
 <div class="highlight-text"><div class="highlight"><pre>val counter = statsReceiver.counter(&quot;requests_counter&quot;)
@@ -144,6 +147,7 @@ AdvancedServer
 </pre></div>
 </div>
 <p>The value of this counter will be exported by the HTTP server and accessible at /admin/metrics.json</p>
+<p>If you would like a pretty version of the json output, add the parameter pretty=true or pretty=1, eg /admin/metrics.json?pretty=true</p>
 <div class="highlight-text"><div class="highlight"><pre>{
   &quot;requests_counter&quot;: 234,
   &quot;finagle/closechans&quot;: 592,
@@ -173,7 +177,7 @@ AdvancedServer
 </div>
 <div class="section" id="http-admin-interface">
 <h2>HTTP Admin interface<a class="headerlink" href="#http-admin-interface" title="Permalink to this headline">¶</a></h2>
-<p>Twitter-server starts an HTTP server (it binds to the port defined by the flag <cite>-http.port</cite>; port 8080 by default). It exports an HttpMuxer object in which endpoints are registered. The library defines a series of default endpoints:</p>
+<p>Twitter-server starts an HTTP server (it binds to the port defined by the flag <cite>-admin.port</cite>; port 8080 by default). It exports an HttpMuxer object in which endpoints are registered. The library defines a series of default endpoints:</p>
 <div class="highlight-text"><div class="highlight"><pre>$ curl localhost:8080/admin
 /admin/pprof/contention
 /admin/pprof/profile
@@ -313,21 +317,27 @@ Blocked:
 <dd>Return pong (used for monitoring)</dd>
 </dl>
 </div>
-<div class="section" id="mesos">
-<h2>Mesos<a class="headerlink" href="#mesos" title="Permalink to this headline">¶</a></h2>
-<p>Twitter-server is compatible with running on Twitter’s Mesos clusters, which interfaces with the process through 3 additional handlers:</p>
+<div class="section" id="lifecycle-management">
+<h2>Lifecycle Management<a class="headerlink" href="#lifecycle-management" title="Permalink to this headline">¶</a></h2>
+<p>Twitter-server exposes endpoints to manage server lifecycle that are compatible with <a class="reference external" href="http://mesos.apache.org/">Mesos&#8217;s</a> job manager:</p>
 <dl class="docutils">
 <dt><strong>/abortabortabort</strong></dt>
 <dd>Abort the process.</dd>
 <dt><strong>/health</strong></dt>
-<dd>Return OK (identical to /admin/ping).</dd>
+<dd>By default, respond with content-body &#8220;OK&#8221;. This endpoint can be managed manually by mixing in the Lifecycle.Warmup trait with your server.</dd>
 <dt><strong>/quitquitquit</strong></dt>
 <dd>Quit the process.</dd>
 </dl>
 <p>These entries are the default, but if you need you can add your own handler to this HTTP server:</p>
 <div class="highlight-text"><div class="highlight"><pre>HttpMuxer.addHandler(&quot;/echo&quot;, service)
+HttpMuxer.addHandler(&quot;/echo/&quot;, service)
 </pre></div>
 </div>
+</div>
+<div class="section" id="extension">
+<h2>Extension<a class="headerlink" href="#extension" title="Permalink to this headline">¶</a></h2>
+<p>Twitter-server can be extended modularly by mixing in more traits.  If you want to alter the behavior of a trait that is already mixed into twitter-server, you can override methods that you want to have different behavior and then mix it in again.  For example, in the <a class="reference external" href="https://github.com/twitter/util/blob/master/util-logging/src/main/scala/com/twitter/logging/App.scala">Logging</a> trait, you can override loggers to change where you send logs.</p>
+<p>If you want finer grained control over your server, you can remix traits however you like in the same way that the <a class="reference external" href="https://github.com/twitter/twitter-server/blob/master/src/main/scala/com/twitter/server/TwitterServer.scala">TwitterServer</a> trait is built.</p>
 </div>
 </div>
 
@@ -353,7 +363,8 @@ Blocked:
 <li><a class="reference internal" href="#logging">Logging</a></li>
 <li><a class="reference internal" href="#metrics">Metrics</a></li>
 <li><a class="reference internal" href="#http-admin-interface">HTTP Admin interface</a></li>
-<li><a class="reference internal" href="#mesos">Mesos</a></li>
+<li><a class="reference internal" href="#lifecycle-management">Lifecycle Management</a></li>
+<li><a class="reference internal" href="#extension">Extension</a></li>
 </ul>
 </li>
 </ul>
