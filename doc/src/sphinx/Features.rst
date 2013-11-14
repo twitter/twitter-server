@@ -47,6 +47,8 @@ For more complicated logging schemes, you can extend the Logging trait and mix i
 Metrics
 -------
 
+Note: in order to turn on metrics, you must have the finagle-stats jar on your classpath.
+
 `statsReceiver`, defined by `TwitterServer`, defines a sink for metrics. With it you can update counters and stats (histograms) or define gauges (instantaneous values).
 
 For instance, you define your stats:
@@ -58,6 +60,8 @@ And update the value:
 .. includecode:: code/AdvancedServer.scala#stats_usage
 
 The value of this counter will be exported by the HTTP server and accessible at /admin/metrics.json
+
+If you would like a pretty version of the json output, add the parameter pretty=true or pretty=1, eg /admin/metrics.json?pretty=true
 
 ::
 

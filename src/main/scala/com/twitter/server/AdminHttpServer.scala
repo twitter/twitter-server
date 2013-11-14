@@ -2,7 +2,8 @@ package com.twitter.server
 
 import com.twitter.app.App
 import com.twitter.finagle.http.HttpMuxer
-import com.twitter.finagle.{ListeningServer, Http, NullServer}
+import com.twitter.finagle.stats.NullStatsReceiver
+import com.twitter.finagle.{HttpServer, ListeningServer, NullServer}
 import java.net.InetSocketAddress
 
 trait AdminHttpServer { self: App =>
@@ -12,7 +13,9 @@ trait AdminHttpServer { self: App =>
   @volatile protected var adminHttpServer: ListeningServer = NullServer
 
   premain {
-    adminHttpServer = Http.serve(adminPort(), HttpMuxer)
+    // Use NullStatsReceiver to keep admin endpoints from getting their stats mixed in
+    // with the service's stats
+    adminHttpServer = HttpServer.copy(statsReceiver = NullStatsReceiver).serve(adminPort(), HttpMuxer)
   }
 
   onExit {

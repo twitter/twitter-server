@@ -1,7 +1,7 @@
 package com.twitter.server
 
 import com.twitter.app.Flags
-import com.twitter.finagle.{Announcer, Announcement, Resolver}
+import com.twitter.finagle.{Addr, Announcer, Announcement, Resolver}
 import com.twitter.util.{Await, Future, RandomSocket}
 import java.net.InetSocketAddress
 import org.junit.runner.RunWith
@@ -24,7 +24,7 @@ class ResolverTest extends FunSuite {
     val flag = new Flags("my", includeGlobal=true)
     flag.parse(Array("-com.twitter.server.resolverMap", "foo=:8080"))
 
-    assert(Resolver.resolve("flag!foo").isReturn)
+    Resolver.eval("flag!foo") // doesn't throw.
   }
 
   test("announcers resolve from the main announcer") {
