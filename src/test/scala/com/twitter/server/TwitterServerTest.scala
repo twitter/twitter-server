@@ -1,20 +1,43 @@
 package com.twitter.server
 
-import com.twitter.app.Flags
-import com.twitter.finagle.{Announcer, Announcement, Resolver}
-import com.twitter.util.{Await, Closable, Future, RandomSocket}
-import java.net.InetSocketAddress
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
+import scala.collection.mutable.MutableList
 
-object TestTwitterServer extends TwitterServer {
-  def main() {}
+
+class TestTwitterServer extends TwitterServer {
+  val bootstrapSeq = MutableList.empty[Symbol]
+
+  def main() {
+    bootstrapSeq += 'Main
+  }
+
+  init {
+    bootstrapSeq += 'Init
+  }
+
+  premain {
+    bootstrapSeq += 'PreMain
+  }
+
+  postmain {
+    bootstrapSeq += 'PostMain
+  }
 }
 
 @RunWith(classOf[JUnitRunner])
 class TwitterServerTest extends FunSuite {
-  test("TwitterServer.main() is executes without error") {
-    TestTwitterServer.main()
+
+  test("TwitterServer does not prematurely execute lifecycle hooks") {
+    val twitterServer = new TestTwitterServer
+    assert(twitterServer.bootstrapSeq.isEmpty)
   }
+
+  test("TwitterServer.main(args) executes without error") {
+    val twitterServer = new TestTwitterServer
+    twitterServer.main(args = Array.empty[String])
+    assert(twitterServer.bootstrapSeq === Seq('Init, 'PreMain, 'Main, 'PostMain))
+  }
+
 }
