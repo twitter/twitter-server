@@ -7,7 +7,7 @@ import com.typesafe.sbt.site.SphinxSupport.Sphinx
 object TwitterServer extends Build {
   val libVersion = "1.3.1"
   val utilVersion = "6.10.0"
-  val finagleVersion = "6.9.0"
+  val finagleVersion = "6.10.0"
   val jacksonVersion = "2.2.2"
 
   val jacksonLibs = Seq(
