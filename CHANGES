@@ -6,6 +6,14 @@ as it is included in TwitterServer's user's guide.
 1.x
 -----
 
+1.4.0
+~~~~~
+
+- Remove finagle-stats dependency so that alternate stats packages can be used such as ostrich
+- Add a hooking mechanism and expose an API to install the Dtab using the hooking mechanism
+- Upgrade finagle to 6.10.0
+- Upgrade util to 6.10.0
+
 1.3.1
 ~~~~~
 
