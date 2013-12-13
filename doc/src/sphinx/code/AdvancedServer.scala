@@ -40,13 +40,13 @@ object AdvancedServer extends TwitterServer {
   def main() {
     // We can create a new http server but in that case we profit from the
     // one already started for /admin/*
-    // The `TwitterServer` trait exposes a `httpServer` that serve all routes
+    // The `TwitterServer` trait exposes an `adminHttpServer` that serve all routes
     // registered in the HttpMuxer object, we just have to add our own.
     //#registering_http_service
     HttpMuxer.addHandler("/echo", service)
     HttpMuxer.addHandler("/echo/", service)
     //#registering_http_service
     // And wait on the server
-    Await.ready(httpServer)
+    Await.ready(adminHttpServer)
   }
 }

@@ -6,6 +6,7 @@ import com.twitter.logging.Logging
 trait TwitterServer extends App
   with Logging
   with LogFormat
+  with Hooks
   with AdminHttpServer
   with Admin
   with Lifecycle

@@ -47,7 +47,7 @@ For more complicated logging schemes, you can extend the Logging trait and mix i
 Metrics
 -------
 
-Note: in order to turn on metrics, you must have the finagle-stats jar on your classpath.
+Note: in order to turn on metrics, you must have the finagle-stats jar on your classpath.  finagle-stats depends on libraries which can be found in the maven.twttr.com repository.  There are instructions on the :doc:`quickstart <index>` for adding it in maven or sbt.
 
 `statsReceiver`, defined by `TwitterServer`, defines a sink for metrics. With it you can update counters and stats (histograms) or define gauges (instantaneous values).
 
