@@ -4,7 +4,7 @@
   <groupId>com.twitter</groupId>
   <artifactId>twitter-server</artifactId>
   <packaging>jar</packaging>
-  <version>1.4.1-SNAPSHOT</version>
+  <version>1.4.2-SNAPSHOT</version>
   <parent>
     <groupId>com.twitter</groupId>
     <artifactId>scala-parent-292</artifactId>
