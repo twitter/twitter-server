@@ -6,6 +6,11 @@ as it is included in TwitterServer's user's guide.
 1.x
 -----
 
+1.4.1
+~~~~~
+- Upgrade finagle to 6.11.1
+- Upgrade util to 6.11.1
+
 1.4.0
 ~~~~~
 
