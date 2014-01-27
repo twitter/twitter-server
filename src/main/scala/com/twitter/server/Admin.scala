@@ -13,6 +13,7 @@ trait Admin { self: App =>
   HttpMuxer.addHandler("/admin/", new FailureHandler(failString))
   HttpMuxer.addHandler("/admin/announcer", new AnnouncerHandler)
   HttpMuxer.addHandler("/admin/contention", new ContentionHandler)
+  HttpMuxer.addHandler("/admin/dtab", new DtabHandler)
   HttpMuxer.addHandler("/admin/ping", new ReplyHandler("pong"))
   HttpMuxer.addHandler("/admin/pprof/contention", new ProfileResourceHandler(Thread.State.BLOCKED))
   HttpMuxer.addHandler("/admin/pprof/heap", new HeapResourceHandler)
