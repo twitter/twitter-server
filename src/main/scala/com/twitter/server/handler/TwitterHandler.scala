@@ -2,6 +2,7 @@ package com.twitter.server.handler
 
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.HttpMuxHandler
+import com.twitter.logging.Logger
 import com.twitter.util.Future
 import org.jboss.netty.buffer.ChannelBuffers
 import org.jboss.netty.handler.codec.http._
@@ -21,10 +22,15 @@ trait TwitterHandler extends Service[HttpRequest, HttpResponse] {
       }
     }).start()
   }
+
+  protected def log(req: HttpRequest, msg: String) {
+    Logger("").info("[%s %s] %s".format(req.getMethod, req.getUri, msg))
+  }
 }
 
 class ShutdownHandler extends TwitterHandler {
   def apply(req: HttpRequest) = {
+    log(req, "quitting")
     background { System.exit(0) }
     respond("quitting\n")
   }
@@ -32,6 +38,7 @@ class ShutdownHandler extends TwitterHandler {
 
 class AbortHandler extends TwitterHandler {
   def apply(req: HttpRequest) = {
+    log(req, "aborting")
     background { Runtime.getRuntime.halt(0) }
     respond("aborting\n")
   }
