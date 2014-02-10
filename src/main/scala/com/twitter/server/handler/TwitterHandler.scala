@@ -2,12 +2,14 @@ package com.twitter.server.handler
 
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.HttpMuxHandler
-import com.twitter.logging.Logger
 import com.twitter.util.Future
+import java.util.logging.Logger
 import org.jboss.netty.buffer.ChannelBuffers
 import org.jboss.netty.handler.codec.http._
 
 trait TwitterHandler extends Service[HttpRequest, HttpResponse] {
+  private[this] val log = Logger.getLogger(getClass.getName)
+
   def respond(msg: String) = {
     val response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK)
     response.setContent(ChannelBuffers.wrappedBuffer(msg.getBytes))
@@ -24,7 +26,7 @@ trait TwitterHandler extends Service[HttpRequest, HttpResponse] {
   }
 
   protected def log(req: HttpRequest, msg: String) {
-    Logger("").info("[%s %s] %s".format(req.getMethod, req.getUri, msg))
+    log.info("[%s %s] %s".format(req.getMethod, req.getUri, msg))
   }
 }
 
