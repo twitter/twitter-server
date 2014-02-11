@@ -13,7 +13,13 @@ class ContentionHandler extends Service[HttpRequest, HttpResponse] {
     response.setHeader("Content-Type", "text/plain")
 
     val snap = snapshotter.snap
-    val msg = "Blocked:\n%s\n\nLock Owners:\n%s".format(
+
+    val deadlockMsg = if (snap.deadlocks.isEmpty) "" else {
+      "DEADLOCKS:\n\n%s\n\n".format(snap.deadlocks.mkString("\n\n"))
+    }
+
+    val msg = "%sBlocked:\n%s\n\nLock Owners:\n%s".format(
+      deadlockMsg,
       snap.blockedThreads.mkString("\n"),
       snap.lockOwners.mkString("\n"))
     response.setContent(ChannelBuffers.wrappedBuffer(msg.getBytes))
