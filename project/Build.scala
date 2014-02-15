@@ -5,7 +5,7 @@ import com.typesafe.sbt.SbtSite.site
 import com.typesafe.sbt.site.SphinxSupport.Sphinx
 
 object TwitterServer extends Build {
-  val libVersion = "1.4.1"
+  val libVersion = "1.5.0"
   val utilVersion = "6.12.0"
   val finagleVersion = "6.12.0"
   val jacksonVersion = "2.2.2"

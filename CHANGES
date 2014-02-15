@@ -6,6 +6,16 @@ as it is included in TwitterServer's user's guide.
 1.x
 -----
 
+1.5.0
+~~~~~
+
+- Add logging to TwitterHandlers
+- Report on deadlock conditions in admin/contentions
+- Twitter server handler for dumping the current dtab
+- TwitterHandler: non-root logger
+- update finagle version to 6.12.0
+- update util version to 6.12.0
+
 1.4.1
 ~~~~~
 - Upgrade finagle to 6.11.1
