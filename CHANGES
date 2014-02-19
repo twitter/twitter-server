@@ -6,6 +6,12 @@ as it is included in TwitterServer's user's guide.
 1.x
 -----
 
+1.5.1
+~~~~~
+
+- update finable to 6.12.1
+- update util to 6.12.1
+
 1.5.0
 ~~~~~
 
