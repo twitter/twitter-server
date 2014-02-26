@@ -12,6 +12,7 @@ trait TwitterHandler extends Service[HttpRequest, HttpResponse] {
 
   def respond(msg: String) = {
     val response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK)
+    response.setHeader("Content-Length", msg.getBytes.length)
     response.setContent(ChannelBuffers.wrappedBuffer(msg.getBytes))
     Future.value(response)
   }
