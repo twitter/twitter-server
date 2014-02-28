@@ -15,13 +15,13 @@ object JvmStats {
 
     val mem = ManagementFactory.getMemoryMXBean()
 
-    val heap = mem.getHeapMemoryUsage()
+    def heap = mem.getHeapMemoryUsage()
     val heapStats = stats.scope("heap")
     heapStats.addGauge("committed") { heap.getCommitted() }
     heapStats.addGauge("max") { heap.getMax() }
     heapStats.addGauge("used") { heap.getUsed() }
 
-    val nonHeap = mem.getNonHeapMemoryUsage()
+    def nonHeap = mem.getNonHeapMemoryUsage()
     val nonHeapStats = stats.scope("nonheap")
     nonHeapStats.addGauge("committed") { nonHeap.getCommitted() }
     nonHeapStats.addGauge("max") { nonHeap.getMax() }
@@ -55,11 +55,13 @@ object JvmStats {
     val postGCStats = BroadcastStatsReceiver(Seq(stats.scope("postGC"), postGCMem))
     memPool foreach { pool =>
       val name = pool.getName.regexSub("""[^\w]""".r) { m => "_" }
-      Option(pool.getCollectionUsage) foreach { usage =>
+      if (pool.getCollectionUsage != null) {
+        def usage = pool.getCollectionUsage // this is a snapshot, we can't reuse the value
         postGCStats.addGauge(name, "used") { usage.getUsed }
         postGCStats.addGauge(name, "max") { usage.getMax }
       }
-      Option(pool.getUsage) foreach { usage =>
+      if (pool.getUsage != null) {
+        def usage = pool.getUsage // this is a snapshot, we can't reuse the value
         currentMem.addGauge(name, "used") { usage.getUsed }
         currentMem.addGauge(name, "max") { usage.getMax }
       }
