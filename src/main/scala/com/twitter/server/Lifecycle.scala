@@ -1,12 +1,13 @@
 package com.twitter.server
 
+import com.twitter.app.App
 import com.twitter.finagle.http.HttpMuxer
 import com.twitter.server.handler._
 
-trait Lifecycle {
+trait Lifecycle { self: App =>
   // Mesos/Aurora lifecycle endpoints
   HttpMuxer.addHandler("/abortabortabort", new AbortHandler)
-  HttpMuxer.addHandler("/quitquitquit", new ShutdownHandler)
+  HttpMuxer.addHandler("/quitquitquit", new ShutdownHandler(this))
   HttpMuxer.addHandler("/health", new ReplyHandler("OK\n"))
 }
 

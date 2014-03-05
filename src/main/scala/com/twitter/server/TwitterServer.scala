@@ -11,4 +11,3 @@ trait TwitterServer extends App
   with Admin
   with Lifecycle
   with Stats
-  with Closer

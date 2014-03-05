@@ -1,12 +1,14 @@
 package com.twitter.server
 
+import com.twitter.util._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import scala.collection.mutable.MutableList
 
-
 class TestTwitterServer extends TwitterServer {
+  override val adminPort = flag("admin.port", RandomSocket(), "")
+
   val bootstrapSeq = MutableList.empty[Symbol]
 
   def main() {
@@ -19,6 +21,10 @@ class TestTwitterServer extends TwitterServer {
 
   premain {
     bootstrapSeq += 'PreMain
+  }
+
+  onExit {
+    bootstrapSeq += 'Exit
   }
 
   postmain {
@@ -37,7 +43,24 @@ class TwitterServerTest extends FunSuite {
   test("TwitterServer.main(args) executes without error") {
     val twitterServer = new TestTwitterServer
     twitterServer.main(args = Array.empty[String])
-    assert(twitterServer.bootstrapSeq === Seq('Init, 'PreMain, 'Main, 'PostMain))
+    assert(twitterServer.bootstrapSeq ===
+        Seq('Init, 'PreMain, 'Main, 'PostMain, 'Exit))
   }
 
+  test("TwitterServer.main(args) executes without error when closed explicitly") {
+    val twitterServer = new TestTwitterServer {
+      private val closed = new Promise[Unit]
+
+      onExit { closed.setDone() }
+
+      override def main() {
+        super.main()
+        close()
+        Await.result(closed)
+      }
+    }
+
+    twitterServer.main(args = Array.empty[String])
+    assert(twitterServer.bootstrapSeq === Seq('Init, 'PreMain, 'Main, 'Exit, 'PostMain))
+  }
 }
