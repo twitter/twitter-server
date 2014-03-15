@@ -19,7 +19,7 @@ trait Admin { self: App =>
   HttpMuxer.addHandler("/admin/pprof/heap", new HeapResourceHandler)
   HttpMuxer.addHandler("/admin/pprof/profile", new ProfileResourceHandler(Thread.State.RUNNABLE))
   HttpMuxer.addHandler("/admin/server_info", new ServerInfoHandler(this))
-  HttpMuxer.addHandler("/admin/shutdown", new ShutdownHandler)
+  HttpMuxer.addHandler("/admin/shutdown", new ShutdownHandler(this))
   HttpMuxer.addHandler("/admin/threads", new ThreadsHandler)
   HttpMuxer.addHandler("/admin/tracing", new TracingHandler)
 }

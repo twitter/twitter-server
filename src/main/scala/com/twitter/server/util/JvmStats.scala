@@ -46,6 +46,17 @@ object JvmStats {
       case _ =>
     }
 
+    val compilation = ManagementFactory.getCompilationMXBean()
+    val compilationStats = stats.scope("compilation")
+    compilationStats.addGauge("time_msec") { compilation.getTotalCompilationTime() }
+
+    val classes = ManagementFactory.getClassLoadingMXBean()
+    val classLoadingStats = stats.scope("classes")
+    classLoadingStats.addGauge("total_loaded") { classes.getTotalLoadedClassCount() }
+    classLoadingStats.addGauge("total_unloaded") { classes.getUnloadedClassCount() }
+    classLoadingStats.addGauge("current_loaded") { classes.getLoadedClassCount().toLong }
+
+
     val memPool = ManagementFactory.getMemoryPoolMXBeans.asScala
     val memStats = stats.scope("mem")
     val currentMem = memStats.scope("current")
