@@ -6,6 +6,14 @@ as it is included in TwitterServer's user's guide.
 1.x
 -----
 
+1.6.0
+~~~~~
+
+- upgrade finagle version to 6.13.0
+- Implement application-level shutdown handling in App.
+- Bug-fix: Refresh JVM memory snapshots on stats collection Motivation
+- Bug-fix: set content-length when responding from TwitterHandler
+
 1.5.1
 ~~~~~
 
