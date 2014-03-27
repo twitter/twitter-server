@@ -49,14 +49,9 @@ class TwitterServerTest extends FunSuite {
 
   test("TwitterServer.main(args) executes without error when closed explicitly") {
     val twitterServer = new TestTwitterServer {
-      private val closed = new Promise[Unit]
-
-      onExit { closed.setDone() }
-
       override def main() {
         super.main()
-        close()
-        Await.result(closed)
+        Await.result(close())
       }
     }
 
