@@ -1,10 +1,10 @@
 //#imports
-import com.twitter.finagle.{Http, ListeningServer, NullServer, Service}
+import com.twitter.finagle.{Http, Service}
+import com.twitter.io.Charsets
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future}
 import org.jboss.netty.buffer.ChannelBuffers.copiedBuffer
 import org.jboss.netty.handler.codec.http._
-import org.jboss.netty.util.CharsetUtil.UTF_8
 //#imports
 
 //#server
@@ -13,7 +13,7 @@ object BasicServer extends TwitterServer {
     def apply(request: HttpRequest) = {
       val response =
         new DefaultHttpResponse(request.getProtocolVersion, HttpResponseStatus.OK)
-      response.setContent(copiedBuffer("hello", UTF_8))
+      response.setContent(copiedBuffer("hello", Charsets.Utf8))
       Future.value(response)
     }
   }
