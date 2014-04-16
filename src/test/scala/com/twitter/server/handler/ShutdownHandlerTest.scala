@@ -26,15 +26,17 @@ class ShutdownHandlerTest extends FunSuite {
     def mk(testDeadline: Time => Unit): Closer = new Closer(testDeadline)
   }
 
-  test("close without a grace period") {
+  test("close without a grace period") (Time.withCurrentTimeFrozen { tc =>
+    val now = Time.now
     val closer = Closer.mk { deadline =>
-      assert(deadline === Time.Top)
+      // MinGrace is 1 second
+      assert(deadline === now+1.second)
     }
     val handler = new ShutdownHandler(closer)
     val rsp = Await.result(handler(Request("/foo")))
     assert(rsp.getStatus === Status.Ok)
     assert(closer.closed)
-  }
+  })
 
   test("close with a grace period") {
     val grace = 10.seconds
