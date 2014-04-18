@@ -1,12 +1,12 @@
 import com.twitter.conversions.time._
 import com.twitter.finagle.http.HttpMuxer
-import com.twitter.finagle.{Http, Service}
+import com.twitter.finagle.Service
+import com.twitter.io.Charsets
 import com.twitter.server.TwitterServer
-import com.twitter.util.{Await, Duration, Future, Time}
+import com.twitter.util.{Await, Future, Time}
 import java.net.InetSocketAddress
 import org.jboss.netty.buffer.ChannelBuffers.copiedBuffer
 import org.jboss.netty.handler.codec.http._
-import org.jboss.netty.util.CharsetUtil.UTF_8
 
 object AdvancedServer extends TwitterServer {
 
@@ -31,7 +31,7 @@ object AdvancedServer extends TwitterServer {
       //#stats_usage
       val response =
         new DefaultHttpResponse(request.getProtocolVersion, HttpResponseStatus.OK)
-      val content = copiedBuffer(what() + "\n", UTF_8)
+      val content = copiedBuffer(what() + "\n", Charsets.Utf8)
       response.setContent(content)
       Future.value(response)
     }

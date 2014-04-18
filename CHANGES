@@ -6,6 +6,12 @@ as it is included in TwitterServer's user's guide.
 1.x
 -----
 
+1.6.2
+~~~~~~~
+
+- Add com.twitter.io.Charsets and replace the use of org.jboss.netty.util.CharsetUtil
+- Fix twitter-server execution test
+
 1.6.1
 ~~~~~
 

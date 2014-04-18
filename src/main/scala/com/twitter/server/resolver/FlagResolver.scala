@@ -1,7 +1,7 @@
 package com.twitter.server
 
 import com.twitter.app.GlobalFlag
-import com.twitter.finagle.{Addr, Resolver, ResolverNotFoundException}
+import com.twitter.finagle.{Addr, Resolver, Name, ResolverNotFoundException}
 import com.twitter.util.Var
 import java.net.SocketAddress
 
@@ -17,7 +17,11 @@ class FlagResolver extends Resolver {
 
   def bind(arg: String): Var[Addr] = resolvers.get(arg) match {
     case Some(target) =>
-      Resolver.eval(target).bind()
+      Resolver.eval(target) match {
+        case Name.Bound(va) => va
+        case Name.Path(_) => 
+          Var.value(Addr.Failed(new IllegalArgumentException("Cannot bind to trees")))
+      }
     case None => 
       val a = Addr.Failed(new ResolverNotFoundException(arg))
       Var.value(a)
