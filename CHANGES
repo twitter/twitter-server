@@ -6,6 +6,14 @@ as it is included in TwitterServer's user's guide.
 1.x
 -----
 
+1.6.3
+~~~~~~~
+
+- Define type for statsReceiver explicitly so that it can be overloaded
+- Store gauge references (otherwise only weakly referenced)
+- Enforce close grace period for com.twitter.app.App
+- upgrade finagle/util to 6.15.0
+
 1.6.2
 ~~~~~~~
 
