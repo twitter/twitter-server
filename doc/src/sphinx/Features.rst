@@ -117,7 +117,7 @@ Twitter-server starts an HTTP server (it binds to the port defined by the flag `
   Returns a set of resolution chains that have run through Resolver. This allows one to see how a particular target is being resolved.
 
 **/admin/announcer**
-  Returns a set of announcement chains that have run through the Announcer. This allows one ot see how a particular target is being announced.
+  Returns a set of announcement chains that have run through the Announcer. This allows one to see how a particular target is being announced.
 
 **/admin/pprof/contention**
   Returns a CPU contention profile. The output is in `pprof <http://code.google.com/p/gperftools/>`_ format.
