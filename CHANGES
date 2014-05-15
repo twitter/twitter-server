@@ -6,6 +6,13 @@ as it is included in TwitterServer's user's guide.
 1.x
 -----
 
+1.7.0
+~~~~~~~
+
+- Bump finagle to 6.16.1-SNAPSHOT
+- Bump util to 6.16.1-SNAPSHOT
+- Disable admin server stats
+
 1.6.3
 ~~~~~~~
 
