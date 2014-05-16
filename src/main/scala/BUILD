@@ -14,5 +14,8 @@ scala_library(name='scala',
     pants('util/util-logging')
   ],
   sources=rglobs('*.scala'),
-  resources=[pants('twitter-server/src/main/resources')]
+  resources=[pants('twitter-server/src/main/resources')],
+  provides=artifact(org='com.twitter',
+                    name='twitter-server',
+                    repo='pants-support/ivy:internal',),
 )
