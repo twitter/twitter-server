@@ -15,7 +15,7 @@ import org.jboss.netty.handler.codec.http._
 class DtabHandler extends Service[HttpRequest, HttpResponse] {
   def apply(req: HttpRequest): Future[HttpResponse] = {
     val response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK)
-    response.setContent(ChannelBuffers.wrappedBuffer(Dtab.local.toString().getBytes()))
+    response.setContent(ChannelBuffers.wrappedBuffer(Dtab.base.toString().getBytes()))
     Future.value(response)
   }
 }
