@@ -7,12 +7,16 @@ object TwitterStats {
 
   def register(statsReceiver: StatsReceiver) = {
     val sched = statsReceiver.scope("scheduler")
-
-    sched.addGauge("productivity") {
+    
+    // Productivity is a very rough estimate of time spent not
+    // blocking. It measures the proportion of a thread's execution
+    // time spent on the CPU. This cannot take into account issues
+    // like CPU scheduling effects.
+    sched.provideGauge("productivity") {
       val cpu = Scheduler.cpuTime
-      val usr = Scheduler.usrTime
-      if (cpu.toFloat == 0F) 0F
-      else usr.toFloat / cpu.toFloat
+      val wall = Scheduler.wallTime
+      if (wall.toFloat <= 0F) 0F
+      else cpu.toFloat / wall.toFloat
     }
     
     sched.addGauge("dispatches") {
