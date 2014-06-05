@@ -6,6 +6,13 @@ as it is included in TwitterServer's user's guide.
 1.x
 -----
 
+1.7.1
+~~~~~~~
+
+- Upgrade versions of all dependencies
+- Admin dtab handler: display base dtab
+- Change productivity stat to cpuTime/wallTime
+
 1.7.0
 ~~~~~~~
 
