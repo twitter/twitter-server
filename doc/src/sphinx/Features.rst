@@ -61,6 +61,28 @@ And update the value:
 
 The value of this counter will be exported by the HTTP server and accessible at /admin/metrics.json
 
+Filtering stats out
+*******************
+
+Metrics can be too expensive to store. By passing a comma-separated list of regexes to exclude from stats using `-com.twitter.finagle.stats.statsFilter`  flag, one can single out the stats that will not be shown when queried with `filtered=true`. In other words, you can still access all of the stats normally, but this adds the option to fetch the filtered list.
+
+For example, to filter out all stats starting with jvm and also any p90 stats, one can pass the following to Twitter-Server:
+
+::
+ 
+-com.twitter.finagle.stats.statsFilter="jvm.*,.*\.p90"
+
+To query the reduced list:
+
+:: 
+
+/admin/metrics.json?filtered=true
+
+Note that this only works with `finagle-stats` and doesn't work with `finagle-ostrich4`.
+
+Pretty output
+*************
+
 If you would like a pretty version of the json output, add the parameter pretty=true or pretty=1, eg /admin/metrics.json?pretty=true
 
 ::
