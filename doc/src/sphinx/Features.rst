@@ -128,6 +128,7 @@ Twitter-server starts an HTTP server (it binds to the port defined by the flag `
   /admin/resolutions
   /admin/pprof/heap
   /admin/contention
+  /admin/clients
   /admin/announcer
   /admin/shutdown
   /admin/resolver
@@ -221,6 +222,8 @@ See the :ref:`metrics <metrics_label>` section for more information.
     at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)
     ...
 
+**/admin/clients**
+  Display a list of clients. Per-client configuration parameters and values for each module are available at /admin/clients?name=<client name>.
 
 **/admin/shutdown**
   Stop the process gracefully.

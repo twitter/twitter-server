@@ -1,0 +1,27 @@
+<!doctype html> 
+<html> 
+  <head> 
+  <title>Clients</title> 
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet" />
+  <style media="screen" type="text/css">
+    .container {
+        margin: 20px;
+    }
+
+    .table {
+      width: 90%;
+    }
+  </style>
+  </head>
+  <body>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <div class="container">
+      <h1>Clients</h1>
+      <ul>
+        {{#clients}}
+        <li><a href="{{baseUrl}}?name={{.}}">{{.}}</a></li>
+        {{/clients}}
+      </ul>
+    </div>
+  </body>
+</html>
