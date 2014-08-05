@@ -23,4 +23,5 @@ trait Admin { self: App =>
   HttpMuxer.addHandler("/admin/shutdown", new ShutdownHandler(this))
   HttpMuxer.addHandler("/admin/threads", new ThreadsHandler)
   HttpMuxer.addHandler("/admin/tracing", new TracingHandler)
+  HttpMuxer.addHandler("/admin/logging", new LoggingHandler)
 }
