@@ -4,7 +4,7 @@
   <groupId>com.twitter</groupId>
   <artifactId>twitter-server</artifactId>
   <packaging>jar</packaging>
-  <version>1.7.3-SNAPSHOT</version>
+  <version>1.7.4-SNAPSHOT</version>
   <parent>
     <groupId>com.twitter</groupId>
     <artifactId>scala-parent-292</artifactId>
@@ -20,52 +20,57 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>2.2.2</version>
+      <version>2.3.1</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.2.2</version>
+      <version>2.3.1</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.module</groupId>
       <artifactId>jackson-module-scala_2.9.2</artifactId>
-      <version>2.2.2</version>
+      <version>2.3.1</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>finagle-core</artifactId>
-      <version>6.18.1-SNAPSHOT</version>
+      <version>6.20.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>finagle-http</artifactId>
-      <version>6.18.1-SNAPSHOT</version>
+      <version>6.20.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>finagle-zipkin</artifactId>
-      <version>6.18.1-SNAPSHOT</version>
+      <version>6.20.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.spullara.mustache.java</groupId>
+      <artifactId>compiler</artifactId>
+      <version>0.8.12.1</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>util-app</artifactId>
-      <version>6.18.1-SNAPSHOT</version>
+      <version>6.19.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>util-core</artifactId>
-      <version>6.18.1-SNAPSHOT</version>
+      <version>6.19.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>util-jvm</artifactId>
-      <version>6.18.1-SNAPSHOT</version>
+      <version>6.19.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>util-logging</artifactId>
-      <version>6.18.1-SNAPSHOT</version>
+      <version>6.19.1-SNAPSHOT</version>
     </dependency>
     <!-- testing -->
     <dependency>

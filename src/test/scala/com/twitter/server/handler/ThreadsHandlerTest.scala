@@ -13,7 +13,7 @@ import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class ThreadsHandlerSpec extends FunSuite {
-  type Threads = Map[String, JMapWrapper[String, JMapWrapper[String, Any]]]
+  type Threads = Map[String, Map[String, Map[String, Any]]]
 
   test("Threads handler display thread info") {
     val reader = new ObjectMapper

@@ -1,6 +1,7 @@
 package com.twitter.server
 
 import com.twitter.app.App
+import com.twitter.finagle.tracing.Trace
 import com.twitter.util.Time
 import java.util.logging.{Formatter, Level, LogRecord, Logger}
 import java.io.{PrintWriter, StringWriter}
@@ -26,7 +27,7 @@ private class LogFormatter extends Formatter {
     Level.WARNING -> 'W',
     Level.SEVERE -> 'E'
   )
-  
+
   // Make some effort to demangle scala names.
   private def prettyClass(name: String) = {
     var s = NameTransformer.decode(name)
@@ -48,15 +49,20 @@ private class LogFormatter extends Formatter {
       .append(" THREAD")
       .append(r.getThreadID)
 
+    for (id <- Trace.idOption) {
+      str.append(" TraceId:")
+      str.append(id.traceId)
+    }
+
     if (r.getSourceClassName != null) {
       str.append(' ').append(prettyClass(r.getSourceClassName))
       if (r.getSourceMethodName != null)
         str.append('.').append(r.getSourceMethodName)
     }
-    
+
     str.append(": ")
     str.append(msg)
-    
+
     if (r.getThrown != null) {
       val w = new StringWriter
       r.getThrown.printStackTrace(new PrintWriter(w))

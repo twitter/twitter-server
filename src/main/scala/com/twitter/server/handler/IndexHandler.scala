@@ -8,7 +8,7 @@ import org.jboss.netty.handler.codec.http._
 class IndexHandler(prefix: String = "/") extends WebHandler {
   def apply(req: HttpRequest): Future[HttpResponse] = {
     val paths = HttpMuxer.patterns.filter(_.startsWith(prefix))
-    val links = paths map { p => "<a href='%s'>%s</a>".format(p, p) }
+   	val links = paths map { p => "<a href='%s'>%s</a>".format(p, p) }
     makeHttpFriendlyResponse(req, paths.mkString("\n"), links.mkString("<br />\n"))
   }
 }

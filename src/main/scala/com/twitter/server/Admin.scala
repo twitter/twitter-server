@@ -12,6 +12,7 @@ trait Admin { self: App =>
   HttpMuxer.addHandler("/admin", new IndexHandler("/admin/"))
   HttpMuxer.addHandler("/admin/", new FailureHandler(failString))
   HttpMuxer.addHandler("/admin/announcer", new AnnouncerHandler)
+  HttpMuxer.addHandler("/admin/clients", new ClientsHandler("/admin/clients"))
   HttpMuxer.addHandler("/admin/contention", new ContentionHandler)
   HttpMuxer.addHandler("/admin/dtab", new DtabHandler)
   HttpMuxer.addHandler("/admin/ping", new ReplyHandler("pong"))
@@ -22,4 +23,5 @@ trait Admin { self: App =>
   HttpMuxer.addHandler("/admin/shutdown", new ShutdownHandler(this))
   HttpMuxer.addHandler("/admin/threads", new ThreadsHandler)
   HttpMuxer.addHandler("/admin/tracing", new TracingHandler)
+  HttpMuxer.addHandler("/admin/logging", new LoggingHandler)
 }

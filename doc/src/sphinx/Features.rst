@@ -42,6 +42,8 @@ Trait `TwitterServer` provides a logger named `log`. It is configured via defaul
 
 For more complicated logging schemes, you can extend the Logging trait and mix it back into twitter-server.
 
+Per-logger log levels can be changed on-the-fly via the logging handler on the admin interface.
+
 .. _metrics_label:
 
 Metrics
@@ -69,12 +71,12 @@ Metrics can be too expensive to store. By passing a comma-separated list of rege
 For example, to filter out all stats starting with jvm and also any p90 stats, one can pass the following to Twitter-Server:
 
 ::
- 
+
 -com.twitter.finagle.stats.statsFilter="jvm.*,.*\.p90"
 
 To query the reduced list:
 
-:: 
+::
 
 /admin/metrics.json?filtered=true
 
@@ -128,8 +130,10 @@ Twitter-server starts an HTTP server (it binds to the port defined by the flag `
   /admin/resolutions
   /admin/pprof/heap
   /admin/contention
+  /admin/clients
   /admin/announcer
   /admin/shutdown
+  /admin/logging
   /admin/resolver
   /admin/tracing
   /admin/threads
@@ -221,6 +225,8 @@ See the :ref:`metrics <metrics_label>` section for more information.
     at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)
     ...
 
+**/admin/clients**
+  Display a list of clients. Per-client configuration parameters and values for each module are available at /admin/clients?name=<client name>.
 
 **/admin/shutdown**
   Stop the process gracefully.
@@ -261,6 +267,14 @@ See `zipkin <https://github.com/twitter/zipkin>`_ documentation for more info.
 **/admin/ping**
   Return pong (used for monitoring)
 
+**/admin/logging**
+  Display the set of loggers and their current log level. The level of each logger can also be modified on-the-fly.
+
+::
+
+  root                              ALL CRITICAL DEBUG ERROR FATAL INFO OFF TRACE WARNING
+  com.twitter.ostrich.stats.Metric  ALL CRITICAL DEBUG ERROR FATAL INFO OFF TRACE WARNING
+  com.twitter.ostrich.stats.Stats$  ALL CRITICAL DEBUG ERROR FATAL INFO OFF TRACE WARNING
 
 Lifecycle Management
 --------------------

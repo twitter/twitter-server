@@ -6,6 +6,12 @@ as it is included in TwitterServer's user's guide.
 1.x
 -----
 
+1.7.3
+~~~~~~~
+
+- Upgrade sbt to 0.13
+- Add trace ID to twitter-server logging
+
 1.7.2
 ~~~~~~~
 

@@ -5,10 +5,11 @@ import com.typesafe.sbt.SbtSite.site
 import com.typesafe.sbt.site.SphinxSupport.Sphinx
 
 object TwitterServer extends Build {
-  val libVersion = "1.7.2"
-  val utilVersion = "6.18.0"
-  val finagleVersion = "6.18.0"
-  val jacksonVersion = "2.2.2"
+  val libVersion = "1.7.3"
+  val utilVersion = "6.19.0"
+  val finagleVersion = "6.20.0"
+  val jacksonVersion = "2.3.1"
+  val mustacheVersion = "0.8.12.1"
 
   val jacksonLibs = Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
@@ -92,7 +93,8 @@ object TwitterServer extends Build {
       finagle("zipkin"),
       util("app"),
       util("core"),
-      util("jvm")
+      util("jvm"),
+      "com.github.spullara.mustache.java" % "compiler" % mustacheVersion
     ) ++ jacksonLibs
   )
 

@@ -2,18 +2,18 @@
 
 junit_tests(name='scala',
   dependencies=[
-    pants('3rdparty:jackson-databind'),
-    pants('3rdparty:jackson-module-scala'),
-    pants('3rdparty:junit'),
-    pants('3rdparty:mockito-all'),
-    pants('3rdparty:netty'),
-    pants('3rdparty:scalatest'),
-    pants('finagle/finagle-core'),
-    pants('finagle/finagle-http'),
-    pants('twitter-server'),
-    pants('util/util-app'),
-    pants('util/util-core')
+    '3rdparty:jackson-databind',
+    '3rdparty:jackson-module-scala',
+    '3rdparty:junit',
+    '3rdparty:mockito-all',
+    '3rdparty:netty',
+    '3rdparty:scalatest',
+    'finagle/finagle-core',
+    'finagle/finagle-http',
+    'twitter-server',
+    'util/util-app',
+    'util/util-core'
   ],
   sources=rglobs('*.scala'),
-  resources=[pants('twitter-server/src/test/resources')]
+  resources=['twitter-server/src/test/resources']
 )
