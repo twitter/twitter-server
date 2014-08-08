@@ -10,6 +10,12 @@ Twitter-server is published with Maven:
 
 ::
 
+  <repository>
+    <id>twttr</id>
+    <name>twttr</name>
+    <url>http://maven.twttr.com/</url>
+  </repository>
+
   <dependency>
     <groupId>com.twitter</groupId>
     <artifactId>twitter-server_2.9.2</artifactId>
@@ -20,7 +26,11 @@ or, with sbt:
 
 ::
 
+  resolvers += "twttr" at "http://maven.twttr.com/"
+
   libraryDependencies += "com.twitter" %% "twitter-server" % "1.0.2"
+
+NB: you only need to add the `maven.twttr.com` repository if you want to use libraries in twitter common, which are only published to `maven.twttr.com`.  For example, `finagle-stats`, which adds :doc:`metrics <Features#metrics>`, requires a twitter common library.
 
 
 First we’ll need to import a few things into our namespace.

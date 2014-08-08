@@ -1,3 +1,4 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -6,15 +7,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Features &mdash; Twitter-Server 1.3.0 documentation</title>
+    <title>Features &mdash; Twitter-Server 1.7.3 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '1.3.0',
+        URL_ROOT:    '',
+        VERSION:     '1.7.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Twitter-Server 1.3.0 documentation" href="index.html" />
+    <link rel="top" title="Twitter-Server 1.7.3 documentation" href="index.html" />
     <link rel="next" title="Migration from Ostrich" href="Migration.html" />
     <link rel="prev" title="Twitter-server" href="index.html" />
    
@@ -61,13 +62,13 @@
 <p>We’ll walk through the features provided by twitter-server by examining a slightly more advanced version of the example shown in the introduction.</p>
 <div class="highlight-text"><div class="highlight"><pre>import com.twitter.conversions.time._
 import com.twitter.finagle.http.HttpMuxer
-import com.twitter.finagle.{Http, Service}
+import com.twitter.finagle.Service
+import com.twitter.io.Charsets
 import com.twitter.server.TwitterServer
-import com.twitter.util.{Await, Duration, Future, Time}
+import com.twitter.util.{Await, Future, Time}
 import java.net.InetSocketAddress
 import org.jboss.netty.buffer.ChannelBuffers.copiedBuffer
 import org.jboss.netty.handler.codec.http._
-import org.jboss.netty.util.CharsetUtil.UTF_8
 
 object AdvancedServer extends TwitterServer {
 
@@ -82,7 +83,7 @@ object AdvancedServer extends TwitterServer {
       counter.incr()
       val response =
         new DefaultHttpResponse(request.getProtocolVersion, HttpResponseStatus.OK)
-      val content = copiedBuffer(what() + &quot;\n&quot;, UTF_8)
+      val content = copiedBuffer(what() + &quot;\n&quot;, Charsets.Utf8)
       response.setContent(content)
       Future.value(response)
     }
@@ -91,12 +92,12 @@ object AdvancedServer extends TwitterServer {
   def main() {
     // We can create a new http server but in that case we profit from the
     // one already started for /admin/*
-    // The `TwitterServer` trait exposes a `httpServer` that serve all routes
+    // The `TwitterServer` trait exposes an `adminHttpServer` that serve all routes
     // registered in the HttpMuxer object, we just have to add our own.
     HttpMuxer.addHandler(&quot;/echo&quot;, service)
     HttpMuxer.addHandler(&quot;/echo/&quot;, service)
     // And wait on the server
-    Await.ready(httpServer)
+    Await.ready(adminHttpServer)
   }
 }
 </pre></div>
@@ -133,10 +134,11 @@ AdvancedServer
 </pre></div>
 </div>
 <p>For more complicated logging schemes, you can extend the Logging trait and mix it back into twitter-server.</p>
+<p>Per-logger log levels can be changed on-the-fly via the logging handler on the admin interface.</p>
 </div>
 <div class="section" id="metrics">
 <span id="metrics-label"></span><h2>Metrics<a class="headerlink" href="#metrics" title="Permalink to this headline">¶</a></h2>
-<p>Note: in order to turn on metrics, you must have the finagle-stats jar on your classpath.</p>
+<p>Note: in order to turn on metrics, you must have the finagle-stats jar on your classpath.  finagle-stats depends on libraries which can be found in the maven.twttr.com repository.  There are instructions on the <a class="reference internal" href="index.html"><em>quickstart</em></a> for adding it in maven or sbt.</p>
 <p><cite>statsReceiver</cite>, defined by <cite>TwitterServer</cite>, defines a sink for metrics. With it you can update counters and stats (histograms) or define gauges (instantaneous values).</p>
 <p>For instance, you define your stats:</p>
 <div class="highlight-text"><div class="highlight"><pre>val counter = statsReceiver.counter(&quot;requests_counter&quot;)
@@ -147,6 +149,21 @@ AdvancedServer
 </pre></div>
 </div>
 <p>The value of this counter will be exported by the HTTP server and accessible at /admin/metrics.json</p>
+<div class="section" id="filtering-stats-out">
+<h3>Filtering stats out<a class="headerlink" href="#filtering-stats-out" title="Permalink to this headline">¶</a></h3>
+<p>Metrics can be too expensive to store. By passing a comma-separated list of regexes to exclude from stats using <cite>-com.twitter.finagle.stats.statsFilter</cite>  flag, one can single out the stats that will not be shown when queried with <cite>filtered=true</cite>. In other words, you can still access all of the stats normally, but this adds the option to fetch the filtered list.</p>
+<p>For example, to filter out all stats starting with jvm and also any p90 stats, one can pass the following to Twitter-Server:</p>
+<div class="highlight-text"><div class="highlight"><pre>-com.twitter.finagle.stats.statsFilter=&quot;jvm.*,.*\.p90&quot;
+</pre></div>
+</div>
+<p>To query the reduced list:</p>
+<div class="highlight-text"><div class="highlight"><pre>/admin/metrics.json?filtered=true
+</pre></div>
+</div>
+<p>Note that this only works with <cite>finagle-stats</cite> and doesn&#8217;t work with <cite>finagle-ostrich4</cite>.</p>
+</div>
+<div class="section" id="pretty-output">
+<h3>Pretty output<a class="headerlink" href="#pretty-output" title="Permalink to this headline">¶</a></h3>
 <p>If you would like a pretty version of the json output, add the parameter pretty=true or pretty=1, eg /admin/metrics.json?pretty=true</p>
 <div class="highlight-text"><div class="highlight"><pre>{
   &quot;requests_counter&quot;: 234,
@@ -175,6 +192,7 @@ AdvancedServer
 </pre></div>
 </div>
 </div>
+</div>
 <div class="section" id="http-admin-interface">
 <h2>HTTP Admin interface<a class="headerlink" href="#http-admin-interface" title="Permalink to this headline">¶</a></h2>
 <p>Twitter-server starts an HTTP server (it binds to the port defined by the flag <cite>-admin.port</cite>; port 8080 by default). It exports an HttpMuxer object in which endpoints are registered. The library defines a series of default endpoints:</p>
@@ -186,8 +204,10 @@ AdvancedServer
 /admin/resolutions
 /admin/pprof/heap
 /admin/contention
+/admin/clients
 /admin/announcer
 /admin/shutdown
+/admin/logging
 /admin/resolver
 /admin/tracing
 /admin/threads
@@ -198,7 +218,7 @@ AdvancedServer
 <dt><strong>/admin/resolutions</strong></dt>
 <dd>Returns a set of resolution chains that have run through Resolver. This allows one to see how a particular target is being resolved.</dd>
 <dt><strong>/admin/announcer</strong></dt>
-<dd>Returns a set of announcement chains that have run through the Announcer. This allows one ot see how a particular target is being announced.</dd>
+<dd>Returns a set of announcement chains that have run through the Announcer. This allows one to see how a particular target is being announced.</dd>
 <dt><strong>/admin/pprof/contention</strong></dt>
 <dd>Returns a CPU contention profile. The output is in <a class="reference external" href="http://code.google.com/p/gperftools/">pprof</a> format.</dd>
 <dt><strong>/admin/pprof/profile</strong></dt>
@@ -278,6 +298,8 @@ Blocked:
 </pre></div>
 </div>
 <dl class="docutils">
+<dt><strong>/admin/clients</strong></dt>
+<dd>Display a list of clients. Per-client configuration parameters and values for each module are available at /admin/clients?name=&lt;client name&gt;.</dd>
 <dt><strong>/admin/shutdown</strong></dt>
 <dd>Stop the process gracefully.</dd>
 <dt><strong>/admin/tracing</strong></dt>
@@ -315,7 +337,14 @@ Blocked:
 <dl class="docutils">
 <dt><strong>/admin/ping</strong></dt>
 <dd>Return pong (used for monitoring)</dd>
+<dt><strong>/admin/logging</strong></dt>
+<dd>Display the set of loggers and their current log level. The level of each logger can also be modified on-the-fly.</dd>
 </dl>
+<div class="highlight-text"><div class="highlight"><pre>root                              ALL CRITICAL DEBUG ERROR FATAL INFO OFF TRACE WARNING
+com.twitter.ostrich.stats.Metric  ALL CRITICAL DEBUG ERROR FATAL INFO OFF TRACE WARNING
+com.twitter.ostrich.stats.Stats$  ALL CRITICAL DEBUG ERROR FATAL INFO OFF TRACE WARNING
+</pre></div>
+</div>
 </div>
 <div class="section" id="lifecycle-management">
 <h2>Lifecycle Management<a class="headerlink" href="#lifecycle-management" title="Permalink to this headline">¶</a></h2>
@@ -361,7 +390,11 @@ HttpMuxer.addHandler(&quot;/echo/&quot;, service)
 <li><a class="reference internal" href="#">Features</a><ul>
 <li><a class="reference internal" href="#flags">Flags</a></li>
 <li><a class="reference internal" href="#logging">Logging</a></li>
-<li><a class="reference internal" href="#metrics">Metrics</a></li>
+<li><a class="reference internal" href="#metrics">Metrics</a><ul>
+<li><a class="reference internal" href="#filtering-stats-out">Filtering stats out</a></li>
+<li><a class="reference internal" href="#pretty-output">Pretty output</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#http-admin-interface">HTTP Admin interface</a></li>
 <li><a class="reference internal" href="#lifecycle-management">Lifecycle Management</a></li>
 <li><a class="reference internal" href="#extension">Extension</a></li>

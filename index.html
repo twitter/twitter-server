@@ -1,3 +1,4 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -6,15 +7,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Twitter-server &mdash; Twitter-Server 1.3.0 documentation</title>
+    <title>Twitter-server &mdash; Twitter-Server 1.7.3 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '1.3.0',
+        URL_ROOT:    '',
+        VERSION:     '1.7.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Twitter-Server 1.3.0 documentation" href="#" />
+    <link rel="top" title="Twitter-Server 1.7.3 documentation" href="#" />
     <link rel="next" title="Features" href="Features.html" />
    
   
@@ -60,7 +61,13 @@
 <div class="section" id="quick-start">
 <h2>Quick-start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
 <p>Twitter-server is published with Maven:</p>
-<div class="highlight-text"><div class="highlight"><pre>&lt;dependency&gt;
+<div class="highlight-text"><div class="highlight"><pre>&lt;repository&gt;
+  &lt;id&gt;twttr&lt;/id&gt;
+  &lt;name&gt;twttr&lt;/name&gt;
+  &lt;url&gt;http://maven.twttr.com/&lt;/url&gt;
+&lt;/repository&gt;
+
+&lt;dependency&gt;
   &lt;groupId&gt;com.twitter&lt;/groupId&gt;
   &lt;artifactId&gt;twitter-server_2.9.2&lt;/artifactId&gt;
   &lt;version&gt;1.0.2&lt;/version&gt;
@@ -68,16 +75,19 @@
 </pre></div>
 </div>
 <p>or, with sbt:</p>
-<div class="highlight-text"><div class="highlight"><pre>libraryDependencies += &quot;com.twitter&quot; %% &quot;twitter-server&quot; % &quot;1.0.2&quot;
+<div class="highlight-text"><div class="highlight"><pre>resolvers += &quot;twttr&quot; at &quot;http://maven.twttr.com/&quot;
+
+libraryDependencies += &quot;com.twitter&quot; %% &quot;twitter-server&quot; % &quot;1.0.2&quot;
 </pre></div>
 </div>
+<p>NB: you only need to add the <cite>maven.twttr.com</cite> repository if you want to use libraries in twitter common, which are only published to <cite>maven.twttr.com</cite>.  For example, <cite>finagle-stats</cite>, which adds <tt class="xref doc docutils literal"><span class="pre">metrics</span></tt>, requires a twitter common library.</p>
 <p>First we’ll need to import a few things into our namespace.</p>
-<div class="highlight-text"><div class="highlight"><pre>import com.twitter.finagle.{Http, ListeningServer, NullServer, Service}
+<div class="highlight-text"><div class="highlight"><pre>import com.twitter.finagle.{Http, Service}
+import com.twitter.io.Charsets
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future}
 import org.jboss.netty.buffer.ChannelBuffers.copiedBuffer
 import org.jboss.netty.handler.codec.http._
-import org.jboss.netty.util.CharsetUtil.UTF_8
 </pre></div>
 </div>
 <p>Twitter-server defines its own version of the standard <cite>main</cite>. To use it, create an object extended with <cite>com.twitter.server.TwitterServer</cite>, and define the <cite>main()</cite> method (no arguments).</p>
@@ -87,7 +97,7 @@ import org.jboss.netty.util.CharsetUtil.UTF_8
     def apply(request: HttpRequest) = {
       val response =
         new DefaultHttpResponse(request.getProtocolVersion, HttpResponseStatus.OK)
-      response.setContent(copiedBuffer(&quot;hello&quot;, UTF_8))
+      response.setContent(copiedBuffer(&quot;hello&quot;, Charsets.Utf8))
       Future.value(response)
     }
   }
@@ -124,7 +134,11 @@ hello
 <li class="toctree-l1"><a class="reference internal" href="Features.html">Features</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Features.html#flags">Flags</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Features.html#logging">Logging</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Features.html#metrics">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Features.html#metrics">Metrics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Features.html#filtering-stats-out">Filtering stats out</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Features.html#pretty-output">Pretty output</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="Features.html#http-admin-interface">HTTP Admin interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Features.html#lifecycle-management">Lifecycle Management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Features.html#extension">Extension</a></li>
