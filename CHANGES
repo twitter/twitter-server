@@ -6,11 +6,13 @@ as it is included in TwitterServer's user's guide.
 1.x
 -----
 
+
 1.7.3
 ~~~~~~~
 
-- Upgrade sbt to 0.13
+- Add admin endpoint for per-client configuration
 - Add trace ID to twitter-server logging
+- Create a logging handler for on-the-fly logging updates
 
 1.7.2
 ~~~~~~~
