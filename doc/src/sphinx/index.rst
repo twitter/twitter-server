@@ -30,11 +30,7 @@ or, with sbt:
 
   libraryDependencies += "com.twitter" %% "twitter-server_2.10" % "1.7.3"
 
-Check the Twitter-server `change log <https://github.com/twitter/twitter-server/blob/master/CHANGES>`_ to determine the most recent version.
-
-Here's an example of a full sbt build script.
-
-.. includecode:: code/build.sbt
+Check the twitter-server `change log <https://github.com/twitter/twitter-server/blob/master/CHANGES>`_ to determine the most recent version. For a full build script :doc:`see here <build>`.
 
 NB: you only need to add the `maven.twttr.com` repository if you want to use libraries in twitter common, which are only published to `maven.twttr.com`.  For example, `finagle-stats`, which adds :doc:`metrics <Features#metrics>`, requires a twitter common library.
 
