@@ -28,9 +28,9 @@ or, with sbt:
 
   resolvers += "twttr" at "http://maven.twttr.com/"
 
-  libraryDependencies += "com.twitter" %% "twitter-server_2.10" % "1.7.3"
+  libraryDependencies += "com.twitter" %% "twitter-server" % "1.7.3"
 
-Check the twitter-server `change log <https://github.com/twitter/twitter-server/blob/master/CHANGES>`_ to determine the most recent version. For a full build script :doc:`see here <build>`.
+Check the twitter-server `change log <https://github.com/twitter/twitter-server/blob/master/CHANGES>`_ to determine the most recent version.
 
 NB: you only need to add the `maven.twttr.com` repository if you want to use libraries in twitter common, which are only published to `maven.twttr.com`.  For example, `finagle-stats`, which adds :doc:`metrics <Features#metrics>`, requires a twitter common library.
 
