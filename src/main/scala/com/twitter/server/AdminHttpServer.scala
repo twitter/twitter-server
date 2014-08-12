@@ -5,6 +5,7 @@ import com.twitter.finagle.{ServerCodecConfig, NullServer, ListeningServer, Http
 import com.twitter.finagle.http.{Http, HttpMuxer}
 import com.twitter.finagle.netty3.Netty3Listener
 import com.twitter.finagle.stats.NullStatsReceiver
+import com.twitter.finagle.tracing.NullTracer
 import java.net.{SocketAddress, InetSocketAddress}
 
 trait AdminHttpServer { self: App =>
@@ -24,6 +25,7 @@ trait AdminHttpServer { self: App =>
     adminHttpServer = HttpServer
       .copy(listener = httpListener)
       .copy(statsReceiver = NullStatsReceiver)
+      .copy(tracer = NullTracer)
       .serve(adminPort(), HttpMuxer)
   }
 
