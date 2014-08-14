@@ -13,7 +13,9 @@ object JvmStats {
   // set used for keeping track of jvm gauges (otherwise only weakly referenced)
   private[this] val gauges = mutable.Set.empty[Any]
 
-  def register(statsReceiver: StatsReceiver) = {
+  private[this] val allocations = new Allocations()
+
+  def register(statsReceiver: StatsReceiver) {
     val stats = statsReceiver.scope("jvm")
 
     val mem = ManagementFactory.getMemoryMXBean()
@@ -123,6 +125,12 @@ object JvmStats {
     // note, these could be -1 if the collector doesn't have support for it.
     gauges.add(gcStats.addGauge("cycles") { gcPool map(_.getCollectionCount) filter(_ > 0) sum })
     gauges.add(gcStats.addGauge("msec") { gcPool map(_.getCollectionTime) filter(_ > 0) sum })
-  }
-}
 
+    if (allocations.trackingEden) {
+      val allocationStats = memStats.scope("allocations")
+      val eden = allocationStats.scope("eden")
+      gauges.add(eden.addGauge("bytes") { allocations.eden })
+    }
+  }
+
+}
