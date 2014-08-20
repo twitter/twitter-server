@@ -21,6 +21,13 @@ But you can also define flags of composite type:
 
 We also provide automatic help entry that display information about all the flags defined.
 
+Note that you cannot read flags until after the arguments have been parsed, which happens before
+premains have been executed, but after the constructor and the inits.  Similarly, you should only
+declare a flag in the constructor, before the arguments have been parsed.
+
+If you access a flag before the parsing phase (e.g. inside a constructor), you will see a SEVERE
+log message.
+
 ::
 
   $ java -jar target/myserver-1.0.0-SNAPSHOT.jar -help
