@@ -233,7 +233,7 @@ See the :ref:`metrics <metrics_label>` section for more information.
     ...
 
 **/admin/clients**
-  Display a list of clients. Per-client configuration parameters and values for each module are available at /admin/clients?name=<client name>.
+  Display a list of clients. Per-client configuration parameters and values for each module are available at /admin/clients/<client name>.
 
 **/admin/shutdown**
   Stop the process gracefully.

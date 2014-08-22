@@ -1,0 +1,34 @@
+<script type="text/javascript" src="/admin/files?name=Navigation&type=js"></script>
+  <ul class="list-unstyled">
+    <li id="/admin" class="selectable">
+      <span class="nav-item-text">
+        <a href="/admin">
+          Summary
+        </a>
+      </span>
+    </li>
+    {{#links}}
+    <li {{#path}} class="selectable" {{/path}}>
+      <span class="nav-item-text">
+        {{#path}}
+        <a id="{{path}}" href="{{.}}">
+        {{/path}}
+          {{name}}
+        {{#path}}
+        </a>
+        {{/path}}
+      </span>
+      <ul class="sublink">
+        {{#subLinks}}
+        <li id="{{path}}" class="selectable">
+          <span class="nav-item-text">
+            <a href="{{path}}">
+              {{name}}
+            </a>
+          </span>
+        </li>
+        {{/subLinks}}
+      </ul>
+    </li>
+    {{/links}}
+  </ul>

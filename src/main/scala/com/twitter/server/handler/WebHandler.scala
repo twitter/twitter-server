@@ -7,18 +7,6 @@ import org.jboss.netty.handler.codec.http._
 
 trait WebHandler extends Service[HttpRequest, HttpResponse] {
 
-  /**
-   * Extract the value of a parameter for a string of the format: 
-   * "....param1=value1&param2=value2..."
-   */
-  def extractQueryValue(parameter: String, string: String): String = {
-    val regex = (""".*""" + parameter + """=([^&]*).*""").r
-    string match {
-      case regex(value) => value
-      case _ => ""
-    }
-  }
-
   def makeHttpFriendlyResponse(req: HttpRequest, curl: String, web: String): Future[HttpResponse] = {
     val msg = Option(req.getHeader("User-Agent")) match {
       case Some(ua) if ua.startsWith("curl") =>

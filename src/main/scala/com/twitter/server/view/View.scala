@@ -1,11 +1,14 @@
 package com.twitter.server.view
 import com.twitter.finagle.client.{ClientInfo, ClientModuleInfo}
- 
-private[server] trait View
-  
-private[server] object ViewUtils {
+import com.twitter.server.ConfigurationFlags
+import com.twitter.server.Flag
+import com.twitter.server.controller.TemplateViewController
+import org.jboss.netty.handler.codec.http._
+import com.twitter.finagle.client.ClientRegistry
+
+private[server] object ResponderUtils {
   def mapParams(params:  Map[String, String]) =
-    params.toList map { 
+    params.toList map {
       case (k, v) => Map("key" -> k, "value" -> pretty(v))
     }
 
@@ -19,14 +22,3 @@ private[server] object ViewUtils {
       }
   }
 }
-
-private[server] class ClientInfoView(client: ClientInfo) extends View { 
-  val name = client.name  
-  val modules = client.modules.toList map {
-    case ClientModuleInfo(role, description, perModuleParams) => 
-      Map("role" -> role, "description" -> description, "perModuleParams" -> 
-        ViewUtils.mapParams(perModuleParams))
-  }
-}
-
-private[server] class ClientListView(val clients: List[String], val baseUrl: String) extends View
