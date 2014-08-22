@@ -116,7 +116,7 @@ private[util] class Allocations {
         case _ => false
       }
 
-      val memoryUsages = edenKeys.flatMap { k =>
+      val memoryUsages = edenKeys.flatMap { k: Any =>
         tabData.get(k.asInstanceOf[juList[_]].toArray) match {
           case cd: CompositeData if cd.containsKey("value") =>
             cd.get("value") match {
