@@ -11,7 +11,7 @@ import java.net.{SocketAddress, InetSocketAddress}
 trait AdminHttpServer { self: App =>
   def defaultHttpPort = 9990
   val adminPort = flag("admin.port", new InetSocketAddress(defaultHttpPort), "Admin http server port")
-
+  
   @volatile protected var adminHttpServer: ListeningServer = NullServer
 
   premain {

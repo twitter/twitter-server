@@ -21,4 +21,8 @@ object JsonConverter {
     response.setContent(ChannelBuffers.wrappedBuffer(msg.getBytes))
     response
   }
+
+  def writeToString(obj: Any): String = {
+    writer.writeValueAsString(obj)
+  }
 }
