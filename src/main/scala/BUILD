@@ -1,6 +1,11 @@
 # main twitter-server
 
 scala_library(name='scala',
+  provides = artifact(
+    org = 'com.twitter',
+    name = 'twitter-server',
+    repo = pants('pants-support/ivy:internal'),
+  ),
   dependencies=[
     '3rdparty:jackson-core',
     '3rdparty:jackson-databind',
@@ -16,7 +21,4 @@ scala_library(name='scala',
   ],
   sources=rglobs('*.scala'),
   resources=['twitter-server/src/main/resources'],
-  provides=artifact(org='com.twitter',
-                    name='twitter-server',
-                    repo='pants-support/ivy:internal',),
 )
