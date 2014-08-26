@@ -8,6 +8,7 @@ import javax.management.openmbean.{CompositeData, TabularData}
 import javax.management.{
   ListenerNotFoundException, Notification, NotificationListener, NotificationEmitter}
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 
 private[util] object Allocations {
   val Unknown = -1L
@@ -107,17 +108,15 @@ private[util] class Allocations {
         return None
 
       val tabData = any.asInstanceOf[TabularData]
-      val edenKeys = tabData.keySet.asScala.filter {
-        case ks: juList[_] =>
-          ks.asScala.head match {
-            case s: String if s.contains("Eden") => true
-            case _ => false
-          }
-        case _ => false
+      val edenKeys: mutable.Set[juList[_]] = tabData.keySet.asScala.collect {
+        case ks: juList[_] if ks.asScala.headOption.exists {
+          case s: String => s.contains("Eden")
+          case _ => false
+        } => ks
       }
 
-      val memoryUsages = edenKeys.flatMap { k: Any =>
-        tabData.get(k.asInstanceOf[juList[_]].toArray) match {
+      val memoryUsages = edenKeys.flatMap { k =>
+        tabData.get(k.toArray) match {
           case cd: CompositeData if cd.containsKey("value") =>
             cd.get("value") match {
               case vcd: CompositeData => Some(MemoryUsage.from(vcd))
