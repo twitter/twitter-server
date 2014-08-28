@@ -2,7 +2,7 @@ package com.twitter.server
 
 import com.twitter.app.App
 
-case class Flag(name: String, value: String, description: String)
+private[server] case class Flag(name: String, value: String, description: String)
 
 private[server] class ConfigurationFlags(app: App) {
 

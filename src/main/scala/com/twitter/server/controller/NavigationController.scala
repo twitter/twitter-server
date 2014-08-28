@@ -1,14 +1,11 @@
 package com.twitter.server.controller
 
-import com.twitter.finagle.http.HttpMuxer
 import com.twitter.server.controller.TemplateViewController.Renderable
-import com.twitter.finagle.client.{ClientInfo, ClientModuleInfo, ClientRegistry}
 import com.twitter.server.handler.MetricsHandler
 
 private[server] case class Link (name: String, path: String, subLinks: Seq[Link] = Seq.empty)
 
-private[this] class NavigationView(paths: Seq[String]) extends TemplateViewController.Renderable {
-
+private[server] class NavigationView(paths: Seq[String]) extends TemplateViewController.Renderable {
    // Customize how links are grouped
   private[this] val customGroups = {
     val groups = Map(
@@ -36,6 +33,7 @@ private[this] class NavigationView(paths: Seq[String]) extends TemplateViewContr
     "abortabortabort" -> "Abort",
     "quitquitquit" -> "Quit"
   )
+
   private[this] val hiddenEndpoints = {
     val he = Seq(
       "dtab",
@@ -45,7 +43,7 @@ private[this] class NavigationView(paths: Seq[String]) extends TemplateViewContr
       "/admin",
       "clients/"
     )
-    if(!MetricsHandler.hasRegistry) he :+ "metrics_graphs"
+    if (!MetricsHandler.hasRegistry) he :+ "metrics_graphs"
     else he
   }
 
@@ -82,12 +80,4 @@ private[this] class NavigationView(paths: Seq[String]) extends TemplateViewContr
       else ""
     Link(prettyName(topLevel), topLevelLink, subLinks)
   }
-}
-
-trait Navigation {
-  val paths = HttpMuxer.patterns.filter(_.startsWith("/"))
-  val clientPaths = ClientRegistry.clientList().map("/admin/clients/" + _.name)
-  val navigation = TemplateViewController.render(
-      new NavigationView(paths ++ clientPaths), "Navigation")
-
 }

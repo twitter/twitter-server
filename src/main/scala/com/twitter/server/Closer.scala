@@ -1,7 +1,6 @@
 package com.twitter.server
 
 import com.twitter.app.App
-import com.twitter.logging.{Logger, Logging, NullLogger}
 import com.twitter.util.{Duration, Await, Closable}
 import com.twitter.util.TimeConversions._
 

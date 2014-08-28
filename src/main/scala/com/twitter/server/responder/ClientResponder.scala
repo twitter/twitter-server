@@ -1,7 +1,6 @@
 package com.twitter.server.responder
 
 import com.twitter.finagle.client.{ClientInfo, ClientModuleInfo, ClientRegistry}
-import com.twitter.server.controller.Navigation
 import com.twitter.server.controller.TemplateViewController
 import com.twitter.server.controller.TemplateViewController.Renderable
 import org.jboss.netty.handler.codec.http._
@@ -12,8 +11,8 @@ private[server] class ClientResponder(baseUrl: String) extends Responder {
     val name = client.name
     val dest = client.dest
     val modules = client.modules.toList map {
-      case ClientModuleInfo(role, description, perModuleParams) => 
-        Map("role" -> role, "description" -> description, "perModuleParams" -> 
+      case ClientModuleInfo(role, description, perModuleParams) =>
+        Map("role" -> role, "description" -> description, "perModuleParams" ->
           ResponderUtils.mapParams(perModuleParams))
     }
   }
@@ -24,10 +23,10 @@ private[server] class ClientResponder(baseUrl: String) extends Responder {
       case Some(client) =>
         val htmlResponse = TemplateViewController.renderInRoot(
           new ClientInfoView(client), "ClientInfo")
-        new Response(htmlResponse)
-      case None => 
+        Response(htmlResponse)
+      case None =>
         val response = "Client '" + clientName + "' cound not be found."
-        new Response(response, response)
-    } 
+        Response(response, response)
+    }
   }
 }
