@@ -2,11 +2,11 @@ package com.twitter.server.responder
 
 import org.jboss.netty.handler.codec.http._
 
+private[server] case class Response(htmlResponse: String, curlResponse: String = "")
+
 private[server] trait Responder {
   def respond(req: HttpRequest): Response
 }
-
-private[server] case class Response(htmlResponse: String, curlResponse: String = "")
 
 private[twitter] object ResponderUtils {
   def mapParams(params: Map[String, String]): List[Map[String, String]] =

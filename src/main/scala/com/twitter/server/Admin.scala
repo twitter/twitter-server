@@ -13,7 +13,7 @@ trait Admin { self: App =>
   HttpMuxer.addHandler("/admin", new RequestHandler(new IndexResponder(new ConfigurationFlags(self))))
   HttpMuxer.addHandler("/admin/metrics_graphs", new RequestHandler(new TemplateResponder("MetricsList")))
   HttpMuxer.addHandler("/admin/metrics", new MetricsHandler("/admin/metrics"))
-  HttpMuxer.addHandler("/admin/files", new FileHandler("/admin/files", "twitter-server/src/main/resources"))
+  HttpMuxer.addHandler("/admin/files", ResourceHandler)
   HttpMuxer.addHandler("/admin/", new FailureHandler(failString))
   HttpMuxer.addHandler("/admin/announcer", new RequestHandlerJson(new AnnouncerHandler))
   HttpMuxer.addHandler("/admin/clients/", new RequestHandler(new ClientResponder("/admin/clients/")))

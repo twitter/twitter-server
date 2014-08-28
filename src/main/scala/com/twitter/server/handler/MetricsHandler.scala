@@ -9,12 +9,12 @@ import com.twitter.finagle.Service
 import com.twitter.finagle.stats.{StatEntry, StatsRegistry}
 import com.twitter.finagle.util.DefaultTimer
 import com.twitter.finagle.util.LoadService
+import com.twitter.io.Charsets
 import com.twitter.server.responder.ResponderUtils
 import com.twitter.server.util.JsonConverter
 import com.twitter.util.Future
 import org.jboss.netty.buffer.ChannelBuffers.copiedBuffer
 import org.jboss.netty.handler.codec.http._
-import org.jboss.netty.util.CharsetUtil.UTF_8
 import scala.collection.{mutable, immutable}
 import scala.util.Sorting.stableSort
 
@@ -23,20 +23,20 @@ import scala.util.Sorting.stableSort
  * displays individual client information at <baseUrl><client name>
  */
 
-private[this] case class ViewMetric(val name: String, val value: Double)
+private[server] case class ViewMetric(val name: String, val value: Double)
 
-private[this] class Client(
+private[server] class Client(
   val name: String,
   val ports: Seq[String],
   val metrics: Seq[ViewMetric])
 
-private[this] class MetricsResponse(
+private[server] class MetricsResponse(
   val metrics: Seq[ViewMetric],
   val server: Seq[ViewMetric],
   val clients: Seq[Client])
 
 private[server] object MetricsHandler {
-  private[this] val registry = LoadService[StatsRegistry]()
+  private[this] lazy val registry = LoadService[StatsRegistry]()
   private[this] val maintainCache = DefaultTimer.twitter
   private[this] var metrics = Map.empty[String, StatEntry]
   private[this] var isCached = false
@@ -57,8 +57,7 @@ private[server] object MetricsHandler {
   }
 }
 
-class MetricsHandler(baseUrl: String) extends WebHandler {
-
+private[server] class MetricsHandler(baseUrl: String) extends WebHandler {
   private[this] val serverNames = List("thriftmux", "thrift", "http")
   private[this] def safeDivide(a: Double, b: Double): Double =
     if (b == 0) 0.0
@@ -169,7 +168,7 @@ class MetricsHandler(baseUrl: String) extends WebHandler {
       }
     }
     val metricsResponse = new MetricsResponse(metricsList, serverMetricsList, clientsList)
-    response.setContent(copiedBuffer(JsonConverter.writeToString(metricsResponse), UTF_8))
+    response.setContent(copiedBuffer(JsonConverter.writeToString(metricsResponse), Charsets.Utf8))
     Future.value(response)
   }
 }
