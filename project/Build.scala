@@ -14,7 +14,8 @@ object TwitterServer extends Build {
   val jacksonLibs = Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
-    "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion
+    "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion exclude("com.google.guava", "guava"),
+    "com.google.guava" % "guava" % "16.0.1"
   )
 
   def util(which: String) = "com.twitter" %% ("util-"+which) % utilVersion
@@ -95,7 +96,13 @@ object TwitterServer extends Build {
       util("core"),
       util("jvm"),
       "com.github.spullara.mustache.java" % "compiler" % mustacheVersion
-    ) ++ jacksonLibs
+    ) ++ jacksonLibs,
+    ivyXML :=
+      <dependencies>
+        <dependency org="com.github.spullara.mustache.java" name="compiler" rev={mustacheVersion}>
+          <exclude org="com.google.guava" name="guava"/>
+        </dependency>
+      </dependencies>
   )
 
   lazy val twitterServerDoc = Project(
