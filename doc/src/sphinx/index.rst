@@ -8,7 +8,7 @@ Quick-start
 
 Twitter-server is published with Maven:
 
-::
+.. parsed-literal::
 
   <repository>
     <id>twttr</id>
@@ -18,17 +18,17 @@ Twitter-server is published with Maven:
 
   <dependency>
     <groupId>com.twitter</groupId>
-    <artifactId>twitter-server_2.9.2</artifactId>
-    <version>1.0.2</version>
+    <artifactId>twitter-server_2.10</artifactId>
+    <version>\ |release|\ </version>
   </dependency>
 
 or, with sbt:
 
-::
+.. parsed-literal::
 
   resolvers += "twttr" at "http://maven.twttr.com/"
 
-  libraryDependencies += "com.twitter" %% "twitter-server" % "1.0.2"
+  libraryDependencies += "com.twitter" %% "twitter-server" % "|release|"
 
 NB: you only need to add the `maven.twttr.com` repository if you want to use libraries in twitter common, which are only published to `maven.twttr.com`.  For example, `finagle-stats`, which adds :doc:`metrics <Features#metrics>`, requires a twitter common library.
 

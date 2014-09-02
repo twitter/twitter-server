@@ -6,6 +6,10 @@
 import sys, os
 
 sys.path.append(os.path.abspath('exts'))
+sys.path.append(os.path.abspath('utils'))
+
+import sbt_versions
+
 # highlight_language = 'scala'
 highlight_language = 'text'  # this way we don't get ugly syntax coloring
 extensions = ['sphinx.ext.extlinks', 'includecode']
@@ -35,6 +39,8 @@ copyright = u'2013 Twitter, Inc'
 version = ''
 release = ''
 htmlhelp_basename = "twitter-server"
+release = sbt_versions.find_release(os.path.abspath('../../../project/Build.scala'))
+version = sbt_versions.release_to_version(release)
 
 # e.g. :issue:`36` :ticket:`8`
 extlinks = {
