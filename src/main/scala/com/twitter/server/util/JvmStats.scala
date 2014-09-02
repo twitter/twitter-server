@@ -14,6 +14,7 @@ object JvmStats {
   private[this] val gauges = mutable.Set.empty[Any]
 
   private[this] val allocations = new Allocations()
+  allocations.start()
 
   def register(statsReceiver: StatsReceiver) {
     val stats = statsReceiver.scope("jvm")
