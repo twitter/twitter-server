@@ -1,7 +1,7 @@
 package com.twitter.server
 
 import com.twitter.finagle.tracing.{Trace, SpanId, TraceId}
-import com.twitter.logging.StringHandler
+import com.twitter.logging.{Level => TwLevel, StringHandler}
 import java.util.logging.Logger
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
@@ -34,6 +34,17 @@ class LogFormatTest extends FunSuite {
     testStringHandler { (log, handler) =>
       log.info("test")
       assert(!handler.get.contains("TraceId"))
+    }
+  }
+
+  test("com.twitter.logging.Levels are known") {
+    testStringHandler { (log, handler) =>
+      log.log(TwLevel.ERROR, "anError")
+      assert(handler.get.startsWith("E"), handler.get)
+    }
+    testStringHandler { (log, handler) =>
+      log.log(TwLevel.CRITICAL, "anCritical")
+      assert(handler.get.startsWith("E"), handler.get)
     }
   }
 }

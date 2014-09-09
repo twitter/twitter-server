@@ -2,6 +2,7 @@ package com.twitter.server
 
 import com.twitter.app.App
 import com.twitter.finagle.tracing.Trace
+import com.twitter.logging.{Level => TwLevel}
 import com.twitter.util.Time
 import java.util.logging.{Formatter, Level, LogRecord, Logger}
 import java.io.{PrintWriter, StringWriter}
@@ -22,14 +23,21 @@ private class LogFormatter extends Formatter {
     Level.FINEST -> 'D',
     Level.FINER -> 'D',
     Level.FINE -> 'D',
+    TwLevel.TRACE -> 'D',
+    TwLevel.DEBUG -> 'D',
     Level.CONFIG -> 'I',
     Level.INFO -> 'I',
+    TwLevel.INFO -> 'I',
     Level.WARNING -> 'W',
-    Level.SEVERE -> 'E'
+    TwLevel.WARNING -> 'W',
+    Level.SEVERE -> 'E',
+    TwLevel.ERROR -> 'E',
+    TwLevel.CRITICAL -> 'E',
+    TwLevel.FATAL -> 'E'
   )
 
   // Make some effort to demangle scala names.
-  private def prettyClass(name: String) = {
+  private def prettyClass(name: String): String = {
     var s = NameTransformer.decode(name)
     val dolladolla = s.indexOf("$$")
     if (dolladolla > 0) {
@@ -40,11 +48,11 @@ private class LogFormatter extends Formatter {
     s
   }
 
-  override def format(r: LogRecord)  = {
+  override def format(r: LogRecord): String = {
     val msg = formatMessage(r)
 
-    val str = new StringBuilder(msg.size+30+150)
-      .append(levels.get(r.getLevel) getOrElse 'U')
+    val str = new StringBuilder(msg.length + 30 + 150)
+      .append(levels.getOrElse(r.getLevel, 'U'))
       .append(Time.fromMilliseconds(r.getMillis).format(" MMdd HH:mm:ss.SSS"))
       .append(" THREAD")
       .append(r.getThreadID)
@@ -66,10 +74,10 @@ private class LogFormatter extends Formatter {
     if (r.getThrown != null) {
       val w = new StringWriter
       r.getThrown.printStackTrace(new PrintWriter(w))
-      str.append("\n").append(w.toString)
+      str.append('\n').append(w.toString)
     }
 
-    str.append("\n")
+    str.append('\n')
     str.toString
   }
 }
