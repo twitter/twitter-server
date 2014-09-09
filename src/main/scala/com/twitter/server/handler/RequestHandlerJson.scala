@@ -4,8 +4,6 @@ import com.twitter.finagle.Service
 import com.twitter.io.Charsets
 import com.twitter.server.controller.TemplateViewController
 import com.twitter.server.controller.TemplateViewController.Renderable
-import com.twitter.server.responder.Responder
-import com.twitter.server.responder.Response
 import com.twitter.util.Future
 import org.jboss.netty.handler.codec.http._
 

@@ -8,7 +8,7 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class ServerInfoHandlerSpec extends FunSuite {
+class ServerInfoHandlerTest extends FunSuite {
   test("ServerInfo handler display server information") {
     val handler = new ServerInfoHandler(this)
     val req = Request("/")
