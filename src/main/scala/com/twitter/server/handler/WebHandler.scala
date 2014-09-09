@@ -7,10 +7,16 @@ import org.jboss.netty.handler.codec.http._
 
 trait WebHandler extends Service[HttpRequest, HttpResponse] {
 
+  /**
+   * Uses basic heuristics to determine if the request is coming from a web browser.
+   */
+  private[this] def isWebBrowser(userAgent: String): Boolean =
+    userAgent.startsWith("Mozilla")
+
   def makeHttpFriendlyResponse(req: HttpRequest, curl: String, web: String): Future[HttpResponse] = {
     val msg = Option(req.headers.get(HttpHeaders.Names.USER_AGENT)) match {
-      case Some(ua) if ua.startsWith("curl") => curl
-      case _ => "<html>\n\t<body>\n\t\t%s\n\t</body>\n</html>".format(web)
+      case Some(ua) if isWebBrowser(ua) => "<html>\n\t<body>\n\t\t%s\n\t</body>\n</html>".format(web)
+      case _ => curl
     }
     newResponse(req.getProtocolVersion, HttpResponseStatus.OK, msg.getBytes)
   }
