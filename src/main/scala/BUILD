@@ -4,7 +4,7 @@ scala_library(name='scala',
   provides = scala_artifact(
     org = 'com.twitter',
     name = 'twitter-server',
-    repo = pants('pants-support/ivy:internal'),
+    repo = 'pants-support/ivy:internal',
   ),
   dependencies=[
     '3rdparty:jackson-core',
