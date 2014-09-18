@@ -6,6 +6,16 @@ as it is included in TwitterServer's user's guide.
 1.x
 -----
 
+1.7.6
+~~~~~~~
+
+twitter-server: Add gauge on eden allocations
+twitter-server: Do not trace the admin http server
+twitter-server: JvmStats needs to call Allocations.start()
+twitter-server: Log severely if a flag is read at the wrong time
+twitter-server: Parameterize IndexHandler on a `patterns: Seq[String]`
+twitter-server: Proper resource loading in admin pages
+twitter-server: Redesign of twitter-server admin page
 
 1.7.3
 ~~~~~~~
