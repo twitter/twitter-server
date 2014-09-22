@@ -37,6 +37,9 @@ class ServerInfoHandler(obj: AnyRef) extends Service[HttpRequest, HttpResponse] 
     build_revision: String,
     build_branch_name: String,
     build_last_few_commits: Seq[String],
+    merge_base: String,
+    merge_base_commit_date: String,
+    scm_repository: String,
     start_time: String,
     var uptime: Long = 0)
 
@@ -48,6 +51,9 @@ class ServerInfoHandler(obj: AnyRef) extends Service[HttpRequest, HttpResponse] 
       buildProperties.getProperty("build_revision", "unknown"),
       buildProperties.getProperty("build_branch_name", "unknown"),
       buildProperties.getProperty("build_last_few_commits", "unknown").split("\n"),
+      buildProperties.getProperty("merge_base", "unknown"),
+      buildProperties.getProperty("merge_base_commit_date", "unknown"),
+      buildProperties.getProperty("scm_repository", "unknown"),
       (new Date(mxRuntime.getStartTime())).toString)
 
   def apply(req: HttpRequest) = {
