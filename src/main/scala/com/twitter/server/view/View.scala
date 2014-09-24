@@ -13,7 +13,7 @@ private[server] object ResponderUtils {
     }
 
   // Strip extraneous symbols from toString'd objects
-  private[this] def pretty(value: String): String = 
+  private[this] def pretty(value: String): String =
     """.+\.([\w]+)[$|@]""".r.findFirstMatchIn(value) match {
       case Some(name) => name.group(1)
       case _ => """\((.+)\)""".r.findFirstMatchIn(value) match {

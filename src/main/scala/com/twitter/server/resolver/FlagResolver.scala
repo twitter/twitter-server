@@ -19,10 +19,10 @@ class FlagResolver extends Resolver {
     case Some(target) =>
       Resolver.eval(target) match {
         case Name.Bound(va) => va
-        case Name.Path(_) => 
+        case Name.Path(_) =>
           Var.value(Addr.Failed(new IllegalArgumentException("Cannot bind to trees")))
       }
-    case None => 
+    case None =>
       val a = Addr.Failed(new ResolverNotFoundException(arg))
       Var.value(a)
   }
