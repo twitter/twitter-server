@@ -29,4 +29,4 @@ private[server] class ClientInfoView(client: ClientInfo) extends View {
   }
 }
 
-private[server] class ClientListView(val clients: List[String], val baseUrl: String) extends View
+private[server] class ClientListView(val clients: Seq[ClientInfo], val baseUrl: String) extends View
