@@ -1,10 +1,24 @@
 .. Author notes: this file is formatted with restructured text
-
-(http://docutils.sourceforge.net/docs/user/rst/quickstart.html)
-as it is included in TwitterServer's user's guide.
+  (http://docutils.sourceforge.net/docs/user/rst/quickstart.html)
+  as it is included in TwitterServer's user's guide.
 
 1.x
 -----
+
+1.8.0
+~~~~~~~
+
+New Features
+------------
+  * Add the ability to promote objects to old gen before serving
+
+Runtime Behavior Changes
+------------------------
+  * Add merge_base merge_base_commit_date and scm_repository to server_info
+  * AdminHttpServer now disables tracing
+  * Export gauge on eden allocations
+  * Improve heuristic for returning html or not in WebHandler
+  * Initial redesign of admin pages
 
 1.7.6
 ~~~~~~~
