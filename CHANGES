@@ -11,6 +11,7 @@
 New Features
 ------------
   * Add the ability to promote objects to old gen before serving
+  * Export everything from build.properties at /admin/server_info
 
 Runtime Behavior Changes
 ------------------------
@@ -19,6 +20,10 @@ Runtime Behavior Changes
   * Export gauge on eden allocations
   * Improve heuristic for returning html or not in WebHandler
   * Initial redesign of admin pages
+
+Breaking API Changes:
+---------------------
+  * Remove ServerInfo class: export /admin/server_info directly from build.properties file
 
 1.7.6
 ~~~~~~~

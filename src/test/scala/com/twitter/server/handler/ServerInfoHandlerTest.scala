@@ -16,11 +16,13 @@ class ServerInfoHandlerTest extends FunSuite {
 
     assert(res.status == HttpResponseStatus.OK)
     val info = res.contentString
-    assert(info contains("\"build\" :"))
-    assert(info contains("\"build_revision\" :"))
-    assert(info contains("\"name\" :"))
-    assert(info contains("\"version\" :"))
+    assert(info contains("\"build\" : \"unknown\""))
+    assert(info contains("\"build_revision\" : \"unknown\""))
+    assert(info contains("\"name\" : \"twitter-server\""))
+    assert(info contains("\"version\" : \"0.0.0\""))
     assert(info contains("\"start_time\" :"))
     assert(info contains("\"uptime\" :"))
+    // user-defined properties
+    assert(info contains("\"foo\" : \"bar\""))
   }
 }
