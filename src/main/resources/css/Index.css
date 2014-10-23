@@ -1,0 +1,99 @@
+
+#server {
+  border: lightgrey 1px solid;
+  padding: 15px;
+  margin-bottom: 20px;
+  min-height: 300px;
+}
+
+.server-info {
+  padding-top: 30px;
+}
+
+.metrics-highlights th:not(:first-child), .metrics-highlights td:not(:first-child) {
+  padding-left: 13px;
+  padding-top: 5px;
+}
+
+.metrics-highlights td:first-child {
+  font-weight: bold;
+}
+
+.metrics-highlights a:link, .metrics-highlights a:visited {
+  color: inherit;
+}
+
+.client {
+  height: 150px;
+  padding: 15px;
+  border: lightgrey 1px solid;
+}
+
+.client-name:visited, .client-name:link  {
+  color: black;
+}
+
+.success-rate {
+  display: block;
+  font-size: 36px;
+  text-align: center;
+  line-height: 37px;
+}
+
+.success-rate-text {
+  color: grey;
+  font-style: italic;
+  text-align: center;
+  padding-bottom: 10px;
+}
+
+.success-rate.success-rate-good {
+  color: #6BBF50;
+}
+
+.success-rate.success-rate-poor {
+  color: #F28E1D;
+}
+
+.success-rate.success-rate-bad {
+  color: #CA3528;
+}
+
+.client-name {
+  font-size: 16px;
+  padding-bottom: 10px;
+  display: block;
+}
+
+.metrics-highlights {
+  font-size: 14px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.client-ports {
+  margin-top: 10px;
+}
+
+.client-ports ul {
+  list-style-type: none;
+  padding-left:0;
+}
+
+.client-ports li {
+  font-size: 11px;
+}
+
+.metrics-highlights ul {
+  list-style-type: none;
+  padding-left:0;
+}
+
+.hidden {
+  display: none;
+}
+
+.flags-table {
+  font-size: 14px;
+}

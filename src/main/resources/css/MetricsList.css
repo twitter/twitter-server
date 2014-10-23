@@ -1,0 +1,45 @@
+#metrics-list {
+  border: 1px solid #ddd;
+  min-height:265px;
+  margin-left: 75px;
+  margin-right: 80px;
+}
+
+#metrics-groups, #metrics-items {
+  overflow:scroll;
+  list-style-type: none;
+  min-height:263px;
+  height: 263px;
+}
+
+.metrics-section>#metrics-groups {
+  border-right: 1px solid #ddd;
+}
+
+#chart-div {
+  min-height: 300;
+}
+
+ul {
+  padding: 0px;
+  margin-bottom: 0px;
+}
+
+#metrics-groups li, #metrics-items li {
+  cursor: pointer;
+  color: #428bca;
+  padding: 0px;
+  padding-left: 10px;
+}
+
+#metrics-groups li:hover:not(.selected), #metrics-items li:hover:not(.selected) {
+  background-color: #eee
+}
+
+.selected {
+  background-color: #ddd;
+}
+
+#metrics-chart {
+  vertical-align: top;
+}

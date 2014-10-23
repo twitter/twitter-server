@@ -6,4 +6,4 @@ Twitter-server defines a template from which servers at Twitter are built. Twitt
 Documentation
 -------------
 
-<http://twitter.github.io/twitter-server/>
+<https://twitter.github.io/twitter-server/>
