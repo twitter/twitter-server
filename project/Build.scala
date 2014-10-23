@@ -5,16 +5,17 @@ import com.typesafe.sbt.SbtSite.site
 import com.typesafe.sbt.site.SphinxSupport.Sphinx
 
 object TwitterServer extends Build {
-  val libVersion = "1.7.3"
-  val utilVersion = "6.19.0"
-  val finagleVersion = "6.20.0"
+  val libVersion = "1.8.0"
+  val utilVersion = "6.22.0"
+  val finagleVersion = "6.22.0"
   val jacksonVersion = "2.3.1"
   val mustacheVersion = "0.8.12.1"
 
   val jacksonLibs = Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
-    "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion
+    "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion exclude("com.google.guava", "guava"),
+    "com.google.guava" % "guava" % "16.0.1"
   )
 
   def util(which: String) = "com.twitter" %% ("util-"+which) % utilVersion
@@ -23,9 +24,9 @@ object TwitterServer extends Build {
   val sharedSettings = Seq(
     version := libVersion,
     organization := "com.twitter",
-    crossScalaVersions := Seq("2.9.2", "2.10.0"),
+    crossScalaVersions := Seq("2.10.4"),
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % "1.9.1" % "test",
+      "org.scalatest" %% "scalatest" % "2.2.2" % "test",
       "junit" % "junit" % "4.10" % "test",
       "org.mockito" % "mockito-all" % "1.9.5" % "test"
     ),
@@ -95,7 +96,13 @@ object TwitterServer extends Build {
       util("core"),
       util("jvm"),
       "com.github.spullara.mustache.java" % "compiler" % mustacheVersion
-    ) ++ jacksonLibs
+    ) ++ jacksonLibs,
+    ivyXML :=
+      <dependencies>
+        <dependency org="com.github.spullara.mustache.java" name="compiler" rev={mustacheVersion}>
+          <exclude org="com.google.guava" name="guava"/>
+        </dependency>
+      </dependencies>
   )
 
   lazy val twitterServerDoc = Project(

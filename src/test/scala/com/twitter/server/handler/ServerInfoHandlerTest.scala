@@ -8,7 +8,7 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class ServerInfoHandlerSpec extends FunSuite {
+class ServerInfoHandlerTest extends FunSuite {
   test("ServerInfo handler display server information") {
     val handler = new ServerInfoHandler(this)
     val req = Request("/")
@@ -16,11 +16,13 @@ class ServerInfoHandlerSpec extends FunSuite {
 
     assert(res.status == HttpResponseStatus.OK)
     val info = res.contentString
-    assert(info contains("\"build\" :"))
-    assert(info contains("\"build_revision\" :"))
-    assert(info contains("\"name\" :"))
-    assert(info contains("\"version\" :"))
+    assert(info contains("\"build\" : \"unknown\""))
+    assert(info contains("\"build_revision\" : \"unknown\""))
+    assert(info contains("\"name\" : \"twitter-server\""))
+    assert(info contains("\"version\" : \"0.0.0\""))
     assert(info contains("\"start_time\" :"))
     assert(info contains("\"uptime\" :"))
+    // user-defined properties
+    assert(info contains("\"foo\" : \"bar\""))
   }
 }

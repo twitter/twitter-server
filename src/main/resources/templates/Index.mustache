@@ -1,0 +1,75 @@
+<script type="text/javascript" src="/admin/files?name=Index&type=js"></script>
+<script type="text/javascript" src="/admin/files?name=ChartRenderer&type=js"></script>
+<link href="/admin/files?name=Index&type=css" rel="stylesheet"/>
+<h3>Performance Summary</h3>
+<div id="server">
+  <div class="row">
+    <div class="col-md-4">
+      <div class="server-info">
+        <a id="success-rate-total" class="success-rate"></a>
+        <div id="success-rate-total-text" class="success-rate-text"></div>
+        <table id= "metrics-highlights-total" class="metrics-highlights"></table>
+      </div>
+    </div>
+    <div id="chart-div" class="col-md-8"></div>
+  </div>
+</div>
+<h3>Least Performant Downstream Clients</h3>
+<div class="row" id="least-performant-clients"></div>
+<div class="flags-chart">
+  <h3>Configured Flags</h3>
+  {{^setFlags}}
+  <em>No flags are currently set.</em>
+  {{/setFlags}}
+  {{#setFlags.length}}
+  <table class="table table-condensed table-bordered flags-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#setFlags}}
+      <tr class="success">
+        <td>{{name}}</td>
+        <td>{{value}}</td>
+        <td>{{description}}</td>
+      </tr>
+      {{/setFlags}}
+    </tbody>
+  </table>
+  <em><a href="javascript:void(0)" id="see-all-flags">See all available flags</a></em>
+  {{/setFlags.length}}
+</div>
+<div id="all-flags" class="flags-chart hidden">
+  <h3>All Flags</h3>
+  <table class="table table-condensed table-bordered flags-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#setFlags}}
+      <tr class="success">
+        <td>{{name}}</td>
+        <td>{{value}}</td>
+        <td>{{description}}</td>
+      </tr>
+      {{/setFlags}}
+      {{#unsetFlags}}
+      <tr>
+        <td>{{name}}</td>
+        <td>{{value}}</td>
+        <td>{{description}}</td>
+      </tr>
+      {{/unsetFlags}}
+    </tbody>
+  </table>
+  <em><a href="javascript:void(0)" id="hide-all-flags">Hide all available flags</a></em>
+</div>
+

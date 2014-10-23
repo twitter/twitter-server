@@ -20,8 +20,8 @@ trait NewHook extends (App => Hook)
  * Mix-in to include service-loaded hooks.
  */
 trait Hooks { self: App =>
-  private val hooks = LoadService[NewHook]() map { 
-    newHook => newHook(self) 
+  private val hooks = LoadService[NewHook]() map {
+    newHook => newHook(self)
   }
 
   premain {

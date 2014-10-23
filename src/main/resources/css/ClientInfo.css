@@ -1,0 +1,8 @@
+#client-configuration td {
+  font-size: 14px;
+}
+
+#client {
+  border: lightgrey solid 1px;
+  margin-bottom: 10px;
+}
