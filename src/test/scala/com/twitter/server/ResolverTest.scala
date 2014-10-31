@@ -18,21 +18,21 @@ class TestAnnouncer extends Announcer {
     Future.value(TestAnnouncement(addr, target))
 }
 
+// Called InternalResolverTest to avoid conflict with twitter-server
 @RunWith(classOf[JUnitRunner])
 class ResolverTest extends FunSuite {
   test("resolvers resolve from the main resolver") {
-    val flag = new Flags("my", includeGlobal=true)
-    flag.parse(Array("-com.twitter.server.resolverMap", "foo=:8080"))
-
-    Resolver.eval("flag!foo") // doesn't throw.
+    resolverMap.let(Map("foo" -> ":8080")) {
+      Resolver.eval("flag!foo") // doesn't throw.
+    }
   }
 
   test("announcers resolve from the main announcer") {
     val addr = RandomSocket()
-    val flag = new Flags("my", includeGlobal=true)
-    flag.parse(Array("-com.twitter.server.announcerMap", "foo=test!127.0.0.1:80"))
 
-    // checks for non-exceptional
-    Await.result(Announcer.announce(addr, "flag!foo"))
+    announcerMap.let(Map("foo" -> "test!127.0.0.1:80")) {
+      // checks for non-exceptional
+      Await.result(Announcer.announce(addr, "flag!foo"))
+    }
   }
 }
