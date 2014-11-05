@@ -1,10 +1,9 @@
 package com.twitter.server.view
-import com.twitter.finagle.client.{ClientInfo, ClientModuleInfo}
+
 import com.twitter.server.ConfigurationFlags
 import com.twitter.server.Flag
 import com.twitter.server.controller.TemplateViewController
 import org.jboss.netty.handler.codec.http._
-import com.twitter.finagle.client.ClientRegistry
 
 private[server] object ResponderUtils {
   def mapParams(params:  Map[String, String]) =

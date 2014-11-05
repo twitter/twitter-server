@@ -4,7 +4,8 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.twitter.conversions.time._
-import com.twitter.finagle.client.{ClientInfo, ClientRegistry}
+import com.twitter.finagle.client.ClientRegistry
+import com.twitter.finagle.util.StackRegistry
 import com.twitter.finagle.Service
 import com.twitter.finagle.stats.{StatEntry, StatsRegistry}
 import com.twitter.finagle.util.DefaultTimer
@@ -27,7 +28,7 @@ private[server] case class ViewMetric(val name: String, val value: Double)
 
 private[server] class Client(
   val name: String,
-  val ports: Seq[String],
+  val ports: String,
   val metrics: Seq[ViewMetric])
 
 private[server] class MetricsResponse(
@@ -154,7 +155,7 @@ private[server] class MetricsHandler(baseUrl: String) extends WebHandler {
     val clientsList = {
       val unsortedClientsList =
         if (wantClientMetrics.isEmpty) Seq.empty else {
-          ClientRegistry.clientList() map { case ClientInfo(name, port, _) =>
+          ClientRegistry.registrants map { case StackRegistry.Entry(name, port, _, _) =>
             val metricsNames = wantClientMetrics map { metricName =>
               "clnt/" + name + "/" + metricName
             }
@@ -164,10 +165,10 @@ private[server] class MetricsHandler(baseUrl: String) extends WebHandler {
         }
       if (sortClientsBy.isEmpty) unsortedClientsList else {
         val sortOrderDesc = sortClientsOrder != "asc"
-        sortClientsList(unsortedClientsList, sortClientsBy, sortOrderDesc)
+        sortClientsList(unsortedClientsList.toSeq, sortClientsBy, sortOrderDesc)
       }
     }
-    val metricsResponse = new MetricsResponse(metricsList, serverMetricsList, clientsList)
+    val metricsResponse = new MetricsResponse(metricsList, serverMetricsList, clientsList.toSeq)
     response.setContent(copiedBuffer(JsonConverter.writeToString(metricsResponse), Charsets.Utf8))
     Future.value(response)
   }

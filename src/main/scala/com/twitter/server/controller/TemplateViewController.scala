@@ -16,7 +16,7 @@ private[server] object TemplateViewController {
    */
   private[this] case class RootView(val contents: String) extends Renderable {
     val paths = HttpMuxer.patterns.filter(_.startsWith("/"))
-    val clientPaths = ClientRegistry.clientList().map("/admin/clients/" + _.name)
+    val clientPaths = ClientRegistry.registrants.map("/admin/clients/" + _.name)
     val navigation = render(new NavigationView(paths ++ clientPaths), "Navigation")
   }
 
