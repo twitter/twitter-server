@@ -14,7 +14,7 @@ trait Lifecycle { self: App =>
   HttpMuxer.addHandler("/health", new ReplyHandler("OK\n"))
 }
 
-object promoteBeforeServing extends GlobalFlag[Boolean](false,
+object promoteBeforeServing extends GlobalFlag[Boolean](true,
   "Promote objects in young generation to old generation before serving requests. " +
     "May shorten the following gc pauses by avoiding the copying back and forth between survivor " +
     "spaces of a service's long lived objects.")
@@ -39,10 +39,6 @@ object Lifecycle {
      * Helps make early gc pauses more consistent.
      *
      * Ideally this runs in the moments right before your service starts accepting traffic.
-     *
-     * Note: while we gather more data points, you must explicitly set the
-     * `promoteBeforeServing` flag to true, but we expect to default that to true in the future.
-     * (the application flags must have already been parsed).
      */
     def beforeServing(): Unit = {
       if (promoteBeforeServing() && shouldExplicitGc && hasPromoted.compareAndSet(false, true)) {
