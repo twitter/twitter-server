@@ -19,7 +19,7 @@ object TwitterStats {
       else cpu.toFloat / wall.toFloat
     }
 
-    sched.addGauge("dispatches") {
+    sched.provideGauge("dispatches") {
       Scheduler.numDispatches.toFloat
     }
   }
