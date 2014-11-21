@@ -1,0 +1,37 @@
+#chart-div {
+  min-height: 350px;
+  border: 1px solid lightgray;
+  padding: 5px;
+}
+
+.snuggle-left {
+  padding-left: 0;
+}
+
+.snuggle-right {
+  padding-right: 0;
+}
+
+#metrics {
+  border-left: 1px solid lightgray;
+  border-top: 1px solid lightgray;
+  border-bottom: 1px solid lightgray;
+  margin-bottom: 0;
+  height: 397px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#metrics li {
+  cursor: pointer;
+  color: #428bca;
+  padding: 3px 12px 3px 12px;
+}
+
+#metrics li:hover:not(.selected) {
+  background-color: #efefef;
+}
+
+#metrics li.selected {
+  background-color: #dfdfdf;
+}

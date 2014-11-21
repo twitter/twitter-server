@@ -1,54 +1,46 @@
 package com.twitter.server.handler
 
 import com.twitter.conversions.time._
+import com.twitter.finagle.http.Status
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.Request
+import com.twitter.io.Buf
 import com.twitter.jvm.Heapster
+import com.twitter.server.util.HttpUtils._
 import com.twitter.util.{Duration, Future}
 import java.util.logging.Logger
-import org.jboss.netty.buffer.{ChannelBuffers, ChannelBufferOutputStream}
-import org.jboss.netty.handler.codec.http._
 
-class HeapResourceHandler extends Service[HttpRequest, HttpResponse] {
-  private val log = Logger.getLogger(getClass.getName)
+class HeapResourceHandler extends Service[Request, Response] {
+  private[this] val log = Logger.getLogger(getClass.getName)
+
   case class Params(pause: Duration, samplingPeriod: Int, forceGC: Boolean)
 
-  def apply(request: HttpRequest): Future[HttpResponse] = {
-    val req = Request(request)
-    val res = req.response
-    val ret = Future.value(res)
-
-    if (!Heapster.instance.isDefined) {
-      res.statusCode = 500
-      res.contentString = "heapster not loaded!"
-      return ret
-    }
+  def apply(req: Request): Future[Response] = {
+    if (!Heapster.instance.isDefined)
+      return newResponse(
+        status = Status.InternalServerError,
+        contentType = "text/plain;charset=UTF-8",
+        content = Buf.Utf8("heapster not loaded!")
+      )
 
     val heapster = Heapster.instance.get
 
-    val params =
-      req.params.foldLeft(Params(10.seconds, 10 << 19, true)) {
-        case (params, ("pause", pauseVal)) =>
-          params.copy(pause = pauseVal.toInt.seconds)
-        case (params, ("sample_period", sampleVal)) =>
-          params.copy(samplingPeriod = sampleVal.toInt)
-        case (params, ("force_gc", "no")) =>
-          params.copy(forceGC = false)
-        case (params, ("force_gc", "0")) =>
-          params.copy(forceGC = false)
-        case (params, _) =>
-          params
-      }
+    val params = parse(req.getUri)._2.foldLeft(Params(10.seconds, 10 << 19, true)) {
+      case (params, ("pause", Seq(pauseVal))) =>
+        params.copy(pause = pauseVal.toInt.seconds)
+      case (params, ("sample_period", Seq(sampleVal))) =>
+        params.copy(samplingPeriod = sampleVal.toInt)
+      case (params, ("force_gc", Seq("no"))) =>
+        params.copy(forceGC = false)
+      case (params, ("force_gc", Seq("0"))) =>
+        params.copy(forceGC = false)
+      case (params, _) =>
+        params
+    }
 
-    log.info("collecting heap profile for %s seconds".format(params.pause))
-    val profile = heapster.profile(params.pause, params.samplingPeriod, params.forceGC)
+    log.info(s"[${req.getUri}] collecting heap profile for ${params.pause} seconds")
 
     // Write out the profile verbatim. It's a pprof "raw" profile.
-    res.setHeader("Content-Type", "pprof/raw")
-    res.statusCode = 200
-    res.content = ChannelBuffers.dynamicBuffer
-    val output = new ChannelBufferOutputStream(res.content)
-    output.write(profile)
-    ret
+    val profile = heapster.profile(params.pause, params.samplingPeriod, params.forceGC)
+    newResponse(contentType = "pprof/raw", content = Buf.ByteArray(profile))
   }
 }

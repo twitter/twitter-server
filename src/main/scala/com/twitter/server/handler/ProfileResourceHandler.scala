@@ -1,48 +1,52 @@
 package com.twitter.server.handler
 
 import com.twitter.conversions.time._
+import com.twitter.finagle.http.Status
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.Request
+import com.twitter.io.Buf
 import com.twitter.jvm.CpuProfile
+import com.twitter.server.util.HttpUtils._
+import com.twitter.util.Future
 import com.twitter.util.{Duration, Future, Return, Throw}
+import java.io.ByteArrayOutputStream
 import java.util.logging.Logger
-import org.jboss.netty.buffer.{ChannelBuffers, ChannelBufferOutputStream}
-import org.jboss.netty.handler.codec.http._
 
-class ProfileResourceHandler(which: Thread.State) extends Service[HttpRequest, HttpResponse] {
+class ProfileResourceHandler(
+  which: Thread.State
+) extends Service[Request, Response] {
   private[this] val log = Logger.getLogger(getClass.getName)
+
   case class Params(pause: Duration, frequency: Int)
 
-  def apply(request: HttpRequest) = {
-    val req = Request(request)
-    val res = req.response
-    val ret = Future.value(res)
+  def apply(req: Request): Future[Response] = {
+    val params = parse(req.getUri)._2.foldLeft(Params(10.seconds, 100)) {
+      case (params, ("seconds", Seq(pauseVal))) =>
+        params.copy(pause = pauseVal.toInt.seconds)
+      case (params, ("hz", Seq(hz))) =>
+        params.copy(frequency = hz.toInt)
+      case (params, _) =>
+        params
+    }
 
-    val params =
-      req.params.foldLeft(Params(10.seconds, 100)) {
-        case (params, ("seconds", pauseVal)) =>
-          params.copy(pause = pauseVal.toInt.seconds)
-        case (params, ("hz", hz)) =>
-          params.copy(frequency = hz.toInt)
-        case (params, _) =>
-          params
-      }
+    log.info(s"[${req.getUri}] collecting CPU profile ($which) for ${params.pause} seconds at ${params.frequency}Hz")
 
-    log.info("collecting CPU profile (%s) for %s seconds at %dHz".format(
-      which, params.pause, params.frequency))
     CpuProfile.recordInThread(params.pause, params.frequency, which) transform {
       case Return(prof) =>
         // Write out the profile verbatim. It's a pprof "raw" profile.
-        res.setHeader("Content-Type", "pprof/raw")
-        res.statusCode = 200
-        res.content = ChannelBuffers.dynamicBuffer
-        prof.writeGoogleProfile(new ChannelBufferOutputStream(res.content))
-        ret
+        val bos = new ByteArrayOutputStream
+
+        prof.writeGoogleProfile(bos)
+        newResponse(
+          contentType = "pprof/raw",
+          content = Buf.ByteArray(bos.toByteArray)
+        )
 
       case Throw(exc) =>
-        res.statusCode = 500
-        res.contentString = exc.toString
-        ret
+        newResponse(
+          status = Status.InternalServerError,
+          contentType = "text/plain;charset=UTF-8",
+          content = Buf.Utf8(exc.toString)
+        )
     }
   }
 }

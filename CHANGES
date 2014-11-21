@@ -5,6 +5,32 @@
 1.x
 -----
 
+1.9.0
+~~~~~~
+
+New Features:
+-------------
+  * Most noticeably, the admin server received a complete UI redesign. All http endpoints are
+    now available via a navigation pane. We provide a simple API for service owners to include
+    ad-hoc admin pages which will be part of the navigation pane. Note, it is still possible to
+    join the admin server’s namespace via the global com.twitter.finagle.http.HttpMuxer.
+
+  * When using the twitter Metrics library, the admin server now scrapes your stats to
+    extract a quick summary of how your server is performing. This includes secondly
+    success rates for your server and least performant downstreams. We provide a /admin/metrics
+    endpoint which can watch stats (at secondly granularity) and extract them via http queries.
+
+  * More recently, Finagle clients and servers began to retain information about their composition.
+    This is useful in examining the modules and parameters that comprise a specific implementation.
+    We now surface this information in the admin server via /admin/clients/<client_name> and
+    /admin/servers/<server_name>
+
+Dependencies:
+-------------
+  * Remove dependency on mustache for admin server in favor of templating
+    via string interpolation. This is more hygienic for web applications
+    and frameworks built atop twitter-server.
+
 1.8.0
 ~~~~~~~
 

@@ -1,17 +1,24 @@
 Migration from Ostrich
 ======================
 
-`Ostrich <https://github.com/twitter/ostrich>`_ is a library used to maintain and export statistics and track services. It is obsoleted by twitter-server.
+`Ostrich <https://github.com/twitter/ostrich>`_ is a library used to maintain and export
+statistics and track services. It is obsoleted by twitter-server.
 
-`Metrics <https://github.com/twitter/commons/tree/master/src/java/com/twitter/common/metrics>`_ replaces Ostrich’s stats library.
+`Metrics <https://github.com/twitter/commons/tree/master/src/java/com/twitter/common/metrics>`_
+replaces Ostrich’s stats library.
 
 .. note::
 
   Ostrich stats are still present on /stats if `finagle-ostrich4` is in your runtime classpath.
 
-While ostrich provided several different primitives for process statistics (stats, counters, and gauges), metrics provides just one: a gauge. Gauges are instantaneous measurements — they are an exported variable. Metrics provides counters and histograms as well, but these just export gauges.
+While ostrich provided several different primitives for process statistics (stats, counters,
+and gauges), metrics provides just one: a gauge. Gauges are instantaneous measurements — they
+are an exported variable. Metrics provides counters and histograms as well, but these just export
+gauges.
 
-The upshot is that the exported metrics are raw: every request to /admin/metrics.json simply reads the current value of the collection of metrics. Ostrich provided in-process rate computation of counters — this is no longer possible with metrics.
+The upshot is that the exported metrics are raw: every request to /admin/metrics.json simply reads
+the current value of the collection of metrics. Ostrich provided in-process rate computation of
+ counters — this is no longer possible with metrics.
 
 Stats format
 ------------
@@ -82,9 +89,13 @@ E.g. (metrics):
 
 .. note::
 
-  The stats exported by Ostrich will also be computed by the Ostrich library. It's not a format conversion but a real dual collection/export of stats. You can compare both stats, but note than you can have different results in histogram values because metrics is *far* more precise than Ostrich.
+  The stats exported by Ostrich will also be computed by the Ostrich library. It's not a format
+  conversion but a real dual collection/export of stats. You can compare both stats, but note than
+  you can have different results in histogram values because metrics is *far* more precise than
+  Ostrich.
 
-For example, here are the difference between the two libraries for 10k random numbers between 1 and 10,000:
+For example, here are the difference between the two libraries for 10k random numbers between
+1 and 10,000:
 
 ::
 
@@ -97,14 +108,17 @@ For example, here are the difference between the two libraries for 10k random nu
   scala> "real p99:%d  ostrich:%d  metrics:%d".format(p99, op99, mp99)
   res9: String = real p99:9911  ostrich:9498  metrics:9910
 
-You can `run this code on your machine <https://gist.github.com/stevegury/261b0a204cd0726f47ea>`_ to see by yourself.
+You can `run this code on your machine <https://gist.github.com/stevegury/261b0a204cd0726f47ea>`_
+to see by yourself.
 
 Step by step guide
 ------------------
 
 * Convert your code to twitter-server.
 
-Your server will run as before and expose stats through ostrich "/stats" endpoint as well as through "/metrics.json" endpoint. The observability team will continue to collect your stats from ostrich output on "/stats".
+Your server will run as before and expose stats through ostrich "/stats" endpoint as well as
+through "/metrics.json" endpoint. The observability team will continue to collect your stats
+from ostrich output on "/stats".
 
 * Update your dashboard.
 
@@ -120,4 +134,5 @@ Problem
 
 * Historical Data
 
-If you want to keep your historical data, you need to rebuild the old delta'd data into absolute data.
+If you want to keep your historical data, you need to rebuild the old delta'd data into absolute
+data.

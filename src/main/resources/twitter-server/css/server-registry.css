@@ -1,0 +1,12 @@
+.tab-pane.borders {
+  border-left: 1px solid lightgray;
+  border-right: 1px solid lightgray;
+  border-bottom: 1px solid lightgray;
+  padding: 10px;
+  margin-bottom: 25px;
+}
+
+.server-stats {
+  margin-top: 165px;
+  margin-left: 10px;
+}

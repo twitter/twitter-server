@@ -1,11 +1,12 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
+import com.twitter.io.Buf
+import com.twitter.server.util.HttpUtils._
 import com.twitter.server.util.JsonConverter
 import com.twitter.util.Future
 import java.lang.management.ManagementFactory
 import java.util.{Date, Properties}
-import org.jboss.netty.handler.codec.http._
 import scala.collection.JavaConverters._
 
 /**
@@ -15,7 +16,7 @@ import scala.collection.JavaConverters._
  * (class-package-name/build.properties), and if not found there, then it is searched for
  * with an absolute path ("/build.properties").
  */
-class ServerInfoHandler(obj: AnyRef) extends Service[HttpRequest, HttpResponse] {
+class ServerInfoHandler(obj: AnyRef) extends Service[Request, Response] {
   private[this] val mxRuntime = ManagementFactory.getRuntimeMXBean
 
   private[this] val buildProperties = new Properties
@@ -50,6 +51,10 @@ class ServerInfoHandler(obj: AnyRef) extends Service[HttpRequest, HttpResponse] 
       buildProperties.getProperty("build_name", "unknown")
   ) - "build_name"
 
-  def apply(req: HttpRequest) =
-    Future.value(JsonConverter(serverInfo + ("uptime" -> mxRuntime.getUptime)))
+  def apply(req: Request): Future[Response] = {
+    newResponse(
+      contentType = "application/json;charset=UTF-8",
+      content = Buf.Utf8(JsonConverter.writeToString(serverInfo + ("uptime" -> mxRuntime.getUptime)))
+    )
+  }
 }

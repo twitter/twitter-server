@@ -1,33 +1,48 @@
 package com.twitter.server.handler
 
+import com.twitter.finagle.http.Status
 import com.twitter.finagle.Service
+import com.twitter.io.Buf
 import com.twitter.io.Charsets
-import com.twitter.server.responder.ResponderUtils
+import com.twitter.server.util.HttpUtils._
 import com.twitter.util.Future
-import java.io.FileNotFoundException
-import org.jboss.netty.buffer.ChannelBuffers.wrappedBuffer
-import org.jboss.netty.handler.codec.http._
+import java.nio.charset.Charset
 import scala.io.Source
 
 /**
- * A simple resource loader designed to load css/js resources for twitter-server
- * admin pages. The handler parses the query string and follows a simple scheme.
- * For example, the query string "name=Index&type=css" will look for the resource
- * "css/Index.css" in the packages resource directory.
+ * A handler designed to serve static resources accessible via
+ * java's `Class#getResourceAsStream` over http. The serving directory
+ * is configurable and set to `www` by default.
  */
-private[server] object ResourceHandler extends WebHandler {
-  def apply(req: HttpRequest): Future[HttpResponse] = {
-    val query = req.getUri()
-    val name = ResponderUtils.extractQueryValue("name", query)
-    val fileType = ResponderUtils.extractQueryValue("type", query)
-    val filePath = fileType + "/" + name + "." + fileType
-    val is = getClass.getClassLoader.getResourceAsStream(filePath)
+class ResourceHandler(basePath: String, servingDir: String = "www")
+  extends Service[Request, Response] {
+  private[this] def meta(path: String): (Charset, String) = {
+    val exts = path.split('.')
+    val ext = if (exts.nonEmpty) exts.last else ""
+    ext match {
+      case "js" => (Charsets.Utf8, s"application/javascript;charset=UTF-8")
+      case "css" => (Charsets.Utf8, s"text/css;charset=UTF-8")
+      case _ => (Charsets.Iso8859_1, s"application/octet-stream")
+    }
+  }
 
-    if (is == null) new404(req.getProtocolVersion) else {
-      val source = Source.fromInputStream(is, Charsets.Utf8.toString)
-      val content = source.mkString.getBytes(Charsets.Utf8)
+  def apply(req: Request): Future[Response] = {
+    val (uri, _) = parse(req.getUri)
+    val path = uri.stripPrefix(basePath)
+
+    if (path.contains(".."))
+      return newResponse(
+        status = Status.BadRequest,
+        contentType = "text/plain;charset=UTF-8",
+        content = Buf.Utf8("Invalid path!"))
+
+    val is = getClass.getClassLoader.getResourceAsStream(s"$servingDir/$path")
+    if (is == null) new404("resource not found") else {
+      val (charset, mime) = meta(path)
+      val source = Source.fromInputStream(is, charset.toString)
+      val bytes = source.mkString.getBytes(charset)
       source.close()
-      newResponse(req.getProtocolVersion, HttpResponseStatus.OK, content)
+      newResponse(contentType = mime, content = Buf.ByteArray(bytes))
     }
   }
 }

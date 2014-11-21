@@ -1,17 +1,17 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.Request
+import com.twitter.io.Buf
 import com.twitter.logging.Logger
+import com.twitter.server.util.HttpUtils._
 import com.twitter.util.Future
 import java.net.URLEncoder
-import org.jboss.netty.handler.codec.http._
 
 /**
  * An HTTP [[com.twitter.finagle.Service Service]] that exposes an application's
  * logging configuration state.
  */
-class LoggingHandler extends WebHandler {
+class LoggingHandler extends Service[Request, Response] {
   val levelNames = Logger.levelNames.keys.toSeq.sorted
 
   def helpMessage: (String, String) = {
@@ -43,15 +43,17 @@ class LoggingHandler extends WebHandler {
     (html, text)
   }
 
-  def apply(request: HttpRequest): Future[HttpResponse] = {
-    val req = Request(request)
+  def apply(request: Request): Future[Response] = {
+    val (_, params) = parse(request.getUri)
 
-    val loggerName = req.params.get("logger") map {
+    val loggerName: Option[String] = params.getOrElse("logger", Seq.empty).headOption map {
       case "root" => ""
       case n => n
     }
 
-    val (html, text) = (req.params.get("level"), loggerName) match {
+    val loggerLevel = params.getOrElse("level", Seq.empty).headOption
+
+    val (html, text) = (loggerLevel, loggerName) match {
       case (Some(level), Some(name)) =>
         val updated = for {
           level <- Logger.levelNames.get(level.toUpperCase)
@@ -63,17 +65,22 @@ class LoggingHandler extends WebHandler {
             level)
         }
 
-        updated orElse {
+        (updated orElse {
           Some("Logging level change failed for %s to %s".format(name, level))
         } map { msg =>
           val (html, text) = helpMessage
           (msg + "<br /><br />" + html, msg + "\n\n" + text)
-        } get
+        }).get
 
       case _ =>
         helpMessage
     }
 
-    makeHttpFriendlyResponse(request, text, html)
+    if (!isWebBrowser(request)) newOk(text) else {
+      newResponse(
+        contentType = "text/html;charset=UTF-8",
+        content = Buf.Utf8(html)
+      )
+    }
   }
 }

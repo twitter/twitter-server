@@ -84,10 +84,10 @@ object JvmStats {
       }
     }
     gauges.add(postGCStats.addGauge("used") {
-      memPool flatMap(p => Option(p.getCollectionUsage)) map(_.getUsed) sum
+      memPool.flatMap(p => Option(p.getCollectionUsage)).map(_.getUsed).sum
     })
     gauges.add(currentMem.addGauge("used") {
-      memPool flatMap(p => Option(p.getUsage)) map(_.getUsed) sum
+      memPool.flatMap(p => Option(p.getUsage)).map(_.getUsed).sum
     })
 
     // `BufferPoolMXBean` and `ManagementFactory.getPlatfromMXBeans` are introduced in Java 1.7.
@@ -124,8 +124,8 @@ object JvmStats {
     }
 
     // note, these could be -1 if the collector doesn't have support for it.
-    gauges.add(gcStats.addGauge("cycles") { gcPool map(_.getCollectionCount) filter(_ > 0) sum })
-    gauges.add(gcStats.addGauge("msec") { gcPool map(_.getCollectionTime) filter(_ > 0) sum })
+    gauges.add(gcStats.addGauge("cycles") { gcPool.map(_.getCollectionCount).filter(_ > 0).sum })
+    gauges.add(gcStats.addGauge("msec") { gcPool.map(_.getCollectionTime).filter(_ > 0).sum })
 
     if (allocations.trackingEden) {
       val allocationStats = memStats.scope("allocations")

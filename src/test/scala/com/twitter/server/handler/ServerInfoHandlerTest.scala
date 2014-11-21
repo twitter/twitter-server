@@ -25,4 +25,11 @@ class ServerInfoHandlerTest extends FunSuite {
     // user-defined properties
     assert(info contains("\"foo\" : \"bar\""))
   }
+
+  test("content-type") {
+    val handler = new ServerInfoHandler(this)
+    val req = Request("/")
+    val res = Response(Await.result(handler(req)))
+    assert(res.contentType === Some("application/json;charset=UTF-8"))
+  }
 }

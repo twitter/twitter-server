@@ -1,0 +1,203 @@
+html, body {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+h1,h2,h3,h4,h5,h6 {
+  color: #666;
+}
+
+/** Navigation */
+#wrapper {
+  padding-left: 0;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+}
+
+#wrapper.toggled {
+  margin-left: -250px;
+}
+
+#sidebar {
+  position: fixed;
+  height: 100%;
+  width: 250px;
+  overflow-y: auto;
+  overflow-x: auto;
+  background-color: #428bca;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+}
+
+#contents {
+  margin-left: 270px;
+  padding-top: 10px;
+}
+
+#toggle {
+  z-index: 1000;
+  position: fixed;
+  left: 250px;
+  width: 12px;
+  height: 100%;
+  background-color: #428bca;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 0 red;
+  cursor: pointer;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+}
+
+#toggle:hover {
+  background-color: #2972B1;
+}
+
+#wrapper.toggled #toggle {
+  left: 0;
+}
+
+#toggle span {
+  color: white;
+  font-size: 8pt;
+  position: relative;
+  top: 50%;
+}
+
+/** Nav style **/
+nav a:hover, nav a:visited, nav a:link, nav a:active {
+  text-decoration: none;
+}
+
+nav ul {
+  list-style-type: none;
+  padding-left: 0;
+  padding-right: 0;
+  margin-bottom: 0;
+  width: 100%;
+}
+
+nav li {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 20px;
+}
+
+nav .selectable:hover:not(.selected) {
+  background-color: #2972B1;
+}
+
+nav .selected {
+  background-color: #0F5897;
+}
+
+nav li {
+  padding-left: 25px;
+  padding-right: 15px;
+  color: white;
+  font-weight: 400;
+}
+
+nav li a {
+  color: #e1e8ed;
+  font-weight: 300;
+  font-size: 10pt;
+}
+
+nav li a:hover {
+  color: white;
+}
+
+nav .subnav {
+  padding-left: 0;
+  padding-right: 0;
+  width: 100%;
+  display: inline-block;
+}
+
+nav .subnav.active ul {
+  display: block;
+}
+
+nav .subnav ul {
+  display: none;
+}
+
+nav li span {
+  color: white;
+  font-weight: bold;
+  font-size: 10.5pt;
+}
+
+nav li span.glyphicon {
+  padding-left: 20px;
+  cursor: pointer;
+}
+
+nav .subnav li {
+  padding-left: 40px;
+}
+
+/** Shared */
+
+pre {
+  background-color: transparent;
+  border: none;
+}
+
+.tabs-below > .nav-tabs,
+.tabs-right > .nav-tabs,
+.tabs-left > .nav-tabs {
+  border-bottom: 0;
+}
+
+.tab-content > .tab-pane,
+.pill-content > .pill-pane {
+  display: none;
+}
+
+.tab-content > .active,
+.pill-content > .active {
+  display: block;
+}
+
+.tabs-left > .nav-tabs > li,
+.tabs-right > .nav-tabs > li {
+  float: none;
+}
+
+.tabs-left > .nav-tabs > li > a,
+.tabs-right > .nav-tabs > li > a {
+  min-width: 74px;
+  margin-right: 0;
+  margin-bottom: 3px;
+}
+
+.tabs-left > .nav-tabs {
+  float: left;
+  margin-right: 19px;
+  border-right: 1px solid #ddd;
+}
+
+.tabs-left > .nav-tabs > li > a {
+  margin-right: -1px;
+  line-height: 0.45;
+  margin-bottom: 0px;
+  border-radius: 0px;
+  border: none;
+}
+
+.tabs-left > .nav-tabs .active > a,
+.tabs-left > .nav-tabs .active > a:hover,
+.tabs-left > .nav-tabs .active > a:focus {
+  background-color: #ddd;
+  border: none;
+}

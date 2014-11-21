@@ -1,7 +1,9 @@
 Twitter-server
 ==============
 
-Twitter-server defines a template from which servers at Twitter are built. Twitter-server ensures that common components like an administrative HTTP server, tracing, stats, etc. are wired in correctly for production use at Twitter.
+Twitter-server defines a template from which servers at Twitter are built. Twitter-server ensures
+that common components like an administrative HTTP server, tracing, stats, etc. are wired in
+correctly for production use at Twitter.
 
 Quick-start
 -----------
@@ -30,16 +32,19 @@ or, with sbt:
 
   libraryDependencies += "com.twitter" %% "twitter-server" % "|release|"
 
-NB: you only need to add the `maven.twttr.com` repository if you want to use libraries in twitter common, which are only published to `maven.twttr.com`.  For example, `finagle-stats`, which adds :doc:`metrics <Features#metrics>`, requires a twitter common library.
-
+NB: you only need to add the `maven.twttr.com` repository if you want to use libraries in
+twitter common, which are only published to `maven.twttr.com`.  For example, `finagle-stats`,
+which adds :doc:`metrics <Features#metrics>`, requires a twitter common library.
 
 First we’ll need to import a few things into our namespace.
 
 .. includecode:: code/BasicServer.scala#imports
 
-Twitter-server defines its own version of the standard `main`. To use it, create an object extended with `com.twitter.server.TwitterServer`, and define the `main()` method (no arguments).
+Twitter-server defines its own version of the standard `main`. To use it, create an object extended
+with `com.twitter.server.TwitterServer`, and define the `main()` method (no arguments).
 
-In this example, we use the finagle HTTP server to start a server on port 8888, the service bound to this port is a simple hello service.
+In this example, we use the finagle HTTP server to start a server on port 8888, the service
+bound to this port is a simple hello service.
 
 .. includecode:: code/BasicServer.scala#server
 
@@ -59,7 +64,8 @@ After compiling, we can start the server like any other java or scala process.
   $ curl localhost:8888
   hello
 
-This server is fully configured to run in Twitter's production environment; see :doc:`features <Features>` for more details.
+This server is fully configured to run in Twitter's production environment;
+see :doc:`features <Features>` for more details.
 
 User's guide
 ------------

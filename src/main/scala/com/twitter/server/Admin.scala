@@ -2,30 +2,65 @@ package com.twitter.server
 
 import com.twitter.app.App
 import com.twitter.finagle.http.HttpMuxer
+import com.twitter.finagle.Service
 import com.twitter.server.handler._
-import com.twitter.server.responder._
+import com.twitter.server.view._
 
-trait Admin { self: App =>
-  val url = "\"http://twitter.github.io/twitter-server/Features.html#http-admin-interface\""
-  val failString = "Your requested endpoint was not found." +
-    "  Please see the <a href=%s>docs</a>".format(url) +
-    " or the <a href=\"../admin\">index</a> for the endpoints."
-  HttpMuxer.addHandler("/admin", new RequestHandler(new IndexResponder(new ConfigurationFlags(self))))
-  HttpMuxer.addHandler("/admin/metrics_graphs", new RequestHandler(new TemplateResponder("MetricsList")))
-  HttpMuxer.addHandler("/admin/metrics", new MetricsHandler("/admin/metrics"))
-  HttpMuxer.addHandler("/admin/files", ResourceHandler)
-  HttpMuxer.addHandler("/admin/", new FailureHandler(failString))
-  HttpMuxer.addHandler("/admin/announcer", new RequestHandlerJson(new AnnouncerHandler))
-  HttpMuxer.addHandler("/admin/clients/", new RequestHandler(new ClientResponder("/admin/clients/")))
-  HttpMuxer.addHandler("/admin/contention", new RequestHandlerJson(new ContentionHandler))
-  HttpMuxer.addHandler("/admin/dtab", new DtabHandler)
-  HttpMuxer.addHandler("/admin/ping", new RequestHandlerJson(new ReplyHandler("pong")))
-  HttpMuxer.addHandler("/admin/pprof/contention", new ProfileResourceHandler(Thread.State.BLOCKED))
-  HttpMuxer.addHandler("/admin/pprof/heap", new HeapResourceHandler)
-  HttpMuxer.addHandler("/admin/pprof/profile", new ProfileResourceHandler(Thread.State.RUNNABLE))
-  HttpMuxer.addHandler("/admin/server_info", new RequestHandlerJson(new ServerInfoHandler(this)))
-  HttpMuxer.addHandler("/admin/shutdown", new ShutdownHandler(this))
-  HttpMuxer.addHandler("/admin/threads", new RequestHandlerJson(new ThreadsHandler))
-  HttpMuxer.addHandler("/admin/tracing", new TracingHandler)
-  HttpMuxer.addHandler("/admin/logging", new LoggingHandler)
+trait Admin { self: App with AdminHttpServer =>
+  import AdminHttpServer.Route
+
+  override protected def routes: Seq[Route] = Seq(
+    Route(
+      path = "/admin", handler = new SummaryHandler,
+      alias = "Summary", group = None, includeInIndex = true),
+    Route(
+      path = "/admin/server_info", handler = new TextBlockView andThen new ServerInfoHandler(self),
+      alias = "Build Properites", group = Some("Process Info"), includeInIndex = true),
+    Route(
+      path = "/admin/contention", handler = new TextBlockView andThen new ContentionHandler,
+      alias = "Contention", group = Some("Process Info"), includeInIndex = true),
+    Route(
+      path = "/admin/threads", handler = new TextBlockView andThen new ThreadsHandler,
+      alias = "Threads", group = Some("Process Info"), includeInIndex = true),
+    Route(
+      path = "/admin/announcer", handler = new TextBlockView andThen new AnnouncerHandler,
+      alias = "Announcer", group = Some("Process Info"), includeInIndex = true),
+    Route(
+      path = "/admin/dtab", handler = new TextBlockView andThen new DtabHandler,
+      alias = "Dtab", group = Some("Process Info"), includeInIndex = true),
+    Route(
+      path = "/admin/pprof/heap", handler = new HeapResourceHandler,
+      alias = "Heap", group = Some("Performance Profile"), includeInIndex = true),
+    Route(
+      path = "/admin/pprof/profile", handler = new ProfileResourceHandler(Thread.State.RUNNABLE),
+      alias = "Profile", group = Some("Performance Profile"), includeInIndex = true),
+    Route(
+      path = "/admin/pprof/contention", handler = new ProfileResourceHandler(Thread.State.BLOCKED),
+      alias = "Contention", group = Some("Performance Profile"), includeInIndex = true),
+    Route(
+      path = "/admin/ping", handler = new ReplyHandler("pong"),
+      alias = "Ping", group = Some("Utilities"), includeInIndex = true),
+    Route(
+      path = "/admin/shutdown", handler = new ShutdownHandler(this),
+      alias = "Shutdown", group = Some("Utilities"), includeInIndex = true),
+    Route(
+      path = "/admin/tracing", handler = new TracingHandler,
+      alias = "Tracing", group = Some("Utilities"), includeInIndex = true),
+    Route(
+      path = "/admin/logging", handler = new LoggingHandler,
+      alias = "Logging", group = Some("Utilities"), includeInIndex = true),
+    Route(
+      path = "/admin/metrics", handler = new MetricQueryHandler,
+      alias = "Watch", group = Some("Metrics"), includeInIndex = true),
+    Route(
+      path = "/admin/clients/", handler = new ClientRegistryHandler,
+      alias = "Clients", group = None, includeInIndex = false),
+    Route(
+      path = "/admin/servers/", handler = new ServerRegistryHandler,
+      alias = "Servers", group = None, includeInIndex = false),
+    Route(
+      path = "/admin/files/", handler = new ResourceHandler(
+        basePath = "/admin/files/", servingDir = "twitter-server"),
+      alias = "Files", group = None, includeInIndex = false)
+  )
 }

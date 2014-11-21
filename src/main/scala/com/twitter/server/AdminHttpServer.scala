@@ -1,22 +1,59 @@
 package com.twitter.server
 
 import com.twitter.app.App
+import com.twitter.finagle.client.ClientRegistry
 import com.twitter.finagle.http.HttpMuxer
-import com.twitter.finagle.netty3.Netty3Listener
+import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.tracing.NullTracer
-import com.twitter.finagle.{Http, ListeningServer, NullServer, param}
+import com.twitter.finagle.{Http, ListeningServer, NullServer, param, Service}
+import com.twitter.server.util.HttpUtils
+import com.twitter.server.view.{IndexView, NotFoundView}
 import com.twitter.util.Monitor
-import java.net.{SocketAddress, InetSocketAddress}
+import java.net.InetSocketAddress
 import java.util.logging.Logger
 
+object AdminHttpServer {
+  /**
+   * Represents an element which can be routed to via the admin http server.
+   *
+   * @param path The path used to access the route. A request
+   * is routed to the path as per the [[com.twitter.finagle.http.HttpMuxer]]
+   * spec.
+   *
+   * @param handler The service which requests are routed to.
+   *
+   * @param alias A short name used to identify the route when listed in
+   * index.
+   *
+   * @param group A grouping used to organize the route in the
+   * admin server pages. Routes with the same grouping are displayed
+   * together in the admin server pages.
+   *
+   * @param includeInIndex Indicates whether the route is included
+   * as part of the admin server index.
+   */
+  case class Route(
+    path: String,
+    handler: Service[HttpUtils.Request, HttpUtils.Response],
+    alias: String,
+    group: Option[String],
+    includeInIndex: Boolean)
+}
+
 trait AdminHttpServer { self: App =>
-  def defaultHttpPort = 9990
+  import AdminHttpServer._
+
+  def defaultHttpPort: Int = 9990
   val adminPort = flag("admin.port", new InetSocketAddress(defaultHttpPort), "Admin http server port")
 
   @volatile protected var adminHttpServer: ListeningServer = NullServer
 
+  protected def routes: Seq[Route] = Nil
+
   premain {
+    // a logger used to log all sync and async exceptions
+    // that occur in the admin server.
     val log = Logger.getLogger(getClass.getName)
     val loggingMonitor = new Monitor {
       def handle(exc: Throwable): Boolean = {
@@ -25,11 +62,67 @@ trait AdminHttpServer { self: App =>
       }
     }
 
+    // Stat libraries join the global muxer namespace.
+    // Special case and group them here.
+    val (metricLinks, otherLinks) = {
+      val links = HttpMuxer.patterns map { path => IndexView.Link(path, path) }
+      links partition {
+        case IndexView.Link("/admin/metrics.json", _) => true
+        case IndexView.Link("/stats.json", _) => true
+        case _ => false
+      }
+    }
+
+    // convert local routes into the IndexView data model
+    val localRoutes =
+      routes.filter(_.includeInIndex).groupBy(_.group) flatMap {
+        case (group, rs) =>
+          val links = rs map { r => IndexView.Link(r.alias, r.path) }
+          if (!group.isDefined) links else {
+            val linx = if (group != Some("Metrics")) links else links++metricLinks
+            Seq(IndexView.Group(group.get, linx))
+          }
+      }
+
+    // create index with both the local and global muxer namespaces
+    // and server/client registries.
+    val index = { () =>
+      val serverGroup = {
+        val serverLinks = ServerRegistry.registrants collect {
+          case server if server.name.nonEmpty =>
+            IndexView.Link(server.name, "/admin/servers/" + server.name)
+        }
+        IndexView.Group("Listening Servers", serverLinks.toSeq)
+      }
+
+      val clientGroup = {
+        val clientLinks = ClientRegistry.registrants collect {
+         case client if client.name.nonEmpty =>
+          IndexView.Link(client.name, "/admin/clients/" + client.name)
+        }
+        IndexView.Group("Downstream Clients", clientLinks.toSeq)
+      }
+
+      val miscGroup = IndexView.Group("Misc", otherLinks)
+      miscGroup +: clientGroup +: serverGroup +: localRoutes.toSeq
+    }
+
+    // create a service which multiplexes across all endpoints.
+    val adminHttpMuxer = {
+      val localMuxer = routes.foldLeft(new HttpMuxer) {
+        case (muxer, route) =>
+          log.info(s"${route.path} => ${route.handler.getClass.getName}")
+          val service = new IndexView(route.alias, route.path, index) andThen route.handler
+          muxer.withHandler(route.path, service)
+      }
+      HttpUtils.combine(localMuxer, HttpMuxer)
+    }
+
     adminHttpServer = Http.server
       .configured(param.Stats(NullStatsReceiver))
       .configured(param.Tracer(NullTracer))
       .configured(param.Monitor(loggingMonitor))
-      .serve(adminPort(), HttpMuxer)
+      .serve(adminPort(), new NotFoundView andThen adminHttpMuxer)
   }
 
   onExit {

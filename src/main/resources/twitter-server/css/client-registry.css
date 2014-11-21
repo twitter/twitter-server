@@ -1,0 +1,53 @@
+.client {
+  margin-bottom: 5px;
+  border-radius: 4px;
+  text-align: center;
+  border: lightgrey 1px solid;
+}
+
+.client .name {
+  margin-left: 6px;
+  margin-right: 6px;
+}
+
+.client .dest {
+  font-size: 9pt;
+  padding: 0 6px 6px 6px;
+  margin: 0;
+  min-height: 45px;
+}
+
+.client hr {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid lightgray;
+}
+
+.success-rate-header {
+  color: #999;
+  text-transform: uppercase;
+  padding-top: 8px;
+  text-align: left;
+  margin-left: 15px;
+}
+
+.success-rate-text {
+  color: gray;
+  font-weight: bold;
+  text-align: right;
+  margin: 0 0 0 -25px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.success-rate-good {
+  color: #6BBF50;
+}
+
+.success-rate-poor {
+  color: #F28E1D;
+}
+
+.success-rate-bad {
+  color: #CA3528;
+}

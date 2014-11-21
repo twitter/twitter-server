@@ -1,0 +1,21 @@
+#process-info ul {
+  margin-left: 0;
+  margin-bottom: 0;
+}
+
+#process-info ul li {
+  padding-left: 0;
+}
+
+#process-info ul li div span {
+  font-weight: normal;
+  padding-right: 5px;
+}
+
+#process-info ul li div a {
+  padding-right: 4px;
+}
+
+#process-info hr {
+  margin-top: 5px;
+}

@@ -27,10 +27,10 @@ class ThreadsHandlerSpec extends FunSuite {
     val stacks = threads("threads")
     val (_, stack) = stacks.head
 
-    assert(stack get("thread") isDefined)
-    assert(stack get("daemon") isDefined)
-    assert(stack get("state") isDefined)
-    assert(stack get("priority") isDefined)
-    assert(stack get("stack") isDefined)
+    assert(stack.get("thread").isDefined)
+    assert(stack.get("daemon").isDefined)
+    assert(stack.get("state").isDefined)
+    assert(stack.get("priority").isDefined)
+    assert(stack.get("stack").isDefined)
   }
 }
