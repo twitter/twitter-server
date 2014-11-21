@@ -2,7 +2,7 @@ package com.twitter.server.util
 
 import com.twitter.finagle.stats.{BroadcastStatsReceiver, StatsReceiver}
 import com.twitter.util.Try
-import java.lang.management.ManagementFactory
+import java.lang.management.{ManagementFactory, BufferPoolMXBean}
 import java.lang.reflect.Method
 import scala.collection.mutable
 
@@ -90,29 +90,13 @@ object JvmStats {
       memPool.flatMap(p => Option(p.getUsage)).map(_.getUsed).sum
     })
 
-    // `BufferPoolMXBean` and `ManagementFactory.getPlatfromMXBeans` are introduced in Java 1.7.
-    // Use reflection to add these gauges so we can still compile with 1.6
+    val bufferPool = ManagementFactory.getPlatformMXBeans(classOf[BufferPoolMXBean]).asScala
     val bufferPoolStats = memStats.scope("buffer")
-    for {
-      bufferPoolMXBean <- Try[Class[_]] {
-        ClassLoader.getSystemClassLoader.loadClass("java.lang.management.BufferPoolMXBean")
-      }
-      getPlatformMXBeans <- classOf[ManagementFactory].getMethods.find { m =>
-        m.getName == "getPlatformMXBeans" && m.getParameterTypes.length == 1
-      }
-      pool <- getPlatformMXBeans.invoke(null /* static method */, bufferPoolMXBean)
-        .asInstanceOf[java.util.List[_]].asScala
-    } {
-      val name = bufferPoolMXBean.getMethod("getName").invoke(pool).asInstanceOf[String]
-
-      val getCount: Method = bufferPoolMXBean.getMethod("getCount")
-      gauges.add(bufferPoolStats.addGauge(name, "count") { getCount.invoke(pool).asInstanceOf[Long] })
-
-      val getMemoryUsed: Method = bufferPoolMXBean.getMethod("getMemoryUsed")
-      gauges.add(bufferPoolStats.addGauge(name, "used") { getMemoryUsed.invoke(pool).asInstanceOf[Long] })
-
-      val getTotalCapacity: Method = bufferPoolMXBean.getMethod("getTotalCapacity")
-      gauges.add(bufferPoolStats.addGauge(name, "max") { getTotalCapacity.invoke(pool).asInstanceOf[Long] })
+    bufferPool foreach { bp =>
+      val name = bp.getName
+      gauges.add(bufferPoolStats.addGauge(name, "count") { bp.getCount })
+      gauges.add(bufferPoolStats.addGauge(name, "used") { bp.getMemoryUsed })
+      gauges.add(bufferPoolStats.addGauge(name, "max") { bp.getTotalCapacity })
     }
 
     val gcPool = ManagementFactory.getGarbageCollectorMXBeans.asScala
