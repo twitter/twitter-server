@@ -1,13 +1,15 @@
 package com.twitter.server
 
 import com.twitter.util._
+import java.net.{InetAddress, InetSocketAddress}
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import scala.collection.mutable.MutableList
 
 class TestTwitterServer extends TwitterServer {
-  override val adminPort = flag("admin.port", RandomSocket(), "")
+  override val adminPort = flag("admin.port",
+    new InetSocketAddress(InetAddress.getLoopbackAddress, 0), "")
 
   val bootstrapSeq = MutableList.empty[Symbol]
 
