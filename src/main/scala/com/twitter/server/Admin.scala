@@ -15,7 +15,7 @@ trait Admin { self: App with AdminHttpServer =>
       alias = "Summary", group = None, includeInIndex = true),
     Route(
       path = "/admin/server_info", handler = new TextBlockView andThen new ServerInfoHandler(self),
-      alias = "Build Properites", group = Some("Process Info"), includeInIndex = true),
+      alias = "Build Properties", group = Some("Process Info"), includeInIndex = true),
     Route(
       path = "/admin/contention", handler = new TextBlockView andThen new ContentionHandler,
       alias = "Contention", group = Some("Process Info"), includeInIndex = true),

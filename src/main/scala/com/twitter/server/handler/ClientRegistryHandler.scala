@@ -36,7 +36,7 @@ private object ClientRegistryHandler {
                          val css = if (sr < 0.9) "success-rate-bad"
                             else if (sr < 0.99) "success-rate-poor"
                             else "success-rate-good"
-                         f"<h3 class='success-rate-text col-xs-6 $css'>${sr*100}%2.2f%%</h3>"
+                         f"<h3 class='success-rate-text col-xs-6 $css'>${sr*100.0}%2.2f%%</h3>"
                        }
                     </div>
                   </div>
@@ -60,7 +60,7 @@ class ClientRegistryHandler(
   // The search namespace includes both "$clientName/" and "clnt/$clientName"
   // to take into account finagle's ClientStatsReceiver. Note, unnamed clients are
   // ignored as we can't dissambiguate their stats.
-  private[this] def findScope(clientName: String): Option[String] = {
+  private[this] def findClientScope(clientName: String): Option[String] = {
     val k0 = s"$clientName"
     val k1 = s"clnt/$clientName"
     if (source.contains(s"$k0/loadbalancer/adds")) Some(k0)
@@ -68,21 +68,32 @@ class ClientRegistryHandler(
     else None
   }
 
-  // Compute the success rate for each client in the registry.
+  // Finagle's StatFilter usually reports to the root of the `clientScope`.
+  // However, the ClientBuilder API provides an easy to install retry filter
+  // with a separate StatsFilter that reports to "tries".
+  private[this] def findReqScope(clientScope: String): Option[String] = {
+    val k0 = s"$clientScope/tries"
+    val k1 = s"$clientScope"
+    if (source.contains(s"$k0/requests")) Some(k0)
+    else if (source.contains(s"$k1/requests")) Some(k1)
+    else None
+  }
+
+  // Compute the success rate for each client in the registry. Note, this only takes
+  // into consideration the request path. We should expose some quick stats regarding
+  // service acquisition in order to quickly surface clients that are having trouble
+  // establishing connections. Currently, these clients show up with a success rate of 0.0%
+  // but it would be more informative to expose "/service_creation/failures" too.
   private[this] def clientProfiles: Seq[(Double, StackRegistry.Entry)] =
     (registry.registrants flatMap {
       case e: StackRegistry.Entry if e.name.nonEmpty =>
-        def getRequests(scope: String) = source.get(s"$scope/tries/requests")
-          .orElse(source.get(s"$scope/requests"))
-
-        def getSuccess(scope: String) = source.get(s"$scope/tries/success")
-          .orElse(source.get(s"$scope/success"))
-
         for {
-          scope <- findScope(e.name)
-          r <- getRequests(scope)
-          s <- getSuccess(scope)
-        } yield if (r.value == 0) (0.0, e) else (s.value/r.value, e)
+          scope <- findClientScope(e.name)
+          reqScope <- findReqScope(scope)
+          req <- source.get(s"$reqScope/requests")
+          reqFail <- source.get(s"$reqScope/failures")
+            .orElse(Some(MetricSource.Entry("", 0.0, 0.0)))
+        } yield if (req.value == 0) (0.0, e) else (1.0 - (reqFail.value/req.value), e)
 
       case _ => Nil
     }).toSeq
@@ -108,7 +119,7 @@ class ClientRegistryHandler(
         val entries = registry.registrants filter { _.name == name }
         if (entries.isEmpty) new404(s"$name could not be found.") else {
           val client = entries.head
-          val scope = findScope(client.name)
+          val scope = findClientScope(client.name)
           val html = StackRegistryView.render(client, scope)
           newResponse(
             contentType = "text/html;charset=UTF-8",

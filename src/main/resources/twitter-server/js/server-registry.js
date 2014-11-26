@@ -13,19 +13,19 @@ function graphLibLoaded() {
 
     function render(data) {
       var json = $.parseJSON(data)
-      var success = 0
+      var failures = 0
       var requests = 0
       for (var i = 0; i < json.length; i++) {
         var name = json[i].name
         var delta = json[i].delta
         var id = name.replace(/\//g, "-")
-        if (name.indexOf("success") > -1) success = delta
+        if (name.indexOf("failures") > -1) failures = delta
         else if (name.indexOf("requests") > -1) requests = delta
         $("#"+id).text(delta)
       }
 
       var sr = 0.0
-      if (requests > 0) sr = Number(((success/requests)*100.0).toFixed(4))
+      if (requests > 0) sr = Number(((1.0 - failures/requests)*100.0).toFixed(4))
       chartRenderer.appendMetric({ delta: sr })
     }
 
