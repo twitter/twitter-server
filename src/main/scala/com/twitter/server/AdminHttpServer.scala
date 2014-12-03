@@ -88,19 +88,19 @@ trait AdminHttpServer { self: App =>
     // and server/client registries.
     val index = { () =>
       val serverGroup = {
-        val serverLinks = ServerRegistry.registrants collect {
+        val serverLinks: Seq[IndexView.Entry] = (ServerRegistry.registrants collect {
           case server if server.name.nonEmpty =>
             IndexView.Link(server.name, "/admin/servers/" + server.name)
-        }
-        IndexView.Group("Listening Servers", serverLinks.toSeq)
+        }).toSeq
+        IndexView.Group("Listening Servers", serverLinks.sorted(IndexView.EntryOrdering))
       }
 
       val clientGroup = {
-        val clientLinks = ClientRegistry.registrants collect {
-         case client if client.name.nonEmpty =>
-          IndexView.Link(client.name, "/admin/clients/" + client.name)
-        }
-        IndexView.Group("Downstream Clients", clientLinks.toSeq)
+        val clientLinks: Seq[IndexView.Entry] = (ClientRegistry.registrants collect {
+          case client if client.name.nonEmpty =>
+            IndexView.Link(client.name, "/admin/clients/" + client.name)
+        }).toSeq
+        IndexView.Group("Downstream Clients", clientLinks.sorted(IndexView.EntryOrdering))
       }
 
       val miscGroup = IndexView.Group("Misc", otherLinks)
