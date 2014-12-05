@@ -40,6 +40,7 @@ function loadProcInfo() {
     $.ajax({
       url: url,
       dataType: "text",
+      cache: false,
       success: renderProcInfo
     })
   }
@@ -54,6 +55,7 @@ function loadClientInfo() {
     $.ajax({
       url: $("#client-info").data("refresh-uri"),
       dataType: "text",
+      cache: false,
       success: function(data) { $("#client-info").html(data) }
     })
   }
@@ -66,6 +68,7 @@ function loadServerInfo() {
   $.ajax({
     url: $("#server-info").data("refresh-uri"),
     dataType: "text",
+    cache: false,
     success: function(data) { $("#server-info").html(data) }
   })
 }

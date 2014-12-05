@@ -65,7 +65,10 @@ trait AdminHttpServer { self: App =>
     // Stat libraries join the global muxer namespace.
     // Special case and group them here.
     val (metricLinks, otherLinks) = {
-      val links = HttpMuxer.patterns map { path => IndexView.Link(path, path) }
+      val links = HttpMuxer.patterns map {
+        case path@"/admin/metrics.json" => IndexView.Link(path, s"$path?pretty=true")
+        case path => IndexView.Link(path, path)
+      }
       links partition {
         case IndexView.Link("/admin/metrics.json", _) => true
         case IndexView.Link("/stats.json", _) => true

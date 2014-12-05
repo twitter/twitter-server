@@ -23,31 +23,48 @@
   border-top: 1px solid lightgray;
 }
 
-.success-rate-header {
+.sr-header {
   color: #999;
   text-transform: uppercase;
-  padding-top: 8px;
+  padding-top: 10px;
   text-align: left;
   margin-left: 15px;
 }
 
-.success-rate-text {
+.sr-text {
   color: gray;
   font-weight: bold;
   text-align: right;
   margin: 0 0 0 -25px;
-  padding-top: 10px;
+  padding-top: 12px;
   padding-bottom: 10px;
 }
 
-.success-rate-good {
+.sr-good {
   color: #6BBF50;
 }
 
-.success-rate-poor {
+.sr-poor {
   color: #F28E1D;
 }
 
-.success-rate-bad {
+.sr-bad {
   color: #CA3528;
+}
+
+.sr-undefined {
+  color: #777777;
+}
+
+.conn-trouble {
+  position: absolute;
+  margin-left: -90px;
+  margin-top: -11px;
+  width: 185px;
+  border: 1px solid #ccc;
+  color: #777777;
+}
+
+.conn-trouble span {
+  color: #f0ad4e;
 }
