@@ -8,13 +8,18 @@ object TwitterServer extends Build {
   val libVersion = "1.8.0"
   val utilVersion = "6.22.2"
   val finagleVersion = "6.22.0"
-  val jacksonVersion = "2.3.1"
   val mustacheVersion = "0.8.12.1"
 
-  val jacksonLibs = Seq(
-    "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
-    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
-    "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion exclude("com.google.guava", "guava"),
+  // The following won't be necessary once we've upgraded internally to 2.4.
+  def jacksonVersion(scalaVersion: String) =
+    CrossVersion.partialVersion(scalaVersion) match {
+      case Some((2, 11)) => "2.4.4"
+      case _ => "2.3.1"
+    }
+  def jacksonLibs(scalaVersion: String) = Seq(
+    "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion(scalaVersion),
+    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion(scalaVersion),
+    "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion(scalaVersion) exclude("com.google.guava", "guava"),
     "com.google.guava" % "guava" % "16.0.1"
   )
 
@@ -24,7 +29,8 @@ object TwitterServer extends Build {
   val sharedSettings = Seq(
     version := libVersion,
     organization := "com.twitter",
-    crossScalaVersions := Seq("2.10.4"),
+    scalaVersion := "2.10.4",
+    crossScalaVersions := Seq("2.10.4", "2.11.4"),
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "2.2.2" % "test",
       "junit" % "junit" % "4.10" % "test",
@@ -96,7 +102,8 @@ object TwitterServer extends Build {
       util("core"),
       util("jvm"),
       "com.github.spullara.mustache.java" % "compiler" % mustacheVersion
-    ) ++ jacksonLibs,
+    ),
+    libraryDependencies <++= scalaVersion(jacksonLibs(_)),
     ivyXML :=
       <dependencies>
         <dependency org="com.github.spullara.mustache.java" name="compiler" rev={mustacheVersion}>
