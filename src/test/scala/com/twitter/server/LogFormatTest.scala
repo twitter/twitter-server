@@ -22,8 +22,7 @@ class LogFormatTest extends FunSuite {
 
   test("LogFormat contains trace ID if set") {
     testStringHandler { (log, handler) =>
-      Trace.unwind {
-        Trace.setId(TraceId(None, None, SpanId(1), None))
+      Trace.letId(TraceId(None, None, SpanId(1), None)) {
         log.info("test")
         assert(handler.get.contains("TraceId:0000000000000001"))
       }

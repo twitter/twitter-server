@@ -16,44 +16,45 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 class TracingHandlerSpec extends FunSuite with MockitoSugar with BeforeAndAfter {
   val service = new TracingHandler
 
-  before { Trace.clear() }
-
   test("enable tracing") {
     val tracer = mock[Tracer]
     try {
-      Trace.disable
-      Trace.pushTracer(tracer)
-      Trace.record("msg")
-      verify(tracer, never()).record(any(classOf[Record]))
-
-      val request = Request("/", ("enable", "true"))
-      assert(Response(Await.result(service(request))).status == HttpResponseStatus.OK)
-
-      Trace.record("msg")
-      verify(tracer).record(any(classOf[Record]))
+      // FIXME: This relies on a global.
+      Trace.disable()
+      Trace.letTracer(tracer) {
+        Trace.record("msg")
+        verify(tracer, never()).record(any(classOf[Record]))
+  
+        val request = Request("/", ("enable", "true"))
+        assert(Response(Await.result(service(request))).status == HttpResponseStatus.OK)
+  
+        Trace.record("msg")
+        verify(tracer).record(any(classOf[Record]))
+      }
     } finally {
-      Trace.enable
+      Trace.enable()
     }
   }
 
   test("disable tracing") {
     val tracer = mock[Tracer]
     try {
-      Trace.enable
-      Trace.pushTracer(tracer)
-      Trace.record("msg")
-      verify(tracer).record(any(classOf[Record]))
-
-      val tracer2 = mock[Tracer]
-      Trace.pushTracer(tracer2)
-
-      val request = Request("/", ("disable", "true"))
-      assert(Response(Await.result(service(request))).status ==HttpResponseStatus.OK)
-
-      Trace.record("msg")
-      verify(tracer2, never()).record(any(classOf[Record]))
+      Trace.enable()
+      Trace.letTracer(tracer) {
+        Trace.record("msg")
+        verify(tracer).record(any(classOf[Record]))
+  
+        val tracer2 = mock[Tracer]
+        Trace.letTracer(tracer2) {
+          val request = Request("/", ("disable", "true"))
+          assert(Response(Await.result(service(request))).status ==HttpResponseStatus.OK)
+    
+          Trace.record("msg")
+          verify(tracer2, never()).record(any(classOf[Record]))
+        }
+      }
     } finally {
-      Trace.enable
+      Trace.enable()
     }
   }
 }
