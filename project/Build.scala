@@ -121,7 +121,7 @@ object TwitterServer extends Build {
       site.settings ++
       site.sphinxSupport() ++
       Seq(
-        scalacOptions in doc <++= (version).map(v => Seq("-doc-title", "Twitter-server", "-doc-version", v)),
+        scalacOptions in doc <++= (version).map(v => Seq("-doc-title", "TwitterServer", "-doc-version", v)),
         includeFilter in Sphinx := ("*.html" | "*.png" | "*.js" | "*.css" | "*.gif" | "*.txt")
       )
     ).configs(DocTest).settings(

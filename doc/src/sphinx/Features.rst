@@ -1,8 +1,9 @@
 Features
 ========
 
-We’ll walk through the features provided by twitter-server by examining a slightly more advanced
-version of the example shown in the introduction.
+We’ll walk through the features provided by TwitterServer by
+examining a slightly more advanced version of the example shown in the
+introduction.
 
 .. includecode:: code/AdvancedServer.scala
 
@@ -21,14 +22,16 @@ But you can also define flags of composite type:
 
 .. includecode:: code/AdvancedServer.scala#complex_flag
 
-We also provide automatic help entry that display information about all the flags defined.
+We also provide automatic help entry that display information about
+all the flags defined.
 
-Note that you cannot read flags until after the arguments have been parsed, which happens before
-premains have been executed, but after the constructor and the inits.  Similarly, you should only
-declare a flag in the constructor, before the arguments have been parsed.
+Note that you cannot read flags until after the arguments have been
+parsed, which happens before premains have been executed, but after
+the constructor and the inits.  Similarly, you should only declare a
+flag in the constructor, before the arguments have been parsed.
 
-If you access a flag before the parsing phase (e.g. inside a constructor), you will see a SEVERE
-log message.
+If you access a flag before the parsing phase (e.g. inside a
+constructor), you will see a SEVERE log message.
 
 ::
 
@@ -45,28 +48,33 @@ log message.
 Logging
 -------
 
-Trait `TwitterServer` provides a logger named `log`. It is configured via default command line
-flags: `-log.level` and `-log.output`. As you can see from the above `-help` output, it logs to
-`stderr` by default with a log level of `INFO`.
+The `TwitterServer` trait provides a logger named `log`. It is
+configured via default command line flags: `-log.level` and
+`-log.output`. As you can see from the above `-help` output, it logs
+to `stderr` by default with a log level of `INFO`.
 
 .. includecode:: code/AdvancedServer.scala#log_usage
 
-For more complicated logging schemes, you can extend the Logging trait and mix it back into
-twitter-server.
+For more complicated logging schemes, you can extend the Logging trait
+and mix it back into a `TwitterServer`.
 
-Per-logger log levels can be changed on-the-fly via the logging handler on the admin interface.
+Per-logger log levels can be changed on-the-fly via the logging
+handler on the admin interface.
 
 .. _metrics_label:
 
 Metrics
 -------
 
-Note: in order to turn on metrics, you must have the finagle-stats jar on your classpath.
-`finagle-stats` depends on libraries which can be found in the maven.twttr.com repository.
-There are instructions on the :doc:`quickstart <index>` for adding it in maven or sbt.
+Note: In order to enable usage of the Metrics library, you must have
+the finagle-stats jar on your classpath.  `finagle-stats` depends on
+libraries which can be found in the maven.twttr.com repository.  There
+are instructions on the :doc:`quickstart <index>` for adding it in
+maven or sbt.
 
-`statsReceiver`, defined by `TwitterServer`, defines a sink for metrics. With it you can update
-counters and stats (histograms) or define gauges (instantaneous values).
+The `statsReceiver` field of `TwitterServer` defines a sink for
+metrics. With it you can update counters and stats (histograms) or
+define gauges (instantaneous values).
 
 For instance, you define your stats:
 
@@ -76,18 +84,21 @@ And update the value:
 
 .. includecode:: code/AdvancedServer.scala#stats_usage
 
-The value of this counter will be exported by the HTTP server and accessible at /admin/metrics.json
+The value of this counter will be exported by the HTTP server and
+accessible at /admin/metrics.json
 
 Filtering stats out
 *******************
 
-Metrics can be too expensive to store. By passing a comma-separated list of regexes to exclude
-from stats using `-com.twitter.finagle.stats.statsFilter` flag, one can single out the stats that
-will not be shown when queried with `filtered=true`. In other words, you can still access all of
-the stats normally, but this adds the option to fetch the filtered list.
+Metrics can be too expensive to store. By passing a comma-separated
+list of regexes to exclude from stats using
+`-com.twitter.finagle.stats.statsFilter` flag, one can single out the
+stats that will not be shown when queried with `filtered=true`. In
+other words, you can still access all of the stats normally, but this
+adds the option to fetch the filtered list.
 
-For example, to filter out all stats starting with jvm and also any p90 stats, one can pass the
-following to Twitter-Server:
+For example, to filter out all stats starting with jvm and also any
+p90 stats, one can pass the following to TwitterServer:
 
 ::
 
@@ -99,13 +110,14 @@ To query the reduced list:
 
 /admin/metrics.json?filtered=true
 
-Note that this only works with `finagle-stats` and doesn't work with `finagle-ostrich4`.
+Note that this only works with `finagle-stats` and doesn't work with
+`finagle-ostrich4`.
 
 Pretty output
 *************
 
-If you would like a pretty version of the json output, add the parameter pretty=true or pretty=1,
-eg /admin/metrics.json?pretty=true
+If you would like a pretty version of the json output, add the
+parameter pretty=true or pretty=1, eg /admin/metrics.json?pretty=true
 
 ::
 
@@ -138,9 +150,10 @@ eg /admin/metrics.json?pretty=true
 HTTP Admin interface
 --------------------
 
-Twitter-server starts an HTTP server (it binds to the port defined by the flag `-admin.port`;
-port 8080 by default). It exports an HttpMuxer object in which endpoints are registered.
-The library defines a series of default endpoints:
+TwitterServer starts an HTTP server (it binds to the port defined by
+the flag `-admin.port`; port 8080 by default). It exports an `HttpMuxer`
+object in which endpoints are registered.  The library defines a
+series of default endpoints:
 
 ::
 
@@ -162,18 +175,22 @@ The library defines a series of default endpoints:
   /admin/ping
 
 **/admin/resolutions**
-  Returns a set of resolution chains that have run through Resolver. This allows one to see how a
-  particular target is being resolved.
+  Returns a set of resolution chains that have run through
+  Resolver. This allows one to see how a particular target is being
+  resolved.
 
 **/admin/announcer**
-  Returns a set of announcement chains that have run through the Announcer. This allows one to see
-  how a particular target is being announced.
+  Returns a set of announcement chains that have run through the
+  Announcer. This allows one to see how a particular target is being
+  announced.
 
 **/admin/pprof/contention**
-  Returns a CPU contention profile. The output is in `pprof <http://code.google.com/p/gperftools/>`_ format.
+  Returns a CPU contention profile. The output is in `pprof
+  <http://code.google.com/p/gperftools/>`_ format.
 
 **/admin/pprof/profile**
-  Returns a CPU usage profile. The output is in `pprof <http://code.google.com/p/gperftools/>`_ format.
+  Returns a CPU usage profile. The output is in `pprof
+  <http://code.google.com/p/gperftools/>`_ format.
 
 ::
 
@@ -192,8 +209,9 @@ The library defines a series of default endpoints:
          ...
 
 **/admin/pprof/heap**
-  Returns a heap profile computed by the `heapster agent <https://github.com/mariusaeriksen/heapster>`_.
-  The output is in `pprof <http://code.google.com/p/gperftools/>`_ format.
+  Returns a heap profile computed by the `heapster agent
+  <https://github.com/mariusaeriksen/heapster>`_.  The output is in
+  `pprof <http://code.google.com/p/gperftools/>`_ format.
 
 ::
 
@@ -208,9 +226,10 @@ The library defines a series of default endpoints:
        104   0.0% 100.0%      136   0.0% Ljava/lang/Shutdown;
 
 **/admin/metrics.json**
-  Export a snapshot of the current statistics of the program. You can use the StatsReceiver in your
-  application for add new counters/gauges/histograms, simply use the `statsReceiver` variable provided
-  by TwitterServer.
+  Export a snapshot of the current statistics of the program. You can
+  use the StatsReceiver in your application for add new
+  counters/gauges/histograms, simply use the `statsReceiver` variable
+  provided by TwitterServer.
 
 See the :ref:`metrics <metrics_label>` section for more information.
 
@@ -218,6 +237,7 @@ See the :ref:`metrics <metrics_label>` section for more information.
   Watch specific stats and extract them via http queries.
 
 ::
+
   > curl "localhost:8090/admin/metrics?m=clnt/crocodile/requests&m=clnt/crocodile/failures"
   [
     {
@@ -318,8 +338,8 @@ See `zipkin <https://github.com/twitter/zipkin>`_ documentation for more info.
   Return pong (used for monitoring)
 
 **/admin/logging**
-  Display the set of loggers and their current log level. The level of each logger can
-  also be modified on-the-fly.
+  Display the set of loggers and their current log level. The level of
+  each logger can also be modified on-the-fly.
 
 ::
 
@@ -330,7 +350,7 @@ See `zipkin <https://github.com/twitter/zipkin>`_ documentation for more info.
 Lifecycle Management
 --------------------
 
-Twitter-server exposes endpoints to manage server lifecycle that are compatible with
+TwitterServer exposes endpoints to manage server lifecycle that are compatible with
 `Mesos's <http://mesos.apache.org/>`_ job manager:
 
 **/abortabortabort**
@@ -351,12 +371,15 @@ These entries are the default, but if you need you can add your own handler to t
 Extension
 ---------
 
-Twitter-server can be extended modularly by mixing in more traits.  If you want to alter
-the behavior of a trait that is already mixed into twitter-server, you can override methods
-that you want to have different behavior and then mix it in again.  For example, in the
-`Logging <https://github.com/twitter/util/blob/master/util-logging/src/main/scala/com/twitter/logging/App.scala>`_
+TwitterServer can be extended modularly by mixing in more traits. If
+you want to alter the behavior of a trait that is already mixed into
+`TwitterServer`, you can override methods that you want to have
+different behavior and then mix it in again. For example, in the
+`Logging
+<https://github.com/twitter/util/blob/master/util-logging/src/main/scala/com/twitter/logging/App.scala>`_
 trait, you can override loggers to change where you send logs.
 
-If you want finer grained control over your server, you can remix traits however you like in the
-same way that the `TwitterServer <https://github.com/twitter/twitter-server/blob/master/src/main/scala/com/twitter/server/TwitterServer.scala>`_
+If you want finer grained control over your server, you can remix
+traits however you like in the same way that the `TwitterServer
+<https://github.com/twitter/twitter-server/blob/master/src/main/scala/com/twitter/server/TwitterServer.scala>`_
 trait is built.
