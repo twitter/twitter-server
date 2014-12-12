@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -7,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Twitter-server &mdash; Twitter-Server 1.7.3 documentation</title>
+    <title>TwitterServer &mdash; TwitterServer 1.9.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '1.7.3',
+        URL_ROOT:    './',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Twitter-Server 1.7.3 documentation" href="#" />
+    <link rel="top" title="TwitterServer 1.9.0 documentation" href="#" />
     <link rel="next" title="Features" href="Features.html" />
    
   
@@ -46,7 +45,7 @@
         <li class="right" >
           <a href="Features.html" title="Features"
              accesskey="N">next</a> |</li>
-        <li><a href="#">Twitter-server</a> &raquo;</li> 
+        <li><a href="#">TwitterServer</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -55,13 +54,17 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="twitter-server">
-<h1>Twitter-server<a class="headerlink" href="#twitter-server" title="Permalink to this headline">¶</a></h1>
-<p>Twitter-server defines a template from which servers at Twitter are built. Twitter-server ensures that common components like an administrative HTTP server, tracing, stats, etc. are wired in correctly for production use at Twitter.</p>
+  <div class="section" id="twitterserver">
+<h1>TwitterServer<a class="headerlink" href="#twitterserver" title="Permalink to this headline">¶</a></h1>
+<p>TwitterServer defines a template from which servers at Twitter are
+built. It provides common application components such as an
+administrative HTTP server, tracing, stats, etc. These features are
+wired in correctly for use in production at Twitter.</p>
 <div class="section" id="quick-start">
 <h2>Quick-start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
-<p>Twitter-server is published with Maven:</p>
-<div class="highlight-text"><div class="highlight"><pre>&lt;repository&gt;
+<p>TwitterServer is published with Maven:</p>
+<pre class="literal-block">
+&lt;repository&gt;
   &lt;id&gt;twttr&lt;/id&gt;
   &lt;name&gt;twttr&lt;/name&gt;
   &lt;url&gt;http://maven.twttr.com/&lt;/url&gt;
@@ -69,18 +72,20 @@
 
 &lt;dependency&gt;
   &lt;groupId&gt;com.twitter&lt;/groupId&gt;
-  &lt;artifactId&gt;twitter-server_2.9.2&lt;/artifactId&gt;
-  &lt;version&gt;1.0.2&lt;/version&gt;
+  &lt;artifactId&gt;twitter-server_2.10&lt;/artifactId&gt;
+  &lt;version&gt;1.9.0&lt;/version&gt;
 &lt;/dependency&gt;
-</pre></div>
-</div>
+</pre>
 <p>or, with sbt:</p>
-<div class="highlight-text"><div class="highlight"><pre>resolvers += &quot;twttr&quot; at &quot;http://maven.twttr.com/&quot;
+<pre class="literal-block">
+resolvers += &quot;twttr&quot; at &quot;<a class="reference external" href="http://maven.twttr.com/">http://maven.twttr.com/</a>&quot;
 
-libraryDependencies += &quot;com.twitter&quot; %% &quot;twitter-server&quot; % &quot;1.0.2&quot;
-</pre></div>
-</div>
-<p>NB: you only need to add the <cite>maven.twttr.com</cite> repository if you want to use libraries in twitter common, which are only published to <cite>maven.twttr.com</cite>.  For example, <cite>finagle-stats</cite>, which adds <tt class="xref doc docutils literal"><span class="pre">metrics</span></tt>, requires a twitter common library.</p>
+libraryDependencies += &quot;com.twitter&quot; %% &quot;twitter-server&quot; % &quot;1.9.0&quot;
+</pre>
+<p>NB: You only need to add the <cite>maven.twttr.com</cite> repository if you want
+to use libraries in Twitter <cite>common</cite>, which are only published to
+<cite>maven.twttr.com</cite>. For example, <cite>finagle-stats</cite>, which adds
+<a class="reference internal" href="Features.html"><em>Metrics</em></a>, requires a twitter common library.</p>
 <p>First we’ll need to import a few things into our namespace.</p>
 <div class="highlight-text"><div class="highlight"><pre>import com.twitter.finagle.{Http, Service}
 import com.twitter.io.Charsets
@@ -90,8 +95,11 @@ import org.jboss.netty.buffer.ChannelBuffers.copiedBuffer
 import org.jboss.netty.handler.codec.http._
 </pre></div>
 </div>
-<p>Twitter-server defines its own version of the standard <cite>main</cite>. To use it, create an object extended with <cite>com.twitter.server.TwitterServer</cite>, and define the <cite>main()</cite> method (no arguments).</p>
-<p>In this example, we use the finagle HTTP server to start a server on port 8888, the service bound to this port is a simple hello service.</p>
+<p>TwitterServer defines its own version of the standard <cite>main</cite>. To use
+it, create an object extended with <cite>com.twitter.server.TwitterServer</cite>,
+and define the <cite>main()</cite> method (no arguments).</p>
+<p>In this example, we use Finagle to start an HTTP server on
+port 8888. The service bound to this port is a simple hello service.</p>
 <div class="highlight-text"><div class="highlight"><pre>object BasicServer extends TwitterServer {
   val service = new Service[HttpRequest, HttpResponse] {
     def apply(request: HttpRequest) = {
@@ -112,8 +120,10 @@ import org.jboss.netty.handler.codec.http._
 }
 </pre></div>
 </div>
-<p><cite>onExit</cite> is used to register code to be run when the process shutdown is requested.</p>
-<p>After compiling, we can start the server like any other java or scala process.</p>
+<p><cite>onExit</cite> is used to register code to be run when the process shutdown
+is requested.</p>
+<p>After compiling, we can start the server like any other java or scala
+process.</p>
 <div class="highlight-text"><div class="highlight"><pre>$ java -jar target/myserver-1.0.0-SNAPSHOT.jar &amp;
 [1] 66569
 Feb 21, 2013 10:55:57 AM com.twitter.finagle.http.HttpMuxer$$anonfun$5 apply
@@ -125,7 +135,8 @@ $ curl localhost:8888
 hello
 </pre></div>
 </div>
-<p>This server is fully configured to run in Twitter&#8217;s production environment; see <a class="reference internal" href="Features.html"><em>features</em></a> for more details.</p>
+<p>This server is fully configured to run in Twitter&#8217;s production
+environment. See <a class="reference internal" href="Features.html"><em>features</em></a> for more details.</p>
 </div>
 <div class="section" id="user-s-guide">
 <h2>User&#8217;s guide<a class="headerlink" href="#user-s-guide" title="Permalink to this headline">¶</a></h2>
@@ -160,14 +171,14 @@ hello
         </div>
       </div>
       <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper"><a href="index.html"><h3>Twitter-server</h3></a>
+        <div class="sphinxsidebarwrapper"><a href="index.html"><h3>TwitterServer</h3></a>
 <p>
-  Twitter-server is a library upon which servers are built to run in the Twitter production environment.
+  TwitterServer is a library defining a template from which servers at Twitter are built.
 </p>
 
 <h3>Useful Links</h3>
 <ul>
-  <li><a href="http://github.com/twitter/twitter-server">Twitter-server @ GitHub</a></li>
+  <li><a href="http://github.com/twitter/twitter-server">TwitterServer on GitHub</a></li>
   <li><a href="http://github.com/twitter/twitter-server/issues">Issue Tracker</a></li>
 </ul>
 <div id="searchbox" style="display: none">

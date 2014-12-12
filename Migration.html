@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -7,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Migration from Ostrich &mdash; Twitter-Server 1.7.3 documentation</title>
+    <title>Migration from Ostrich &mdash; TwitterServer 1.9.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '1.7.3',
+        URL_ROOT:    './',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Twitter-Server 1.7.3 documentation" href="index.html" />
+    <link rel="top" title="TwitterServer 1.9.0 documentation" href="index.html" />
     <link rel="prev" title="Features" href="Features.html" />
    
   
@@ -44,7 +43,7 @@
         <li class="right" >
           <a href="Features.html" title="Features"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Twitter-server</a> &raquo;</li> 
+        <li><a href="index.html">TwitterServer</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -55,14 +54,25 @@
             
   <div class="section" id="migration-from-ostrich">
 <h1>Migration from Ostrich<a class="headerlink" href="#migration-from-ostrich" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference external" href="https://github.com/twitter/ostrich">Ostrich</a> is a library used to maintain and export statistics and track services. It is obsoleted by twitter-server.</p>
-<p><a class="reference external" href="https://github.com/twitter/commons/tree/master/src/java/com/twitter/common/metrics">Metrics</a> replaces Ostrich’s stats library.</p>
+<p><a class="reference external" href="https://github.com/twitter/ostrich">Ostrich</a> is a library used to
+maintain and export statistics and track services. It is obsoleted by
+TwitterServer.</p>
+<p><a class="reference external" href="https://github.com/twitter/commons/tree/master/src/java/com/twitter/common/metrics">Metrics</a>
+replaces Ostrich’s stats library.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Ostrich stats are still present on /stats if <cite>finagle-ostrich4</cite> is in your runtime classpath.</p>
+<p class="last">Ostrich stats are still present on /stats if <cite>finagle-ostrich4</cite> is
+in your runtime classpath.</p>
 </div>
-<p>While ostrich provided several different primitives for process statistics (stats, counters, and gauges), metrics provides just one: a gauge. Gauges are instantaneous measurements — they are an exported variable. Metrics provides counters and histograms as well, but these just export gauges.</p>
-<p>The upshot is that the exported metrics are raw: every request to /admin/metrics.json simply reads the current value of the collection of metrics. Ostrich provided in-process rate computation of counters — this is no longer possible with metrics.</p>
+<p>While Ostrich provided several different primitives for process
+statistics (stats, counters, and gauges), Metrics provides just one: a
+gauge. Gauges are instantaneous measurements — they are an exported
+variable. Metrics provides counters and histograms as well, but these
+just export gauges.</p>
+<p>The upshot is that the exported metrics are raw: every request to
+/admin/metrics.json simply reads the current value of the collection
+of metrics. Ostrich provided in-process rate computation of counters —-
+this is no longer possible with metrics.</p>
 <div class="section" id="stats-format">
 <h2>Stats format<a class="headerlink" href="#stats-format" title="Permalink to this headline">¶</a></h2>
 <p>E.g. (Ostrich):</p>
@@ -99,7 +109,7 @@
 }
 </pre></div>
 </div>
-<p>E.g. (metrics):</p>
+<p>E.g. (Metrics):</p>
 <div class="highlight-text"><div class="highlight"><pre>{
   &quot;finagle/closechans&quot;: 592,
   &quot;finagle/closed&quot;: 592,
@@ -127,9 +137,14 @@
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The stats exported by Ostrich will also be computed by the Ostrich library. It&#8217;s not a format conversion but a real dual collection/export of stats. You can compare both stats, but note than you can have different results in histogram values because metrics is <em>far</em> more precise than Ostrich.</p>
+<p class="last">The stats exported by Ostrich will also be computed by the Ostrich
+library. It&#8217;s not a format conversion but a real dual
+collection/export of stats. You can compare both stats, but note
+than you can have different results in histogram values because
+metrics is <em>far</em> more precise than Ostrich.</p>
 </div>
-<p>For example, here are the difference between the two libraries for 10k random numbers between 1 and 10,000:</p>
+<p>For example, here are the difference between the two libraries for 10k
+random numbers between 1 and 10,000:</p>
 <div class="highlight-text"><div class="highlight"><pre>scala&gt; &quot;real p50:%d  ostrich:%d  metrics:%d&quot;.format(p50, op50, mp50)
 res7: String = real p50:5066  ostrich:5210  metrics:5066
 
@@ -140,14 +155,18 @@ scala&gt; &quot;real p99:%d  ostrich:%d  metrics:%d&quot;.format(p99, op99, mp99
 res9: String = real p99:9911  ostrich:9498  metrics:9910
 </pre></div>
 </div>
-<p>You can <a class="reference external" href="https://gist.github.com/stevegury/261b0a204cd0726f47ea">run this code on your machine</a> to see by yourself.</p>
+<p>You can <a class="reference external" href="https://gist.github.com/stevegury/261b0a204cd0726f47ea">run this code on your machine</a> to see by
+yourself.</p>
 </div>
 <div class="section" id="step-by-step-guide">
 <h2>Step by step guide<a class="headerlink" href="#step-by-step-guide" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Convert your code to twitter-server.</li>
+<li>Convert your code to TwitterServer.</li>
 </ul>
-<p>Your server will run as before and expose stats through ostrich &#8220;/stats&#8221; endpoint as well as through &#8220;/metrics.json&#8221; endpoint. The observability team will continue to collect your stats from ostrich output on &#8220;/stats&#8221;.</p>
+<p>Your server will run as before and expose stats through ostrich
+&#8220;/stats&#8221; endpoint as well as through &#8220;/metrics.json&#8221; endpoint. The
+observability team will continue to collect your stats from ostrich
+output on &#8220;/stats&#8221;.</p>
 <ul class="simple">
 <li>Update your dashboard.</li>
 </ul>
@@ -162,7 +181,8 @@ res9: String = real p99:9911  ostrich:9498  metrics:9910
 <ul class="simple">
 <li>Historical Data</li>
 </ul>
-<p>If you want to keep your historical data, you need to rebuild the old delta&#8217;d data into absolute data.</p>
+<p>If you want to keep your historical data, you need to rebuild the old
+delta&#8217;d data into absolute data.</p>
 </div>
 </div>
 
@@ -171,14 +191,14 @@ res9: String = real p99:9911  ostrich:9498  metrics:9910
         </div>
       </div>
       <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper"><a href="index.html"><h3>Twitter-server</h3></a>
+        <div class="sphinxsidebarwrapper"><a href="index.html"><h3>TwitterServer</h3></a>
 <p>
-  Twitter-server is a library upon which servers are built to run in the Twitter production environment.
+  TwitterServer is a library defining a template from which servers at Twitter are built.
 </p>
 
 <h3>Useful Links</h3>
 <ul>
-  <li><a href="http://github.com/twitter/twitter-server">Twitter-server @ GitHub</a></li>
+  <li><a href="http://github.com/twitter/twitter-server">TwitterServer on GitHub</a></li>
   <li><a href="http://github.com/twitter/twitter-server/issues">Issue Tracker</a></li>
 </ul>
   <h3><a href="index.html">Table Of Contents</a></h3>
