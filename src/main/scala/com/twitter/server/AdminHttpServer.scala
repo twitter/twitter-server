@@ -2,16 +2,17 @@ package com.twitter.server
 
 import com.twitter.app.App
 import com.twitter.finagle.client.ClientRegistry
-import com.twitter.finagle.http.HttpMuxer
+import com.twitter.finagle.http.{Response, Request, HttpMuxer}
 import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.tracing.NullTracer
-import com.twitter.finagle.{Http, ListeningServer, NullServer, param, Service}
+import com.twitter.finagle.{Filter, Http, ListeningServer, NullServer, param, Service}
 import com.twitter.server.util.HttpUtils
 import com.twitter.server.view.{IndexView, NotFoundView}
 import com.twitter.util.Monitor
 import java.net.InetSocketAddress
 import java.util.logging.Logger
+import org.jboss.netty.handler.codec.http.{HttpResponse, HttpRequest}
 
 object AdminHttpServer {
   /**
@@ -39,6 +40,24 @@ object AdminHttpServer {
     alias: String,
     group: Option[String],
     includeInIndex: Boolean)
+
+  /**
+   * Create a Route using a Finagle service interface
+   */
+  def mkRoute(
+    path: String,
+    handler: Service[Request, Response],
+    alias: String,
+    group: Option[String],
+    includeInIndex: Boolean
+  ): Route = {
+    val nettyToFinagle = Filter.mk[HttpRequest, HttpResponse, Request, Response] { (req, service) =>
+      service(Request(req)) map { _.httpResponse }
+    }
+
+    Route(path, nettyToFinagle andThen handler, alias, group, includeInIndex)
+  }
+
 }
 
 trait AdminHttpServer { self: App =>
