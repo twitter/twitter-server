@@ -1,8 +1,6 @@
 package com.twitter.server
 
 import com.twitter.app.App
-import com.twitter.finagle.http.HttpMuxer
-import com.twitter.finagle.Service
 import com.twitter.server.handler._
 import com.twitter.server.view._
 
@@ -59,8 +57,10 @@ trait Admin { self: App with AdminHttpServer =>
       path = "/admin/servers/", handler = new ServerRegistryHandler,
       alias = "Servers", group = None, includeInIndex = false),
     Route(
-      path = "/admin/files/", handler = new ResourceHandler(
-        basePath = "/admin/files/", servingDir = "twitter-server"),
+      path = "/admin/files/",
+      handler = ResourceHandler.fromJar(
+        baseRequestPath = "/admin/files/",
+        baseResourcePath = "twitter-server"),
       alias = "Files", group = None, includeInIndex = false)
   )
 }
