@@ -123,9 +123,7 @@ Step by step guide
 * Convert your code to TwitterServer.
 
 Your server will run as before and expose stats through ostrich
-"/stats" endpoint as well as through "/metrics.json" endpoint. The
-observability team will continue to collect your stats from ostrich
-output on "/stats".
+"/stats" endpoint.
 
 * Update your dashboard.
 
@@ -133,8 +131,11 @@ Update your collecting system to collect stats from the new URL.
 
 * Disable the ostrich stats
 
-Simply by excluding the finagle-ostrich4 dependency
+Exclude the finagle-ostrich4 dependency
 
+* Enable the metrics stats
+
+Add the finagle-stats dependency to your classpath
 
 Problem
 -------
