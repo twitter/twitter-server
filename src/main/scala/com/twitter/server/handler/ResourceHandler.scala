@@ -55,7 +55,7 @@ class ResourceHandler(
         FuturePool.unboundedPool {
           val bytes = source.mkString.getBytes(charset)
           source.close()
-          newResponse(contentType = mime, content = Buf.ByteArray(bytes))
+          newResponse(contentType = mime, content = Buf.ByteArray.Owned(bytes))
         }.flatten
       }.getOrElse {
         new404("resource not found")

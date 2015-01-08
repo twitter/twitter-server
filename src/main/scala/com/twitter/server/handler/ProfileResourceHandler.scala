@@ -38,7 +38,7 @@ class ProfileResourceHandler(
         prof.writeGoogleProfile(bos)
         newResponse(
           contentType = "pprof/raw",
-          content = Buf.ByteArray(bos.toByteArray)
+          content = Buf.ByteArray.Owned(bos.toByteArray)
         )
 
       case Throw(exc) =>

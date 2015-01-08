@@ -1,9 +1,8 @@
 package com.twitter.server
 
-import com.twitter.app.Flags
-import com.twitter.finagle.{Addr, Announcer, Announcement, Resolver}
-import com.twitter.util.{Await, Future, RandomSocket}
-import java.net.InetSocketAddress
+import com.twitter.finagle.{Announcer, Announcement, Resolver}
+import com.twitter.util.{Await, Future}
+import java.net.{InetAddress, InetSocketAddress}
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -28,7 +27,7 @@ class ResolverTest extends FunSuite {
   }
 
   test("announcers resolve from the main announcer") {
-    val addr = RandomSocket()
+    val addr = new InetSocketAddress(InetAddress.getLoopbackAddress, 0)
 
     announcerMap.let(Map("foo" -> "test!127.0.0.1:80")) {
       // checks for non-exceptional

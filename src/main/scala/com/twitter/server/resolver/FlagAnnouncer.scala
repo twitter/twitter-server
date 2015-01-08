@@ -1,11 +1,11 @@
 package com.twitter.server
 
 import com.twitter.app.GlobalFlag
-import com.twitter.finagle.{Group, Announcer, Announcement, AnnouncerNotFoundException}
+import com.twitter.finagle.{Announcer, Announcement, AnnouncerNotFoundException}
 import com.twitter.util.Future
 import java.net.InetSocketAddress
 
-object announcerMap extends GlobalFlag(Map[String, String](),
+object announcerMap extends GlobalFlag[Map[String, String]](Map.empty,
   "A list mapping service names to announcers (gizmoduck=zk!/gizmoduck)")
 
 class FlagAnnouncer extends Announcer {

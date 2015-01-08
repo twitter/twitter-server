@@ -6,7 +6,7 @@ import com.twitter.util.Var
 
 // TODO: deprecate in favor of Wily dtabs.
 
-object resolverMap extends GlobalFlag(Map[String, String](),
+object resolverMap extends GlobalFlag[Map[String, String]](Map.empty,
   "A list mapping service names to resolvers (gizmoduck=zk!/gizmoduck)")
 
 
@@ -17,7 +17,7 @@ object resolverMap extends GlobalFlag(Map[String, String](),
  * Resolvers are discovered via the com.twitter.server.resolverMap
  */
 class NamedResolverNotFoundException(scheme: String, name: String)
-  extends Exception(s"Resolver not found for scheme '${scheme}' with name '${name}'. " +
+  extends Exception(s"Resolver not found for scheme '$scheme' with name '$name'. " +
     s"resolverMap = ${resolverMap().keySet.toSeq.sorted.mkString(",")}")
 
 class FlagResolver extends Resolver {

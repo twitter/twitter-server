@@ -41,6 +41,6 @@ class HeapResourceHandler extends Service[Request, Response] {
 
     // Write out the profile verbatim. It's a pprof "raw" profile.
     val profile = heapster.profile(params.pause, params.samplingPeriod, params.forceGC)
-    newResponse(contentType = "pprof/raw", content = Buf.ByteArray(profile))
+    newResponse(contentType = "pprof/raw", content = Buf.ByteArray.Owned(profile))
   }
 }
