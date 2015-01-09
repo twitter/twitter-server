@@ -90,6 +90,7 @@ trait AdminHttpServer { self: App =>
       }
       links partition {
         case IndexView.Link("/admin/metrics.json", _) => true
+        case IndexView.Link("/admin/per_host_metrics.json", _) => true
         case IndexView.Link("/stats.json", _) => true
         case _ => false
       }

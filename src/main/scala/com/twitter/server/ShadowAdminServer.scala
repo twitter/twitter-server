@@ -46,7 +46,8 @@ trait ShadowAdminServer { self: App with AdminHttpServer =>
     // Both ostrich and metrics export a `HttpMuxHandler`
     val handlers = LoadService[HttpMuxHandler]() filter { handler =>
       handler.pattern == "/stats.json" ||
-      handler.pattern == "/admin/metrics.json"
+      handler.pattern == "/admin/metrics.json" ||
+      handler.pattern == "/admin/per_host_metrics.json"
     }
 
     val muxer = handlers.foldLeft(new HttpMuxer) {

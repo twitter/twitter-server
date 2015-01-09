@@ -15,13 +15,19 @@ import org.scalatest.junit.JUnitRunner
 class MockMetricsExporter extends HttpMuxHandler {
   val pattern = "/admin/metrics.json"
   def apply(req: HttpRequest): Future[HttpResponse] =
-    newOk("metrics!")
+    newOk("standard metrics!")
 }
 
 class MockOstrichExporter extends HttpMuxHandler {
   val pattern = "/stats.json"
   def apply(req: HttpRequest): Future[HttpResponse] =
     newOk("metrics!")
+}
+
+class MockHostMetricsExporter extends HttpMuxHandler {
+  val pattern = "/admin/per_host_metrics.json"
+  def apply(req: HttpRequest): Future[HttpResponse] =
+    newOk("per host metrics!")
 }
 
 
@@ -36,7 +42,10 @@ class ShadowAdminServerTest extends FunSuite {
       assert(resp0.getContent.toString(Charsets.Utf8).contains("metrics!"))
 
       val resp = Await.result(client(Request("/admin/metrics.json")))
-      assert(resp0.getContent.toString(Charsets.Utf8).contains("metrics!"))
+      assert(resp.getContent.toString(Charsets.Utf8).contains("standard metrics!"))
+
+      val resp1 = Await.result(client(Request("/admin/per_host_metrics.json")))
+      assert(resp1.getContent.toString(Charsets.Utf8).contains("per host metrics!"))
 
       Await.result(close())
     }
