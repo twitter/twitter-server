@@ -3,7 +3,7 @@ package com.twitter.server.util
 import com.twitter.finagle.http.{Status, Version}
 import com.twitter.finagle.netty3.BufChannelBuffer
 import com.twitter.finagle.Service
-import com.twitter.io.{Buf, BufReader, Charsets}
+import com.twitter.io.Buf
 import com.twitter.util.Future
 import org.jboss.netty.handler.codec.http._
 import scala.collection.JavaConverters._

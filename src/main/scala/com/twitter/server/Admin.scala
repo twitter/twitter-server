@@ -4,8 +4,26 @@ import com.twitter.app.App
 import com.twitter.server.handler._
 import com.twitter.server.view._
 
+object Admin {
+
+  /**
+   * Common constants for [[AdminHttpServer.Route]]'s `group`.
+   */
+  object Grouping {
+    val ProcessInfo = "Process Info"
+    val PerfProfile = "Performance Profile"
+    val Utilities = "Utilities"
+    val Metrics = "Metrics"
+  }
+
+}
+
+/**
+ * Defines many of the default `/admin/` HTTP routes.
+ */
 trait Admin { self: App with AdminHttpServer =>
   import AdminHttpServer.Route
+  import Admin.Grouping
 
   override protected def routes: Seq[Route] = Seq(
     Route(
@@ -13,43 +31,43 @@ trait Admin { self: App with AdminHttpServer =>
       alias = "Summary", group = None, includeInIndex = true),
     Route(
       path = "/admin/server_info", handler = new TextBlockView andThen new ServerInfoHandler(self),
-      alias = "Build Properties", group = Some("Process Info"), includeInIndex = true),
+      alias = "Build Properties", group = Some(Grouping.ProcessInfo), includeInIndex = true),
     Route(
       path = "/admin/contention", handler = new TextBlockView andThen new ContentionHandler,
-      alias = "Contention", group = Some("Process Info"), includeInIndex = true),
+      alias = "Contention", group = Some(Grouping.ProcessInfo), includeInIndex = true),
     Route(
-      path = "/admin/threads", handler = new TextBlockView andThen new ThreadsHandler,
-      alias = "Threads", group = Some("Process Info"), includeInIndex = true),
+      path = "/admin/threads", handler = new ThreadsHandler,
+      alias = "Threads", group = Some(Grouping.ProcessInfo), includeInIndex = true),
     Route(
       path = "/admin/announcer", handler = new TextBlockView andThen new AnnouncerHandler,
-      alias = "Announcer", group = Some("Process Info"), includeInIndex = true),
+      alias = "Announcer", group = Some(Grouping.ProcessInfo), includeInIndex = true),
     Route(
       path = "/admin/dtab", handler = new TextBlockView andThen new DtabHandler,
-      alias = "Dtab", group = Some("Process Info"), includeInIndex = true),
+      alias = "Dtab", group = Some(Grouping.ProcessInfo), includeInIndex = true),
     Route(
       path = "/admin/pprof/heap", handler = new HeapResourceHandler,
-      alias = "Heap", group = Some("Performance Profile"), includeInIndex = true),
+      alias = "Heap", group = Some(Grouping.PerfProfile), includeInIndex = true),
     Route(
       path = "/admin/pprof/profile", handler = new ProfileResourceHandler(Thread.State.RUNNABLE),
-      alias = "Profile", group = Some("Performance Profile"), includeInIndex = true),
+      alias = "Profile", group = Some(Grouping.PerfProfile), includeInIndex = true),
     Route(
       path = "/admin/pprof/contention", handler = new ProfileResourceHandler(Thread.State.BLOCKED),
-      alias = "Contention", group = Some("Performance Profile"), includeInIndex = true),
+      alias = "Contention", group = Some(Grouping.PerfProfile), includeInIndex = true),
     Route(
       path = "/admin/ping", handler = new ReplyHandler("pong"),
-      alias = "Ping", group = Some("Utilities"), includeInIndex = true),
+      alias = "Ping", group = Some(Grouping.Utilities), includeInIndex = true),
     Route(
       path = "/admin/shutdown", handler = new ShutdownHandler(this),
-      alias = "Shutdown", group = Some("Utilities"), includeInIndex = true),
+      alias = "Shutdown", group = Some(Grouping.Utilities), includeInIndex = true),
     Route(
       path = "/admin/tracing", handler = new TracingHandler,
-      alias = "Tracing", group = Some("Utilities"), includeInIndex = true),
+      alias = "Tracing", group = Some(Grouping.Utilities), includeInIndex = true),
     Route(
       path = "/admin/logging", handler = new LoggingHandler,
-      alias = "Logging", group = Some("Utilities"), includeInIndex = true),
+      alias = "Logging", group = Some(Grouping.Utilities), includeInIndex = true),
     Route(
       path = "/admin/metrics", handler = new MetricQueryHandler,
-      alias = "Watch", group = Some("Metrics"), includeInIndex = true),
+      alias = "Watch", group = Some(Grouping.Metrics), includeInIndex = true),
     Route(
       path = "/admin/clients/", handler = new ClientRegistryHandler,
       alias = "Clients", group = None, includeInIndex = false),
