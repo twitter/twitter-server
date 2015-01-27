@@ -7,6 +7,7 @@ import com.twitter.server.util.JsonConverter
 import com.twitter.server.view.ThreadsView
 import com.twitter.util.Future
 import java.lang.management.ManagementFactory
+import org.jboss.netty.handler.codec.http.QueryStringDecoder
 import scala.collection.JavaConverters._
 
 private[server] object ThreadsHandler {
@@ -22,6 +23,15 @@ private[server] object ThreadsHandler {
     ("sun.nio.ch.EPollArrayWrapper", "epollWait"),
     ("sun.nio.ch.KQueueArrayWrapper", "kevent0")
   )
+
+  private[handler] def isHtml(req: Request): Boolean = {
+    val decoder = new QueryStringDecoder(req.getUri)
+    if (decoder.getPath.endsWith(".json")) {
+      false
+    } else {
+      isWebBrowser(req)
+    }
+  }
 
 }
 
@@ -39,7 +49,7 @@ class ThreadsHandler extends Service[Request, Response] {
   import ThreadsHandler._
 
   def apply(req: Request): Future[Response] =
-    if (isWebBrowser(req)) {
+    if (isHtml(req)) {
       htmlResponse(req)
     } else {
       jsonResponse(req)
