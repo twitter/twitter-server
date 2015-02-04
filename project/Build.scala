@@ -5,9 +5,12 @@ import com.typesafe.sbt.SbtSite.site
 import com.typesafe.sbt.site.SphinxSupport.Sphinx
 
 object TwitterServer extends Build {
-  val libVersion = "1.9.0"
-  val utilVersion = "6.23.0"
-  val finagleVersion = "6.24.0"
+  val branch = Process("git" :: "symbolic-ref" :: "--short" :: "HEAD" :: Nil).!!.trim
+  val suffix = if (branch == "master") "" else "-SNAPSHOT"
+
+  val libVersion = "1.9.0" + suffix
+  val utilVersion = "6.23.0" + suffix
+  val finagleVersion = "6.24.0" + suffix
   val mustacheVersion = "0.8.12.1"
 
   // The following won't be necessary once we've upgraded internally to 2.4.
