@@ -13,7 +13,7 @@ $(document).ready(function() {
   var confirmationLinks = {
   "/abortabortabort": "abort",
   "/quitquitquit": "quit",
-  "/admin/shutdown": "shutdown"
+  "Shutdown": "shutdown"
   }
 
   for(var key in confirmationLinks) {
