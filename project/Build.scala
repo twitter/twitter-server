@@ -35,6 +35,7 @@ object TwitterServer extends Build {
     scalaVersion := "2.10.4",
     crossScalaVersions := Seq("2.10.4", "2.11.4"),
     libraryDependencies ++= Seq(
+      "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
       "org.scalatest" %% "scalatest" % "2.2.2" % "test",
       "junit" % "junit" % "4.10" % "test",
       "org.mockito" % "mockito-all" % "1.9.5" % "test"
