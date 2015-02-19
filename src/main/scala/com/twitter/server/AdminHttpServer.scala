@@ -141,10 +141,12 @@ trait AdminHttpServer { self: App =>
       HttpUtils.combine(localMuxer, HttpMuxer)
     }
 
+    log.info(s"Serving admin http on ${adminPort()}")
     adminHttpServer = Http.server
       .configured(param.Stats(NullStatsReceiver))
       .configured(param.Tracer(NullTracer))
       .configured(param.Monitor(loggingMonitor))
+      .configured(param.Label("adminhttp"))
       .serve(adminPort(), new NotFoundView andThen adminHttpMuxer)
   }
 
