@@ -24,15 +24,6 @@ private[server] object ThreadsHandler {
     ("sun.nio.ch.KQueueArrayWrapper", "kevent0")
   )
 
-  private[handler] def isHtml(req: Request): Boolean = {
-    val decoder = new QueryStringDecoder(req.getUri)
-    if (decoder.getPath.endsWith(".json")) {
-      false
-    } else {
-      isWebBrowser(req)
-    }
-  }
-
 }
 
 /**

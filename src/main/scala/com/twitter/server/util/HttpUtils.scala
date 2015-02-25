@@ -43,6 +43,18 @@ private[server] object HttpUtils {
   }
 
   /**
+   * Decides whether to use html or json
+   */
+  def isHtml(req: Request): Boolean = {
+    val decoder = new QueryStringDecoder(req.getUri)
+    if (decoder.getPath.endsWith(".json")) {
+      false
+    } else {
+      isWebBrowser(req)
+    }
+  }
+
+  /**
    * Create an http response with the give params.
    * Some of the headers like content length are inferred.
    *

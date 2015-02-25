@@ -5,6 +5,7 @@ import com.twitter.finagle.Service
 import com.twitter.io.{Buf, Charsets}
 import com.twitter.server.util.HttpUtils._
 import com.twitter.util.Await
+import org.jboss.netty.handler.codec.http.HttpHeaders
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -46,6 +47,20 @@ class HttpUtilsTest extends FunSuite {
       "User-Agent",
       "curl/7.9.8 (i686-pc-linux-gnu) libcurl 7.9.8 (OpenSSL 0.9.6b) (ipv6 enabled)")
     assert(!isWebBrowser(req))
+  }
+
+  test("isHtml") {
+    // path ends with ".json"
+    assert(!isHtml(http.Request("/admin/threads.json")))
+    assert(!isHtml(http.Request("/admin/threads.json?k=v")))
+
+    // if not ",json" then defaults to isWebBrowser
+    val req = http.Request("/admin/threads?k=v.json")
+    req.headers().set(HttpHeaders.Names.USER_AGENT, "Mozilla 5.0/TwitterTest")
+    assert(isHtml(req))
+
+    req.headers().set(HttpHeaders.Names.USER_AGENT, "Just/TwitterTest")
+    assert(!isHtml(req))
   }
 
   test("newResponse") {

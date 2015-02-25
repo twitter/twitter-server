@@ -25,6 +25,11 @@ New Features:
     We now surface this information in the admin server via /admin/clients/<client_name> and
     /admin/servers/<server_name>
 
+  * TwitterServer now exposes a /admin/registry.json endpoint, which speaks json and exposes the
+    values from util-registry as labels. Most labels are long-lived, and tend to represent something
+    about a process that is true for the entire lifetime, like the version of a library, or what a 
+    flag was set to.
+
 Dependencies:
 -------------
   * Remove dependency on mustache for admin server in favor of templating

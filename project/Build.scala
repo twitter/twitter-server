@@ -104,6 +104,7 @@ object TwitterServer extends Build {
       finagle("zipkin"),
       util("app"),
       util("core"),
+      util("registry"),
       util("jvm"),
       "com.github.spullara.mustache.java" % "compiler" % mustacheVersion
     ),
