@@ -1,2 +1,3 @@
 com.twitter.server.MockMetricsExporter
 com.twitter.server.MockOstrichExporter
+com.twitter.server.MockHostMetricsExporter

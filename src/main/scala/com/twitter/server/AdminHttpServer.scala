@@ -11,7 +11,7 @@ import com.twitter.server.util.HttpUtils
 import com.twitter.server.view.{IndexView, NotFoundView}
 import com.twitter.util.Monitor
 import java.net.InetSocketAddress
-import java.util.logging.Logger
+import java.util.logging.{Level, Logger}
 import org.jboss.netty.handler.codec.http.{HttpResponse, HttpRequest}
 
 object AdminHttpServer {
@@ -76,7 +76,7 @@ trait AdminHttpServer { self: App =>
     val log = Logger.getLogger(getClass.getName)
     val loggingMonitor = new Monitor {
       def handle(exc: Throwable): Boolean = {
-        log.severe(exc.toString)
+        log.log(Level.SEVERE, s"Caught exception in AdminHttpHandler: $exc", exc)
         false
       }
     }

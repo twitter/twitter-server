@@ -1,7 +1,12 @@
 package com.twitter.server
 
+import com.twitter.finagle.http.{Request, HttpMuxHandler, Response}
+import com.twitter.finagle.{Http, Service}
 import com.twitter.util._
+import java.io.ByteArrayOutputStream
 import java.net.{InetAddress, InetSocketAddress}
+import java.util.logging.{Logger, StreamHandler, SimpleFormatter}
+import org.jboss.netty.handler.codec.http.{HttpResponse, HttpRequest}
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -34,6 +39,14 @@ class TestTwitterServer extends TwitterServer {
   }
 }
 
+class MockExceptionHandler extends Service[Request, Response] {
+  val pattern = "/exception_please.json"
+  def apply(req: Request): Future[Response] = {
+    throw new Exception("test exception")
+  }
+}
+
+
 @RunWith(classOf[JUnitRunner])
 class TwitterServerTest extends FunSuite {
 
@@ -59,5 +72,29 @@ class TwitterServerTest extends FunSuite {
 
     twitterServer.main(args = Array.empty[String])
     assert(twitterServer.bootstrapSeq === Seq('Init, 'PreMain, 'Main, 'Exit, 'PostMain))
+  }
+
+  test("Exceptions thrown in handlers include stack traces") {
+    val twitterServer = new TestTwitterServer {
+      val mockExceptionHandler = new MockExceptionHandler
+      override def routes = super.routes ++ Seq(
+        AdminHttpServer.mkRoute(
+          "/exception_please.json", mockExceptionHandler, "mockExceptionHandler", None, false))
+
+      override def main() {
+        val port = adminHttpServer.boundAddress.asInstanceOf[InetSocketAddress].getPort
+
+        val logger = Logger.getLogger(getClass.getName)
+        val stream = new ByteArrayOutputStream
+        val handler = new StreamHandler(stream, new SimpleFormatter)
+        logger.addHandler(handler)
+
+        val client = Http.client.newService(s"localhost:${port}")
+        stream.reset()
+        Await.ready(client(Request("/exception_please.json")))
+        assert(stream.toString.contains("at com.twitter.server.MockExceptionHandler.apply"))
+      }
+    }
+    twitterServer.main(args = Array.empty[String])
   }
 }
