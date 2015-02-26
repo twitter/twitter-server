@@ -5,6 +5,7 @@ import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils._
 import com.twitter.server.util.JsonConverter
 import com.twitter.util.Future
+import com.twitter.util.registry.GlobalRegistry
 import java.lang.management.ManagementFactory
 import java.util.{Date, Properties}
 import scala.collection.JavaConverters._
@@ -40,15 +41,22 @@ class ServerInfoHandler(obj: AnyRef) extends Service[Request, Response] {
     "build_branch_name" -> "unknown",
     "merge_base" -> "unknown",
     "merge_base_commit_date" -> "unknown",
-    "scm_repository" -> "unknown",
-    "start_time" -> new Date(mxRuntime.getStartTime).toString
+    "scm_repository" -> "unknown"
   )
 
-  private[this] val serverInfo = basicServerInfo ++ buildProperties.asScala ++ Map(
+  private[this] val combinedInfo = basicServerInfo ++ buildProperties.asScala
+
+  private[this] val registry = GlobalRegistry.get
+  combinedInfo.foreach { case (key, value) =>
+    registry.put(Seq("build.properties", key), value)
+  }
+
+  private[this] val serverInfo = combinedInfo ++ Map(
     "build_last_few_commits" ->
       buildProperties.getProperty("build_last_few_commits", "unknown").split("\n"),
     "build" ->
-      buildProperties.getProperty("build_name", "unknown")
+      buildProperties.getProperty("build_name", "unknown"),
+    "start_time" -> new Date(mxRuntime.getStartTime).toString
   ) - "build_name"
 
   def apply(req: Request): Future[Response] = {

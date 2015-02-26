@@ -2,6 +2,7 @@ package com.twitter.server.handler
 
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util.Await
+import com.twitter.util.registry.{Registry, GlobalRegistry, SimpleRegistry}
 import org.jboss.netty.handler.codec.http.HttpResponseStatus
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
@@ -26,10 +27,18 @@ class ServerInfoHandlerTest extends FunSuite {
     assert(info contains("\"foo\" : \"bar\""))
   }
 
-  test("content-type") {
+  test("ServerInfo handler returns the right content-type") {
     val handler = new ServerInfoHandler(this)
     val req = Request("/")
     val res = Response(Await.result(handler(req)))
     assert(res.contentType === Some("application/json;charset=UTF-8"))
+  }
+
+  test("ServerInfo handler adds build properties to Global Registry on instantiation") {
+    val simple = new SimpleRegistry()
+    GlobalRegistry.withRegistry(simple) {
+      new ServerInfoHandler(this)
+      assert(GlobalRegistry.get.toSet.nonEmpty)
+    }
   }
 }

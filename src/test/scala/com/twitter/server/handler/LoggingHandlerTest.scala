@@ -35,9 +35,10 @@ class LoggingHandlerTest extends FunSuite {
   test("change log level") {
     val handler = new LoggingHandler
 
-    assert(Logger("").getLevel === Level.INFO)
+    Logger("").setLevel(Level.INFO)
+    assert(Logger("").getLevel == Level.INFO)
     Await.result(handler(http.Request("/?logger=root&level=DEBUG")))
-    assert(Logger("").getLevel === Level.DEBUG)
+    assert(Logger("").getLevel == Level.DEBUG)
   }
 
   test("text output") {
