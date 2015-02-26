@@ -4,7 +4,7 @@ import com.twitter.finagle.context.Contexts
 import com.twitter.logging.{Level, Logger}
 import com.twitter.util.Time
 import com.twitter.util.events.{Event, Sink}
-import java.util.logging.{LogRecord, LogManager}
+import java.util.logging.{LogManager, LogRecord}
 import org.junit.runner.RunWith
 import org.scalacheck.Gen
 import org.scalatest.FunSuite
@@ -33,7 +33,7 @@ class EventSinkTest extends FunSuite with GeneratorDrivenPropertyChecks {
       } yield (journal, captures)
 
       forAll(genTestInputs) { case (journal, captures) =>
-        val sink = mkSink()
+        val sink = Sink.of(mutable.ListBuffer.empty)
         val config = Configuration(sink, captures:_*)
 
         // Attach the handlers with the sink and capture specification.
@@ -58,7 +58,8 @@ class EventSinkTest extends FunSuite with GeneratorDrivenPropertyChecks {
 
               case _ => false
             }
-        }.map(e => e.level -> e.message))
+          }.map(e => e.level -> e.message)
+        )
       }
     }
   }
@@ -83,16 +84,8 @@ private object EventSinkTest {
   } yield Entry(logger, level, message.take(10))
 
   def normalize(e: Event) = e match {
-    case Event(Record, _, _, r: LogRecord, _) => Some(r.getLevel -> r.getMessage)
+    case Event(Record, _, _, log: LogRecord, _) => Some(log.getLevel -> log.getMessage)
     case _ => None
-  }
-
-  // An unsized Sink.
-  def mkSink(): Sink = new Sink {
-    val buffer = mutable.ListBuffer.empty[Event]
-    val events = buffer.iterator
-    def event(e: Event.Type, l: Long, o: Object, d: Double) =
-      buffer += Event(e, Time.now, l, o, d)
   }
 
   // Given a list of loggers, we can generate a list of captures by sequencing

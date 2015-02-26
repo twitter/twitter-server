@@ -2,8 +2,10 @@ package com.twitter.server
 
 import com.twitter.app.App
 import com.twitter.finagle.context.Contexts
+import com.twitter.io.Buf
 import com.twitter.logging.{Logger, Handler, Formatter, Level}
 import com.twitter.util.events.{Event, Sink}
+import com.twitter.util.{Return, Throw, Time, Try}
 import java.util.logging.LogRecord
 import scala.annotation.varargs
 
@@ -53,7 +55,37 @@ object EventSink {
 
   val DefaultConfig = Configuration(Sink.default, Capture(Logger.get(""), Level.ALL))
   val eventSinkCtx = new Contexts.local.Key[Configuration]
-  val Record = new Event.Type { }
+
+  val Record = {
+    case class Log(level: String, message: String)
+    case class Envelope(id: String, when: Long, data: Log)
+
+    new Event.Type {
+      val id = "Record"
+
+      def serialize(event: Event) = event match {
+        case Event(etype, when, _, log: LogRecord, _) if etype eq this =>
+          val data = Log(log.getLevel.getName, log.getMessage)
+          val env = Envelope(id, when.inMilliseconds, data)
+          Try(Buf.Utf8(Json.serialize(env)))
+
+        case _ =>
+          Throw(new IllegalArgumentException("unknown format"))
+      }
+
+      def deserialize(buf: Buf) = for {
+        (idd, when, data) <- Buf.Utf8.unapply(buf) match {
+          case None => Throw(new IllegalArgumentException("unknown format"))
+          case Some(str) => Try {
+            val env = Json.deserialize[Envelope](str)
+            (env.id, Time.fromMilliseconds(env.when), env.data)
+          }
+        }
+        if idd == id
+        level <- Try(Level.parse(data.level).get)
+      } yield Event(this, when, objectVal = new LogRecord(level, data.message))
+    }
+  }
 
   private def mkHandler(sink: Sink, level: Level, formatter: Formatter): Handler =
     new Handler(formatter, Some(level)) {
@@ -71,3 +103,33 @@ object EventSink {
     }
   }
 }
+
+private object Json {
+  import com.fasterxml.jackson.core.`type`.TypeReference
+  import com.fasterxml.jackson.databind.{ObjectMapper, JsonNode}
+  import com.fasterxml.jackson.module.scala.DefaultScalaModule
+  import java.lang.reflect.{Type, ParameterizedType}
+
+  val mapper = new ObjectMapper()
+  mapper.registerModule(DefaultScalaModule)
+
+  def serialize(o: AnyRef): String = mapper.writeValueAsString(o)
+
+  def deserialize[T: Manifest](value: String): T =
+    mapper.readValue(value, typeReference[T])
+
+  def deserialize[T: Manifest](node: JsonNode): T =
+    mapper.readValue(node.traverse, typeReference[T])
+
+  private def typeReference[T: Manifest] = new TypeReference[T] {
+    override def getType = typeFromManifest(manifest[T])
+  }
+
+  private def typeFromManifest(m: Manifest[_]): Type =
+    if (m.typeArguments.isEmpty) m.runtimeClass else new ParameterizedType {
+      def getRawType = m.runtimeClass
+      def getActualTypeArguments = m.typeArguments.map(typeFromManifest).toArray
+      def getOwnerType = null
+    }
+}
+
