@@ -121,7 +121,7 @@ private object JsonSinkTest {
   import Arbitrary.arbitrary
 
   case class Entry[A](e: Event.Type, l: Long, o: A, d: Double)
-  case class Envelope[A](id: String, when: Long, l: Long, o: A, d: Double)
+  case class Envelope[A](id: String, when: Long, l: Long, o: A, d: Double, t: Long, s: Long)
 
   // Convenience wrapper around Event.Type that preserves type information for
   // objectVal -- we need this to deserialize.
@@ -133,8 +133,8 @@ private object JsonSinkTest {
     val id = idd
 
     def serialize(event: Event) = event match {
-      case Event(etype, when, l, o, d) if etype eq this =>
-        val env = Envelope(id, when.inMilliseconds, l, o, d)
+      case Event(etype, when, l, o, d, t, s) if etype eq this =>
+        val env = Envelope(id, when.inMilliseconds, l, o, d, t, s)
         Try(Buf.Utf8(Json.serialize(env)))
 
       case _ => Throw(new IllegalArgumentException("unknown format"))
@@ -163,7 +163,7 @@ private object JsonSinkTest {
 
   // Define LogRecord equality.
   def normalizeLog(e: Event): Event = e match {
-    case Event(_, _, _, log: LogRecord, _) =>
+    case Event(_, _, _, log: LogRecord, _, _, _) =>
       e.copy(objectVal = log.getLevel -> log.getMessage)
     case _ =>
       e

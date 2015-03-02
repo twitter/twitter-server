@@ -84,7 +84,7 @@ private object EventSinkTest {
   } yield Entry(logger, level, message.take(10))
 
   def normalize(e: Event) = e match {
-    case Event(Record, _, _, log: LogRecord, _) => Some(log.getLevel -> log.getMessage)
+    case Event(Record, _, _, log: LogRecord, _, _, _) => Some(log.getLevel -> log.getMessage)
     case _ => None
   }
 
