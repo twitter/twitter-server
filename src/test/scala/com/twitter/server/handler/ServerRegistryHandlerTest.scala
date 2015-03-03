@@ -17,7 +17,7 @@ class ServerRegistryHandlerTest extends FunSuite {
     val metricsCtx = new MetricSourceTest.Ctx
     import metricsCtx._
 
-    val registry = new StackRegistry {}
+    val registry = new StackRegistry { def registryName: String = "server" }
     registry.register("server0", ":8080", StackServer.newStack, Stack.Params.empty)
     val handler = new ServerRegistryHandler(source, registry)
 

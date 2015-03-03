@@ -19,7 +19,7 @@ class ClientRegistryHandlerTest extends FunSuite {
     val metricsCtx = new MetricSourceTest.Ctx
     import metricsCtx._
 
-    val registry = new StackRegistry {}
+    val registry = new StackRegistry { def registryName: String = "client" }
     registry.register("client0", "localhost:8080", StackClient.newStack, Stack.Params.empty)
     val handler = new ClientRegistryHandler(source, registry)
 
@@ -38,7 +38,7 @@ class ClientRegistryHandlerTest extends FunSuite {
       val metricsCtx = new MetricSourceTest.Ctx
       import metricsCtx._
 
-      val registry = new StackRegistry {}
+      val registry = new StackRegistry { def registryName: String = "client"}
       registry.register("client0", "localhost:8080", StackClient.newStack, Stack.Params.empty)
 
       val handler = new ClientRegistryHandler(source, registry)

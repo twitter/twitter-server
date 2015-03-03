@@ -34,20 +34,7 @@ private[server] object StackRegistryView {
             </tr>"""
       }).mkString("\n")
 
-    // Introspect the entries stack and params. We limit the
-    // reflection of params to case classes.
-    val modules = (entry.stack.tails map { node =>
-      val raw = node.head.parameters.map { p => entry.params(p) }
-      val reflected = raw.foldLeft(Seq[(String, String)]()) {
-        case (seq, p: Product) =>
-          val fields = p.getClass.getDeclaredFields.map(_.getName).toSeq
-          val values = p.productIterator.map(_.toString).toSeq
-          seq ++ (fields.zipAll(values, "<unknown>", "<unknown>"))
-
-        case (seq, _) => seq
-      }
-      (node.head.role.name, node.head.description, reflected)
-    }).toSeq
+    val modules = entry.modules
 
     s"""<h2>
           ${entry.name}
@@ -69,7 +56,7 @@ private[server] object StackRegistryView {
             <div class="tabbable tabs-left">
               <ul class="nav nav-tabs">
                 ${
-                   (for ((role, _, _) <- modules) yield {
+                   (for (StackRegistry.Module(role, _, _) <- modules) yield {
                       s"""<li><a href="#${role}-module" data-toggle="tab">${role}</a></li>"""
                     }).mkString("\n")
                  }
@@ -78,7 +65,7 @@ private[server] object StackRegistryView {
             <!-- tab content -->
             <div class="tab-content">
               ${
-                (for ((role, desc, params) <- modules) yield {
+                (for (StackRegistry.Module(role, desc, params) <- modules) yield {
                   s"""<div class="tab-pane" id="${role}-module">
                         <div style="display:inline-block; width:50%">
                           <div class="panel panel-default">
