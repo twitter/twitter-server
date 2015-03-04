@@ -28,7 +28,6 @@ class JsonSinkTest extends FunSuite with GeneratorDrivenPropertyChecks {
     sink.event(Record, objectVal = new LogRecord(Level.INFO, "world"))
     sink.event(Trace, objectVal = Annotation.Message("goodbye"))
     sink.event(Trace, objectVal = Annotation.LocalAddr(new InetSocketAddress(0)))
-    sink.event(Trace, objectVal = Annotation.BinaryAnnotation("hi", 3))
 
     val identity = JsonSink.serialize _ andThen JsonSink.deserialize
     val events = Await.result(identity(sink))
