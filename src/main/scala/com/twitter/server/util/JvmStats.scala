@@ -1,9 +1,7 @@
 package com.twitter.server.util
 
 import com.twitter.finagle.stats.{BroadcastStatsReceiver, StatsReceiver}
-import com.twitter.util.Try
 import java.lang.management.{ManagementFactory, BufferPoolMXBean}
-import java.lang.reflect.Method
 import scala.collection.mutable
 
 object JvmStats {
@@ -13,8 +11,7 @@ object JvmStats {
   // set used for keeping track of jvm gauges (otherwise only weakly referenced)
   private[this] val gauges = mutable.Set.empty[Any]
 
-  private[this] val allocations = new Allocations()
-  allocations.start()
+  private[this] var allocations: Allocations = _
 
   def register(statsReceiver: StatsReceiver) {
     val stats = statsReceiver.scope("jvm")
@@ -111,6 +108,8 @@ object JvmStats {
     gauges.add(gcStats.addGauge("cycles") { gcPool.map(_.getCollectionCount).filter(_ > 0).sum })
     gauges.add(gcStats.addGauge("msec") { gcPool.map(_.getCollectionTime).filter(_ > 0).sum })
 
+    allocations = new Allocations(gcStats)
+    allocations.start()
     if (allocations.trackingEden) {
       val allocationStats = memStats.scope("allocations")
       val eden = allocationStats.scope("eden")

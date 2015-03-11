@@ -1,5 +1,6 @@
 package com.twitter.server.util
 
+import com.twitter.finagle.stats.StatsReceiver
 import java.lang.management.{MemoryPoolMXBean, MemoryUsage, ManagementFactory}
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.atomic.AtomicLong
@@ -16,8 +17,10 @@ private[util] object Allocations {
 
 /**
  * Provides visibility into object allocations.
+ *
+ * @param statsReceiver typically scoped to /jvm/gc/
  */
-private[util] class Allocations {
+private[util] class Allocations(statsReceiver: StatsReceiver) {
 
   import Allocations.Unknown
 
@@ -33,6 +36,8 @@ private[util] class Allocations {
 
   private[this] val beanAndListeners =
     new LinkedBlockingQueue[(NotificationEmitter, NotificationListener)]()
+
+  private[this] val edenGcPauses = statsReceiver.scope("eden").stat("pause_msec")
 
   private[util] def start() {
     edenPool.flatMap { bean =>
@@ -128,6 +133,8 @@ private[util] class Allocations {
       memoryUsages.headOption
     }
 
+    // the Notification's userData correspond to
+    // `com.sun.management.GarbageCollectionNotificationInfo`s.
     override def handleNotification(notification: Notification, handback: Any) {
       val userData = notification.getUserData match {
         case cd: CompositeData if cd.containsKey("gcInfo") => cd
@@ -137,6 +144,14 @@ private[util] class Allocations {
         case cd: CompositeData => cd
         case _ => return
       }
+
+      if (gcInfo.containsKey("duration")) {
+        gcInfo.get("duration") match {
+          case duration: java.lang.Long => edenGcPauses.add(duration.floatValue)
+          case _ =>
+        }
+      }
+
       if (!gcInfo.containsKey("memoryUsageBeforeGc") || !gcInfo.containsKey("memoryUsageAfterGc"))
         return
 
