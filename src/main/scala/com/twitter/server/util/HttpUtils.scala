@@ -1,8 +1,8 @@
 package com.twitter.server.util
 
+import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Status, Version}
 import com.twitter.finagle.netty3.BufChannelBuffer
-import com.twitter.finagle.Service
 import com.twitter.io.Buf
 import com.twitter.util.Future
 import org.jboss.netty.handler.codec.http._
@@ -20,19 +20,33 @@ private[server] object HttpUtils {
 
   /**
    * Creates a http [[com.twitter.finagle.Service]] which attempts a
-   * request on `svc0` and falls back to `svc1` if the request
-   * fails with a 404.
+   * request on the given `services`, in order, until a service returns
+   * a response with a non-404 status code. If none return a non-404,
+   * the response of the last service is used.
    */
-  def combine(
-    svc0: Service[Request, Response],
-    svc1: Service[Request, Response]
-  ): Service[Request, Response] =
+  def combine(services: Seq[Service[Request, Response]]): Service[Request, Response] = {
+    if (services.isEmpty)
+      throw new IllegalArgumentException("must have at least one service")
+
     new Service[Request, Response] {
-      def apply(req: Request) = svc0(req) flatMap { rep =>
-        if (rep.getStatus == Status.NotFound) svc1(req)
-        else Future.value(rep)
+      private def go(req: Request, svcs: Seq[Service[Request, Response]]): Future[Response] = {
+        svcs.size match {
+          case 0 => throw new AssertionError()
+          case 1 => svcs(0)(req)
+          case _ =>
+            svcs.head(req).flatMap { rep =>
+              if (rep.getStatus == Status.NotFound)
+                go(req, svcs.tail)
+              else
+                Future.value(rep)
+            }
+        }
       }
+
+      def apply(req: Request): Future[Response] =
+        go(req, services)
     }
+  }
 
   /**
    * Uses basic heuristics to determine if the request is coming from a web browser.

@@ -1,7 +1,7 @@
 package com.twitter.server.util
 
-import com.twitter.finagle.http
-import com.twitter.finagle.Service
+import com.twitter.finagle.{Service, http}
+import com.twitter.finagle.http.Status
 import com.twitter.io.{Buf, Charsets}
 import com.twitter.server.util.HttpUtils._
 import com.twitter.util.Await
@@ -25,13 +25,31 @@ class HttpUtilsTest extends FunSuite {
     val muxer0 = new http.HttpMuxer().withHandler("/hello", hello)
     val muxer1 = new http.HttpMuxer().withHandler("/world", world)
 
-    val svc = combine(muxer0, muxer1)
+    val svc = combine(Seq(muxer0, muxer1))
 
     val res0 = Await.result(svc(http.Request("/hello")))
     assert(res0.getContent.toString(Charsets.Utf8) === "hello")
 
     val res1 = Await.result(svc(http.Request("/world")))
     assert(res1.getContent.toString(Charsets.Utf8) === "world")
+
+
+    val muxer2 = new http.HttpMuxer().withHandler("/hello",
+      new Service[Request, Response] {
+        def apply(req: Request) = newOk("sup")
+      }
+    )
+
+    val svcSeq1 = combine(Seq(muxer0, muxer1, muxer2))
+    val res2 = Await.result(svcSeq1(http.Request("/hello")))
+    assert(res2.getContent.toString(Charsets.Utf8) === "hello")
+
+    val svcSeq2 = combine(Seq(muxer2, muxer0, muxer1))
+    val res3 = Await.result(svcSeq2(http.Request("/hello")))
+    assert(res3.getContent.toString(Charsets.Utf8) === "sup")
+
+    val res4 = Await.result(svcSeq1(http.Request("/an404")))
+    assert(res4.getStatus == Status.NotFound)
   }
 
   test("isWebBrowser") {

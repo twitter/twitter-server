@@ -3,6 +3,8 @@ package com.twitter.server
 import com.twitter.app.App
 import com.twitter.finagle.client.ClientRegistry
 import com.twitter.finagle.http.{Response, Request, HttpMuxer}
+import com.twitter.finagle.httpx
+import com.twitter.finagle.httpx.compat.NettyClientAdaptor
 import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.tracing.NullTracer
@@ -84,7 +86,7 @@ trait AdminHttpServer { self: App =>
     // Stat libraries join the global muxer namespace.
     // Special case and group them here.
     val (metricLinks, otherLinks) = {
-      val links = HttpMuxer.patterns map {
+      val links = (HttpMuxer.patterns ++ httpx.HttpMuxer.patterns).map {
         case path@"/admin/metrics.json" => IndexView.Link(path, s"$path?pretty=true")
         case path => IndexView.Link(path, path)
       }
@@ -132,13 +134,16 @@ trait AdminHttpServer { self: App =>
 
     // create a service which multiplexes across all endpoints.
     val adminHttpMuxer = {
+      val httpxMuxer: Service[HttpRequest, HttpResponse] =
+        NettyClientAdaptor.andThen(httpx.HttpMuxer)
+
       val localMuxer = routes.foldLeft(new HttpMuxer) {
         case (muxer, route) =>
           log.info(s"${route.path} => ${route.handler.getClass.getName}")
           val service = new IndexView(route.alias, route.path, index) andThen route.handler
           muxer.withHandler(route.path, service)
       }
-      HttpUtils.combine(localMuxer, HttpMuxer)
+      HttpUtils.combine(Seq(localMuxer, HttpMuxer, httpxMuxer))
     }
 
     log.info(s"Serving admin http on ${adminPort()}")

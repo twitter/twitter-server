@@ -100,12 +100,14 @@ object TwitterServer extends Build {
     libraryDependencies ++= Seq(
       finagle("core"),
       finagle("http"),
-      util("logging"),
+      finagle("httpx"),
+      finagle("httpx-compat"),
       finagle("zipkin"),
       util("app"),
       util("core"),
-      util("registry"),
       util("jvm"),
+      util("logging"),
+      util("registry"),
       "com.github.spullara.mustache.java" % "compiler" % mustacheVersion
     ),
     libraryDependencies <++= scalaVersion(jacksonLibs(_)),
