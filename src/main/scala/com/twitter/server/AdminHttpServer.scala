@@ -143,7 +143,7 @@ trait AdminHttpServer { self: App =>
           val service = new IndexView(route.alias, route.path, index) andThen route.handler
           muxer.withHandler(route.path, service)
       }
-      HttpUtils.combine(Seq(localMuxer, HttpMuxer, httpxMuxer))
+      HttpUtils.combine(Seq(localMuxer, httpxMuxer, HttpMuxer))
     }
 
     log.info(s"Serving admin http on ${adminPort()}")
