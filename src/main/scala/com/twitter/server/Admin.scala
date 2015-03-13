@@ -1,7 +1,6 @@
 package com.twitter.server
 
 import com.twitter.app.App
-import com.twitter.util.registry.GlobalRegistry
 import com.twitter.server.handler._
 import com.twitter.server.view._
 
@@ -88,7 +87,7 @@ trait Admin { self: App with AdminHttpServer =>
         baseResourcePath = "twitter-server"),
       alias = "Files", group = None, includeInIndex = false),
     Route(
-      path = "/admin/registry.json", handler = new RegistryHandler(GlobalRegistry.get),
+      path = "/admin/registry.json", handler = new RegistryHandler,
       alias = "Registry", group = Some(Grouping.ProcessInfo), includeInIndex = true)
   )
 }

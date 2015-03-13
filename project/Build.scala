@@ -13,16 +13,11 @@ object TwitterServer extends Build {
   val finagleVersion = "6.24.0" + suffix
   val mustacheVersion = "0.8.12.1"
 
-  // The following won't be necessary once we've upgraded internally to 2.4.
-  def jacksonVersion(scalaVersion: String) =
-    CrossVersion.partialVersion(scalaVersion) match {
-      case Some((2, 11)) => "2.4.4"
-      case _ => "2.3.1"
-    }
+  val jacksonVersion = "2.4.4"
   def jacksonLibs(scalaVersion: String) = Seq(
-    "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion(scalaVersion),
-    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion(scalaVersion),
-    "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion(scalaVersion) exclude("com.google.guava", "guava"),
+    "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
+    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
+    "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion exclude("com.google.guava", "guava"),
     "com.google.guava" % "guava" % "16.0.1"
   )
 
