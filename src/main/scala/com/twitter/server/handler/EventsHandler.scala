@@ -1,40 +1,54 @@
 package com.twitter.server.handler
 
+import com.twitter.concurrent.Spool
 import com.twitter.finagle.Service
 import com.twitter.finagle.http
 import com.twitter.io.{Reader, Buf}
-import com.twitter.server.util.{HttpUtils, JsonSink}
 import com.twitter.server.util.HttpUtils.{Request, Response}
+import com.twitter.server.util.{HttpUtils, JsonSink}
 import com.twitter.util.events.{Sink, Event}
-import com.twitter.util.{Future, Throw, Return}
-import java.util.logging.LogRecord
+import com.twitter.util.Future
+import java.util.logging.{LogRecord, Logger}
 
 /**
  * "Controller" for displaying the current state of the sink.
  */
-class EventsHandler extends Service[Request, Response] {
+private[server] class EventsHandler(sink: Sink) extends Service[Request, Response] {
   import EventsHandler._
+
+  private[this] val log = Logger.getLogger(getClass.getName)
+
+  def this() = this(Sink.default)
 
   def apply(req: Request): Future[Response] =
     if (HttpUtils.isHtml(req)) doHtml(req) else doJson(req)
 
   private[this] def doJson(req: Request): Future[Response] = {
-    val reader = JsonSink.serialize(Sink.default)
+    val reader = JsonSink.serialize(sink)
     val response = http.Response()
     response.contentType = "application/x-ldjson"
     response.setChunked(true)
-    Reader.copy(reader, response.writer) ensure response.writer.close()
+    Reader.copy(reader, response.writer).onFailure { e =>
+      log.info("Encountered an error while writing the event stream: " + e)
+    }.ensure(response.writer.close())
     Future.value(response)
   }
 
-  private[this] def doHtml(req: Request): Future[Response] =
-    HttpUtils.newResponse(
-      contentType = "text/html;charset=UTF-8",
-      content = content(Sink.default)
-    )
+  private[this] def doHtml(req: Request): Future[Response] = {
+    val response = http.Response()
+    response.contentType = "text/html;charset=UTF-8"
+    response.setChunked(true)
+    val reader = content(sink)
+    Reader.copy(reader, response.writer).onFailure { e =>
+      log.info("Encountered an error while writing the event stream: " + e)
+    }.ensure(response.writer.close())
+    Future.value(response)
+  }
 }
 
 private object EventsHandler {
+  import Spool.*::
+
   val columns: Seq[String] =
     Seq("Event", "When", "LongVal", "ObjectVal", "DoubleVal", "TraceID", "SpanID")
 
@@ -46,7 +60,7 @@ private object EventsHandler {
     case _ => o.toString
   }
 
-  def rowOf(e: Event): String = Seq(
+  def rowOf(e: Event): Buf = Buf.Utf8(Seq(
     e.etype.id,
     s"<nobr>${e.when.toString}</nobr>",
     if (e.longVal == Event.NoLong) "" else e.longVal.toString,
@@ -54,14 +68,25 @@ private object EventsHandler {
     if (e.doubleVal == Event.NoDouble) "" else e.doubleVal.toString,
     if (e.traceIdVal == Event.NoTraceId) "" else e.traceIdVal.toString,
     if (e.spanIdVal == Event.NoSpanId) "" else e.spanIdVal.toString
-  ).mkString("<tr><td>", "</td><td>", "</td></tr>")
+  ).mkString("<tr><td>", "</td><td>", "</td></tr>"))
 
-  def tableOf(sink: Sink): String = s"""
-    <table class="table table-condensed table-striped">
+  def newline(buf: Buf): Buf = buf.concat(Buf.Utf8("\n"))
+
+  def tableOf(sink: Sink): Spool[Buf] =
+    Buf.Utf8(s"""<table class="table table-condensed table-striped">
       <caption>A log of events originating from this server process.</caption>
       <thead>$header</thead>
-      <tbody>${sink.events.map(rowOf).mkString("\n")}</tbody>
-    </table>"""
+      <tbody>"""
+    ) *:: Future.value(
+      // Note: The events iterator can be potentially large, so to avoid fully
+      // buffering a big HTML document, we stream it as soon as it's ready.
+      // HTML tables seemingly were designed with incremental display in mind
+      // (see http://tools.ietf.org/html/rfc1942), so user-agents may even be
+      // able to take advantage of this and begin rendering the table earlier,
+      // and progressively as rows arrive.
+      Spool.fromSeq(sink.events.toSeq).map(rowOf _ andThen newline) ++
+      Spool.fromSeq(Seq(Buf.Utf8("</tbody></table>")))
+    )
 
   def helpPage: String = """
   <h2>Events</h2>
@@ -84,7 +109,7 @@ private object EventsHandler {
   </code></pre>
   """
 
-  def content(sink: Sink): Buf =
-    if (Sink.enabled) Buf.Utf8(tableOf(sink))
-    else Buf.Utf8(helpPage)
+  def content(sink: Sink): Reader =
+    if (sink != Sink.Null) Reader.concat(tableOf(sink).map(Reader.fromBuf))
+    else Reader.fromBuf(Buf.Utf8(helpPage))
 }
