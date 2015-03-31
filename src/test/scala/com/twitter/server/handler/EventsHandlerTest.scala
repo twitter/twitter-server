@@ -49,4 +49,25 @@ class EventsHandlerTest extends FunSuite {
     assert(Await.result(content).isDefined)
     res.reader.discard()
   }
+
+  test("trace: empty sink") {
+    val empty = Sink.of(mutable.ListBuffer.empty)
+    val reader = TraceEventSink.serialize(empty)
+    val Buf.Utf8(json) = Await.result(Reader.readAll(reader))
+    assert(json == "[")
+  }
+
+  test("trace: base") {
+    val sink = Sink.of(mutable.ListBuffer.empty)
+    sink.event(Event.nullType, objectVal = "hello")
+
+    val reader = TraceEventSink.serialize(sink)
+    val Buf.Utf8(json) = Await.result(Reader.readAll(reader)).concat(Buf.Utf8("]"))
+
+    val doc = Json.deserialize[Seq[Map[String, Any]]](json)
+    val args = doc.head("args").asInstanceOf[Map[String, Any]]
+
+    assert(doc.head("name") == Event.nullType.id)
+    assert(args("objectVal") == "hello")
+  }
 }
