@@ -144,7 +144,12 @@ private object JsonSinkTest {
         case None => Throw(new IllegalArgumentException("unknown format"))
         case Some(str) => Try {
           val env = Json.mapper.readValue(str, classOf[Envelope[A]])
-          (env.id, Time.fromMilliseconds(env.when), env.l, env.o, env.d)
+
+          // 2.11 won't apply an implicit conversion targeting Object, but we
+          // can manually invoke the converter provided by the view bound.
+          val obj = implicitly[A => Object].apply(env.o)
+
+          (env.id, Time.fromMilliseconds(env.when), env.l, obj, env.d)
         }
       }
       if idd == id

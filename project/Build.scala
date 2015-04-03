@@ -14,7 +14,7 @@ object TwitterServer extends Build {
   val mustacheVersion = "0.8.12.1"
 
   val jacksonVersion = "2.4.4"
-  def jacksonLibs(scalaVersion: String) = Seq(
+  val jacksonLibs = Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
     "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion exclude("com.google.guava", "guava"),
@@ -24,11 +24,18 @@ object TwitterServer extends Build {
   def util(which: String) = "com.twitter" %% ("util-"+which) % utilVersion
   def finagle(which: String) = "com.twitter" %% ("finagle-"+which) % finagleVersion
 
+  def xmlLib(scalaVersion: String) = CrossVersion.partialVersion(scalaVersion) match {
+    case Some((2, scalaMajor)) if scalaMajor >= 11 => Seq(
+      "org.scala-lang.modules" %% "scala-xml" % "1.0.3"
+    )
+    case _ => Seq.empty
+  }
+
   val sharedSettings = Seq(
     version := libVersion,
     organization := "com.twitter",
-    scalaVersion := "2.10.4",
-    crossScalaVersions := Seq("2.10.4", "2.11.4"),
+    scalaVersion := "2.10.5",
+    crossScalaVersions := Seq("2.10.5", "2.11.6"),
     libraryDependencies ++= Seq(
       "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
       "org.scalatest" %% "scalatest" % "2.2.2" % "test",
@@ -105,7 +112,8 @@ object TwitterServer extends Build {
       util("registry"),
       "com.github.spullara.mustache.java" % "compiler" % mustacheVersion
     ),
-    libraryDependencies <++= scalaVersion(jacksonLibs(_)),
+    libraryDependencies ++= jacksonLibs,
+    libraryDependencies <++= scalaVersion(xmlLib(_)),
     ivyXML :=
       <dependencies>
         <dependency org="com.github.spullara.mustache.java" name="compiler" rev={mustacheVersion}>

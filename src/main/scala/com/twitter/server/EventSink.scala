@@ -57,8 +57,9 @@ object EventSink {
   val DefaultConfig = Configuration(Sink.default, Capture(Logger.get(""), Level.ALL))
   val eventSinkCtx = new Contexts.local.Key[Configuration]
 
+  private[this] case class Log(level: String, message: String)
+
   val Record = {
-    case class Log(level: String, message: String)
 
     new Event.Type {
       val id = "Record"
