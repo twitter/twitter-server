@@ -3,6 +3,7 @@ import Keys._
 import Tests._
 import com.typesafe.sbt.SbtSite.site
 import com.typesafe.sbt.site.SphinxSupport.Sphinx
+import sbtunidoc.Plugin.unidocSettings
 
 object TwitterServer extends Build {
   val branch = Process("git" :: "rev-parse" :: "--abbrev-ref" :: "HEAD" :: Nil).!!.trim
@@ -63,6 +64,8 @@ object TwitterServer extends Build {
     publishArtifact in Test := false,
     pomIncludeRepository := { _ => false },
     publishMavenStyle := true,
+    autoAPIMappings := true,
+    apiURL := Some(url("https://twitter.github.io/twitter-server/docs/")),
     pomExtra := (
       <url>https://github.com/twitter/twitter-server</url>
       <licenses>
@@ -96,7 +99,7 @@ object TwitterServer extends Build {
     base = file("."),
     settings = Project.defaultSettings ++
       sharedSettings ++
-      Unidoc.settings
+      unidocSettings
   ).settings(
     name := "twitter-server",
     libraryDependencies ++= Seq(
