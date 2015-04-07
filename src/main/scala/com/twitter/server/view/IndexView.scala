@@ -1,7 +1,6 @@
 package com.twitter.server.view
 
-import com.twitter.concurrent.Spool
-import com.twitter.concurrent.Spool.*::
+import com.twitter.concurrent.exp.AsyncStream
 import com.twitter.finagle.{Service, SimpleFilter}
 import com.twitter.finagle.http
 import com.twitter.io.{Reader, Buf, Charsets}
@@ -86,15 +85,16 @@ object IndexView {
                       <div class="col-md-12">"""
         )
       )
-      *:: Future.value(contents
-      *:: Future.value(Reader.fromBuf(
+      +:: contents
+      +:: AsyncStream.of(Reader.fromBuf(
         Buf.Utf8("""</div>
                     </div>
                   </div>
                 </div>
               </body>
             </html>"""))
-      *:: Future.value(Spool.empty[Reader]))))
+        )
+    )
   }
 }
 

@@ -30,9 +30,10 @@ class JsonSinkTest extends FunSuite with GeneratorDrivenPropertyChecks {
     sink.event(Trace, objectVal = Annotation.LocalAddr(new InetSocketAddress(0)))
 
     val identity = JsonSink.serialize _ andThen JsonSink.deserialize
-    val events = Await.result(identity(sink))
+    val events = identity(sink)
 
-    assert(Await.result(events.map(normalizeLog).toSeq) == sink.events.map(normalizeLog).toSeq)
+    assert(Await.result(events.map(normalizeLog).toSeq) ==
+      sink.events.map(normalizeLog).toSeq)
   }
 
   test("JsonSink.serialize: Record") {
@@ -75,8 +76,8 @@ class JsonSinkTest extends FunSuite with GeneratorDrivenPropertyChecks {
 
     forAll(genEntries(Event)) { entries =>
       entries.foreach(e => sink.event(e.e, e.l, e.o, e.d))
-      val fromBlind = Await.result(blindId(sink).flatMap(_.toSeq))
-      val fromDeser = Await.result(deserId(sink).flatMap(_.toSeq))
+      val fromBlind = Await.result(blindId(sink).toSeq)
+      val fromDeser = Await.result(deserId(sink).toSeq)
 
       assert(fromBlind == Nil)
       assert(fromDeser == sink.events.toSeq)
@@ -88,7 +89,7 @@ class JsonSinkTest extends FunSuite with GeneratorDrivenPropertyChecks {
     new TestType[String] {
       forAll(genEntries(Event)) { entries =>
         entries.foreach(e => sink.event(e.e, e.l, e.o, e.d))
-        val events = Await.result(identity(sink))
+        val events = identity(sink)
         assert(Await.result(events.toSeq) == sink.events.toSeq)
       }
     }
@@ -99,7 +100,7 @@ class JsonSinkTest extends FunSuite with GeneratorDrivenPropertyChecks {
     new TestType[Integer] {
       forAll(genEntries(Event)) { entries =>
         entries.foreach(e => sink.event(e.e, e.l, e.o, e.d))
-        val events = Await.result(identity(sink))
+        val events = identity(sink)
         assert(Await.result(events.toSeq) == sink.events.toSeq)
       }
     }
@@ -109,7 +110,7 @@ class JsonSinkTest extends FunSuite with GeneratorDrivenPropertyChecks {
     new TestType[List[Int]] {
       forAll(genEntries(Event)) { entries =>
         entries.foreach(e => sink.event(e.e, e.l, e.o, e.d))
-        val events = Await.result(identity(sink))
+        val events = identity(sink)
         assert(Await.result(events.toSeq) == sink.events.toSeq)
       }
     }

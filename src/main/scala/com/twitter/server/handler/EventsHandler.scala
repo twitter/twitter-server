@@ -1,6 +1,6 @@
 package com.twitter.server.handler
 
-import com.twitter.concurrent.Spool
+import com.twitter.concurrent.exp.AsyncStream
 import com.twitter.finagle.Service
 import com.twitter.finagle.http
 import com.twitter.io.{Reader, Buf}
@@ -43,8 +43,6 @@ private[server] class EventsHandler(sink: Sink) extends Service[Request, Respons
 }
 
 private object EventsHandler {
-  import Spool.*::
-
   val Html = "text/html;charset=UTF-8"
   val LineDelimitedJson = "application/x-ldjson;charset=UTF-8"
   val TraceEvent = "trace/json;charset=UTF-8"
@@ -72,20 +70,20 @@ private object EventsHandler {
 
   def newline(buf: Buf): Buf = buf.concat(Buf.Utf8("\n"))
 
-  def tableOf(sink: Sink): Spool[Buf] =
+  def tableOf(sink: Sink): AsyncStream[Buf] =
     Buf.Utf8(s"""<table class="table table-condensed table-striped">
       <caption>A log of events originating from this server process.</caption>
       <thead>$header</thead>
       <tbody>"""
-    ) *:: Future.value(
+    ) +:: (
       // Note: The events iterator can be potentially large, so to avoid fully
       // buffering a big HTML document, we stream it as soon as it's ready.
       // HTML tables seemingly were designed with incremental display in mind
       // (see http://tools.ietf.org/html/rfc1942), so user-agents may even be
       // able to take advantage of this and begin rendering the table earlier,
       // and progressively as rows arrive.
-      Spool.fromSeq(sink.events.toSeq).map(rowOf _ andThen newline) ++
-      Spool.fromSeq(Seq(Buf.Utf8("</tbody></table>")))
+      AsyncStream.fromSeq(sink.events.toSeq).map(rowOf _ andThen newline) ++
+      AsyncStream.of(Buf.Utf8("</tbody></table>"))
     )
 
   def helpPage: String = """
@@ -150,11 +148,10 @@ private object TraceEventSink {
     // Note: we leave out the "]" from the JSON array since it's optional. See:
     // http://goo.gl/iN9ozV#heading=h.f2f0yd51wi15.
     if (events.isEmpty) Reader.fromBuf(leftBracket) else Reader.concat(
-      Reader.fromBuf(leftBracket.concat(events.head)) *:: Future.value(
-        Spool.fromSeq(events.tail.map { buf =>
+      Reader.fromBuf(leftBracket.concat(events.head)) +::
+        AsyncStream.fromSeq(events.tail.map { buf =>
           Reader.fromBuf(delim.concat(buf))
         })
-      )
     )
   }
 }
