@@ -1,5 +1,6 @@
 package com.twitter.server.view
 
+import com.twitter.finagle.param.Label
 import com.twitter.finagle.util.StackRegistry
 import com.twitter.finagle.{Stack, StackBuilder, Stackable}
 import org.junit.runner.RunWith
@@ -47,7 +48,7 @@ private[server] object StackRegistryViewTest {
   sb.push(Bar.module)
   sb.push(Foo.module)
   val stk = sb.result
-  val prms = Stack.Params.empty
+  val prms = Stack.Params.empty + Label("test")
 }
 
 @RunWith(classOf[JUnitRunner])
@@ -55,13 +56,13 @@ class StackRegistryViewTest extends FunSuite {
   import StackRegistryViewTest._
 
   test("render stack") {
-    val entry0 = StackRegistry.Entry("test", "", stk, prms)
+    val entry0 = StackRegistry.Entry("", stk, prms)
     val res0 = StackRegistryView.render(entry0, None)
     assert(res0.contains("foo"))
     assert(res0.contains("bar"))
     assert(res0.contains("baz"))
 
-    val entry1 = StackRegistry.Entry("test", "", stk.remove(Stack.Role("baz")), prms)
+    val entry1 = StackRegistry.Entry("", stk.remove(Stack.Role("baz")), prms)
     val res1 = StackRegistryView.render(entry1, None)
     assert(res1.contains("foo"))
     assert(res1.contains("bar"))
@@ -69,12 +70,12 @@ class StackRegistryViewTest extends FunSuite {
   }
 
   test("render params") {
-    val entry0 = StackRegistry.Entry("test", "", stk, prms)
+    val entry0 = StackRegistry.Entry("", stk, prms)
     val res0 = StackRegistryView.render(entry0, None)
     assert(res0.contains("incrementBy"))
     assert(res0.contains("50"))
 
-    val entry1 = StackRegistry.Entry("test", "", stk, prms + Incr(10))
+    val entry1 = StackRegistry.Entry("", stk, prms + Incr(10))
     val res1 = StackRegistryView.render(entry1, None)
     assert(res1.contains("incrementBy"))
     assert(res1.contains("10"))

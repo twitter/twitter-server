@@ -3,7 +3,7 @@ package com.twitter.server.handler
 import com.twitter.conversions.time._
 import com.twitter.finagle.client.StackClient
 import com.twitter.finagle.util.StackRegistry
-import com.twitter.finagle.{http, Stack}
+import com.twitter.finagle.{http, Stack, param}
 import com.twitter.io.Charsets
 import com.twitter.server.util.HttpUtils._
 import com.twitter.server.util.MetricSourceTest
@@ -20,7 +20,7 @@ class ClientRegistryHandlerTest extends FunSuite {
     import metricsCtx._
 
     val registry = new StackRegistry { def registryName: String = "client" }
-    registry.register("client0", "localhost:8080", StackClient.newStack, Stack.Params.empty)
+    registry.register("localhost:8080", StackClient.newStack, Stack.Params.empty + param.Label("client0"))
     val handler = new ClientRegistryHandler(source, registry)
 
     val res = Await.result(handler(http.Request("/client0")))
@@ -39,7 +39,7 @@ class ClientRegistryHandlerTest extends FunSuite {
       import metricsCtx._
 
       val registry = new StackRegistry { def registryName: String = "client"}
-      registry.register("client0", "localhost:8080", StackClient.newStack, Stack.Params.empty)
+      registry.register("localhost:8080", StackClient.newStack, Stack.Params.empty + param.Label("client0"))
 
       val handler = new ClientRegistryHandler(source, registry)
 

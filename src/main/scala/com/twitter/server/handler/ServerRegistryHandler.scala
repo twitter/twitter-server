@@ -16,17 +16,19 @@ private object ServerRegistryHandler {
         <script type="application/javascript" src="/admin/files/js/chart-renderer.js"></script>
         <ul id="server-tabs" class="nav nav-tabs" data-refresh-uri="/admin/metrics">
           ${
-             (for ((scope, StackRegistry.Entry(name, addr, _, _)) <- servers) yield {
-                s"""<li><a href="#${name}-entry" data-toggle="tab">$scope</a></li>"""
+             (for {
+                 (scope, entry) <- servers
+               } yield {
+                 s"""<li><a href="#${entry.name}-entry" data-toggle="tab">$scope</a></li>"""
              }).mkString("\n")
            }
         </ul>
         <!-- Tab panes -->
         <div id="servers" class="tab-content">
           ${
-             (for ((scope, StackRegistry.Entry(name, addr, _, _)) <- servers) yield {
+             (for ((scope, entry) <- servers) yield {
                 val scopeDash = scope.replace("/", "-")
-                s"""<div class="tab-pane borders" id="${name}-entry">
+                s"""<div class="tab-pane borders" id="${entry.name}-entry">
                       <div class="row">
                         <!-- server stats -->
                         <div class="server-info col-md-3">
@@ -80,8 +82,8 @@ class ServerRegistryHandler(
     path.split('/').last match {
       case idx@("index.html" | "index.htm" | "index.txt" | "servers") =>
         val servers = (registry.registrants flatMap {
-          case e@StackRegistry.Entry(name, _, _, _) if name.nonEmpty =>
-            for (scope <- findScope(name)) yield (scope, e)
+          case e: StackRegistry.Entry if e.name.nonEmpty =>
+            for (scope <- findScope(e.name)) yield (scope, e)
 
           case _ => Nil
         }).toSeq
