@@ -3,6 +3,7 @@ package com.twitter.server.handler
 import com.twitter.concurrent.exp.AsyncStream
 import com.twitter.finagle.Service
 import com.twitter.finagle.http
+import com.twitter.finagle.tracing.SpanId
 import com.twitter.io.{Reader, Buf}
 import com.twitter.server.util.HttpUtils.{Request, Response}
 import com.twitter.server.util.{HttpUtils, JsonSink}
@@ -64,8 +65,8 @@ private object EventsHandler {
     if (e.longVal == Event.NoLong) "" else e.longVal.toString,
     if (e.objectVal == Event.NoObject) "" else showObject(e.objectVal),
     if (e.doubleVal == Event.NoDouble) "" else e.doubleVal.toString,
-    if (e.traceIdVal == Event.NoTraceId) "" else e.traceIdVal.toString,
-    if (e.spanIdVal == Event.NoSpanId) "" else e.spanIdVal.toString
+    if (e.traceIdVal == Event.NoTraceId) "" else SpanId.toString(e.traceIdVal),
+    if (e.spanIdVal == Event.NoSpanId) "" else SpanId.toString(e.spanIdVal)
   ).mkString("<tr><td>", "</td><td>", "</td></tr>"))
 
   def newline(buf: Buf): Buf = buf.concat(Buf.Utf8("\n"))
