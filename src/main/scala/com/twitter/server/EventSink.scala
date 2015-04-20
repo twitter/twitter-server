@@ -18,19 +18,21 @@ import scala.annotation.varargs
  * [[com.twitter.finagle.context.Contexts]] to specify overrides.
  *
  * {{{
- * import EventSink._
- * val spec = Seq(
- *   Capture(Logger("example.MyClass"), Level.DEBUG),
- *   Capture(Logger("example.OtherClass"), Level.CRITICAL)
- * )
- * Contexts.local.let(eventSinkCtx, spec:_*) {
- *   // Start twitter-server...
- * }
+ *   import EventSink._
+ *   val spec = Seq(
+ *     Capture(Logger("example.MyClass"), Level.DEBUG),
+ *     Capture(Logger("example.OtherClass"), Level.CRITICAL)
+ *   )
+ *   Contexts.local.let(eventSinkCtx, spec:_*) {
+ *     // Start twitter-server...
+ *   }
  * }}}
  */
 trait EventSink { app: App =>
   premain {
-    EventSink.runConfig()
+    import EventSink._
+    val config = Contexts.local.get(eventSinkCtx).getOrElse(DefaultConfig)
+    EventSink.runConfig(config)
   }
 }
 
@@ -54,8 +56,14 @@ object EventSink {
   @varargs
   case class Configuration(sink: Sink, captures: Capture*)
 
-  val DefaultConfig = Configuration(Sink.default, Capture(Logger.get(""), Level.ALL))
-  val eventSinkCtx = new Contexts.local.Key[Configuration]
+  val DefaultConfig: Configuration = {
+    val root = Logger.get("")
+    val level = Level.fromJava(root.getLevel).getOrElse(Level.ALL)
+    Configuration(Sink.default, Capture(root, level))
+  }
+
+  val eventSinkCtx: Contexts.local.Key[Configuration] =
+    new Contexts.local.Key[Configuration]
 
   private[this] case class Log(level: String, message: String)
 
@@ -108,8 +116,10 @@ object EventSink {
       def flush() = ()
     }
 
-  private[server] def runConfig(): Unit = {
-    val config = Contexts.local.get(eventSinkCtx).getOrElse(DefaultConfig)
+  /**
+   * Initialize the capture sink with this capture configuration.
+   */
+  def runConfig(config: Configuration): Unit = {
     config.captures.foreach {
       case Capture(logger, level, formatter) =>
         logger.addHandler(mkHandler(config.sink, level, formatter))

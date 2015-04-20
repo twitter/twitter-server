@@ -1,6 +1,5 @@
 package com.twitter.server
 
-import com.twitter.finagle.context.Contexts
 import com.twitter.logging.{Level, Logger}
 import com.twitter.util.Time
 import com.twitter.util.events.{Event, Sink}
@@ -37,7 +36,7 @@ class EventSinkTest extends FunSuite with GeneratorDrivenPropertyChecks {
         val config = Configuration(sink, captures:_*)
 
         // Attach the handlers with the sink and capture specification.
-        Contexts.local.let(eventSinkCtx, config)(runConfig)
+        EventSink.runConfig(config)
 
         // Interpret the journal by running each entry through the logger.
         journal foreach { case Entry(logger, level, message) =>
