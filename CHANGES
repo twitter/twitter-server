@@ -5,6 +5,22 @@
 1.x
 -----
 
+1.10.0
+~~~~~~~
+
+New Features:
+-------------
+  * TwitterServer collects a statically allocated ring of runtime events, which be viewed
+    at /admin/events, and downloaded as JSON with a HTTP client like curl (or by simply
+    omitting the User-Agent header in the request).
+
+  * TwitterServer exports runtime configuration data about your service, which can be
+    downloaded as json at /admin/registry.json.
+
+Dependencies:
+-------------
+  * Bumped many dependency versions.
+
 1.9.0
 ~~~~~~
 
