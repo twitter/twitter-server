@@ -58,7 +58,7 @@ object EventSink {
 
   val DefaultConfig: Configuration = {
     val root = Logger.get("")
-    val level = Level.fromJava(root.getLevel).getOrElse(Level.ALL)
+    val level = Option(root.getLevel).flatMap(Level.fromJava).getOrElse(Level.ALL)
     Configuration(Sink.default, Capture(root, level))
   }
 
