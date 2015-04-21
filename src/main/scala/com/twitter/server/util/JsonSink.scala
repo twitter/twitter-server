@@ -18,6 +18,18 @@ private[util] trait JsonSink extends Deserializer with Serializer {
   }
 }
 
+/**
+ * A utility to serialize the [[com.twitter.util.events.Sink]] to JSON.
+ *
+ * Add the following to the `onExit` hook to export the Sink to a file when the
+ * server exits, or place it behind an endpoint to be triggered by request.
+ *
+ * {{{
+ * val json = Writer.fromOutputStream(new FileOutputStream("sink.json"))
+ * val done = Reader.copy(JsonSink.serialize(Sink.default), json) ensure json.close()
+ * Await.result(done, 3.seconds)
+ * }}}
+ */
 object JsonSink extends JsonSink {
   import ZipkinTracer.Trace
   import EventSink.Record
@@ -44,33 +56,3 @@ object JsonSink extends JsonSink {
     } yield Event(this, Time.fromMilliseconds(when), objectVal = data)
   }
 }
-
-private[util] object Json {
-  import com.fasterxml.jackson.core.`type`.TypeReference
-  import com.fasterxml.jackson.databind.{ObjectMapper, JsonNode}
-  import com.fasterxml.jackson.module.scala.DefaultScalaModule
-  import java.lang.reflect.{Type, ParameterizedType}
-
-  val mapper = new ObjectMapper()
-  mapper.registerModule(DefaultScalaModule)
-
-  def serialize(o: AnyRef): String = mapper.writeValueAsString(o)
-
-  def deserialize[T: Manifest](value: String): T =
-    mapper.readValue(value, typeReference[T])
-
-  def deserialize[T: Manifest](node: JsonNode): T =
-    mapper.readValue(node.traverse, typeReference[T])
-
-  private def typeReference[T: Manifest] = new TypeReference[T] {
-    override def getType = typeFromManifest(manifest[T])
-  }
-
-  private def typeFromManifest(m: Manifest[_]): Type =
-    if (m.typeArguments.isEmpty) m.runtimeClass else new ParameterizedType {
-      def getRawType = m.runtimeClass
-      def getActualTypeArguments = m.typeArguments.map(typeFromManifest).toArray
-      def getOwnerType = null
-    }
-}
-

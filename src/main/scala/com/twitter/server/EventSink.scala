@@ -18,14 +18,14 @@ import scala.annotation.varargs
  * [[com.twitter.finagle.context.Contexts]] to specify overrides.
  *
  * {{{
- *   import EventSink._
- *   val spec = Seq(
- *     Capture(Logger("example.MyClass"), Level.DEBUG),
- *     Capture(Logger("example.OtherClass"), Level.CRITICAL)
- *   )
- *   Contexts.local.let(eventSinkCtx, spec:_*) {
- *     // Start twitter-server...
- *   }
+ * import EventSink._
+ * val spec = Seq(
+ *   Capture(Logger("example.MyClass"), Level.DEBUG),
+ *   Capture(Logger("example.OtherClass"), Level.CRITICAL)
+ * )
+ * Contexts.local.let(eventSinkCtx, spec:_*) {
+ *   // Start twitter-server...
+ * }
  * }}}
  */
 trait EventSink { app: App =>

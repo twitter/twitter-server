@@ -1,13 +1,11 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.http.{Request, Response}
-import com.twitter.io.{Reader, Buf}
 import com.twitter.util.events.{Sink, Event}
-import com.twitter.util.{Await, Future, FuturePool, Promise, Time}
+import com.twitter.util.{Await, FuturePool, Promise, Time}
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import scala.collection.mutable
 
 @RunWith(classOf[JUnitRunner])
 class EventsHandlerTest extends FunSuite {
@@ -48,26 +46,5 @@ class EventsHandlerTest extends FunSuite {
 
     assert(Await.result(content).isDefined)
     res.reader.discard()
-  }
-
-  test("trace: empty sink") {
-    val empty = Sink.of(mutable.ListBuffer.empty)
-    val reader = TraceEventSink.serialize(empty)
-    val Buf.Utf8(json) = Await.result(Reader.readAll(reader))
-    assert(json == "[")
-  }
-
-  test("trace: base") {
-    val sink = Sink.of(mutable.ListBuffer.empty)
-    sink.event(Event.nullType, objectVal = "hello")
-
-    val reader = TraceEventSink.serialize(sink)
-    val Buf.Utf8(json) = Await.result(Reader.readAll(reader)).concat(Buf.Utf8("]"))
-
-    val doc = Json.deserialize[Seq[Map[String, Any]]](json)
-    val args = doc.head("args").asInstanceOf[Map[String, Any]]
-
-    assert(doc.head("name") == Event.nullType.id)
-    assert(args("objectVal") == "hello")
   }
 }

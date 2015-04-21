@@ -6,7 +6,7 @@ import com.twitter.finagle.http
 import com.twitter.finagle.tracing.SpanId
 import com.twitter.io.{Reader, Buf}
 import com.twitter.server.util.HttpUtils.{Request, Response}
-import com.twitter.server.util.{HttpUtils, JsonSink}
+import com.twitter.server.util.{HttpUtils, JsonSink, TraceEventSink}
 import com.twitter.util.events.{Sink, Event}
 import com.twitter.util.Future
 import java.util.logging.{LogRecord, Logger}
@@ -16,7 +16,6 @@ import java.util.logging.{LogRecord, Logger}
  */
 private[server] class EventsHandler(sink: Sink) extends Service[Request, Response] {
   import EventsHandler._
-  import TraceEventSink._
 
   private[this] val log = Logger.getLogger(getClass.getName)
 
@@ -113,77 +112,3 @@ private object EventsHandler {
     else Reader.fromBuf(Buf.Utf8(helpPage))
 }
 
-private object TraceEventSink {
-  import EventsHandler.showObject
-
-  val comma = Buf.Utf8(",")
-  val nl = Buf.Utf8("\n")
-  val leftBracket = Buf.Utf8("[")
-  val sp = Buf.Utf8(" ")
-
-  def asTraceEvent(e: Event): Buf = Buf.Utf8(
-    Json.serialize(Map(
-      "name" -> e.etype.id,
-      "cat" -> "",
-      "ph" -> "i",
-      "ts" -> (e.when.inMillis * 1000).toString,
-      "pid" -> e.getTraceId.getOrElse(0),
-      "tid" -> e.getSpanId.getOrElse(0),
-      "args" -> Map(
-        Seq(
-          "longVal" -> e.getLong,
-          "objectVal" -> e.getObject.map(showObject),
-          "doubleVal" -> e.getDouble
-        ).filterNot(_._2.isEmpty):_*
-      )
-    ))
-  )
-
-  /**
-   * Serialize a sink into the [[http://goo.gl/iN9ozV Trace Event]] format.
-   */
-  def serialize(sink: Sink): Reader = {
-    val delim = nl.concat(comma).concat(sp)
-    val events: Seq[Buf] = sink.events.toSeq.map(asTraceEvent)
-
-    // Note: we leave out the "]" from the JSON array since it's optional. See:
-    // http://goo.gl/iN9ozV#heading=h.f2f0yd51wi15.
-    if (events.isEmpty) Reader.fromBuf(leftBracket) else Reader.concat(
-      Reader.fromBuf(leftBracket.concat(events.head)) +::
-        AsyncStream.fromSeq(events.tail.map { buf =>
-          Reader.fromBuf(delim.concat(buf))
-        })
-    )
-  }
-}
-
-private object Json {
-  import com.fasterxml.jackson.annotation.JsonInclude
-  import com.fasterxml.jackson.core.`type`.TypeReference
-  import com.fasterxml.jackson.databind.{ObjectMapper, JsonNode}
-  import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-  import com.fasterxml.jackson.module.scala.DefaultScalaModule
-  import java.lang.reflect.{Type, ParameterizedType}
-
-  val mapper = new ObjectMapper()
-  mapper.registerModule(DefaultScalaModule)
-
-  def serialize(o: AnyRef): String = mapper.writeValueAsString(o)
-
-  def deserialize[T: Manifest](value: String): T =
-    mapper.readValue(value, typeReference[T])
-
-  def deserialize[T: Manifest](node: JsonNode): T =
-    mapper.readValue(node.traverse, typeReference[T])
-
-  private def typeReference[T: Manifest] = new TypeReference[T] {
-    override def getType = typeFromManifest(manifest[T])
-  }
-
-  private def typeFromManifest(m: Manifest[_]): Type =
-    if (m.typeArguments.isEmpty) m.runtimeClass else new ParameterizedType {
-      def getRawType = m.runtimeClass
-      def getActualTypeArguments = m.typeArguments.map(typeFromManifest).toArray
-      def getOwnerType = null
-    }
-}
