@@ -23,7 +23,7 @@ function loadProcInfo() {
   function pretty(name, value) {
     if (name === "jvm/uptime") return msToStr.convert(value)
     else if (name === "jvm/mem/current/used") return bytesToStr.convert(value)
-    else if (name === "jvm/gc/msec") return bytesToStr.convert(value)+"/ms"
+    else if (name === "jvm/gc/msec") return msToStr.convert(value)
     else return value
   }
 
