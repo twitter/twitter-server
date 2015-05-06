@@ -8,7 +8,7 @@ import com.twitter.io.{Reader, Buf}
 import com.twitter.server.util.HttpUtils.{Request, Response}
 import com.twitter.server.util.{HttpUtils, JsonSink, TraceEventSink}
 import com.twitter.util.events.{Sink, Event}
-import com.twitter.util.Future
+import com.twitter.util.{Future, Throw, Try}
 import java.util.logging.{LogRecord, Logger}
 
 /**
@@ -43,6 +43,9 @@ private[server] class EventsHandler(sink: Sink) extends Service[Request, Respons
 }
 
 private object EventsHandler {
+  import AsyncStream.fromSeq
+  import Percentile.annotate
+
   val Html = "text/html;charset=UTF-8"
   val LineDelimitedJson = "application/x-ldjson;charset=UTF-8"
   val TraceEvent = "trace/json;charset=UTF-8"
@@ -82,7 +85,7 @@ private object EventsHandler {
       // (see http://tools.ietf.org/html/rfc1942), so user-agents may even be
       // able to take advantage of this and begin rendering the table earlier,
       // and progressively as rows arrive.
-      AsyncStream.fromSeq(sink.events.toSeq).map(rowOf _ andThen newline) ++
+      annotate(fromSeq(sink.events.toSeq)).map(rowOf _ andThen newline) ++
       AsyncStream.of(Buf.Utf8("</tbody></table>"))
     )
 
@@ -112,3 +115,81 @@ private object EventsHandler {
     else Reader.fromBuf(Buf.Utf8(helpPage))
 }
 
+private object Percentile {
+  import AsyncStream.{flatten, fromFuture}
+  import java.lang.reflect.Method
+
+  trait Ctx {
+    def StatAdd: Object
+    def getHistogram(name: String): Object
+    def buildSnapshot(histogram: Object): Object
+    def getPercentiles(snapshot: Object): Array[Object]
+    def getQuantile(percentile: Object): Double
+    def getValue(percentile: Object): Long
+  }
+
+  def field(cname: String, field: String): Try[Object] =
+    Try.withFatals(Class.forName(cname).getField(field).get()) {
+      case e: NoClassDefFoundError => Throw(e)
+    }
+
+  def method(cname: String, method: String, args: Class[_]*): Try[Method] =
+    Try.withFatals(Class.forName(cname).getMethod(method, args:_*)) {
+      case e: NoClassDefFoundError => Throw(e)
+    }
+
+  val nsStats = "com.twitter.finagle.stats"
+  val nsMetrics = "com.twitter.common.metrics"
+  val tryCtx: Try[Ctx] = for {
+    a <- field(nsStats + ".MetricsStatsReceiver$", "MODULE$")
+    b <- method(nsStats + ".MetricsStatsReceiver$", "StatAdd")
+    c <- Try(b.invoke(a))
+    d <- method(nsMetrics + ".Metrics", "createHistogram", classOf[String])
+    e <- method(nsMetrics + ".HistogramInterface", "snapshot")
+    f <- method(nsMetrics + ".Snapshot", "percentiles")
+    g <- method(nsMetrics + ".Percentile", "getQuantile")
+    h <- method(nsMetrics + ".Percentile", "getValue")
+    i <- method(nsMetrics + ".Metrics", "root").map(_.invoke(null))
+  } yield new Ctx {
+    val StatAdd = c
+    def getHistogram(name: String) = d.invoke(i, name)
+    def buildSnapshot(histogram: Object) = e.invoke(histogram)
+    def getPercentiles(snapshot: Object) = f.invoke(snapshot).asInstanceOf[Array[Object]]
+    def getQuantile(percentile: Object) = g.invoke(percentile).asInstanceOf[Double]
+    def getValue(percentile: Object) = h.invoke(percentile).asInstanceOf[Long]
+  }
+
+  def percentileFor(ctx: Ctx, snapshot: Object, value: Long): Double = {
+    import ctx._
+    val ps = getPercentiles(snapshot)
+    var v = Event.NoDouble
+    for (p <- ps; if value >= getValue(p)) v = getQuantile(p)
+    v
+  }
+
+  type Snapshots = Map[String, Object]
+
+  def fold(ctx: Ctx, snaps: Snapshots, es: AsyncStream[Event]): AsyncStream[Event] = {
+    import ctx._
+    fromFuture(es.uncons).flatMap {
+      case Some((stat, tail)) if stat.etype == StatAdd =>
+        val name = stat.objectVal.toString
+        snaps.get(name) match {
+          case None =>
+            val snap = buildSnapshot(getHistogram(name))
+            val d = percentileFor(ctx, snap, stat.longVal)
+            stat.copy(doubleVal = d) +:: fold(ctx, snaps + (name -> snap), tail())
+
+          case Some(snap) =>
+            val d = percentileFor(ctx, snap, stat.longVal)
+            stat.copy(doubleVal = d) +:: fold(ctx, snaps, tail())
+        }
+
+      case Some((e, tail)) => e +:: fold(ctx, snaps, tail())
+      case None => AsyncStream.empty[Event]
+    }
+  }
+
+  def annotate(events: AsyncStream[Event]): AsyncStream[Event] =
+    if (tryCtx.isThrow) events else fold(tryCtx.get, Map.empty[String, Object], events)
+}

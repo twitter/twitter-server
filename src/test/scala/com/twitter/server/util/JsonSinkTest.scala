@@ -164,7 +164,7 @@ private object JsonSinkTest {
   } yield Entry(etype, l, o, d)
 
   def genEntries[A: Arbitrary](etype: Etype[A]): Gen[List[Entry[A]]] =
-    Gen.listOfN(15, genEntry[A](etype))
+    Gen.listOfN(5, genEntry[A](etype))
 
   // Define LogRecord equality.
   def normalizeLog(e: Event): Event = e match {
