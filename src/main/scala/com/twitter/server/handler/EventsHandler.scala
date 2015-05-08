@@ -116,7 +116,7 @@ private object EventsHandler {
 }
 
 private object Percentile {
-  import AsyncStream.{flatten, fromFuture}
+  import AsyncStream.fromFuture
   import java.lang.reflect.Method
 
   trait Ctx {
