@@ -34,12 +34,21 @@ private[server] object StackRegistryViewTest {
       }
   }
 
+  // Test class name parameters, which were previously mangled
+  case class ClassNames(classNames: Seq[String])
+  implicit object ClassNames extends Stack.Param[ClassNames] {
+    val default = ClassNames(Seq("com.twitter.com.twitter.finagle.exception.ExceptionReporter"))
+  }
+
   object Baz {
     def module: Stackable[Int => Int] =
-      new Stack.Module0[Int => Int] {
+      new Stack.Module1[ClassNames, Int => Int] {
         val role = Stack.Role("baz")
         val description = "adds 3 to every value."
-        def make(next: Int => Int) = { i => next(i+3) }
+        def make(classNames: ClassNames, next: Int => Int) = { i =>
+          val ClassNames(j) = classNames
+          next(i+3)
+        }
       }
   }
 
@@ -61,6 +70,7 @@ class StackRegistryViewTest extends FunSuite {
     assert(res0.contains("foo"))
     assert(res0.contains("bar"))
     assert(res0.contains("baz"))
+    assert(res0.contains("List(" + ClassNames.default.classNames(0) + ")"))
 
     val entry1 = StackRegistry.Entry("", stk.remove(Stack.Role("baz")), prms)
     val res1 = StackRegistryView.render(entry1, None)

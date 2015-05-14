@@ -3,17 +3,6 @@ package com.twitter.server.view
 import com.twitter.finagle.util.StackRegistry
 
 private[server] object StackRegistryView {
-
-  /** Strip extraneous symbols from toString'd objects. */
-  private def pretty(value: String): String =
-    """.+\.([\w]+)[$|@]""".r.findFirstMatchIn(value) match {
-      case Some(name) => name.group(1)
-      case _ => """\((.+)\)""".r.findFirstMatchIn(value) match {
-        case Some(name) => name.group(1)
-        case _ => value
-      }
-    }
-
   /**
    * Render a stack entry, along with its params, in an html template.
    * @param entry The stack registry entry.
@@ -30,7 +19,7 @@ private[server] object StackRegistryView {
       (for ((field, value) <- params) yield {
         s"""<tr>
               <td>${field}</td>
-              <td>${pretty(value)}</td>
+              <td>${value}</td>
             </tr>"""
       }).mkString("\n")
 
