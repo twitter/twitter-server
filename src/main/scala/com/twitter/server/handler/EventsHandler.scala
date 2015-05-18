@@ -74,7 +74,8 @@ private object EventsHandler {
   def newline(buf: Buf): Buf = buf.concat(Buf.Utf8("\n"))
 
   def tableOf(sink: Sink): AsyncStream[Buf] =
-    Buf.Utf8(s"""<table class="table table-condensed table-striped">
+    Buf.Utf8(helpPage) +:: Buf.Utf8(
+      s"""<table class="table table-condensed table-striped">
       <caption>A log of events originating from this server process.</caption>
       <thead>$header</thead>
       <tbody>"""
@@ -93,22 +94,39 @@ private object EventsHandler {
   <h2>Events</h2>
   <p>The server publishes interesting events during its operation and this section
   displays a log of the most recent.</p>
-  <p>Event capture is currently disabled. To enable it, specify the following
-  options when starting the server.
-  <dl class="dl-horizontal">
-    <dt>sinkEnabled</dt>
-    <dd>Turn on event capture.</dd>
-    <dt>approxNumEvents</dt>
-    <dd>The number of events to keep in memory.</dd>
-  </dl>
-  Example usage:
-  </p>
-  <pre><code>
-  $ java -Dcom.twitter.util.events.sinkEnabled=true \
-         -Dcom.twitter.util.events.approxNumEvents=10000 \
-         MyApp
-  </code></pre>
-  """
+  """ + (if (Sink.enabled) {
+    """
+    <div class="fr-more"><a
+    href="javascript:$('.fr-more-info').show(); $('.fr-more').hide()"
+    >Read more...</a></div>
+    <div class="fr-more-info" style="display:none"><p>Event capture is currently
+    <strong>enabled</strong>. This is the default. To disable event capture,
+    use the following flag.
+    <dl class="dl-horizontal">
+      <dt>sinkEnabled</dt>
+      <dd>Turn on event capture (default: true).</dd>
+    </dl></p>
+    <div>Example usage:<pre><code>
+    $ java -Dcom.twitter.util.events.sinkEnabled=false MyApp
+    </code></pre></div></div>
+    """
+  } else {
+    """
+    <p>Event capture is currently <strong>disabled</strong>.
+    To enable event capture, use the following flags.
+    <dl class="dl-horizontal">
+      <dt>sinkEnabled</dt>
+      <dd>Turn on event capture (default: true).</dd>
+      <dt>approxNumEvents</dt>
+      <dd>The number of events to keep in memory (default: 10000).</dd>
+    </dl></p>
+    <div>Example usage:<pre><code>
+    $ java -Dcom.twitter.util.events.sinkEnabled=true \
+           -Dcom.twitter.util.events.approxNumEvents=10000 \
+           MyApp
+    </code></pre></div>
+    """
+  })
 
   def htmlSerialize(sink: Sink): Reader =
     if (sink != Sink.Null) Reader.concat(tableOf(sink).map(Reader.fromBuf))
