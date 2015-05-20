@@ -1,12 +1,12 @@
 maven_layout()
 
-jar_library(name='twitter-server',
+target(name='twitter-server',
   dependencies=[
     'twitter-server/src/main/scala'
   ]
 )
 
-jar_library(name='tests',
+target(name='tests',
   dependencies=[
     'twitter-server/src/test/scala'
   ]
