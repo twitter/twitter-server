@@ -14,10 +14,7 @@ class EventsHandlerTest extends FunSuite {
     val p = new Promise[Stream[Event]]
     val e = Event(Event.nullType, Time.now)
 
-    // We should only need one e, but because of our implementation of Reader
-    // concatenation, using just one would block the preamble Reader.read
-    // operation below.
-    val stream = e #:: e #:: Await.result(p)
+    val stream = e #:: Await.result(p)
 
     val sink = new Sink {
       def event(e: Event.Type, l: Long, o: Object, d: Double, t: Long, s: Long) = ()
