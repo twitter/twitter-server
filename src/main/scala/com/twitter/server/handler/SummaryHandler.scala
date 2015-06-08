@@ -40,7 +40,7 @@ class SummaryHandler extends Service[Request, Response] {
   import SummaryHandler._
 
   override def apply(req: Request): Future[Response] =
-    if (!isWebBrowser(req)) newOk(TextResponse) else {
+    if (!expectsHtml(req)) newOk(TextResponse) else {
      val finagleVersion = com.twitter.finagle.Init.finagleVersion
 
       val procInfo = Seq("jvm/uptime", "jvm/thread/count",

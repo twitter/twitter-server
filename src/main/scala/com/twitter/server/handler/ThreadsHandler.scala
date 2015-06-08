@@ -7,7 +7,6 @@ import com.twitter.server.util.JsonConverter
 import com.twitter.server.view.ThreadsView
 import com.twitter.util.Future
 import java.lang.management.ManagementFactory
-import org.jboss.netty.handler.codec.http.QueryStringDecoder
 import scala.collection.JavaConverters._
 
 private[server] object ThreadsHandler {
@@ -40,11 +39,7 @@ class ThreadsHandler extends Service[Request, Response] {
   import ThreadsHandler._
 
   def apply(req: Request): Future[Response] =
-    if (isHtml(req)) {
-      htmlResponse(req)
-    } else {
-      jsonResponse(req)
-    }
+    if (expectsHtml(req)) htmlResponse(req) else jsonResponse(req)
 
   private def jsonResponse(req: Request): Future[Response] = {
     val stacks = Thread.getAllStackTraces().asScala.map { case (thread, stack) =>

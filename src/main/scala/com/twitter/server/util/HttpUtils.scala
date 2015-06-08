@@ -1,7 +1,7 @@
 package com.twitter.server.util
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{Status, Version}
+import com.twitter.finagle.http.{MediaType, Status, Version}
 import com.twitter.finagle.netty3.BufChannelBuffer
 import com.twitter.io.Buf
 import com.twitter.util.Future
@@ -22,50 +22,53 @@ private[server] object HttpUtils {
    * Creates a http [[com.twitter.finagle.Service]] which attempts a
    * request on the given `services`, in order, until a service returns
    * a response with a non-404 status code. If none return a non-404,
-   * the response of the last service is used.
+   * the response of the last service is used. If the given list of `services`
+   * is empty the resulting services will be always answering with 404.
    */
-  def combine(services: Seq[Service[Request, Response]]): Service[Request, Response] = {
-    if (services.isEmpty)
-      throw new IllegalArgumentException("must have at least one service")
-
-    new Service[Request, Response] {
-      private def go(req: Request, svcs: Seq[Service[Request, Response]]): Future[Response] = {
-        svcs.size match {
-          case 0 => throw new AssertionError()
-          case 1 => svcs(0)(req)
-          case _ =>
-            svcs.head(req).flatMap { rep =>
+  def combine(services: Seq[Service[Request, Response]]): Service[Request, Response] =
+    Service.mk[Request, Response] { req =>
+      def loop(services: Seq[Service[Request, Response]]): Future[Response] =
+        services match {
+          case service +: Nil => service(req)
+          case service +: tail =>
+            service(req).flatMap { rep =>
               if (rep.getStatus == Status.NotFound)
-                go(req, svcs.tail)
+                loop(tail)
               else
                 Future.value(rep)
             }
+          case Nil =>
+            Future.value(
+              new DefaultHttpResponse(req.getProtocolVersion, HttpResponseStatus.NOT_FOUND)
+            )
         }
-      }
 
-      def apply(req: Request): Future[Response] =
-        go(req, services)
+      loop(services)
     }
-  }
 
   /**
-   * Uses basic heuristics to determine if the request is coming from a web browser.
+   * Determines (by examine the "Accept" header on `req`) if the client accepts given `contentType`.
+   *
+   * Note that this method simply checks if the given `contentType` is a substring of the "Accept"
+   * header.
    */
-  def isWebBrowser(req: Request): Boolean = {
-    val ua = req.headers.get(HttpHeaders.Names.USER_AGENT)
-    if (ua == null) false else ua.startsWith("Mozilla")
-  }
+  def accepts(req: Request, contentType: String): Boolean =
+    Option(req.headers.get(HttpHeaders.Names.ACCEPT)).exists(_.contains(contentType))
 
   /**
-   * Decides whether to use html or json
+   * Determines if the client expects to receive `text/html` content type.
    */
-  def isHtml(req: Request): Boolean = {
+  def expectsHtml(req: Request): Boolean = {
     val decoder = new QueryStringDecoder(req.getUri)
-    if (decoder.getPath.endsWith(".json")) {
-      false
-    } else {
-      isWebBrowser(req)
-    }
+    decoder.getPath.endsWith(".html") || accepts(req, MediaType.Html)
+  }
+
+  /**
+   * Determines if the client expects to receive `application/json` content type.
+   */
+  def expectsJson(req: Request): Boolean = {
+    val decoder = new QueryStringDecoder(req.getUri)
+    decoder.getPath.endsWith(".json") || accepts(req, MediaType.Json)
   }
 
   /**

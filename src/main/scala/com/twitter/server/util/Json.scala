@@ -6,8 +6,7 @@ private[server] object Json {
   import com.fasterxml.jackson.module.scala.DefaultScalaModule
   import java.lang.reflect.{Type, ParameterizedType}
 
-  val mapper = new ObjectMapper()
-  mapper.registerModule(DefaultScalaModule)
+  val mapper: ObjectMapper = new ObjectMapper().registerModule(DefaultScalaModule)
 
   def serialize(o: AnyRef): String = mapper.writeValueAsString(o)
 

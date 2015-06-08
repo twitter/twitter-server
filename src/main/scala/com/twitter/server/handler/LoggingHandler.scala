@@ -102,7 +102,7 @@ class LoggingHandler extends Service[Request, Response] {
 
     val loggers = Logger.iterator.toSeq.sorted(LoggingHandler.loggerOrder)
 
-    if (!isWebBrowser(request)) {
+    if (!expectsHtml(request)) {
       newResponse(
         contentType = "text/plain;charset=UTF-8",
         content = Buf.Utf8(LoggingHandler.renderText(loggers, updateMsg))

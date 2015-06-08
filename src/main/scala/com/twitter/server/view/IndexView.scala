@@ -113,7 +113,7 @@ class IndexView(title: String, uri: String, index: () => Seq[IndexView.Entry])
   }
 
   def apply(req: Request, svc: Service[Request, Response]) =
-    if (!isWebBrowser(req)) svc(req)
+    if (!expectsHtml(req)) svc(req)
     else svc(req) flatMap { res =>
       val contentType = res.headers.get("content-type")
       val content = res.getContent.toString(Charsets.Utf8)

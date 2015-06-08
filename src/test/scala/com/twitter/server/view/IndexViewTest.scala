@@ -24,7 +24,7 @@ class IndexViewTest extends FunSuite {
 
     val idx = new IndexView("test", "", () => Seq())
     val req = http.Request("/")
-    req.headers().set("User-Agent", "Mozilla")
+    req.headers().set("Accept", "text/html")
 
     val svc0 = idx andThen fragment
     val res0 = Await.result(svc0(req))
@@ -33,7 +33,7 @@ class IndexViewTest extends FunSuite {
     assert(res0.getContent.toString(Charsets.Utf8).contains("<html>"))
 
     val svc1 = idx andThen nofragment
-    req.headers().set("User-Agent", "")
+    req.headers().set("Accept", "*/*")
     val res1 = Await.result(svc1(req))
     assert(res1.headers.get("content-type") === "text/plain;charset=UTF-8")
     assert(res1.getStatus === http.Status.Ok)

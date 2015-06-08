@@ -22,7 +22,7 @@ class NotFoundViewTest extends FunSuite {
     val svc = new NotFoundView andThen handler
 
     val req0 = http.Request("/")
-    req0.headers().set("User-Agent", "Mozilla")
+    req0.headers().set("Accept", "text/html")
     val res0 = Await.result(svc(req0))
     assert(res0.headers.get("content-type") === "text/html;charset=UTF-8")
     assert(res0.getStatus === http.Status.NotFound)

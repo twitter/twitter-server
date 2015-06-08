@@ -5,8 +5,8 @@ import com.twitter.finagle.Service
 import com.twitter.finagle.http
 import com.twitter.finagle.tracing.SpanId
 import com.twitter.io.{Reader, Buf}
-import com.twitter.server.util.HttpUtils.{Request, Response}
-import com.twitter.server.util.{HttpUtils, JsonSink, TraceEventSink}
+import com.twitter.server.util.HttpUtils._
+import com.twitter.server.util.{JsonSink, TraceEventSink}
 import com.twitter.util.events.{Sink, Event}
 import com.twitter.util.{Future, Throw, Try}
 import java.util.logging.{LogRecord, Logger}
@@ -22,14 +22,10 @@ private[server] class EventsHandler(sink: Sink) extends Service[Request, Respons
   def this() = this(Sink.default)
 
   def apply(req: Request): Future[Response] =
-    Option(req.headers.get("accept")) match {
-      case Some(accept) if accept.startsWith("trace/") =>
-        respond(TraceEvent, TraceEventSink.serialize(sink))
-
-      case _ =>
-        if (HttpUtils.isHtml(req)) respond(Html, htmlSerialize(sink))
-        else respond(LineDelimitedJson, JsonSink.serialize(sink))
-    }
+    if (accepts(req, "trace/"))
+      respond(TraceEvent, TraceEventSink.serialize(sink))
+    else if (expectsJson(req)) respond(LineDelimitedJson, JsonSink.serialize(sink))
+    else respond(Html, htmlSerialize(sink))
 
   private[this] def respond(contentType: String, reader: Reader): Future[Response] = {
     val response = http.Response()

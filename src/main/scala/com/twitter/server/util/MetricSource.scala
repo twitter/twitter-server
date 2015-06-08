@@ -11,7 +11,7 @@ private[server] object MetricSource {
 }
 
 /**
- * A map from stats names to [[com.twitter.finagle.stats.StatsEntry]]'s
+ * A map from stats names to [[com.twitter.finagle.stats.StatEntry StatsEntries]]
  * which allows for stale StatEntries up to `refreshInterval`.
  */
 private[server] class MetricSource(

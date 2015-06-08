@@ -59,16 +59,14 @@ private[server] trait Deserializer {
   /**
    * Parse a byte stream into a list of events.
    */
-  final def deserialize(reader: Reader): AsyncStream[Event] = for {
-    event <- getLines(reader, CrLf).map(readEvent)
-    if event.isReturn
-  } yield event.get
+  final def deserialize(reader: Reader): AsyncStream[Event] =
+    for { Return(r) <- getLines(reader, CrLf).map(readEvent) } yield r
 }
 
 private[util] object Helpers {
   import AsyncStream.fromFuture
 
-  val CrLf = Buf.ByteArray('\r'.toByte, '\n'.toByte)
+  val CrLf = Buf.Utf8("\r\n")
 
   def indexOf(buf: Buf, sep: Buf): Int =
     Buf.ByteArray.Owned.extract(buf).indexOfSlice(Buf.ByteArray.Owned.extract(sep))

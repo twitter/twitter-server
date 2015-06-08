@@ -13,8 +13,7 @@ class ThreadsHandlerTest extends FunSuite {
   type Threads = Map[String, Map[String, Map[String, Any]]]
 
   test("Threads handler display thread info") {
-    val reader = new ObjectMapper
-    reader.registerModule(DefaultScalaModule)
+    val reader = new ObjectMapper().registerModule(DefaultScalaModule)
 
     val handler = new ThreadsHandler
     val req = Request("/")

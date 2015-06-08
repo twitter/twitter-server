@@ -7,7 +7,7 @@ import com.twitter.server.util.HttpUtils._
 class TextBlockView extends SimpleFilter[Request, Response] {
   def apply(req: Request, svc: Service[Request, Response]) = {
     val serviced = svc(req)
-    if (!isWebBrowser(req)) {
+    if (!expectsHtml(req)) {
       serviced
     } else {
       serviced.flatMap { res =>

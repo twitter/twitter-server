@@ -8,8 +8,7 @@ import org.jboss.netty.handler.codec.http._
 
 object JsonConverter {
   private[this] val writer = {
-    val mapper = new ObjectMapper
-    mapper.registerModule(DefaultScalaModule)
+    val mapper = new ObjectMapper().registerModule(DefaultScalaModule)
     val printer = new DefaultPrettyPrinter
     printer.indentArraysWith(new DefaultPrettyPrinter.Lf2SpacesIndenter)
     mapper.writer(printer)

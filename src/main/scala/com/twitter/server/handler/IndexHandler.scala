@@ -18,7 +18,7 @@ class IndexHandler(
   def apply(req: Request): Future[Response] = {
     val paths = patterns.filter(_.startsWith(prefix))
     val links = paths map { p => s"<a href='$p'>$p</a>" }
-    if (!isWebBrowser(req)) newOk(paths.mkString("\n"))
+    if (!expectsHtml(req)) newOk(paths.mkString("\n"))
     else newResponse(
       contentType = "text/html;charset=UTF-8",
       content = Buf.Utf8(links.mkString("<br />\n"))

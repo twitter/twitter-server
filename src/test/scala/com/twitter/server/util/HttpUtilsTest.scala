@@ -52,33 +52,26 @@ class HttpUtilsTest extends FunSuite {
     assert(res4.getStatus == Status.NotFound)
   }
 
-  test("isWebBrowser") {
-    val req = http.Request("/")
+  test("expects") {
+    val req1 = http.Request("/")
+    req1.headers().set("Accept",
+      "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 
-    req.headers().set(
-      "User-Agent",
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 " +
-      "(KHTML, like Gecko) Chrome/37.0.2062.94 Safari/537.36")
-    assert(isWebBrowser(req))
+    val req2 = http.Request("/admin/threads.json?k=v")
+    req2.headers().set("Accept",
+      "text/html,application/json;q=0.9,*/*;q=0.8")
 
-    req.headers().set(
-      "User-Agent",
-      "curl/7.9.8 (i686-pc-linux-gnu) libcurl 7.9.8 (OpenSSL 0.9.6b) (ipv6 enabled)")
-    assert(!isWebBrowser(req))
-  }
+    val req3 = http.Request("/admin/threads.json")
+    req3.headers().set("Accept", "*/*")
 
-  test("isHtml") {
-    // path ends with ".json"
-    assert(!isHtml(http.Request("/admin/threads.json")))
-    assert(!isHtml(http.Request("/admin/threads.json?k=v")))
+    assert(expectsHtml(req1))
+    assert(!expectsJson(req1))
 
-    // if not ",json" then defaults to isWebBrowser
-    val req = http.Request("/admin/threads?k=v.json")
-    req.headers().set(HttpHeaders.Names.USER_AGENT, "Mozilla 5.0/TwitterTest")
-    assert(isHtml(req))
+    assert(expectsHtml(req2))
+    assert(expectsJson(req2))
 
-    req.headers().set(HttpHeaders.Names.USER_AGENT, "Just/TwitterTest")
-    assert(!isHtml(req))
+    assert(!expectsHtml(req3))
+    assert(expectsJson(req3))
   }
 
   test("newResponse") {
