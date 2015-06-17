@@ -2,6 +2,8 @@
   (http://docutils.sourceforge.net/docs/user/rst/quickstart.html)
   as it is included in TwitterServer's user's guide.
 
+Note that ``RB_ID=#`` correspond to associated messages in commits.
+
 1.x
 -----
 
