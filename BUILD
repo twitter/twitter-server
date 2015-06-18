@@ -8,6 +8,8 @@ target(name='twitter-server',
 
 target(name='tests',
   dependencies=[
-    'twitter-server/src/test/scala'
+    'twitter-server/src/test/scala',
+    'twitter-server/src/test/java'
   ]
 )
+

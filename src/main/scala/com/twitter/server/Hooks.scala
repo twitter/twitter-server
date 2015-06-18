@@ -7,7 +7,7 @@ import com.twitter.finagle.util.LoadService
  * Defines a hook into an App.
  */
 trait Hook {
-  def premain()
+  def premain(): Unit
 }
 
 /**

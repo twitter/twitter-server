@@ -8,7 +8,7 @@ import java.util.logging.Logger
 class AbortHandler extends Service[Request, Response] {
   private[this] val log = Logger.getLogger(getClass.getName)
 
-  private[this] def background(f: => Unit) {
+  private[this] def background(f: => Unit): Unit = {
     (new Thread("lifecycle") {
       override def run() {
         Thread.sleep(10)

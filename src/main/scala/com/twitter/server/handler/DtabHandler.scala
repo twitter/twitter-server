@@ -1,7 +1,6 @@
 package com.twitter.server.handler
 
-import com.twitter.finagle.Service
-import com.twitter.finagle.{Dtab, Announcer, Service}
+import com.twitter.finagle.{Dtab, Service}
 import com.twitter.server.util.HttpUtils._
 import com.twitter.util.Future
 

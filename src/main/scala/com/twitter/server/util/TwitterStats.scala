@@ -5,7 +5,7 @@ import com.twitter.concurrent.Scheduler
 
 object TwitterStats {
 
-  def register(statsReceiver: StatsReceiver) = {
+  def register(statsReceiver: StatsReceiver): Unit = {
     val scheduler = statsReceiver.scope("scheduler")
 
     // Productivity is a very rough estimate of time spent not

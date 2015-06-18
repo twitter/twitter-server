@@ -79,4 +79,5 @@ User's guide
    :maxdepth: 4
 
    Features
+   Java
    Migration

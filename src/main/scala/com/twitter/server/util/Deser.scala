@@ -3,7 +3,7 @@ package com.twitter.server.util
 import com.twitter.concurrent.exp.AsyncStream
 import com.twitter.io.{Reader, Buf}
 import com.twitter.util.events.{Event, Sink}
-import com.twitter.util.{Future, Throw, Return, Try}
+import com.twitter.util.{Throw, Return, Try}
 
 private[twitter] trait Serializer {
   import Helpers._

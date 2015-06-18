@@ -6,7 +6,7 @@ import com.twitter.finagle.tracing.Trace
 import com.twitter.io.Buf
 import com.twitter.logging.{Logger, Handler, Formatter, Level}
 import com.twitter.util.events.{Event, Sink}
-import com.twitter.util.{Return, Throw, Time, Try}
+import com.twitter.util.{Throw, Time, Try}
 import java.util.logging.LogRecord
 import scala.annotation.varargs
 

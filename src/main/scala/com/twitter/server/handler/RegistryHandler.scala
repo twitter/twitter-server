@@ -5,7 +5,6 @@ import com.twitter.util.registry.{Formatter, GlobalRegistry}
 import com.twitter.util.Future
 import com.twitter.server.util.HttpUtils._
 import com.twitter.server.util.JsonConverter
-import java.util.logging.Logger
 
 /**
  * A [[com.twitter.finagle.Service]] for displaying the current state of the

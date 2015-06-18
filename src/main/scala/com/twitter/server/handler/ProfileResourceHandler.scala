@@ -6,7 +6,6 @@ import com.twitter.finagle.Service
 import com.twitter.io.Buf
 import com.twitter.jvm.CpuProfile
 import com.twitter.server.util.HttpUtils._
-import com.twitter.util.Future
 import com.twitter.util.{Duration, Future, Return, Throw}
 import java.io.ByteArrayOutputStream
 import java.util.logging.Logger

@@ -1,6 +1,5 @@
 package com.twitter.server.handler
 
-import com.twitter.app.App
 import com.twitter.finagle.Service
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils._
