@@ -35,6 +35,7 @@ trait TwitterServer extends App
   with Admin
   with Lifecycle
   with Stats
+  with EnvRegistry
 
 /**
  * A Java-friendly version of the [[TwitterServer]].
