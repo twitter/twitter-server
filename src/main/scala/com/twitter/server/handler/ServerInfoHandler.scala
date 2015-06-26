@@ -50,6 +50,12 @@ class ServerInfoHandler(obj: AnyRef) extends Service[Request, Response] {
   combinedInfo.foreach { case (key, value) =>
     registry.put(Seq("build.properties", key), value)
   }
+  sys.props.foreach { case (key, value) =>
+    registry.put(Seq("system.properties", key), value)
+  }
+  sys.env.foreach { case (key, value) =>
+    registry.put(Seq("system.env", key), value)
+  }
 
   private[this] val serverInfo = combinedInfo ++ Map(
     "build_last_few_commits" ->

@@ -10,6 +10,18 @@ import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class ServerInfoHandlerTest extends FunSuite {
+
+  private[this] def testRegistry(key: String) {
+    def isRegistered: Boolean =
+      GlobalRegistry.get.exists(_.key.headOption.exists(_ == key))
+
+    GlobalRegistry.withRegistry(new SimpleRegistry) {
+      assert(!isRegistered)
+      new ServerInfoHandler(this)
+      assert(isRegistered)
+    }
+  }
+
   test("ServerInfo handler display server information") {
     val handler = new ServerInfoHandler(this)
     val req = Request("/")
@@ -35,10 +47,14 @@ class ServerInfoHandlerTest extends FunSuite {
   }
 
   test("ServerInfo handler adds build properties to Global Registry on instantiation") {
-    val simple = new SimpleRegistry()
-    GlobalRegistry.withRegistry(simple) {
-      new ServerInfoHandler(this)
-      assert(GlobalRegistry.get.toSet.nonEmpty)
-    }
+    testRegistry("build.properties")
+  }
+
+  test("ServerInfo handler adds system properties to Global Registry on instantiation") {
+    testRegistry("system.properties")
+  }
+
+  test("ServerInfo handler adds env variables to Global Registry on instantiation") {
+    testRegistry("system.env")
   }
 }
