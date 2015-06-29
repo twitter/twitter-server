@@ -2,7 +2,7 @@ package com.twitter.server.handler
 
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util.Await
-import com.twitter.util.registry.{Registry, GlobalRegistry, SimpleRegistry}
+import com.twitter.util.registry.{GlobalRegistry, SimpleRegistry}
 import org.jboss.netty.handler.codec.http.HttpResponseStatus
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
@@ -10,6 +10,10 @@ import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class ServerInfoHandlerTest extends FunSuite {
+
+  private[this] def isRegistered(key: Seq[String]): Boolean =
+    GlobalRegistry.get.exists(_.key.startsWith(key))
+
   test("ServerInfo handler display server information") {
     val handler = new ServerInfoHandler(this)
     val req = Request("/")
@@ -34,11 +38,13 @@ class ServerInfoHandlerTest extends FunSuite {
     assert(res.contentType === Some("application/json;charset=UTF-8"))
   }
 
-  test("ServerInfo handler adds build properties to Global Registry on instantiation") {
-    val simple = new SimpleRegistry()
-    GlobalRegistry.withRegistry(simple) {
-      new ServerInfoHandler(this)
-      assert(GlobalRegistry.get.toSet.nonEmpty)
+  for (key <- Seq(Seq("build.properties"), Seq("system", "properties"), Seq("system", "env"))) yield {
+    test(s"ServerInfo handler adds ${key.mkString(" ")} to Global Registry on instantiation") {
+      GlobalRegistry.withRegistry(new SimpleRegistry) {
+        assert(!isRegistered(key))
+        new ServerInfoHandler(this)
+        assert(isRegistered(key))
+      }
     }
   }
 }
