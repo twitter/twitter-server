@@ -4,6 +4,7 @@ import Tests._
 import com.typesafe.sbt.SbtSite.site
 import com.typesafe.sbt.site.SphinxSupport.Sphinx
 import sbtunidoc.Plugin.unidocSettings
+import scoverage.ScoverageSbtPlugin
 
 object TwitterServer extends Build {
   val branch = Process("git" :: "rev-parse" :: "--abbrev-ref" :: "HEAD" :: Nil).!!.trim
@@ -44,6 +45,13 @@ object TwitterServer extends Build {
       "org.mockito" % "mockito-all" % "1.9.5" % "test"
     ),
     resolvers += "twitter-repo" at "http://maven.twttr.com",
+
+    ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := (
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, 10)) => false
+        case _ => true
+      }
+    ),
 
     ivyXML :=
       <dependencies>
