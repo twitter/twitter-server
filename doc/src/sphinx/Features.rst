@@ -185,12 +185,19 @@ series of default endpoints:
   announced.
 
 **/admin/pprof/contention**
-  Returns a CPU contention profile. The output is in `pprof
-  <http://code.google.com/p/gperftools/>`_ format.
+  Returns a CPU contention profile which identifies blocked threads
+  (`Thread.State.BLOCKED`).
+  The output is in `pprof <http://code.google.com/p/gperftools/>`_ format.
+  The process will be profiled for 10 seconds at a frequency of 100 hz. These
+  values can be controlled via HTTP request parameters `seconds` and `hz`
+  respectively.
 
 **/admin/pprof/profile**
   Returns a CPU usage profile. The output is in `pprof
   <http://code.google.com/p/gperftools/>`_ format.
+  The process will be profiled for 10 seconds at a frequency of 100 hz. These
+  values can be controlled via HTTP request parameters `seconds` and `hz`
+  respectively.
 
 ::
 
