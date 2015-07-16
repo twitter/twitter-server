@@ -6,6 +6,7 @@ examining a slightly more advanced version of the example shown in the
 introduction.
 
 .. includecode:: code/AdvancedServer.scala
+   :language: scala
 
 Flags
 -----
@@ -17,10 +18,12 @@ focuses on simplicity and type safety, parsing flags into Scala values.
 You define your flag like this, in that case the flag type is `String`:
 
 .. includecode:: code/AdvancedServer.scala#flag
+   :language: scala
 
 But you can also define flags of composite type:
 
 .. includecode:: code/AdvancedServer.scala#complex_flag
+   :language: scala
 
 We also provide automatic help entry that display information about
 all the flags defined.
@@ -54,6 +57,7 @@ configured via default command line flags: `-log.level` and
 to `stderr` by default with a log level of `INFO`.
 
 .. includecode:: code/AdvancedServer.scala#log_usage
+   :language: scala
 
 For more complicated logging schemes, you can extend the Logging trait
 and mix it back into a `TwitterServer`.
@@ -79,10 +83,12 @@ define gauges (instantaneous values).
 For instance, you define your stats:
 
 .. includecode:: code/AdvancedServer.scala#stats
+   :language: scala
 
 And update the value:
 
 .. includecode:: code/AdvancedServer.scala#stats_usage
+   :language: scala
 
 The value of this counter will be exported by the HTTP server and
 accessible at /admin/metrics.json
@@ -374,6 +380,7 @@ TwitterServer exposes endpoints to manage server lifecycle that are compatible w
 These entries are the default, but if you need you can add your own handler to this HTTP server:
 
 .. includecode:: code/AdvancedServer.scala#registering_http_service
+   :language: scala
 
 Extension
 ---------

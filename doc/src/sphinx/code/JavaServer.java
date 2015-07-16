@@ -16,7 +16,7 @@ public class JavaServer extends AbstractTwitterServer {
   //#oninit
   @Override
   public void onInit() {
-    log().info("Java Server initialization...")
+    log().info("Java Server initialization...");
   }
   //#oninit
 }

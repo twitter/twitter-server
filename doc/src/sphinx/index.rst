@@ -11,7 +11,7 @@ Quick-start
 
 TwitterServer is published with Maven:
 
-.. parsed-literal::
+.. code-block:: xml
 
   <repository>
     <id>twttr</id>
@@ -41,6 +41,7 @@ to use libraries in Twitter `common`, which are only published to
 First we’ll need to import a few things into our namespace.
 
 .. includecode:: code/BasicServer.scala#imports
+   :language: scala
 
 TwitterServer defines its own version of the standard `main`. To use
 it, create an object extended with `com.twitter.server.TwitterServer`,
@@ -50,6 +51,7 @@ In this example, we use Finagle to start an HTTP server on
 port 8888. The service bound to this port is a simple hello service.
 
 .. includecode:: code/BasicServer.scala#server
+   :language: scala
 
 `onExit` is used to register code to be run when the process shutdown
 is requested.
