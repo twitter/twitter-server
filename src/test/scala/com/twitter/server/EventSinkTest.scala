@@ -1,7 +1,6 @@
 package com.twitter.server
 
 import com.twitter.logging.{Level, Logger}
-import com.twitter.util.Time
 import com.twitter.util.events.{Event, Sink}
 import java.util.logging.{LogManager, LogRecord}
 import org.junit.runner.RunWith

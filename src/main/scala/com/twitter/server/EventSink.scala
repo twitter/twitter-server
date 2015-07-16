@@ -104,7 +104,7 @@ object EventSink {
   private def mkHandler(sink: Sink, level: Level, formatter: Formatter): Handler =
     new Handler(formatter, Some(level)) {
       def publish(record: LogRecord) =
-        if (isLoggable(record)) {
+        if (sink.recording && isLoggable(record)) {
           if (Trace.hasId) sink.event(
             Record,
             objectVal = record,

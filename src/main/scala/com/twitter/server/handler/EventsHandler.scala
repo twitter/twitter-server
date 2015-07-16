@@ -5,6 +5,7 @@ import com.twitter.finagle.Service
 import com.twitter.finagle.http
 import com.twitter.finagle.tracing.SpanId
 import com.twitter.io.{Reader, Buf}
+import com.twitter.server.handler.EventRecordingHandler._
 import com.twitter.server.util.HttpUtils._
 import com.twitter.server.util.{JsonSink, TraceEventSink}
 import com.twitter.util.events.{Sink, Event}
@@ -70,7 +71,7 @@ private object EventsHandler {
   def newline(buf: Buf): Buf = buf.concat(Buf.Utf8("\n"))
 
   def tableOf(sink: Sink): AsyncStream[Buf] =
-    Buf.Utf8(helpPage) +:: Buf.Utf8(
+    Buf.Utf8(helpPage(sink)) +:: Buf.Utf8(
       s"""<table class="table table-condensed table-striped">
       <caption>A log of events originating from this server process.</caption>
       <thead>$header</thead>
@@ -86,12 +87,40 @@ private object EventsHandler {
       AsyncStream.of(Buf.Utf8("</tbody></table>"))
     )
 
-  def helpPage: String = """
+  def helpPage(sink: Sink): String = """
   <h2>Events</h2>
   <p>The server publishes interesting events during its operation and this section
   displays a log of the most recent.</p>
   """ + (if (Sink.enabled) {
+    val isRecording = sink.recording
+    val onCheck = if (isRecording) "checked" else ""
+    val offCheck = if (isRecording) "" else "checked"
+    val toggle =
+      s"""
+      <script>
+      $$(document).ready(function() {
+        $$('input:radio[name=recording]').change(function() {
+          $$.post("/admin/events/" + this.value)
+        });
+      });
+      </script>
+
+      <div>Events are only captured when recording is enabled. Current state:</div>
+      <div class="radio">
+        <label>
+          <input type="radio" name="recording" id="rec1" value="$RecordOn" $onCheck>
+          On
+        </label>
+      </div>
+      <div class="radio">
+        <label>
+          <input type="radio" name="recording" id="rec2" value="$RecordOff" $offCheck>
+          Off
+        </label>
+      </div>
     """
+
+    toggle + """
     <div class="fr-more"><a
     href="javascript:$('.fr-more-info').show(); $('.fr-more').hide()"
     >Read more...</a></div>
@@ -126,7 +155,7 @@ private object EventsHandler {
 
   def htmlSerialize(sink: Sink): Reader =
     if (sink != Sink.Null) Reader.concat(tableOf(sink).map(Reader.fromBuf))
-    else Reader.fromBuf(Buf.Utf8(helpPage))
+    else Reader.fromBuf(Buf.Utf8(helpPage(sink)))
 }
 
 private object Percentile {

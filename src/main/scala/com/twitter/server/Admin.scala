@@ -69,6 +69,9 @@ trait Admin { self: App with AdminHttpServer =>
       path = "/admin/events", handler = new EventsHandler,
       alias = "Events", group = Some(Grouping.Utilities), includeInIndex = true),
     Route(
+      path = "/admin/events/", handler = new EventRecordingHandler(),
+      alias = "EventRecording", group = None, includeInIndex = false),
+    Route(
       path = "/admin/logging", handler = new LoggingHandler,
       alias = "Logging", group = Some(Grouping.Utilities), includeInIndex = true),
     Route(
