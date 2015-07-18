@@ -24,7 +24,10 @@ function ChartRenderer(element, title) {
     },
     hAxis: {
       baselineColor: '#ddd',
-      gridlineColor: '#ddd'
+      gridlineColor: '#ddd',
+      textStyle: {
+        fontSize: 12
+      }
     },
   }
 
