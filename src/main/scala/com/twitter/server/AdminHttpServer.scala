@@ -11,7 +11,7 @@ import com.twitter.finagle.tracing.NullTracer
 import com.twitter.finagle.{Filter, Http, ListeningServer, NullServer, param, Service}
 import com.twitter.server.util.HttpUtils
 import com.twitter.server.view.{IndexView, NotFoundView}
-import com.twitter.util.Monitor
+import com.twitter.util.{Future, Monitor}
 import java.net.InetSocketAddress
 import java.util.logging.{Level, Logger}
 import org.jboss.netty.handler.codec.http.{HttpResponse, HttpRequest}
@@ -60,28 +60,59 @@ object AdminHttpServer {
     Route(path, nettyToFinagle andThen handler, alias, group, includeInIndex)
   }
 
+  /**
+   * Create a Route using a Finagle service interface and a service using finagle-httpx
+   */
+  def mkRoutex(
+    path: String,
+    handler: Service[httpx.Request, httpx.Response],
+    alias: String,
+    group: Option[String],
+    includeInIndex: Boolean
+  ): Route = {
+    Route(path, NettyClientAdaptor andThen handler, alias, group, includeInIndex)
+  }
+
+
 }
 
 trait AdminHttpServer { self: App =>
   import AdminHttpServer._
 
+
   def defaultHttpPort: Int = 9990
   val adminPort = flag("admin.port", new InetSocketAddress(defaultHttpPort), "Admin http server port")
 
+  private[this] val adminHttpMuxer = new Service[HttpUtils.Request, HttpUtils.Response] {
+    override def apply(request: HttpUtils.Request): Future[HttpUtils.Response] = underlying(request)
+
+    @volatile var underlying: Service[HttpUtils.Request, HttpUtils.Response] =
+      new Service[HttpUtils.Request, HttpUtils.Response] {
+        def apply(request: HttpUtils.Request): Future[HttpUtils.Response] = HttpUtils.new404("no admin server initialized")
+      }
+  }
+
   @volatile protected var adminHttpServer: ListeningServer = NullServer
 
+  private var allRoutes: Seq[Route] = Seq()
+
+  def addAdminRoutes(newRoutes: Seq[Route]): Unit = synchronized {
+    allRoutes = allRoutes ++ newRoutes
+    updateMuxer()
+  }
+
+  def addAdminRoute(route: Route) {
+    addAdminRoutes(Seq(route))
+  }
+
+  // TODO: remove routes, have all routes be added via addAdminRoutes
+  // For now these routes will be added to allRoutes in premain
   protected def routes: Seq[Route] = Nil
 
-  premain {
+  private[this] def updateMuxer() = {
     // a logger used to log all sync and async exceptions
     // that occur in the admin server.
     val log = Logger.getLogger(getClass.getName)
-    val loggingMonitor = new Monitor {
-      def handle(exc: Throwable): Boolean = {
-        log.log(Level.SEVERE, s"Caught exception in AdminHttpHandler: $exc", exc)
-        false
-      }
-    }
 
     // Stat libraries join the global muxer namespace.
     // Special case and group them here.
@@ -100,7 +131,7 @@ trait AdminHttpServer { self: App =>
 
     // convert local routes into the IndexView data model
     val localRoutes =
-      routes.filter(_.includeInIndex).groupBy(_.group) flatMap {
+      allRoutes.filter(_.includeInIndex).groupBy(_.group) flatMap {
         case (group, rs) =>
           val links = rs map { r => IndexView.Link(r.alias, r.path) }
           if (!group.isDefined) links else {
@@ -133,19 +164,25 @@ trait AdminHttpServer { self: App =>
     }
 
     // create a service which multiplexes across all endpoints.
-    val adminHttpMuxer = {
-      val httpxMuxer: Service[HttpRequest, HttpResponse] =
-        NettyClientAdaptor.andThen(httpx.HttpMuxer)
-
-      val localMuxer = routes.foldLeft(new HttpMuxer) {
-        case (muxer, route) =>
-          log.info(s"${route.path} => ${route.handler.getClass.getName}")
-          val service = new IndexView(route.alias, route.path, index) andThen route.handler
-          muxer.withHandler(route.path, service)
-      }
-      HttpUtils.combine(Seq(localMuxer, httpxMuxer, HttpMuxer))
+    val httpxMuxer: Service[HttpRequest, HttpResponse] =
+      NettyClientAdaptor.andThen(httpx.HttpMuxer)
+    val localMuxer = allRoutes.foldLeft(new HttpMuxer) {
+      case (muxer, route) =>
+        log.info(s"${route.path} => ${route.handler.getClass.getName}")
+        val service = new IndexView(route.alias, route.path, index) andThen route.handler
+        muxer.withHandler(route.path, service)
     }
+    adminHttpMuxer.underlying = HttpUtils.combine(Seq(localMuxer, httpxMuxer, HttpMuxer))
+  }
 
+  private[this] def startServer() = {
+    val log = Logger.getLogger(getClass.getName)
+    val loggingMonitor = new Monitor {
+      def handle(exc: Throwable): Boolean = {
+        log.log(Level.SEVERE, s"Caught exception in AdminHttpHandler: $exc", exc)
+        false
+      }
+    }
     log.info(s"Serving admin http on ${adminPort()}")
     adminHttpServer = Http.server
       .configured(param.Stats(NullStatsReceiver))
@@ -155,7 +192,14 @@ trait AdminHttpServer { self: App =>
       .serve(adminPort(), new NotFoundView andThen adminHttpMuxer)
   }
 
+  private[this] def stopServer() = { adminHttpServer.close() }
+
+  premain {
+    addAdminRoutes(routes)
+    startServer
+  }
+
   onExit {
-    adminHttpServer.close()
+    stopServer
   }
 }
