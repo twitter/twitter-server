@@ -6,7 +6,7 @@ import com.twitter.server.AbstractTwitterServer
 public class JavaServer extends AbstractTwitterServer {
 
   //#main
-  class Main {
+  public static class Main {
     public static void main(String[] args) {
       new JavaServer().main(args);
     }
