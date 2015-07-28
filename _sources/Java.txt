@@ -9,6 +9,7 @@ In the following example, we define a `JavaServer` that simply prints a log
 message while initializing.
 
 .. includecode:: code/JavaServer.java
+   :language: java
 
 Main Method
 -----------
@@ -18,8 +19,9 @@ is that in Java you have to explicitly define a `main` method in a separate clas
 an inner class `JavaServer$Main`) and manually launch the server as shown below.
 
 .. includecode:: code/JavaServer.java#main
+   :language: java
 
-Lifecylce Methods
+Lifecycle Methods
 -----------------
 
 In order to make the API more Java-friendly, the `AbstractTwitterServer` provides
@@ -30,6 +32,7 @@ following code shows how to override the `onInit` method, which will be executed
 on application initialization.
 
 .. includecode:: code/JavaServer.java#oninit
+   :language: java
 
 Here is the full list of the lifecycle methods provided by `AbstractTwitterServer`:
 
@@ -55,8 +58,10 @@ an `abstract` Scala class (e.g., `StackServer`) that extends all the traits you
 want to reuse.
 
 .. includecode:: code/StackServer.scala
+   :language: scala
 
 Now you can extend this abstract class in Java and inherit the behaviour defined
 by Scala traits.
 
 .. includecode:: code/JavaStackServer.java
+   :language: java

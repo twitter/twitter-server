@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>TwitterServer &mdash; TwitterServer 1.11.0 documentation</title>
+    <title>TwitterServer &mdash; TwitterServer 1.12.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.11.0',
+        VERSION:     '1.12.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="TwitterServer 1.11.0 documentation" href="#" />
+    <link rel="top" title="TwitterServer 1.12.0 documentation" href="#" />
     <link rel="next" title="Features" href="Features.html" />
    
   
@@ -63,36 +63,36 @@ wired in correctly for use in production at Twitter.</p>
 <div class="section" id="quick-start">
 <h2>Quick-start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
 <p>TwitterServer is published with Maven:</p>
-<pre class="literal-block">
-&lt;repository&gt;
-  &lt;id&gt;twttr&lt;/id&gt;
-  &lt;name&gt;twttr&lt;/name&gt;
-  &lt;url&gt;http://maven.twttr.com/&lt;/url&gt;
-&lt;/repository&gt;
+<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;repository&gt;</span>
+  <span class="nt">&lt;id&gt;</span>twttr<span class="nt">&lt;/id&gt;</span>
+  <span class="nt">&lt;name&gt;</span>twttr<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;url&gt;</span>http://maven.twttr.com/<span class="nt">&lt;/url&gt;</span>
+<span class="nt">&lt;/repository&gt;</span>
 
-&lt;dependency&gt;
-  &lt;groupId&gt;com.twitter&lt;/groupId&gt;
-  &lt;artifactId&gt;twitter-server_2.10&lt;/artifactId&gt;
-  &lt;version&gt;1.11.0&lt;/version&gt;
-&lt;/dependency&gt;
-</pre>
+<span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>com.twitter<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>twitter-server_2.10<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>\ |release|\ <span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</pre></div>
+</div>
 <p>or, with sbt:</p>
 <pre class="literal-block">
 resolvers += &quot;twttr&quot; at &quot;<a class="reference external" href="http://maven.twttr.com/">http://maven.twttr.com/</a>&quot;
 
-libraryDependencies += &quot;com.twitter&quot; %% &quot;twitter-server&quot; % &quot;1.11.0&quot;
+libraryDependencies += &quot;com.twitter&quot; %% &quot;twitter-server&quot; % &quot;1.12.0&quot;
 </pre>
 <p>NB: You only need to add the <cite>maven.twttr.com</cite> repository if you want
 to use libraries in Twitter <cite>common</cite>, which are only published to
 <cite>maven.twttr.com</cite>. For example, <cite>finagle-stats</cite>, which adds
 <a class="reference internal" href="Features.html"><em>Metrics</em></a>, requires a twitter common library.</p>
 <p>First we’ll need to import a few things into our namespace.</p>
-<div class="highlight-text"><div class="highlight"><pre>import com.twitter.finagle.{Http, Service}
-import com.twitter.io.Charsets
-import com.twitter.server.TwitterServer
-import com.twitter.util.{Await, Future}
-import org.jboss.netty.buffer.ChannelBuffers.copiedBuffer
-import org.jboss.netty.handler.codec.http._
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">com.twitter.finagle.</span><span class="o">{</span><span class="nc">Http</span><span class="o">,</span> <span class="nc">Service</span><span class="o">}</span>
+<span class="k">import</span> <span class="nn">com.twitter.io.Charsets</span>
+<span class="k">import</span> <span class="nn">com.twitter.server.TwitterServer</span>
+<span class="k">import</span> <span class="nn">com.twitter.util.</span><span class="o">{</span><span class="nc">Await</span><span class="o">,</span> <span class="nc">Future</span><span class="o">}</span>
+<span class="k">import</span> <span class="nn">org.jboss.netty.buffer.ChannelBuffers.copiedBuffer</span>
+<span class="k">import</span> <span class="nn">org.jboss.netty.handler.codec.http._</span>
 </pre></div>
 </div>
 <p>TwitterServer defines its own version of the standard <cite>main</cite>. To use
@@ -100,24 +100,24 @@ it, create an object extended with <cite>com.twitter.server.TwitterServer</cite>
 and define the <cite>main()</cite> method (no arguments).</p>
 <p>In this example, we use Finagle to start an HTTP server on
 port 8888. The service bound to this port is a simple hello service.</p>
-<div class="highlight-text"><div class="highlight"><pre>object BasicServer extends TwitterServer {
-  val service = new Service[HttpRequest, HttpResponse] {
-    def apply(request: HttpRequest) = {
-      val response =
-        new DefaultHttpResponse(request.getProtocolVersion, HttpResponseStatus.OK)
-      response.setContent(copiedBuffer(&quot;hello&quot;, Charsets.Utf8))
-      Future.value(response)
-    }
-  }
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">object</span> <span class="nc">BasicServer</span> <span class="k">extends</span> <span class="nc">TwitterServer</span> <span class="o">{</span>
+  <span class="k">val</span> <span class="n">service</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Service</span><span class="o">[</span><span class="kt">HttpRequest</span>, <span class="kt">HttpResponse</span><span class="o">]</span> <span class="o">{</span>
+    <span class="k">def</span> <span class="n">apply</span><span class="o">(</span><span class="n">request</span><span class="k">:</span> <span class="kt">HttpRequest</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+      <span class="k">val</span> <span class="n">response</span> <span class="k">=</span>
+        <span class="k">new</span> <span class="nc">DefaultHttpResponse</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="n">getProtocolVersion</span><span class="o">,</span> <span class="nc">HttpResponseStatus</span><span class="o">.</span><span class="nc">OK</span><span class="o">)</span>
+      <span class="n">response</span><span class="o">.</span><span class="n">setContent</span><span class="o">(</span><span class="n">copiedBuffer</span><span class="o">(</span><span class="s">&quot;hello&quot;</span><span class="o">,</span> <span class="nc">Charsets</span><span class="o">.</span><span class="nc">Utf8</span><span class="o">))</span>
+      <span class="nc">Future</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="n">response</span><span class="o">)</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
 
-  def main() {
-    val server = Http.serve(&quot;:8888&quot;, service)
-    onExit {
-      server.close()
-    }
-    Await.ready(server)
-  }
-}
+  <span class="k">def</span> <span class="n">main</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">server</span> <span class="k">=</span> <span class="nc">Http</span><span class="o">.</span><span class="n">serve</span><span class="o">(</span><span class="s">&quot;:8888&quot;</span><span class="o">,</span> <span class="n">service</span><span class="o">)</span>
+    <span class="n">onExit</span> <span class="o">{</span>
+      <span class="n">server</span><span class="o">.</span><span class="n">close</span><span class="o">()</span>
+    <span class="o">}</span>
+    <span class="nc">Await</span><span class="o">.</span><span class="n">ready</span><span class="o">(</span><span class="n">server</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
 </pre></div>
 </div>
 <p><cite>onExit</cite> is used to register code to be run when the process shutdown
@@ -157,7 +157,7 @@ environment. See <a class="reference internal" href="Features.html"><em>features
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Java.html">Using TwitterServer from Java</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Java.html#main-method">Main Method</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Java.html#lifecylce-methods">Lifecylce Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Java.html#lifecycle-methods">Lifecycle Methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Java.html#reusing-scala-traits">Reusing Scala Traits</a></li>
 </ul>
 </li>
