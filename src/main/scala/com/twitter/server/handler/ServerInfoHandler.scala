@@ -1,6 +1,7 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
+import com.twitter.finagle.stats.LoadedStatsReceiver
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils._
 import com.twitter.server.util.JsonConverter
@@ -56,6 +57,13 @@ class ServerInfoHandler(obj: AnyRef) extends Service[Request, Response] {
   sys.env.foreach { case (key, value) =>
     registry.put(Seq("system", "env", key), value)
   }
+
+  // Expose this build revision as a number. Useful to check cluster consistency.
+  combinedInfo.get("build.git.revision.number") match {
+    case Some(rev) => LoadedStatsReceiver.provideGauge("build.git.revision.number") { rev.toFloat }
+    case None =>
+  }
+  
 
   private[this] val serverInfo = combinedInfo ++ Map(
     "build_last_few_commits" ->
