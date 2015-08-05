@@ -105,12 +105,15 @@ object EventSink {
     new Handler(formatter, Some(level)) {
       def publish(record: LogRecord) =
         if (sink.recording && isLoggable(record)) {
-          if (Trace.hasId) sink.event(
-            Record,
-            objectVal = record,
-            traceIdVal = Trace.id.traceId.self,
-            spanIdVal = Trace.id.spanId.self
-          ) else sink.event(Record, objectVal = record)
+          if (Trace.hasId) {
+            val traceId = Trace.id
+            sink.event(
+              Record,
+              objectVal = record,
+              traceIdVal = traceId.traceId.self,
+              spanIdVal = traceId.spanId.self
+            )
+          } else sink.event(Record, objectVal = record)
         }
       def close() = ()
       def flush() = ()
