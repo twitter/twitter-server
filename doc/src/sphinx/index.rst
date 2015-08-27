@@ -16,7 +16,7 @@ TwitterServer is published with Maven:
   <repository>
     <id>twttr</id>
     <name>twttr</name>
-    <url>http://maven.twttr.com/</url>
+    <url>https://maven.twttr.com/</url>
   </repository>
 
   <dependency>
@@ -29,7 +29,7 @@ or, with sbt:
 
 .. parsed-literal::
 
-  resolvers += "twttr" at "http://maven.twttr.com/"
+  resolvers += "twttr" at "https://maven.twttr.com/"
 
   libraryDependencies += "com.twitter" %% "twitter-server" % "|release|"
 

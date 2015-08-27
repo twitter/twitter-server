@@ -13,7 +13,7 @@ object TwitterServer extends Build {
   val libVersion = "1.12.0" + suffix
   val utilVersion = "6.26.0" + suffix
   val finagleVersion = "6.27.0" + suffix
-  val mustacheVersion = "0.8.12.1"
+  val mustacheVersion = "0.8.18"
 
   val jacksonVersion = "2.4.4"
   val jacksonLibs = Seq(
@@ -28,7 +28,7 @@ object TwitterServer extends Build {
 
   def xmlLib(scalaVersion: String) = CrossVersion.partialVersion(scalaVersion) match {
     case Some((2, scalaMajor)) if scalaMajor >= 11 => Seq(
-      "org.scala-lang.modules" %% "scala-xml" % "1.0.3"
+      "org.scala-lang.modules" %% "scala-xml" % "1.0.5"
     )
     case _ => Seq.empty
   }
@@ -37,14 +37,14 @@ object TwitterServer extends Build {
     version := libVersion,
     organization := "com.twitter",
     scalaVersion := "2.10.5",
-    crossScalaVersions := Seq("2.10.5", "2.11.6"),
+    crossScalaVersions := Seq("2.10.5", "2.11.7"),
     libraryDependencies ++= Seq(
       "org.scalacheck" %% "scalacheck" % "1.12.2" % "test",
       "org.scalatest" %% "scalatest" % "2.2.4" % "test",
       "junit" % "junit" % "4.10" % "test",
       "org.mockito" % "mockito-all" % "1.9.5" % "test"
     ),
-    resolvers += "twitter-repo" at "http://maven.twttr.com",
+    resolvers += "twitter-repo" at "https://maven.twttr.com",
 
     ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := (
       CrossVersion.partialVersion(scalaVersion.value) match {
