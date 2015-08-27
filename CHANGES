@@ -7,6 +7,9 @@ Note that ``RB_ID=#`` correspond to associated messages in commits.
 1.x
 -----
 
+1.13.0
+~~~~~~~
+
 1.12.0
 ~~~~~~~
  * Enable syntax highlighting in the docs
