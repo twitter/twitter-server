@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>TwitterServer &mdash; TwitterServer 1.12.0 documentation</title>
+    <title>TwitterServer &mdash; TwitterServer 1.13.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.12.0',
+        VERSION:     '1.13.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="TwitterServer 1.12.0 documentation" href="#" />
+    <link rel="top" title="TwitterServer 1.13.0 documentation" href="#" />
     <link rel="next" title="Features" href="Features.html" />
    
   
@@ -66,7 +66,7 @@ wired in correctly for use in production at Twitter.</p>
 <div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;repository&gt;</span>
   <span class="nt">&lt;id&gt;</span>twttr<span class="nt">&lt;/id&gt;</span>
   <span class="nt">&lt;name&gt;</span>twttr<span class="nt">&lt;/name&gt;</span>
-  <span class="nt">&lt;url&gt;</span>http://maven.twttr.com/<span class="nt">&lt;/url&gt;</span>
+  <span class="nt">&lt;url&gt;</span>https://maven.twttr.com/<span class="nt">&lt;/url&gt;</span>
 <span class="nt">&lt;/repository&gt;</span>
 
 <span class="nt">&lt;dependency&gt;</span>
@@ -78,9 +78,9 @@ wired in correctly for use in production at Twitter.</p>
 </div>
 <p>or, with sbt:</p>
 <pre class="literal-block">
-resolvers += &quot;twttr&quot; at &quot;<a class="reference external" href="http://maven.twttr.com/">http://maven.twttr.com/</a>&quot;
+resolvers += &quot;twttr&quot; at &quot;<a class="reference external" href="https://maven.twttr.com/">https://maven.twttr.com/</a>&quot;
 
-libraryDependencies += &quot;com.twitter&quot; %% &quot;twitter-server&quot; % &quot;1.12.0&quot;
+libraryDependencies += &quot;com.twitter&quot; %% &quot;twitter-server&quot; % &quot;1.13.0&quot;
 </pre>
 <p>NB: You only need to add the <cite>maven.twttr.com</cite> repository if you want
 to use libraries in Twitter <cite>common</cite>, which are only published to
