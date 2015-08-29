@@ -11,7 +11,7 @@ class TextBlockView extends SimpleFilter[Request, Response] {
       serviced
     } else {
       serviced.flatMap { res =>
-        val html = s"<pre>${res.getContent.toString(Charsets.Utf8)}</pre>"
+        val html = s"<pre>${res.contentString}</pre>"
         newResponse(
           contentType = "text/html;charset=UTF-8",
           content = Buf.Utf8(html)

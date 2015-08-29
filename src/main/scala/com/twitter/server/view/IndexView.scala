@@ -2,7 +2,7 @@ package com.twitter.server.view
 
 import com.twitter.concurrent.exp.AsyncStream
 import com.twitter.finagle.{Service, SimpleFilter}
-import com.twitter.finagle.http
+import com.twitter.finagle.httpx.Response
 import com.twitter.io.{Reader, Buf, Charsets}
 import com.twitter.server.util.HttpUtils._
 import com.twitter.util.Future
@@ -115,15 +115,15 @@ class IndexView(title: String, uri: String, index: () => Seq[IndexView.Entry])
   def apply(req: Request, svc: Service[Request, Response]) =
     if (!expectsHtml(req)) svc(req)
     else svc(req) flatMap { res =>
-      val contentType = res.headers.get("content-type")
-      val content = res.getContent.toString(Charsets.Utf8)
+      val contentType = res.headerMap.get("content-type").orNull
+      val content = res.contentString
       res match {
         case _ if !isFragment(contentType, content) => Future.value(res)
-        case rsp: http.Response if rsp.isChunked =>
-          val response = http.Response()
+        case res if res.isChunked =>
+          val response = Response()
           response.contentType = "text/html;charset=UTF-8"
           response.setChunked(true)
-          val reader = render(title, uri, index().sorted, rsp.reader)
+          val reader = render(title, uri, index().sorted, res.reader)
           Reader.copy(reader, response.writer) ensure response.writer.close()
           Future.value(response)
 

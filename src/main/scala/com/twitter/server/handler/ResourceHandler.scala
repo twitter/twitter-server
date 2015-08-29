@@ -1,6 +1,6 @@
 package com.twitter.server.handler
 
-import com.twitter.finagle.http.Status
+import com.twitter.finagle.httpx.Status
 import com.twitter.finagle.Service
 import com.twitter.io.{Buf, Charsets}
 import com.twitter.server.util.HttpUtils._
@@ -39,7 +39,7 @@ class ResourceHandler(
   }
 
   def apply(req: Request): Future[Response] = {
-    val (uri, _) = parse(req.getUri)
+    val (uri, _) = parse(req.uri)
     val path = uri.stripPrefix(baseRequestPath)
 
     if (path.contains(".."))

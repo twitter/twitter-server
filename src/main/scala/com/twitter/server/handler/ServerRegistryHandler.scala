@@ -78,7 +78,7 @@ class ServerRegistryHandler(
   }
 
   def apply(req: Request): Future[Response] = {
-    val (path, _) = parse(req.getUri)
+    val (path, _) = parse(req.uri)
     path.split('/').last match {
       case idx@("index.html" | "index.htm" | "index.txt" | "servers") =>
         val servers = (registry.registrants flatMap {

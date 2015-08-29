@@ -1,6 +1,6 @@
 package com.twitter.server.handler
 
-import com.twitter.finagle.http.Status
+import com.twitter.finagle.httpx.Status
 import com.twitter.finagle.Service
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils._
@@ -32,7 +32,7 @@ class TracingHandler extends Service[Request, Response] {
   private[this] val log = Logger.getLogger(getClass.getName)
 
   def apply(request: Request): Future[Response] = {
-    val (_, params) = parse(request.getUri)
+    val (_, params) = parse(request.uri)
 
     try {
       if (!FinagleTracing.instance.isDefined)

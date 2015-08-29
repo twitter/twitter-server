@@ -2,7 +2,7 @@ package com.twitter.server.handler
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.twitter.finagle.http.{Request, Response}
+import com.twitter.finagle.httpx.{Request, Response}
 import com.twitter.util.Await
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
@@ -17,7 +17,7 @@ class ThreadsHandlerTest extends FunSuite {
 
     val handler = new ThreadsHandler
     val req = Request("/")
-    val res = Response(Await.result(handler(req)))
+    val res = Await.result(handler(req))
 
     val threads = reader.readValue(res.contentString, classOf[Threads])
     val stacks = threads("threads")

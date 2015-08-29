@@ -1,6 +1,6 @@
 package com.twitter.server.handler
 
-import com.twitter.finagle.http.{Request, Response}
+import com.twitter.finagle.httpx.{Request, Response}
 import com.twitter.util.events.{Sink, Event}
 import com.twitter.util.{Await, FuturePool, Promise, Time}
 import org.junit.runner.RunWith

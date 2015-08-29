@@ -1,6 +1,6 @@
 package com.twitter.server.view
 
-import com.twitter.finagle.http.Status
+import com.twitter.finagle.httpx.Status
 import com.twitter.finagle.{Service, SimpleFilter}
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils._
@@ -40,7 +40,7 @@ class NotFoundView extends SimpleFilter[Request, Response] {
   def apply(req: Request, svc: Service[Request, Response]) =
     if (!expectsHtml(req)) svc(req)
     else svc(req) flatMap { res =>
-      if (res.getStatus != Status.NotFound) Future.value(res) else {
+      if (res.status != Status.NotFound) Future.value(res) else {
         newResponse(
           contentType = "text/html;charset=UTF-8",
           status = Status.NotFound,

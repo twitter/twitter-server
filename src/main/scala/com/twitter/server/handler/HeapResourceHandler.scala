@@ -1,7 +1,7 @@
 package com.twitter.server.handler
 
 import com.twitter.conversions.time._
-import com.twitter.finagle.http.Status
+import com.twitter.finagle.httpx.Status
 import com.twitter.finagle.Service
 import com.twitter.io.Buf
 import com.twitter.jvm.Heapster
@@ -24,7 +24,7 @@ class HeapResourceHandler extends Service[Request, Response] {
 
     val heapster = Heapster.instance.get
 
-    val params = parse(req.getUri)._2.foldLeft(Params(10.seconds, 10 << 19, true)) {
+    val params = parse(req.uri)._2.foldLeft(Params(10.seconds, 10 << 19, true)) {
       case (params, ("pause", Seq(pauseVal))) =>
         params.copy(pause = pauseVal.toInt.seconds)
       case (params, ("sample_period", Seq(sampleVal))) =>
@@ -37,7 +37,7 @@ class HeapResourceHandler extends Service[Request, Response] {
         params
     }
 
-    log.info(s"[${req.getUri}] collecting heap profile for ${params.pause} seconds")
+    log.info(s"[${req.uri}] collecting heap profile for ${params.pause} seconds")
 
     // Write out the profile verbatim. It's a pprof "raw" profile.
     val profile = heapster.profile(params.pause, params.samplingPeriod, params.forceGC)

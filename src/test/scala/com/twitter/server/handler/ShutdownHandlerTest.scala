@@ -1,7 +1,7 @@
 package com.twitter.server.handler
 
 import com.twitter.conversions.time._
-import com.twitter.finagle.http.{Status, Request}
+import com.twitter.finagle.httpx.{Status, Request}
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Closable, Time, Await, Future}
 import org.junit.runner.RunWith
@@ -34,7 +34,7 @@ class ShutdownHandlerTest extends FunSuite {
     }
     val handler = new ShutdownHandler(closer)
     val rsp = Await.result(handler(Request("/foo")))
-    assert(rsp.getStatus === Status.Ok)
+    assert(rsp.status === Status.Ok)
     assert(closer.closed)
   })
 
@@ -47,7 +47,7 @@ class ShutdownHandlerTest extends FunSuite {
     }
     val handler = new ShutdownHandler(closer)
     val rsp = Await.result(handler(Request("/foo?grace=" + grace.toString)))
-    assert(rsp.getStatus === Status.Ok)
+    assert(rsp.status === Status.Ok)
     assert(closer.closed)
   }
 
@@ -55,7 +55,7 @@ class ShutdownHandlerTest extends FunSuite {
     val closer = Closer.mk { _ => fail() }
     val handler = new ShutdownHandler(closer)
     val rsp = Await.result(handler(Request("/foo?grace=5")))
-    assert(rsp.getStatus === Status.BadRequest)
+    assert(rsp.status === Status.BadRequest)
     assert(!closer.closed)
   }
 }

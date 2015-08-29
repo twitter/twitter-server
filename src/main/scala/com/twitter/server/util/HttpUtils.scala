@@ -1,22 +1,16 @@
 package com.twitter.server.util
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{MediaType, Status, Version}
-import com.twitter.finagle.netty3.BufChannelBuffer
+import com.twitter.finagle.httpx
 import com.twitter.io.Buf
 import com.twitter.util.Future
-import org.jboss.netty.handler.codec.http._
+import org.jboss.netty.handler.codec.http.QueryStringDecoder
 import scala.collection.JavaConverters._
 import scala.collection.{Map, Seq}
 
-/**
- * Contain all netty3 http types. We avoid using c.t.f.http.{Request, Response}
- * directly because in the absence of an Http{Muxer, Server} written in
- * terms of them, we have to jump through hoops to convert between the types.
- */
 private[server] object HttpUtils {
-  type Request = HttpRequest
-  type Response = HttpResponse
+  type Request = httpx.Request
+  type Response = httpx.Response
 
   /**
    * Creates a http [[com.twitter.finagle.Service]] which attempts a
@@ -32,14 +26,13 @@ private[server] object HttpUtils {
           case service +: Nil => service(req)
           case service +: tail =>
             service(req).flatMap { rep =>
-              if (rep.getStatus == Status.NotFound)
+              if (rep.status == httpx.Status.NotFound)
                 loop(tail)
               else
                 Future.value(rep)
             }
           case Nil =>
-            Future.value(
-              new DefaultHttpResponse(req.getProtocolVersion, HttpResponseStatus.NOT_FOUND)
+            Future.value(httpx.Response(req.version, httpx.Status.NotFound)
             )
         }
 
@@ -53,22 +46,22 @@ private[server] object HttpUtils {
    * header.
    */
   def accepts(req: Request, contentType: String): Boolean =
-    Option(req.headers.get(HttpHeaders.Names.ACCEPT)).exists(_.contains(contentType))
+    req.headerMap.get("Accept").exists(_.contains(contentType))
 
   /**
    * Determines if the client expects to receive `text/html` content type.
    */
   def expectsHtml(req: Request): Boolean = {
-    val decoder = new QueryStringDecoder(req.getUri)
-    decoder.getPath.endsWith(".html") || accepts(req, MediaType.Html)
+    val decoder = new QueryStringDecoder(req.uri)
+    decoder.getPath.endsWith(".html") || accepts(req, httpx.MediaType.Html)
   }
 
   /**
    * Determines if the client expects to receive `application/json` content type.
    */
   def expectsJson(req: Request): Boolean = {
-    val decoder = new QueryStringDecoder(req.getUri)
-    decoder.getPath.endsWith(".json") || accepts(req, MediaType.Json)
+    val decoder = new QueryStringDecoder(req.uri)
+    decoder.getPath.endsWith(".json") || accepts(req, httpx.MediaType.Json)
   }
 
   /**
@@ -82,18 +75,18 @@ private[server] object HttpUtils {
    * @param content The content body of the HTTP response.
    */
   def newResponse(
-    version: HttpVersion = Version.Http11,
-    status: HttpResponseStatus = Status.Ok,
+    version: httpx.Version = httpx.Version.Http11,
+    status: httpx.Status = httpx.Status.Ok,
     headers: Iterable[(String, Object)] = Seq(),
     contentType: String,
     content: Buf
   ): Future[Response] = {
-    val response = new DefaultHttpResponse(version, status)
-    response.setContent(BufChannelBuffer(content))
-    for ((k, v) <- headers) response.headers.set(k, v)
-    response.headers.set(HttpHeaders.Names.CONTENT_LANGUAGE , "en")
-    response.headers.set(HttpHeaders.Names.CONTENT_LENGTH, content.length)
-    response.headers.set(HttpHeaders.Names.CONTENT_TYPE, contentType)
+    val response = httpx.Response(version, status)
+    response.content = content
+    for ((k, v) <- headers) response.headerMap.add(k, v.toString)
+    response.headerMap.add("Content-Language", "en")
+    response.headerMap.add("Content-Length", content.length.toString)
+    response.headerMap.add("Content-Type", contentType)
     Future.value(response)
   }
 
@@ -107,7 +100,7 @@ private[server] object HttpUtils {
   /** Returns a new 404 with contents set to `msg` */
   def new404(msg: String): Future[Response] =
     newResponse(
-      status = Status.NotFound,
+      status = httpx.Status.NotFound,
       contentType = "text/plain;charset=UTF-8",
       content = Buf.Utf8(msg)
     )

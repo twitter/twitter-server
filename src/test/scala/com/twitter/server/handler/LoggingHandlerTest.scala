@@ -1,6 +1,6 @@
 package com.twitter.server.handler
 
-import com.twitter.finagle.http
+import com.twitter.finagle.httpx
 import com.twitter.io.Charsets
 import com.twitter.logging.{Level, Logger}
 import com.twitter.server.util.HttpUtils._
@@ -15,18 +15,18 @@ class LoggingHandlerTest extends FunSuite {
     val handler = new LoggingHandler
     val loggers = Logger.iterator
 
-    val res = Await.result(handler(http.Request("/")))
-    assert(res.getStatus === http.Status.Ok)
-    val text = res.getContent.toString(Charsets.Utf8)
+    val res = Await.result(handler(httpx.Request("/")))
+    assert(res.status === httpx.Status.Ok)
+    val text = res.contentString
     for (logger <- loggers) {
       assert(text.contains(logger.name))
     }
 
-    val browserReq = http.Request("/")
-    browserReq.headers().set("User-Agent", "Mozilla")
-    val browserRes = Await.result(handler(http.Request("/")))
-    assert(browserRes.getStatus === http.Status.Ok)
-    val html = browserRes.getContent.toString(Charsets.Utf8)
+    val browserReq = httpx.Request("/")
+    browserReq.headerMap.set("User-Agent", "Mozilla")
+    val browserRes = Await.result(handler(httpx.Request("/")))
+    assert(browserRes.status === httpx.Status.Ok)
+    val html = browserRes.contentString
     for (logger <- loggers) {
       assert(html.contains(logger.name))
     }
@@ -37,7 +37,7 @@ class LoggingHandlerTest extends FunSuite {
 
     Logger("").setLevel(Level.INFO)
     assert(Logger("").getLevel == Level.INFO)
-    Await.result(handler(http.Request("/?logger=root&level=DEBUG")))
+    Await.result(handler(httpx.Request("/?logger=root&level=DEBUG")))
     assert(Logger("").getLevel == Level.DEBUG)
   }
 
@@ -57,10 +57,10 @@ class LoggingHandlerTest extends FunSuite {
     }
 
     Logger.withLoggers(List(l0, l1)) {
-      val req = http.Request("/")
+      val req = httpx.Request("/")
       val res = Await.result(handler(req))
-      assert(res.getStatus === http.Status.Ok)
-      val text = res.getContent.toString(Charsets.Utf8)
+      assert(res.status === httpx.Status.Ok)
+      val text = res.contentString
       assert(text === "root OFF\nl0 ALL\nl1 DEBUG")
     }
   }

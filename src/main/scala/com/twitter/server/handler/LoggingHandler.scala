@@ -76,7 +76,7 @@ class LoggingHandler extends Service[Request, Response] {
   private[this] val levels = Logger.levels.values.toSeq.sorted(LoggingHandler.levelOrder)
 
   def apply(request: Request): Future[Response] = {
-    val (_, params) = parse(request.getUri)
+    val (_, params) = parse(request.uri)
 
     val loggerName: Option[String] = params.getOrElse("logger", Seq.empty).headOption map {
       case "root" => ""

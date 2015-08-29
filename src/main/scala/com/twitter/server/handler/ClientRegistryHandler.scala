@@ -125,7 +125,7 @@ class ClientRegistryHandler(
     }).toSeq
 
   def apply(req: Request): Future[Response] = {
-    val (path, _) = parse(req.getUri)
+    val (path, _) = parse(req.uri)
     path.split('/').last match {
       case idx@("index.html" | "index.htm" | "index.txt" | "clients") =>
         val leastPerformant = clientProfiles.sorted(profileOrdering).take(4)

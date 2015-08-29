@@ -1,9 +1,8 @@
 package com.twitter.server.handler
 
-import com.twitter.finagle.http.{Request, Response}
+import com.twitter.finagle.httpx.{Request, Response, Status}
 import com.twitter.util.Await
 import com.twitter.util.registry.{GlobalRegistry, SimpleRegistry}
-import org.jboss.netty.handler.codec.http.HttpResponseStatus
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -17,9 +16,9 @@ class ServerInfoHandlerTest extends FunSuite {
   test("ServerInfo handler display server information") {
     val handler = new ServerInfoHandler(this)
     val req = Request("/")
-    val res = Response(Await.result(handler(req)))
+    val res = Await.result(handler(req))
 
-    assert(res.status == HttpResponseStatus.OK)
+    assert(res.status == Status.Ok)
     val info = res.contentString
     assert(info contains("\"build\" : \"unknown\""))
     assert(info contains("\"build_revision\" : \"unknown\""))
@@ -34,7 +33,7 @@ class ServerInfoHandlerTest extends FunSuite {
   test("ServerInfo handler returns the right content-type") {
     val handler = new ServerInfoHandler(this)
     val req = Request("/")
-    val res = Response(Await.result(handler(req)))
+    val res = Await.result(handler(req))
     assert(res.contentType === Some("application/json;charset=UTF-8"))
   }
 

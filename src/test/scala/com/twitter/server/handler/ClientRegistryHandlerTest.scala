@@ -3,7 +3,7 @@ package com.twitter.server.handler
 import com.twitter.conversions.time._
 import com.twitter.finagle.client.StackClient
 import com.twitter.finagle.util.StackRegistry
-import com.twitter.finagle.{http, Stack, param}
+import com.twitter.finagle.{httpx, Stack, param}
 import com.twitter.io.Charsets
 import com.twitter.server.util.HttpUtils._
 import com.twitter.server.util.MetricSourceTest
@@ -23,14 +23,14 @@ class ClientRegistryHandlerTest extends FunSuite {
     registry.register("localhost:8080", StackClient.newStack, Stack.Params.empty + param.Label("client0"))
     val handler = new ClientRegistryHandler(source, registry)
 
-    val res = Await.result(handler(http.Request("/client0")))
-    assert(res.getStatus === http.Status.Ok)
-    val content = res.getContent.toString(Charsets.Utf8)
+    val res = Await.result(handler(httpx.Request("/client0")))
+    assert(res.status === httpx.Status.Ok)
+    val content = res.contentString
     assert(content.contains("client0"))
     assert(content.contains("localhost:8080"))
 
-    val res1 = Await.result(handler(http.Request("/client1")))
-    assert(res1.getStatus === http.Status.NotFound)
+    val res1 = Await.result(handler(httpx.Request("/client1")))
+    assert(res1.status === httpx.Status.NotFound)
   }
 
   test("client profile") {
@@ -44,8 +44,8 @@ class ClientRegistryHandlerTest extends FunSuite {
       val handler = new ClientRegistryHandler(source, registry)
 
       tc.advance(1.second)
-      val req = http.Request("/index.html")
-      assert(Await.result(handler(req)).getContent.toString(Charsets.Utf8) === "")
+      val req = httpx.Request("/index.html")
+      assert(Await.result(handler(req)).contentString === "")
 
       underlying = Map(
         "clnt/client0/loadbalancer/adds" -> Entry(10.0, 10.0),
@@ -56,7 +56,7 @@ class ClientRegistryHandlerTest extends FunSuite {
 
       tc.advance(2.seconds)
       val res = Await.result(handler(req))
-      val html = res.getContent.toString(Charsets.Utf8)
+      val html = res.contentString
       assert(html.contains("client0"))
       assert(html.contains("localhost:8080"))
       assert(html.contains("5 unavailable"))

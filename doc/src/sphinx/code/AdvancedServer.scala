@@ -1,12 +1,10 @@
 import com.twitter.conversions.time._
-import com.twitter.finagle.http.HttpMuxer
+import com.twitter.finagle.httpx.{HttpMuxer, Request, Response}
 import com.twitter.finagle.Service
 import com.twitter.io.Charsets
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future, Time}
 import java.net.InetSocketAddress
-import org.jboss.netty.buffer.ChannelBuffers.copiedBuffer
-import org.jboss.netty.handler.codec.http._
 
 object AdvancedServer extends TwitterServer {
 
@@ -21,18 +19,16 @@ object AdvancedServer extends TwitterServer {
   val counter = statsReceiver.counter("requests_counter")
   //#stats
 
-  val service = new Service[HttpRequest, HttpResponse] {
-    def apply(request: HttpRequest) = {
+  val service = new Service[Request, Response] {
+    def apply(request: Request) = {
       //#log_usage
       log.debug("Received a request at " + Time.now)
       //#log_usage
       //#stats_usage
       counter.incr()
       //#stats_usage
-      val response =
-        new DefaultHttpResponse(request.getProtocolVersion, HttpResponseStatus.OK)
-      val content = copiedBuffer(what() + "\n", Charsets.Utf8)
-      response.setContent(content)
+      val response = Response(request.version, Status.Ok)
+      response.contentString = what() + "\n"
       Future.value(response)
     }
   }

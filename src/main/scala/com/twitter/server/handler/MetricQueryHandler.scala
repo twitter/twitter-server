@@ -38,7 +38,7 @@ class MetricQueryHandler(source: MetricSource = new MetricSource)
     for (k <- keys; e <- source.get(k)) yield e
 
   def apply(req: Request): Future[Response] = {
-    val (_, params) = parse(req.getUri)
+    val (_, params) = parse(req.uri)
 
     params.getOrElse("m", Nil) match {
       case Nil =>

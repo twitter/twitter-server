@@ -8,7 +8,7 @@ package com.twitter
  *
  * An HTTP server is bound to a configurable port (default: 9900) to which commands can be sent
  * and information queried. Additional handlers can be provided by adding them to
- * [[com.twitter.finagle.http.HttpMuxer]].
+ * [[com.twitter.finagle.httpx.HttpMuxer]].
  *
  * {{{
  * object MyServer extends TwitterServer {

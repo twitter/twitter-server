@@ -27,7 +27,7 @@ private[server] class EventRecordingHandler(
   import EventRecordingHandler._
 
   def apply(req: Request): Future[Response] = {
-    val uri = req.getUri
+    val uri = req.uri
     val reply = updateRecording(uri)
 
     newResponse(

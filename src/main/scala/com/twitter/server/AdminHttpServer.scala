@@ -2,26 +2,24 @@ package com.twitter.server
 
 import com.twitter.app.App
 import com.twitter.finagle.client.ClientRegistry
-import com.twitter.finagle.http.{Response, Request, HttpMuxer}
+import com.twitter.finagle.httpx.{Response, Request, HttpMuxer}
 import com.twitter.finagle.httpx
-import com.twitter.finagle.httpx.compat.NettyClientAdaptor
 import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.tracing.NullTracer
-import com.twitter.finagle.{Filter, Http, ListeningServer, NullServer, param, Service}
+import com.twitter.finagle.{Filter, Httpx, ListeningServer, NullServer, param, Service}
 import com.twitter.server.util.HttpUtils
 import com.twitter.server.view.{IndexView, NotFoundView}
 import com.twitter.util.{Future, Monitor}
 import java.net.InetSocketAddress
 import java.util.logging.{Level, Logger}
-import org.jboss.netty.handler.codec.http.{HttpResponse, HttpRequest}
 
 object AdminHttpServer {
   /**
    * Represents an element which can be routed to via the admin http server.
    *
    * @param path The path used to access the route. A request
-   * is routed to the path as per the [[com.twitter.finagle.http.HttpMuxer]]
+   * is routed to the path as per the [[com.twitter.finagle.httpx.HttpMuxer]]
    * spec.
    *
    * @param handler The service which requests are routed to.
@@ -53,11 +51,7 @@ object AdminHttpServer {
     group: Option[String],
     includeInIndex: Boolean
   ): Route = {
-    val nettyToFinagle = Filter.mk[HttpRequest, HttpResponse, Request, Response] { (req, service) =>
-      service(Request(req)) map { _.httpResponse }
-    }
-
-    Route(path, nettyToFinagle andThen handler, alias, group, includeInIndex)
+    Route(path, handler, alias, group, includeInIndex)
   }
 
   /**
@@ -70,7 +64,7 @@ object AdminHttpServer {
     group: Option[String],
     includeInIndex: Boolean
   ): Route = {
-    Route(path, NettyClientAdaptor andThen handler, alias, group, includeInIndex)
+    Route(path, handler, alias, group, includeInIndex)
   }
 
 
@@ -164,8 +158,7 @@ trait AdminHttpServer { self: App =>
     }
 
     // create a service which multiplexes across all endpoints.
-    val httpxMuxer: Service[HttpRequest, HttpResponse] =
-      NettyClientAdaptor.andThen(httpx.HttpMuxer)
+    val httpxMuxer: Service[Request, Response] = httpx.HttpMuxer
     val localMuxer = allRoutes.foldLeft(new HttpMuxer) {
       case (muxer, route) =>
         log.info(s"${route.path} => ${route.handler.getClass.getName}")
@@ -184,7 +177,7 @@ trait AdminHttpServer { self: App =>
       }
     }
     log.info(s"Serving admin http on ${adminPort()}")
-    adminHttpServer = Http.server
+    adminHttpServer = Httpx.server
       .configured(param.Stats(NullStatsReceiver))
       .configured(param.Tracer(NullTracer))
       .configured(param.Monitor(loggingMonitor))

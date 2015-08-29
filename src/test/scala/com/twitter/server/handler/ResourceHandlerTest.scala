@@ -1,7 +1,7 @@
 package com.twitter.server.handler
 
-import com.twitter.finagle.http
-import com.twitter.io.Charsets
+import com.twitter.finagle.httpx
+import com.twitter.io.{Buf, Charsets}
 import com.twitter.util.Await
 import java.io.{ByteArrayInputStream, File, FileWriter, InputStream}
 import java.nio.file.Files
@@ -17,41 +17,42 @@ class ResourceHandlerTest extends FunSuite {
 
   test("404") {
     val handler = new ResourceHandler("/", PartialFunction.empty)
-    val res = Await.result(handler(http.Request("nonexistent.filetype")))
-    assert(res.getStatus === http.Status.NotFound)
+    val res = Await.result(handler(httpx.Request("nonexistent.filetype")))
+    assert(res.status === httpx.Status.NotFound)
   }
 
   test("400") {
     val handler = new ResourceHandler("/", PartialFunction.empty)
-    val res = Await.result(handler(http.Request("../../illegal")))
-    assert(res.getStatus === http.Status.BadRequest)
+    val res = Await.result(handler(httpx.Request("../../illegal")))
+    assert(res.status === httpx.Status.BadRequest)
   }
 
   test("load js") {
     val content = "var foo = function() { }"
     val handler = new ResourceHandler("/", staticResourceResolver(content))
-    val res = Await.result(handler(http.Request("test.js")))
-    assert(res.getStatus === http.Status.Ok)
-    assert(res.headers.get("content-type") === "application/javascript;charset=UTF-8")
-    assert(res.getContent.toString(Charsets.Utf8) === content)
+    val res = Await.result(handler(httpx.Request("test.js")))
+    assert(res.status === httpx.Status.Ok)
+    assert(res.headerMap.get("content-type") === Some("application/javascript;charset=UTF-8"))
+    assert(res.contentString === content)
   }
 
   test("load css") {
     val content = "#foo { color: blue; }"
     val handler = new ResourceHandler("/", staticResourceResolver(content))
-    val res = Await.result(handler(http.Request("test.css")))
-    assert(res.getStatus === http.Status.Ok)
-    assert(res.headers.get("content-type") === "text/css;charset=UTF-8")
-    assert(res.getContent.toString(Charsets.Utf8) === content)
+    val res = Await.result(handler(httpx.Request("test.css")))
+    assert(res.status === httpx.Status.Ok)
+    assert(res.headerMap.get("content-type") === Some("text/css;charset=UTF-8"))
+    assert(res.contentString === content)
   }
 
   test("load bytes") {
     val content = "jileuhto8q34ty3fni34oqbo87ybq"
     val handler = new ResourceHandler("/", staticResourceResolver(content))
-    val res = Await.result(handler(http.Request("test.raw")))
-    assert(res.getStatus === http.Status.Ok)
-    assert(res.headers.get("content-type") === "application/octet-stream")
-    assert(res.getContent.toString(Charsets.Iso8859_1) === content)
+    val res = Await.result(handler(httpx.Request("test.raw")))
+    assert(res.status === httpx.Status.Ok)
+    assert(res.headerMap.get("content-type") === Some("application/octet-stream"))
+    val bytes = Buf.ByteArray.Owned.extract(res.content)
+    assert(new String(bytes, Charsets.Iso8859_1) === content)
   }
 
   private def createTempFile(filename: String, content: String): File = {

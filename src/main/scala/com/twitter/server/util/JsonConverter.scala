@@ -3,8 +3,8 @@ package com.twitter.server.util
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import org.jboss.netty.buffer.ChannelBuffers
-import org.jboss.netty.handler.codec.http._
+import com.twitter.finagle.httpx.{Response, Status, Version}
+import com.twitter.io.Buf
 
 object JsonConverter {
   private[this] val writer = {
@@ -14,10 +14,10 @@ object JsonConverter {
     mapper.writer(printer)
   }
 
-  def apply(obj: Any): HttpResponse = {
+  def apply(obj: Any): Response = {
     val msg = writer.writeValueAsString(obj)
-    val response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK)
-    response.setContent(ChannelBuffers.wrappedBuffer(msg.getBytes))
+    val response = Response(Version.Http11, Status.Ok)
+    response.content = Buf.Utf8(msg)
     response
   }
 

@@ -1,7 +1,7 @@
 package com.twitter.server.handler
 
 import com.twitter.conversions.time._
-import com.twitter.finagle.http.Status
+import com.twitter.finagle.httpx.Status
 import com.twitter.finagle.Service
 import com.twitter.io.Buf
 import com.twitter.jvm.CpuProfile
@@ -18,7 +18,7 @@ class ProfileResourceHandler(
   case class Params(pause: Duration, frequency: Int)
 
   def apply(req: Request): Future[Response] = {
-    val params = parse(req.getUri)._2.foldLeft(Params(10.seconds, 100)) {
+    val params = parse(req.uri)._2.foldLeft(Params(10.seconds, 100)) {
       case (params, ("seconds", Seq(pauseVal))) =>
         params.copy(pause = pauseVal.toInt.seconds)
       case (params, ("hz", Seq(hz))) =>
@@ -27,7 +27,7 @@ class ProfileResourceHandler(
         params
     }
 
-    log.info(s"[${req.getUri}] collecting CPU profile ($which) for ${params.pause} seconds at ${params.frequency}Hz")
+    log.info(s"[${req.uri}] collecting CPU profile ($which) for ${params.pause} seconds at ${params.frequency}Hz")
 
     CpuProfile.recordInThread(params.pause, params.frequency, which) transform {
       case Return(prof) =>

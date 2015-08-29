@@ -1,6 +1,6 @@
 package com.twitter.server.view
 
-import com.twitter.finagle.http
+import com.twitter.finagle.httpx
 import com.twitter.finagle.Service
 import com.twitter.io.{Buf, Charsets}
 import com.twitter.server.util.HttpUtils._
@@ -23,20 +23,20 @@ class IndexViewTest extends FunSuite {
     }
 
     val idx = new IndexView("test", "", () => Seq())
-    val req = http.Request("/")
-    req.headers().set("Accept", "text/html")
+    val req = httpx.Request("/")
+    req.headerMap.set("Accept", "text/html")
 
     val svc0 = idx andThen fragment
     val res0 = Await.result(svc0(req))
-    assert(res0.headers.get("content-type") === "text/html;charset=UTF-8")
-    assert(res0.getStatus === http.Status.Ok)
-    assert(res0.getContent.toString(Charsets.Utf8).contains("<html>"))
+    assert(res0.headerMap.get("content-type") === Some("text/html;charset=UTF-8"))
+    assert(res0.status === httpx.Status.Ok)
+    assert(res0.contentString.contains("<html>"))
 
     val svc1 = idx andThen nofragment
-    req.headers().set("Accept", "*/*")
+    req.headerMap.set("Accept", "*/*")
     val res1 = Await.result(svc1(req))
-    assert(res1.headers.get("content-type") === "text/plain;charset=UTF-8")
-    assert(res1.getStatus === http.Status.Ok)
-    assert(res1.getContent.toString(Charsets.Utf8) === "hello")
+    assert(res1.headerMap.get("content-type") === Some("text/plain;charset=UTF-8"))
+    assert(res1.status === httpx.Status.Ok)
+    assert(res1.contentString === "hello")
   }
 }

@@ -1,12 +1,11 @@
 package com.twitter.server
 
-import com.twitter.finagle.http.{Request, HttpMuxHandler, Response}
-import com.twitter.finagle.{Http, Service}
+import com.twitter.finagle.httpx.{Request, HttpMuxHandler, Response}
+import com.twitter.finagle.{Httpx, Service}
 import com.twitter.util._
 import java.io.ByteArrayOutputStream
 import java.net.{InetAddress, InetSocketAddress}
 import java.util.logging.{Logger, StreamHandler, SimpleFormatter}
-import org.jboss.netty.handler.codec.http.{HttpResponse, HttpRequest}
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -89,7 +88,7 @@ class TwitterServerTest extends FunSuite {
         val handler = new StreamHandler(stream, new SimpleFormatter)
         logger.addHandler(handler)
 
-        val client = Http.client.newService(s"localhost:${port}")
+        val client = Httpx.client.newService(s"localhost:${port}")
         stream.reset()
         Await.ready(client(Request("/exception_please.json")))
         assert(stream.toString.contains("at com.twitter.server.MockExceptionHandler.apply"))

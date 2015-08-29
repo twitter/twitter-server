@@ -18,7 +18,7 @@ class AbortHandler extends Service[Request, Response] {
   }
 
   def apply(req: Request): Future[Response] = {
-    log.info(s"[${req.getUri}] aborting")
+    log.info(s"[${req.uri}] aborting")
     background { Runtime.getRuntime.halt(0) }
     newOk("aborting\n")
   }
