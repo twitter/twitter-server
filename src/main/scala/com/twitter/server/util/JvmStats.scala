@@ -1,6 +1,7 @@
 package com.twitter.server.util
 
 import com.twitter.finagle.stats.{BroadcastStatsReceiver, StatsReceiver}
+import com.twitter.jvm.Jvm
 import java.lang.management.{ManagementFactory, BufferPoolMXBean}
 import scala.collection.mutable
 
@@ -67,7 +68,7 @@ object JvmStats {
     // val postGCStats = memStats.scope("postGC")
     val postGCMem = memStats.scope("postGC")
     val postGCStats = BroadcastStatsReceiver(Seq(stats.scope("postGC"), postGCMem))
-    memPool foreach { pool =>
+    memPool.foreach { pool =>
       val name = pool.getName.regexSub("""[^\w]""".r) { m => "_" }
       if (pool.getCollectionUsage != null) {
         def usage = pool.getCollectionUsage // this is a snapshot, we can't reuse the value
@@ -87,9 +88,17 @@ object JvmStats {
       memPool.flatMap(p => Option(p.getUsage)).map(_.getUsed).sum
     })
 
+    // the Hotspot JVM exposes the full the size that the metaspace can grow to
+    // which differs from the value exposed by `MemoryUsage.getMax` from above
+    Jvm().metaspaceUsage.foreach { usage =>
+      gauges.add(memStats.scope("metaspace").addGauge("max_capacity") {
+        usage.maxCapacity.inBytes
+      })
+    }
+
     val bufferPool = ManagementFactory.getPlatformMXBeans(classOf[BufferPoolMXBean]).asScala
     val bufferPoolStats = memStats.scope("buffer")
-    bufferPool foreach { bp =>
+    bufferPool.foreach { bp =>
       val name = bp.getName
       gauges.add(bufferPoolStats.addGauge(name, "count") { bp.getCount })
       gauges.add(bufferPoolStats.addGauge(name, "used") { bp.getMemoryUsed })
@@ -98,7 +107,7 @@ object JvmStats {
 
     val gcPool = ManagementFactory.getGarbageCollectorMXBeans.asScala
     val gcStats = stats.scope("gc")
-    gcPool foreach { gc =>
+    gcPool.foreach { gc =>
       val name = gc.getName.regexSub("""[^\w]""".r) { m => "_" }
       gauges.add(gcStats.addGauge(name, "cycles") { gc.getCollectionCount })
       gauges.add(gcStats.addGauge(name, "msec") { gc.getCollectionTime })
