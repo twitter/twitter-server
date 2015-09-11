@@ -15,7 +15,7 @@ class ShutdownHandler(app: App) extends Service[Request, Response] {
     parse(uri)._2.get("grace").flatMap(_.headOption)
 
   def apply(req: Request): Future[Response] = {
-    log.info(s"[${req.uri}] quitting")
+    log.info(s"[${req.uri}] from ${req.remoteAddress.getHostAddress} quitting")
     val grace = getGraceParam(req.uri) map { d =>
       try Duration.parse(d) catch { case e: NumberFormatException =>
         val msg = "could not parse 'grace' parameter: %s is not a valid duration".format(d)
