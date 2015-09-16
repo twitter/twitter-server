@@ -3,7 +3,8 @@ package com.twitter.server.handler
 import com.twitter.conversions.time._
 import com.twitter.finagle.client.StackClient
 import com.twitter.finagle.util.StackRegistry
-import com.twitter.finagle.{httpx, Stack, param}
+import com.twitter.finagle.{Stack, param}
+import com.twitter.finagle.httpx.{Request, Status}
 import com.twitter.io.Charsets
 import com.twitter.server.util.HttpUtils._
 import com.twitter.server.util.MetricSourceTest
@@ -23,14 +24,14 @@ class ClientRegistryHandlerTest extends FunSuite {
     registry.register("localhost:8080", StackClient.newStack, Stack.Params.empty + param.Label("client0"))
     val handler = new ClientRegistryHandler(source, registry)
 
-    val res = Await.result(handler(httpx.Request("/client0")))
-    assert(res.status === httpx.Status.Ok)
+    val res = Await.result(handler(Request("/client0")))
+    assert(res.status === Status.Ok)
     val content = res.contentString
     assert(content.contains("client0"))
     assert(content.contains("localhost:8080"))
 
-    val res1 = Await.result(handler(httpx.Request("/client1")))
-    assert(res1.status === httpx.Status.NotFound)
+    val res1 = Await.result(handler(Request("/client1")))
+    assert(res1.status === Status.NotFound)
   }
 
   test("client profile") {
@@ -44,7 +45,7 @@ class ClientRegistryHandlerTest extends FunSuite {
       val handler = new ClientRegistryHandler(source, registry)
 
       tc.advance(1.second)
-      val req = httpx.Request("/index.html")
+      val req = Request("/index.html")
       assert(Await.result(handler(req)).contentString === "")
 
       underlying = Map(

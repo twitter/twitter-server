@@ -1,8 +1,9 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.{Announcer, Service}
+import com.twitter.finagle.httpx.{Request, Response}
 import com.twitter.util.Future
-import com.twitter.server.util.HttpUtils._
+import com.twitter.server.util.HttpUtils.newOk
 
 class AnnouncerHandler extends Service[Request, Response] {
   def apply(req: Request): Future[Response] = {

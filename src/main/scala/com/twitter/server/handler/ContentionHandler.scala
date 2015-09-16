@@ -1,8 +1,9 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
+import com.twitter.finagle.httpx.{Request, Response}
 import com.twitter.jvm.ContentionSnapshot
-import com.twitter.server.util.HttpUtils._
+import com.twitter.server.util.HttpUtils.newOk
 import com.twitter.util.Future
 
 class ContentionHandler extends Service[Request, Response] {

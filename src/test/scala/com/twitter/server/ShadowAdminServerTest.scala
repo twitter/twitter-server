@@ -1,7 +1,7 @@
 package com.twitter.server
 
 import com.twitter.finagle.Httpx
-import com.twitter.finagle.httpx.{HttpMuxHandler, Request}
+import com.twitter.finagle.httpx.{HttpMuxHandler, Request, Response}
 import com.twitter.finagle.{ListeningServer, NullServer}
 import com.twitter.io.Charsets
 import com.twitter.server.util.HttpUtils._

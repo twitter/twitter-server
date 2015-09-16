@@ -1,10 +1,11 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
-import com.twitter.util.registry.{Formatter, GlobalRegistry}
-import com.twitter.util.Future
-import com.twitter.server.util.HttpUtils._
+import com.twitter.finagle.httpx.{Request, Response}
+import com.twitter.server.util.HttpUtils.newOk
 import com.twitter.server.util.JsonConverter
+import com.twitter.util.Future
+import com.twitter.util.registry.{Formatter, GlobalRegistry}
 
 /**
  * A [[com.twitter.finagle.Service]] for displaying the current state of the

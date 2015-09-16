@@ -3,7 +3,6 @@ package com.twitter.server
 import com.twitter.app.App
 import com.twitter.finagle.client.ClientRegistry
 import com.twitter.finagle.httpx.{Response, Request, HttpMuxer}
-import com.twitter.finagle.httpx
 import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.tracing.NullTracer
@@ -36,7 +35,7 @@ object AdminHttpServer {
    */
   case class Route(
     path: String,
-    handler: Service[HttpUtils.Request, HttpUtils.Response],
+    handler: Service[Request, Response],
     alias: String,
     group: Option[String],
     includeInIndex: Boolean)
@@ -59,7 +58,7 @@ object AdminHttpServer {
    */
   def mkRoutex(
     path: String,
-    handler: Service[httpx.Request, httpx.Response],
+    handler: Service[Request, Response],
     alias: String,
     group: Option[String],
     includeInIndex: Boolean
@@ -77,12 +76,13 @@ trait AdminHttpServer { self: App =>
   def defaultHttpPort: Int = 9990
   val adminPort = flag("admin.port", new InetSocketAddress(defaultHttpPort), "Admin http server port")
 
-  private[this] val adminHttpMuxer = new Service[HttpUtils.Request, HttpUtils.Response] {
-    override def apply(request: HttpUtils.Request): Future[HttpUtils.Response] = underlying(request)
+  private[this] val adminHttpMuxer = new Service[Request, Response] {
+    override def apply(request: Request): Future[Response] = underlying(request)
 
-    @volatile var underlying: Service[HttpUtils.Request, HttpUtils.Response] =
-      new Service[HttpUtils.Request, HttpUtils.Response] {
-        def apply(request: HttpUtils.Request): Future[HttpUtils.Response] = HttpUtils.new404("no admin server initialized")
+    @volatile var underlying: Service[Request, Response] =
+      new Service[Request, Response] {
+        def apply(request: Request): Future[Response] =
+          HttpUtils.new404("no admin server initialized")
       }
   }
 
@@ -111,7 +111,7 @@ trait AdminHttpServer { self: App =>
     // Stat libraries join the global muxer namespace.
     // Special case and group them here.
     val (metricLinks, otherLinks) = {
-      val links = (HttpMuxer.patterns ++ httpx.HttpMuxer.patterns).map {
+      val links = HttpMuxer.patterns.map {
         case path@"/admin/metrics.json" => IndexView.Link(path, s"$path?pretty=true")
         case path => IndexView.Link(path, path)
       }
@@ -158,14 +158,13 @@ trait AdminHttpServer { self: App =>
     }
 
     // create a service which multiplexes across all endpoints.
-    val httpxMuxer: Service[Request, Response] = httpx.HttpMuxer
     val localMuxer = allRoutes.foldLeft(new HttpMuxer) {
       case (muxer, route) =>
         log.info(s"${route.path} => ${route.handler.getClass.getName}")
         val service = new IndexView(route.alias, route.path, index) andThen route.handler
         muxer.withHandler(route.path, service)
     }
-    adminHttpMuxer.underlying = HttpUtils.combine(Seq(localMuxer, httpxMuxer, HttpMuxer))
+    adminHttpMuxer.underlying = HttpUtils.combine(Seq(localMuxer, HttpMuxer))
   }
 
   private[this] def startServer() = {

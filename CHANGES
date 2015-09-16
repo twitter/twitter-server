@@ -7,6 +7,13 @@ Note that ``RB_ID=#`` correspond to associated messages in commits.
 1.x
 -----
 
+Dependencies:
+-------------
+
+ * Converted to finagle-httpx. Projects that depend transitively on
+   finagle-http through twitter-server will need to switch to finagle-httpx.
+   RB_ID=741454 RB_ID=740731 
+
 1.13.0
 ~~~~~~~
 

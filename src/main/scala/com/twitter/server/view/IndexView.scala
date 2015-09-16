@@ -2,9 +2,9 @@ package com.twitter.server.view
 
 import com.twitter.concurrent.exp.AsyncStream
 import com.twitter.finagle.{Service, SimpleFilter}
-import com.twitter.finagle.httpx.Response
+import com.twitter.finagle.httpx.{Request, Response, Status}
 import com.twitter.io.{Reader, Buf, Charsets}
-import com.twitter.server.util.HttpUtils._
+import com.twitter.server.util.HttpUtils.{expectsHtml, newResponse}
 import com.twitter.util.Future
 
 object IndexView {

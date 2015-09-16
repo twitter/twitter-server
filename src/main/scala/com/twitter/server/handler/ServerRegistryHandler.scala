@@ -1,10 +1,11 @@
 package com.twitter.server.handler
 
-import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.Service
+import com.twitter.finagle.httpx.{Request, Response, Status}
+import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.util.StackRegistry
 import com.twitter.io.Buf
-import com.twitter.server.util.HttpUtils._
+import com.twitter.server.util.HttpUtils.{new404, newResponse, parse}
 import com.twitter.server.util.MetricSource
 import com.twitter.server.view.StackRegistryView
 import com.twitter.util.Future

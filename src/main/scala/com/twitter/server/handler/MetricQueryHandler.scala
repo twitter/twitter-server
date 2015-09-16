@@ -1,9 +1,10 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
+import com.twitter.finagle.httpx.{Request, Response}
 import com.twitter.io.Buf
 import com.twitter.io.Charsets
-import com.twitter.server.util.HttpUtils._
+import com.twitter.server.util.HttpUtils.{newResponse, parse}
 import com.twitter.server.util.{JsonConverter, MetricSource}
 import com.twitter.util.{Future, Time}
 

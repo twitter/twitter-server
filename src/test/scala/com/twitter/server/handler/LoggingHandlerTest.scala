@@ -1,6 +1,6 @@
 package com.twitter.server.handler
 
-import com.twitter.finagle.httpx
+import com.twitter.finagle.httpx.{Request, Response, Status}
 import com.twitter.io.Charsets
 import com.twitter.logging.{Level, Logger}
 import com.twitter.server.util.HttpUtils._
@@ -15,17 +15,17 @@ class LoggingHandlerTest extends FunSuite {
     val handler = new LoggingHandler
     val loggers = Logger.iterator
 
-    val res = Await.result(handler(httpx.Request("/")))
-    assert(res.status === httpx.Status.Ok)
+    val res = Await.result(handler(Request("/")))
+    assert(res.status === Status.Ok)
     val text = res.contentString
     for (logger <- loggers) {
       assert(text.contains(logger.name))
     }
 
-    val browserReq = httpx.Request("/")
+    val browserReq = Request("/")
     browserReq.headerMap.set("User-Agent", "Mozilla")
-    val browserRes = Await.result(handler(httpx.Request("/")))
-    assert(browserRes.status === httpx.Status.Ok)
+    val browserRes = Await.result(handler(Request("/")))
+    assert(browserRes.status === Status.Ok)
     val html = browserRes.contentString
     for (logger <- loggers) {
       assert(html.contains(logger.name))
@@ -37,7 +37,7 @@ class LoggingHandlerTest extends FunSuite {
 
     Logger("").setLevel(Level.INFO)
     assert(Logger("").getLevel == Level.INFO)
-    Await.result(handler(httpx.Request("/?logger=root&level=DEBUG")))
+    Await.result(handler(Request("/?logger=root&level=DEBUG")))
     assert(Logger("").getLevel == Level.DEBUG)
   }
 
@@ -57,9 +57,9 @@ class LoggingHandlerTest extends FunSuite {
     }
 
     Logger.withLoggers(List(l0, l1)) {
-      val req = httpx.Request("/")
+      val req = Request("/")
       val res = Await.result(handler(req))
-      assert(res.status === httpx.Status.Ok)
+      assert(res.status === Status.Ok)
       val text = res.contentString
       assert(text === "root OFF\nl0 ALL\nl1 DEBUG")
     }

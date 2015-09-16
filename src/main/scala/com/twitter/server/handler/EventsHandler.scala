@@ -2,11 +2,11 @@ package com.twitter.server.handler
 
 import com.twitter.concurrent.exp.AsyncStream
 import com.twitter.finagle.Service
-import com.twitter.finagle.httpx
+import com.twitter.finagle.httpx.{Request, Response}
 import com.twitter.finagle.tracing.SpanId
 import com.twitter.io.{Reader, Buf}
 import com.twitter.server.handler.EventRecordingHandler._
-import com.twitter.server.util.HttpUtils._
+import com.twitter.server.util.HttpUtils.{accepts, expectsJson}
 import com.twitter.server.util.{JsonSink, TraceEventSink}
 import com.twitter.util.events.{Sink, Event}
 import com.twitter.util.{Future, Throw, Try}
@@ -29,7 +29,7 @@ private[server] class EventsHandler(sink: Sink) extends Service[Request, Respons
     else respond(Html, htmlSerialize(sink))
 
   private[this] def respond(contentType: String, reader: Reader): Future[Response] = {
-    val response = httpx.Response()
+    val response = Response()
     response.contentType = contentType
     response.setChunked(true)
     Reader.copy(reader, response.writer).onFailure { e =>

@@ -1,7 +1,7 @@
 package com.twitter.server.util
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.httpx
+import com.twitter.finagle.httpx.{MediaType, Request, Response, Status, Version}
 import com.twitter.io.Buf
 import com.twitter.util.Future
 import org.jboss.netty.handler.codec.http.QueryStringDecoder
@@ -9,9 +9,6 @@ import scala.collection.JavaConverters._
 import scala.collection.{Map, Seq}
 
 private[server] object HttpUtils {
-  type Request = httpx.Request
-  type Response = httpx.Response
-
   /**
    * Creates a http [[com.twitter.finagle.Service]] which attempts a
    * request on the given `services`, in order, until a service returns
@@ -26,14 +23,13 @@ private[server] object HttpUtils {
           case service +: Nil => service(req)
           case service +: tail =>
             service(req).flatMap { rep =>
-              if (rep.status == httpx.Status.NotFound)
+              if (rep.status == Status.NotFound)
                 loop(tail)
               else
                 Future.value(rep)
             }
           case Nil =>
-            Future.value(httpx.Response(req.version, httpx.Status.NotFound)
-            )
+            Future.value(Response(req.version, Status.NotFound))
         }
 
       loop(services)
@@ -53,7 +49,7 @@ private[server] object HttpUtils {
    */
   def expectsHtml(req: Request): Boolean = {
     val decoder = new QueryStringDecoder(req.uri)
-    decoder.getPath.endsWith(".html") || accepts(req, httpx.MediaType.Html)
+    decoder.getPath.endsWith(".html") || accepts(req, MediaType.Html)
   }
 
   /**
@@ -61,7 +57,7 @@ private[server] object HttpUtils {
    */
   def expectsJson(req: Request): Boolean = {
     val decoder = new QueryStringDecoder(req.uri)
-    decoder.getPath.endsWith(".json") || accepts(req, httpx.MediaType.Json)
+    decoder.getPath.endsWith(".json") || accepts(req, MediaType.Json)
   }
 
   /**
@@ -75,13 +71,13 @@ private[server] object HttpUtils {
    * @param content The content body of the HTTP response.
    */
   def newResponse(
-    version: httpx.Version = httpx.Version.Http11,
-    status: httpx.Status = httpx.Status.Ok,
+    version: Version = Version.Http11,
+    status: Status = Status.Ok,
     headers: Iterable[(String, Object)] = Seq(),
     contentType: String,
     content: Buf
   ): Future[Response] = {
-    val response = httpx.Response(version, status)
+    val response = Response(version, status)
     response.content = content
     for ((k, v) <- headers) response.headerMap.add(k, v.toString)
     response.headerMap.add("Content-Language", "en")
@@ -100,7 +96,7 @@ private[server] object HttpUtils {
   /** Returns a new 404 with contents set to `msg` */
   def new404(msg: String): Future[Response] =
     newResponse(
-      status = httpx.Status.NotFound,
+      status = Status.NotFound,
       contentType = "text/plain;charset=UTF-8",
       content = Buf.Utf8(msg)
     )

@@ -1,7 +1,8 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.{Dtab, Service}
-import com.twitter.server.util.HttpUtils._
+import com.twitter.finagle.httpx.{Request, Response}
+import com.twitter.server.util.HttpUtils.newOk
 import com.twitter.util.Future
 
 /**
