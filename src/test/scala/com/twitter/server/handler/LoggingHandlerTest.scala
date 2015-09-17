@@ -1,16 +1,16 @@
 package com.twitter.server.handler
 
-import com.twitter.finagle.httpx.{Request, Response, Status}
-import com.twitter.io.Charsets
+import com.twitter.finagle.httpx.{Request, Status}
 import com.twitter.logging.{Level, Logger}
-import com.twitter.server.util.HttpUtils._
 import com.twitter.util.Await
 import org.junit.runner.RunWith
-import org.scalatest.FunSuite
+import org.scalatest.{Matchers, FunSuite}
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class LoggingHandlerTest extends FunSuite {
+class LoggingHandlerTest extends FunSuite
+  with Matchers
+{
   test("query all loggers") {
     val handler = new LoggingHandler
     val loggers = Logger.iterator
@@ -61,7 +61,9 @@ class LoggingHandlerTest extends FunSuite {
       val res = Await.result(handler(req))
       assert(res.status === Status.Ok)
       val text = res.contentString
-      assert(text === "root OFF\nl0 ALL\nl1 DEBUG")
+      text should include ("root OFF")
+      text should include ("l0 ALL")
+      text should include ("l1 DEBUG")
     }
   }
 }
