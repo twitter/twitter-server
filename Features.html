@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Features &mdash; TwitterServer 1.13.0 documentation</title>
+    <title>Features &mdash; TwitterServer 1.14.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.13.0',
+        VERSION:     '1.14.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="TwitterServer 1.13.0 documentation" href="index.html" />
+    <link rel="top" title="TwitterServer 1.14.0 documentation" href="index.html" />
     <link rel="next" title="Using TwitterServer from Java" href="Java.html" />
     <link rel="prev" title="TwitterServer" href="index.html" />
    
@@ -62,14 +62,12 @@
 examining a slightly more advanced version of the example shown in the
 introduction.</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">com.twitter.conversions.time._</span>
-<span class="k">import</span> <span class="nn">com.twitter.finagle.http.HttpMuxer</span>
+<span class="k">import</span> <span class="nn">com.twitter.finagle.httpx.</span><span class="o">{</span><span class="nc">HttpMuxer</span><span class="o">,</span> <span class="nc">Request</span><span class="o">,</span> <span class="nc">Response</span><span class="o">}</span>
 <span class="k">import</span> <span class="nn">com.twitter.finagle.Service</span>
 <span class="k">import</span> <span class="nn">com.twitter.io.Charsets</span>
 <span class="k">import</span> <span class="nn">com.twitter.server.TwitterServer</span>
 <span class="k">import</span> <span class="nn">com.twitter.util.</span><span class="o">{</span><span class="nc">Await</span><span class="o">,</span> <span class="nc">Future</span><span class="o">,</span> <span class="nc">Time</span><span class="o">}</span>
 <span class="k">import</span> <span class="nn">java.net.InetSocketAddress</span>
-<span class="k">import</span> <span class="nn">org.jboss.netty.buffer.ChannelBuffers.copiedBuffer</span>
-<span class="k">import</span> <span class="nn">org.jboss.netty.handler.codec.http._</span>
 
 <span class="k">object</span> <span class="nc">AdvancedServer</span> <span class="k">extends</span> <span class="nc">TwitterServer</span> <span class="o">{</span>
 
@@ -78,14 +76,12 @@ introduction.</p>
   <span class="k">val</span> <span class="n">durations</span> <span class="k">=</span> <span class="n">flag</span><span class="o">(</span><span class="s">&quot;alarms&quot;</span><span class="o">,</span> <span class="o">(</span><span class="mf">1.</span><span class="n">second</span><span class="o">,</span> <span class="mf">5.</span><span class="n">second</span><span class="o">),</span> <span class="s">&quot;2 alarm durations&quot;</span><span class="o">)</span>
   <span class="k">val</span> <span class="n">counter</span> <span class="k">=</span> <span class="n">statsReceiver</span><span class="o">.</span><span class="n">counter</span><span class="o">(</span><span class="s">&quot;requests_counter&quot;</span><span class="o">)</span>
 
-  <span class="k">val</span> <span class="n">service</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Service</span><span class="o">[</span><span class="kt">HttpRequest</span>, <span class="kt">HttpResponse</span><span class="o">]</span> <span class="o">{</span>
-    <span class="k">def</span> <span class="n">apply</span><span class="o">(</span><span class="n">request</span><span class="k">:</span> <span class="kt">HttpRequest</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+  <span class="k">val</span> <span class="n">service</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Service</span><span class="o">[</span><span class="kt">Request</span>, <span class="kt">Response</span><span class="o">]</span> <span class="o">{</span>
+    <span class="k">def</span> <span class="n">apply</span><span class="o">(</span><span class="n">request</span><span class="k">:</span> <span class="kt">Request</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
       <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="o">(</span><span class="s">&quot;Received a request at &quot;</span> <span class="o">+</span> <span class="nc">Time</span><span class="o">.</span><span class="n">now</span><span class="o">)</span>
       <span class="n">counter</span><span class="o">.</span><span class="n">incr</span><span class="o">()</span>
-      <span class="k">val</span> <span class="n">response</span> <span class="k">=</span>
-        <span class="k">new</span> <span class="nc">DefaultHttpResponse</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="n">getProtocolVersion</span><span class="o">,</span> <span class="nc">HttpResponseStatus</span><span class="o">.</span><span class="nc">OK</span><span class="o">)</span>
-      <span class="k">val</span> <span class="n">content</span> <span class="k">=</span> <span class="n">copiedBuffer</span><span class="o">(</span><span class="n">what</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;\n&quot;</span><span class="o">,</span> <span class="nc">Charsets</span><span class="o">.</span><span class="nc">Utf8</span><span class="o">)</span>
-      <span class="n">response</span><span class="o">.</span><span class="n">setContent</span><span class="o">(</span><span class="n">content</span><span class="o">)</span>
+      <span class="k">val</span> <span class="n">response</span> <span class="k">=</span> <span class="nc">Response</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="n">version</span><span class="o">,</span> <span class="nc">Status</span><span class="o">.</span><span class="nc">Ok</span><span class="o">)</span>
+      <span class="n">response</span><span class="o">.</span><span class="n">contentString</span> <span class="k">=</span> <span class="n">what</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;\n&quot;</span>
       <span class="nc">Future</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="n">response</span><span class="o">)</span>
     <span class="o">}</span>
   <span class="o">}</span>

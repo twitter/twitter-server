@@ -63,9 +63,9 @@ process.
 
   $ java -jar target/myserver-1.0.0-SNAPSHOT.jar &
   [1] 66569
-  Feb 21, 2013 10:55:57 AM com.twitter.finagle.http.HttpMuxer$$anonfun$5 apply
+  Feb 21, 2013 10:55:57 AM com.twitter.finagle.httpx.HttpMuxer$$anonfun$5 apply
   INFO: HttpMuxer[/admin/metrics.json] = com.twitter.finagle.stats.MetricsExporter(<function1>)
-  Feb 21, 2013 10:55:57 AM com.twitter.finagle.http.HttpMuxer$$anonfun$5 apply
+  Feb 21, 2013 10:55:57 AM com.twitter.finagle.httpx.HttpMuxer$$anonfun$5 apply
   INFO: HttpMuxer[/stats] = com.twitter.finagle.stats.OstrichExporter(<function1>)
 
   $ curl localhost:8888
