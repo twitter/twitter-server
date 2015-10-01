@@ -59,6 +59,9 @@ class ServerInfoHandler(obj: AnyRef) extends Service[Request, Response] {
     registry.put(Seq("system", "env", key), value)
   }
 
+  registry.put(Seq("system", "jvm_arguments"),
+    ManagementFactory.getRuntimeMXBean.getInputArguments.toString)
+
   // Expose this build revision as a number. Useful to check cluster consistency.
   combinedInfo.get("build.git.revision.number") match {
     case Some(rev) => LoadedStatsReceiver.provideGauge("build.git.revision.number") { rev.toFloat }
