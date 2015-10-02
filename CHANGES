@@ -7,6 +7,12 @@ Note that ``RB_ID=#`` correspond to associated messages in commits.
 1.x
 -----
 
+Runtime Behavior Changes
+------------------------
+
+  * We no longer export a "scheduler/productivity" stat because various implementation
+    details made it difficult to report reliably.
+
 1.14.0
 ~~~~~~~
 
@@ -15,7 +21,7 @@ Dependencies:
 
  * Converted to finagle-httpx. Projects that depend transitively on
    finagle-http through twitter-server will need to switch to finagle-httpx.
-   RB_ID=741454 RB_ID=740731 
+   RB_ID=741454 RB_ID=740731
 
 1.13.0
 ~~~~~~~
@@ -69,7 +75,7 @@ New Features:
 
   * TwitterServer now exposes a /admin/registry.json endpoint, which speaks json and exposes the
     values from util-registry as labels. Most labels are long-lived, and tend to represent something
-    about a process that is true for the entire lifetime, like the version of a library, or what a 
+    about a process that is true for the entire lifetime, like the version of a library, or what a
     flag was set to.
 
 Dependencies:
