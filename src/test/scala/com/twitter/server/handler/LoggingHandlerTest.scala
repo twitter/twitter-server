@@ -1,6 +1,6 @@
 package com.twitter.server.handler
 
-import com.twitter.finagle.httpx.{Request, Status}
+import com.twitter.finagle.http.{Request, Status}
 import com.twitter.logging.{Level, Logger}
 import com.twitter.util.Await
 import org.junit.runner.RunWith

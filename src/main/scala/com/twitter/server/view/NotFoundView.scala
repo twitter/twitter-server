@@ -1,6 +1,6 @@
 package com.twitter.server.view
 
-import com.twitter.finagle.httpx.{Request, Response, Status}
+import com.twitter.finagle.http.{Request, Response, Status}
 import com.twitter.finagle.{Service, SimpleFilter}
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.{expectsHtml, newResponse}

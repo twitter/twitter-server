@@ -4,7 +4,7 @@ import com.twitter.conversions.time._
 import com.twitter.finagle.client.StackClient
 import com.twitter.finagle.util.StackRegistry
 import com.twitter.finagle.{Stack, param}
-import com.twitter.finagle.httpx.{Request, Status}
+import com.twitter.finagle.http.{Request, Status}
 import com.twitter.io.Charsets
 import com.twitter.server.util.HttpUtils._
 import com.twitter.server.util.MetricSourceTest

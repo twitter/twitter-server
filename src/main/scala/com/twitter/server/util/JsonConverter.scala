@@ -3,7 +3,7 @@ package com.twitter.server.util
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.twitter.finagle.httpx.{Response, Status, Version}
+import com.twitter.finagle.http.{Response, Status, Version}
 import com.twitter.io.Buf
 
 object JsonConverter {

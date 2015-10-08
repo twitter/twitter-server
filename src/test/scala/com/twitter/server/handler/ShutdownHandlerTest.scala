@@ -1,7 +1,7 @@
 package com.twitter.server.handler
 
 import com.twitter.conversions.time._
-import com.twitter.finagle.httpx.{Status, Request}
+import com.twitter.finagle.http.{Status, Request}
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Closable, Time, Await, Future}
 import org.junit.runner.RunWith

@@ -25,8 +25,8 @@ if [ "$TWITTER_SERVER_BRANCH" != "master" ]; then
   git clone https://github.com/twitter/finagle.git --branch develop
   cd finagle
   $TWITTER_SERVER_SBT ++$TRAVIS_SCALA_VERSION finagle-core/publishLocal
-  $TWITTER_SERVER_SBT ++$TRAVIS_SCALA_VERSION finagle-httpx/publishLocal
-  $TWITTER_SERVER_SBT ++$TRAVIS_SCALA_VERSION finagle-httpx-compat/publishLocal
+  $TWITTER_SERVER_SBT ++$TRAVIS_SCALA_VERSION finagle-http/publishLocal
+  $TWITTER_SERVER_SBT ++$TRAVIS_SCALA_VERSION finagle-http-compat/publishLocal
   $TWITTER_SERVER_SBT ++$TRAVIS_SCALA_VERSION finagle-thrift/publishLocal
   $TWITTER_SERVER_SBT ++$TRAVIS_SCALA_VERSION finagle-zipkin/publishLocal
   # clean up

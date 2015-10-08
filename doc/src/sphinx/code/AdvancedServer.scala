@@ -1,5 +1,5 @@
 import com.twitter.conversions.time._
-import com.twitter.finagle.httpx.{HttpMuxer, Request, Response}
+import com.twitter.finagle.http.{HttpMuxer, Request, Response}
 import com.twitter.finagle.Service
 import com.twitter.io.Charsets
 import com.twitter.server.TwitterServer

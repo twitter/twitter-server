@@ -1,19 +1,19 @@
 package com.twitter.server.handler
 
-import com.twitter.finagle.{Service, httpx}
-import com.twitter.finagle.httpx.{HttpMuxer, Request, Response}
+import com.twitter.finagle.{Service, http}
+import com.twitter.finagle.http.{HttpMuxer, Request, Response}
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.{expectsHtml, newOk, newResponse}
 import com.twitter.util.Future
 
 /**
  * A handler which outputs `patterns` as html anchors. By default,
- * it outputs the patterns from the globals [[com.twitter.finagle.httpx.HttpMuxer]]
- * and [[com.twitter.finagle.httpx.HttpMuxer]].
+ * it outputs the patterns from the globals [[com.twitter.finagle.http.HttpMuxer]]
+ * and [[com.twitter.finagle.http.HttpMuxer]].
  */
 class IndexHandler(
     prefix: String = "/",
-    patterns: Seq[String] = HttpMuxer.patterns ++ httpx.HttpMuxer.patterns)
+    patterns: Seq[String] = HttpMuxer.patterns)
   extends Service[Request, Response] {
   def apply(req: Request): Future[Response] = {
     val paths = patterns.filter(_.startsWith(prefix))

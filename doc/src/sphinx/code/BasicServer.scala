@@ -1,5 +1,5 @@
 //#imports
-import com.twitter.finagle.{Httpx, Service}
+import com.twitter.finagle.{Http, Service}
 import com.twitter.io.Charsets
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future}
@@ -16,7 +16,7 @@ object BasicServer extends TwitterServer {
   }
 
   def main() {
-    val server = Httpx.serve(":8888", service)
+    val server = Http.serve(":8888", service)
     onExit {
       server.close()
     }

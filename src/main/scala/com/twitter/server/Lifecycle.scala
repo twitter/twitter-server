@@ -1,7 +1,7 @@
 package com.twitter.server
 
 import com.twitter.app.{GlobalFlag, App}
-import com.twitter.finagle.httpx.HttpMuxer
+import com.twitter.finagle.http.HttpMuxer
 import com.twitter.server.handler._
 import java.lang.management.ManagementFactory
 import java.util.concurrent.atomic.AtomicBoolean

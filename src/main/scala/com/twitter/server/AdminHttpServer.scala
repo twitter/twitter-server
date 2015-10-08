@@ -2,11 +2,11 @@ package com.twitter.server
 
 import com.twitter.app.App
 import com.twitter.finagle.client.ClientRegistry
-import com.twitter.finagle.httpx.{Response, Request, HttpMuxer}
+import com.twitter.finagle.http.{Response, Request, HttpMuxer}
 import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.tracing.NullTracer
-import com.twitter.finagle.{Filter, Httpx, ListeningServer, NullServer, param, Service}
+import com.twitter.finagle.{Filter, Http, ListeningServer, NullServer, param, Service}
 import com.twitter.server.util.HttpUtils
 import com.twitter.server.view.{IndexView, NotFoundView}
 import com.twitter.util.{Future, Monitor}
@@ -18,7 +18,7 @@ object AdminHttpServer {
    * Represents an element which can be routed to via the admin http server.
    *
    * @param path The path used to access the route. A request
-   * is routed to the path as per the [[com.twitter.finagle.httpx.HttpMuxer]]
+   * is routed to the path as per the [[com.twitter.finagle.http.HttpMuxer]]
    * spec.
    *
    * @param handler The service which requests are routed to.
@@ -54,7 +54,7 @@ object AdminHttpServer {
   }
 
   /**
-   * Create a Route using a Finagle service interface and a service using finagle-httpx
+   * Create a Route using a Finagle service interface and a service using finagle-http
    */
   def mkRoutex(
     path: String,
@@ -112,7 +112,8 @@ trait AdminHttpServer { self: App =>
     // Special case and group them here.
     val (metricLinks, otherLinks) = {
       val links = HttpMuxer.patterns.map {
-        case path@"/admin/metrics.json" => IndexView.Link(path, s"$path?pretty=true")
+        case path@"/admin/metrics.json" =>
+          IndexView.Link(path, s"$path?pretty=true")
         case path => IndexView.Link(path, path)
       }
       links partition {
@@ -176,7 +177,7 @@ trait AdminHttpServer { self: App =>
       }
     }
     log.info(s"Serving admin http on ${adminPort()}")
-    adminHttpServer = Httpx.server
+    adminHttpServer = Http.server
       .configured(param.Stats(NullStatsReceiver))
       .configured(param.Tracer(NullTracer))
       .configured(param.Monitor(loggingMonitor))

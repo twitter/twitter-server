@@ -1,7 +1,7 @@
 package com.twitter.server.handler
 
 import com.twitter.app.App
-import com.twitter.finagle.httpx.{Request, Response, Status}
+import com.twitter.finagle.http.{Request, Response, Status}
 import com.twitter.finagle.Service
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.{parse, newOk, newResponse}

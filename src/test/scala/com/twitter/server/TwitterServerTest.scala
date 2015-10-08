@@ -1,7 +1,7 @@
 package com.twitter.server
 
-import com.twitter.finagle.httpx.{Request, HttpMuxHandler, Response}
-import com.twitter.finagle.{Httpx, Service}
+import com.twitter.finagle.http.{Request, HttpMuxHandler, Response}
+import com.twitter.finagle.{Http, Service}
 import com.twitter.util._
 import java.io.ByteArrayOutputStream
 import java.net.{InetAddress, InetSocketAddress}
@@ -88,7 +88,7 @@ class TwitterServerTest extends FunSuite {
         val handler = new StreamHandler(stream, new SimpleFormatter)
         logger.addHandler(handler)
 
-        val client = Httpx.client.newService(s"localhost:${port}")
+        val client = Http.client.newService(s"localhost:${port}")
         stream.reset()
         Await.ready(client(Request("/exception_please.json")))
         assert(stream.toString.contains("at com.twitter.server.MockExceptionHandler.apply"))

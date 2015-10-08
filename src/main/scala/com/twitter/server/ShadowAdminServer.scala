@@ -2,12 +2,12 @@ package com.twitter.server
 
 import com.twitter.app.App
 import com.twitter.concurrent.NamedPoolThreadFactory
-import com.twitter.finagle.httpx.{HttpMuxer, HttpMuxHandler}
+import com.twitter.finagle.http.{HttpMuxer, HttpMuxHandler}
 import com.twitter.finagle.netty3.Netty3Listener
 import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.tracing.NullTracer
 import com.twitter.finagle.util.LoadService
-import com.twitter.finagle.{Httpx, ListeningServer, NullServer, param}
+import com.twitter.finagle.{Http, ListeningServer, NullServer, param}
 import java.net.InetSocketAddress
 import java.util.concurrent.Executors
 import java.util.logging.Logger
@@ -59,7 +59,7 @@ trait ShadowAdminServer { self: App with AdminHttpServer =>
         override def releaseExternalResources() = () // no-op
       }
 
-    shadowHttpServer = Httpx.server
+    shadowHttpServer = Http.server
       .configured(param.Stats(NullStatsReceiver))
       .configured(param.Tracer(NullTracer))
       .configured(Netty3Listener.ChannelFactory(channelFactory))

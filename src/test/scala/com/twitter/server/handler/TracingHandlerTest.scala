@@ -1,6 +1,6 @@
 package com.twitter.server.handler
 
-import com.twitter.finagle.httpx.{Request, Response, Status}
+import com.twitter.finagle.http.{Request, Response, Status}
 import com.twitter.finagle.tracing.Record
 import com.twitter.finagle.tracing.{Trace, Tracer}
 import com.twitter.util.Await

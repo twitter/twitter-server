@@ -1,7 +1,7 @@
 package com.twitter.server.handler
 
 import com.twitter.conversions.time._
-import com.twitter.finagle.httpx.{Request, Response, Status}
+import com.twitter.finagle.http.{Request, Response, Status}
 import com.twitter.finagle.Service
 import com.twitter.io.Buf
 import com.twitter.jvm.Heapster

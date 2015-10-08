@@ -1,7 +1,7 @@
 package com.twitter.server.util
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.httpx.{MediaType, Request, Response, Status, Version}
+import com.twitter.finagle.http.{MediaType, Request, Response, Status, Version}
 import com.twitter.io.Buf
 import com.twitter.util.Future
 import org.jboss.netty.handler.codec.http.QueryStringDecoder

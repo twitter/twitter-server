@@ -2,7 +2,7 @@ package com.twitter.server.handler
 
 import com.twitter.finagle.Service
 import com.twitter.finagle.client.ClientRegistry
-import com.twitter.finagle.httpx.{Request, Response}
+import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.util.StackRegistry
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.{parse, new404, newResponse}

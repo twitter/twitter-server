@@ -1,7 +1,7 @@
 package com.twitter.server
 
-import com.twitter.finagle.Httpx
-import com.twitter.finagle.httpx.{HttpMuxHandler, Request, Response}
+import com.twitter.finagle.Http
+import com.twitter.finagle.http.{HttpMuxHandler, Request, Response}
 import com.twitter.finagle.{ListeningServer, NullServer}
 import com.twitter.io.Charsets
 import com.twitter.server.util.HttpUtils._
@@ -35,7 +35,7 @@ class ShadowAdminServerTest extends FunSuite {
   test("BlackBox server serves") (new TestTwitterServer with ShadowAdminServer {
     override def main() {
       val port = shadowHttpServer.boundAddress.asInstanceOf[InetSocketAddress].getPort
-      val client = Httpx.client.newService(s"localhost:${port}")
+      val client = Http.client.newService(s"localhost:${port}")
 
       val resp0 = Await.result(client(Request("/stats.json")))
       assert(resp0.contentString.contains("metrics!"))
