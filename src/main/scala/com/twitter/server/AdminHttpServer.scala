@@ -6,12 +6,13 @@ import com.twitter.finagle.http.{Response, Request, HttpMuxer}
 import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.tracing.NullTracer
-import com.twitter.finagle.{Filter, Http, ListeningServer, NullServer, param, Service}
+import com.twitter.finagle.{Http, ListeningServer, NullServer, param, Service}
 import com.twitter.server.util.HttpUtils
 import com.twitter.server.view.{IndexView, NotFoundView}
 import com.twitter.util.{Future, Monitor}
 import java.net.InetSocketAddress
 import java.util.logging.{Level, Logger}
+import scala.language.reflectiveCalls
 
 object AdminHttpServer {
   /**
@@ -168,7 +169,7 @@ trait AdminHttpServer { self: App =>
     adminHttpMuxer.underlying = HttpUtils.combine(Seq(localMuxer, HttpMuxer))
   }
 
-  private[this] def startServer() = {
+  private[this] def startServer(): Unit = {
     val log = Logger.getLogger(getClass.getName)
     val loggingMonitor = new Monitor {
       def handle(exc: Throwable): Boolean = {
@@ -183,16 +184,12 @@ trait AdminHttpServer { self: App =>
       .configured(param.Monitor(loggingMonitor))
       .configured(param.Label("adminhttp"))
       .serve(adminPort(), new NotFoundView andThen adminHttpMuxer)
-  }
 
-  private[this] def stopServer() = { adminHttpServer.close() }
+    closeOnExit(adminHttpServer)
+  }
 
   premain {
     addAdminRoutes(routes)
     startServer
-  }
-
-  onExit {
-    stopServer
   }
 }
