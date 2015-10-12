@@ -49,12 +49,24 @@ class ServerInfoHandler(obj: AnyRef) extends Service[Request, Response] {
   private[this] val combinedInfo = basicServerInfo ++ buildProperties.asScala
 
   private[this] val registry = GlobalRegistry.get
+
   combinedInfo.foreach { case (key, value) =>
     registry.put(Seq("build.properties", key), value)
   }
-  sys.props.foreach { case (key, value) =>
-    registry.put(Seq("system", "properties", key), value)
+
+  {
+    // Note, don't use `scala.sys.props` until we are on 2.12:
+    // https://github.com/scala/scala/pull/4372
+    val props = System.getProperties
+    for (key <- props.stringPropertyNames().asScala) {
+      val value = props.getProperty(key)
+      // we acquired a snapshot of keys above, but `key`
+      // could have since been removed.
+      if (value != null)
+        registry.put(Seq("system", "properties", key), value)
+    }
   }
+
   sys.env.foreach { case (key, value) =>
     registry.put(Seq("system", "env", key), value)
   }
@@ -67,7 +79,6 @@ class ServerInfoHandler(obj: AnyRef) extends Service[Request, Response] {
     case Some(rev) => LoadedStatsReceiver.provideGauge("build.git.revision.number") { rev.toFloat }
     case None =>
   }
-  
 
   private[this] val serverInfo = combinedInfo ++ Map(
     "build_last_few_commits" ->
