@@ -36,6 +36,12 @@ trait Admin { self: App with AdminHttpServer =>
       path = "/admin/contention", handler = new TextBlockView andThen new ContentionHandler,
       alias = "Contention", group = Some(Grouping.ProcessInfo), includeInIndex = true),
     Route(
+      path = "/admin/lint", handler = new LintHandler(),
+      alias = "Lint", group = Some(Grouping.ProcessInfo), includeInIndex = true),
+    Route(
+      path = "/admin/lint.json", handler = new LintHandler(),
+      alias = "Lint", group = Some(Grouping.ProcessInfo), includeInIndex = false),
+    Route(
       path = "/admin/threads", handler = new ThreadsHandler,
       alias = "Threads", group = Some(Grouping.ProcessInfo), includeInIndex = true),
     Route(

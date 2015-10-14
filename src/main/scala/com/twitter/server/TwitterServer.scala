@@ -27,6 +27,7 @@ import com.twitter.logging.Logging
  * }}}
  */
 trait TwitterServer extends App
+  with Linters
   with Logging
   with EventSink
   with LogFormat

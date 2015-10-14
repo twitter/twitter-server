@@ -117,6 +117,7 @@ object TwitterServer extends Build {
       util("app"),
       util("core"),
       util("jvm"),
+      util("lint"),
       util("logging"),
       util("registry"),
       "com.github.spullara.mustache.java" % "compiler" % mustacheVersion

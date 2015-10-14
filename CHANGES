@@ -7,6 +7,12 @@ Note that ``RB_ID=#`` correspond to associated messages in commits.
 1.x
 -----
 
+New Features:
+-------------
+
+  * Add new admin endpoint "/admin/lint" which checks for possible issues with
+    performance or configuration. ``RB_ID=754348``
+
 Runtime Behavior Changes
 ------------------------
 

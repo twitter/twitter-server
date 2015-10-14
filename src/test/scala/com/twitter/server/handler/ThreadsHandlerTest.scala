@@ -2,7 +2,7 @@ package com.twitter.server.handler
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.twitter.finagle.http.{Request, Response}
+import com.twitter.finagle.http.Request
 import com.twitter.util.Await
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
