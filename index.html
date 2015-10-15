@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>TwitterServer &mdash; TwitterServer 1.14.0 documentation</title>
+    <title>TwitterServer &mdash; TwitterServer 1.15.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.14.0',
+        VERSION:     '1.15.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="TwitterServer 1.14.0 documentation" href="#" />
+    <link rel="top" title="TwitterServer 1.15.0 documentation" href="#" />
     <link rel="next" title="Features" href="Features.html" />
    
   
@@ -80,14 +80,14 @@ wired in correctly for use in production at Twitter.</p>
 <pre class="literal-block">
 resolvers += &quot;twttr&quot; at &quot;<a class="reference external" href="https://maven.twttr.com/">https://maven.twttr.com/</a>&quot;
 
-libraryDependencies += &quot;com.twitter&quot; %% &quot;twitter-server&quot; % &quot;1.14.0&quot;
+libraryDependencies += &quot;com.twitter&quot; %% &quot;twitter-server&quot; % &quot;1.15.0&quot;
 </pre>
 <p>NB: You only need to add the <cite>maven.twttr.com</cite> repository if you want
 to use libraries in Twitter <cite>common</cite>, which are only published to
 <cite>maven.twttr.com</cite>. For example, <cite>finagle-stats</cite>, which adds
 <a class="reference internal" href="Features.html"><em>Metrics</em></a>, requires a twitter common library.</p>
 <p>First we’ll need to import a few things into our namespace.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">com.twitter.finagle.</span><span class="o">{</span><span class="nc">Httpx</span><span class="o">,</span> <span class="nc">Service</span><span class="o">}</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">com.twitter.finagle.</span><span class="o">{</span><span class="nc">Http</span><span class="o">,</span> <span class="nc">Service</span><span class="o">}</span>
 <span class="k">import</span> <span class="nn">com.twitter.io.Charsets</span>
 <span class="k">import</span> <span class="nn">com.twitter.server.TwitterServer</span>
 <span class="k">import</span> <span class="nn">com.twitter.util.</span><span class="o">{</span><span class="nc">Await</span><span class="o">,</span> <span class="nc">Future</span><span class="o">}</span>
@@ -108,7 +108,7 @@ port 8888. The service bound to this port is a simple hello service.</p>
   <span class="o">}</span>
 
   <span class="k">def</span> <span class="n">main</span><span class="o">()</span> <span class="o">{</span>
-    <span class="k">val</span> <span class="n">server</span> <span class="k">=</span> <span class="nc">Httpx</span><span class="o">.</span><span class="n">serve</span><span class="o">(</span><span class="s">&quot;:8888&quot;</span><span class="o">,</span> <span class="n">service</span><span class="o">)</span>
+    <span class="k">val</span> <span class="n">server</span> <span class="k">=</span> <span class="nc">Http</span><span class="o">.</span><span class="n">serve</span><span class="o">(</span><span class="s">&quot;:8888&quot;</span><span class="o">,</span> <span class="n">service</span><span class="o">)</span>
     <span class="n">onExit</span> <span class="o">{</span>
       <span class="n">server</span><span class="o">.</span><span class="n">close</span><span class="o">()</span>
     <span class="o">}</span>
@@ -123,9 +123,9 @@ is requested.</p>
 process.</p>
 <div class="highlight-text"><div class="highlight"><pre>$ java -jar target/myserver-1.0.0-SNAPSHOT.jar &amp;
 [1] 66569
-Feb 21, 2013 10:55:57 AM com.twitter.finagle.httpx.HttpMuxer$$anonfun$5 apply
+Feb 21, 2013 10:55:57 AM com.twitter.finagle.http.HttpMuxer$$anonfun$5 apply
 INFO: HttpMuxer[/admin/metrics.json] = com.twitter.finagle.stats.MetricsExporter(&lt;function1&gt;)
-Feb 21, 2013 10:55:57 AM com.twitter.finagle.httpx.HttpMuxer$$anonfun$5 apply
+Feb 21, 2013 10:55:57 AM com.twitter.finagle.http.HttpMuxer$$anonfun$5 apply
 INFO: HttpMuxer[/stats] = com.twitter.finagle.stats.OstrichExporter(&lt;function1&gt;)
 
 $ curl localhost:8888

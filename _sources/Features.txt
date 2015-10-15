@@ -174,7 +174,9 @@ series of default endpoints:
   /admin/clients
   /admin/announcer
   /admin/shutdown
+  /admin/lint
   /admin/logging
+  /admin/registry
   /admin/resolver
   /admin/tracing
   /admin/threads
@@ -310,6 +312,13 @@ See the :ref:`metrics <metrics_label>` section for more information.
 **/admin/servers**
   Surface server information exposed by Finagle. Per-server configuration parameters and
   values for each module are available at /admin/clients/<client name>.
+
+**/admin/registry.json**
+  Displays how the service is currently configured across a variety of dimensions
+  including the client stack, server stack, flags, service loader values, and more.
+
+**/admin/lint**
+  Runs and displays the results for all registered linters to check for various service issues.
 
 **/admin/shutdown**
   Stop the process gracefully.

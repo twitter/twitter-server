@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Features &mdash; TwitterServer 1.14.0 documentation</title>
+    <title>Features &mdash; TwitterServer 1.15.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.14.0',
+        VERSION:     '1.15.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="TwitterServer 1.14.0 documentation" href="index.html" />
+    <link rel="top" title="TwitterServer 1.15.0 documentation" href="index.html" />
     <link rel="next" title="Using TwitterServer from Java" href="Java.html" />
     <link rel="prev" title="TwitterServer" href="index.html" />
    
@@ -62,7 +62,7 @@
 examining a slightly more advanced version of the example shown in the
 introduction.</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">com.twitter.conversions.time._</span>
-<span class="k">import</span> <span class="nn">com.twitter.finagle.httpx.</span><span class="o">{</span><span class="nc">HttpMuxer</span><span class="o">,</span> <span class="nc">Request</span><span class="o">,</span> <span class="nc">Response</span><span class="o">}</span>
+<span class="k">import</span> <span class="nn">com.twitter.finagle.http.</span><span class="o">{</span><span class="nc">HttpMuxer</span><span class="o">,</span> <span class="nc">Request</span><span class="o">,</span> <span class="nc">Response</span><span class="o">}</span>
 <span class="k">import</span> <span class="nn">com.twitter.finagle.Service</span>
 <span class="k">import</span> <span class="nn">com.twitter.io.Charsets</span>
 <span class="k">import</span> <span class="nn">com.twitter.server.TwitterServer</span>
@@ -235,7 +235,9 @@ series of default endpoints:</p>
 /admin/clients
 /admin/announcer
 /admin/shutdown
+/admin/lint
 /admin/logging
+/admin/registry
 /admin/resolver
 /admin/tracing
 /admin/threads
@@ -367,6 +369,11 @@ values for each module are available at /admin/clients/&lt;client name&gt;.</dd>
 <dt><strong>/admin/servers</strong></dt>
 <dd>Surface server information exposed by Finagle. Per-server configuration parameters and
 values for each module are available at /admin/clients/&lt;client name&gt;.</dd>
+<dt><strong>/admin/registry.json</strong></dt>
+<dd>Displays how the service is currently configured across a variety of dimensions
+including the client stack, server stack, flags, service loader values, and more.</dd>
+<dt><strong>/admin/lint</strong></dt>
+<dd>Runs and displays the results for all registered linters to check for various service issues.</dd>
 <dt><strong>/admin/shutdown</strong></dt>
 <dd>Stop the process gracefully.</dd>
 <dt><strong>/admin/tracing</strong></dt>
