@@ -5,6 +5,7 @@ import com.twitter.finagle.client.ClientRegistry
 import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.stats.{StatsReceiverWithCumulativeGauges, LoadedStatsReceiver, BroadcastStatsReceiver}
 import com.twitter.finagle.util.StackRegistry
+import com.twitter.server.lint.LoggingRules
 import com.twitter.util.lint._
 
 /**
@@ -24,6 +25,7 @@ trait Linters { app: App =>
     numberOfStatsReceivers()
     tooManyCumulativeGauges()
     Seq(ClientRegistry, ServerRegistry).foreach(stackRegistryDuplicates)
+    rules.add(LoggingRules.MultipleSlf4jImpls)
   }
 
   private[this] def numberOfStatsReceivers(): Unit = {
