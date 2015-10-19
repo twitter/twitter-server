@@ -2,10 +2,12 @@ package com.twitter.server.handler
 
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Response, Request}
+import com.twitter.io.Buf
+import com.twitter.server.handler.LintHandler.LintView
 import com.twitter.server.util.HttpUtils._
 import com.twitter.server.util.JsonConverter
 import com.twitter.util.Future
-import com.twitter.util.lint.{Rule, GlobalRules}
+import com.twitter.util.lint.{Issue, Rule, GlobalRules}
 
 /**
  * UI for running the globally registered lint [[Rule Rules]].
@@ -16,8 +18,20 @@ class LintHandler extends Service[Request, Response] {
     if (expectsHtml(req)) htmlResponse(req) else jsonResponse(req)
 
   private[this] def htmlResponse(req: Request): Future[Response] = {
-    // todo: an HTML version with a reasonable UI
-    jsonResponse(req)
+    // first, run the rules.
+    val rules = GlobalRules.get.iterable.toSeq
+    val (oks, nots) = rules
+      .map(rule => rule -> rule())
+      .partition { case (_, res) => res.isEmpty }
+
+    // render the ui and respond
+    val view = new LintView(rules, oks.map(o => o._1), nots)
+    val rendered = view()
+    newResponse(
+      // note: contentType must be explicit here because of `IndexView.isFragment`
+      contentType = "text/html;charset=UTF-8",
+      content = Buf.Utf8(rendered)
+    )
   }
 
   private[this] def jsonString(s: String): String =
@@ -69,6 +83,153 @@ class LintHandler extends Service[Request, Response] {
         "ok_rules" -> okRules
       )
     )
+  }
+
+}
+
+private object LintHandler {
+
+  /**
+   * Web UI for [[LintHandler]].
+   */
+  class LintView(
+      rules: Seq[Rule],
+      oks: Seq[Rule],
+      nots: Seq[(Rule, Seq[Issue])])
+  {
+
+    def apply(): String = {
+      scriptHeader +
+        summary +
+        failedRows +
+        okRows
+    }
+
+    private def scriptHeader: String =
+      """
+<script>
+  $(document).ready(function(){
+    $('[data-toggle="popover"]').popover();
+  });
+</script>"""
+
+    private def escapeHtml(s: String): String =
+      xml.Utility.escape(s)
+
+    def summary: String = {
+      val numIssues = nots.foldLeft(0) { case (total, (_, issues)) =>
+        total + issues.size
+      }
+
+      s"""
+<div class="row">
+  <div class="col-md-4">
+    <div>
+      <h5>Summary</h5>
+    </div>
+    <div>
+      <table class="table table-condensed table-hover">
+        <tbody>
+          <tr>
+            <td><strong>Number of rules run</strong></td>
+            <td>${rules.size}</td>
+          </tr>
+          <tr>
+            <td><strong>Number of rules ok</strong></td>
+            <td>${oks.size}</td>
+          </tr>
+          <tr>
+            <td><strong>Number of rules failed</strong></td>
+            <td>${nots.size}</td>
+          </tr>
+          <tr>
+            <td><strong>Number of issues found</strong></td>
+            <td>$numIssues</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>"""
+    }
+
+    def nameWithDescription(rule: Rule): String = {
+      val desc = escapeHtml(rule.description)
+     s"""
+      <a href="#" data-toggle="popover" title="Description" data-content="$desc" data-trigger="hover focus">
+        ${escapeHtml(rule.name)}
+      </a>
+      """
+    }
+
+    def failedRow(rule: Rule, issue: Issue): String = {
+      val desc = escapeHtml(rule.description)
+      s"""
+      <tr>
+        <td>${nameWithDescription(rule)}</td>
+        <td>${escapeHtml(issue.details)}</td>
+      </tr>"""
+    }
+
+    def failedRows: String = {
+      val data = nots.map { case (rule, issues) =>
+        issues.map { issue =>
+          failedRow(rule, issue)
+        }.mkString("")
+      }.mkString("")
+
+      s"""
+<div class="row">
+  <div>
+    <h5>Failed rules</h5>
+  </div>
+  <div>
+    <table class="table table-hover table-condensed">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Issue</th>
+        </tr>
+      </thead>
+      <tbody>
+      $data
+      </tbody>
+    </table>
+  </div>
+</div>"""
+    }
+
+    def okRows: String = {
+      val data = oks.map { rule =>
+        s"""
+        <tr>
+          <td>
+            ${nameWithDescription(rule)}
+          </td>
+        </tr>
+        """
+      }.mkString("")
+
+      s"""
+<div class="row">
+  <div>
+    <h5>Ok rules</h5>
+  </div>
+  <div>
+    <table class="table table-hover table-condensed">
+      <thead>
+        <tr>
+          <th>Name</th>
+        </tr>
+      </thead>
+      <tbody>
+      $data
+      </tbody>
+    </table>
+  </div>
+</div>"""
+    }
+
   }
 
 }
