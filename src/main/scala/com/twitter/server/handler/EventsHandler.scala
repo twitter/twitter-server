@@ -1,6 +1,6 @@
 package com.twitter.server.handler
 
-import com.twitter.concurrent.exp.AsyncStream
+import com.twitter.concurrent.AsyncStream
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.tracing.SpanId

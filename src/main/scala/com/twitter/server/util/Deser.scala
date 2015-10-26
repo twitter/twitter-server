@@ -1,6 +1,6 @@
 package com.twitter.server.util
 
-import com.twitter.concurrent.exp.AsyncStream
+import com.twitter.concurrent.AsyncStream
 import com.twitter.io.{Reader, Buf}
 import com.twitter.util.events.{Event, Sink}
 import com.twitter.util.{Throw, Return, Try}

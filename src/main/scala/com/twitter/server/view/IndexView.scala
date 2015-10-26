@@ -1,6 +1,6 @@
 package com.twitter.server.view
 
-import com.twitter.concurrent.exp.AsyncStream
+import com.twitter.concurrent.AsyncStream
 import com.twitter.finagle.{Service, SimpleFilter}
 import com.twitter.finagle.http.{Request, Response, Status}
 import com.twitter.io.{Reader, Buf, Charsets}
