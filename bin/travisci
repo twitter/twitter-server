@@ -7,28 +7,33 @@ TWITTER_SERVER_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 if [ "$TWITTER_SERVER_BRANCH" != "master" ]; then
   TWITTER_SERVER_DIR=$(pwd)
-   # TODO try to use ./sbt of each project instead of scrooge's sbt
-  TWITTER_SERVER_SBT=$TWITTER_SERVER_DIR/sbt
-  TWITTER_SERVER_TMP_DIR=$(mktemp -d -t ostrich.XXXXXXXXXX.tmp)
+  TWITTER_SERVER_TMP_DIR=$(mktemp -d -t twitter-server.XXXXXXXXXX.tmp)
   # util
   cd $TWITTER_SERVER_TMP_DIR
   git clone https://github.com/twitter/util.git --branch develop
   cd util
-  $TWITTER_SERVER_SBT ++$TRAVIS_SCALA_VERSION publishLocal
+  ./sbt ++$TRAVIS_SCALA_VERSION publishLocal
   # ostrich
   cd $TWITTER_SERVER_TMP_DIR
   git clone https://github.com/twitter/ostrich.git --branch develop
   cd ostrich
-  $TWITTER_SERVER_SBT ++$TRAVIS_SCALA_VERSION publishLocal
-  # finagle
+  ./sbt ++$TRAVIS_SCALA_VERSION publishLocal
+  # finagle-core, finagle-http
   cd $TWITTER_SERVER_TMP_DIR
   git clone https://github.com/twitter/finagle.git --branch develop
   cd finagle
-  $TWITTER_SERVER_SBT ++$TRAVIS_SCALA_VERSION finagle-core/publishLocal
-  $TWITTER_SERVER_SBT ++$TRAVIS_SCALA_VERSION finagle-http/publishLocal
-  $TWITTER_SERVER_SBT ++$TRAVIS_SCALA_VERSION finagle-http-compat/publishLocal
-  $TWITTER_SERVER_SBT ++$TRAVIS_SCALA_VERSION finagle-thrift/publishLocal
-  $TWITTER_SERVER_SBT ++$TRAVIS_SCALA_VERSION finagle-zipkin/publishLocal
+  ./sbt ++$TRAVIS_SCALA_VERSION finagle-core/publishLocal
+  ./sbt ++$TRAVIS_SCALA_VERSION finagle-http/publishLocal
+  ./sbt ++$TRAVIS_SCALA_VERSION finagle-http-compat/publishLocal
+  # scrooge-core
+  cd $TWITTER_SERVER_TMP_DIR
+  git clone https://github.com/twitter/scrooge.git --branch develop
+  cd scrooge
+  ./sbt ++$TRAVIS_SCALA_VERSION scrooge-core/publishLocal
+  # finagle-thrift, finagle-zipkin
+  cd $TWITTER_SERVER_TMP_DIR/finagle
+  ./sbt ++$TRAVIS_SCALA_VERSION finagle-thrift/publishLocal
+  ./sbt ++$TRAVIS_SCALA_VERSION finagle-zipkin/publishLocal
   # clean up
   cd $TWITTER_SERVER_DIR
   rm -rf $TWITTER_SERVER_TMP_DIR
