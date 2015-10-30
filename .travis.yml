@@ -24,8 +24,6 @@ notifications:
   hipchat:
     rooms:
       secure: qoCpyYilDuXnWSquICCKRhuHhlOSS5WMsnna0yLAk46O2o2woitt0kMQM3fkEeqYtnYxH+K12aIShkC95BCKQ2cJbjR4OhNyTY9ZakgeTrdufAu7HwH1W+yxrdnXvmRbvH5uxgq/O0SerteL8gfIwHJRcaUQeswZJyBvD4G0CKU=
-  template:
-    - '%{repository}: %{message} /cc @csl'
 
 before_script:
   # default $SBT_OPTS is irrelevant to sbt lancher
