@@ -67,6 +67,10 @@ object AdminHttpServer {
     Route(path, handler, alias, group, includeInIndex)
   }
 
+  /**
+   * The name used for the finagle server.
+   */
+  val ServerName = "adminhttp"
 
 }
 
@@ -182,7 +186,7 @@ trait AdminHttpServer { self: App =>
       .configured(param.Stats(NullStatsReceiver))
       .configured(param.Tracer(NullTracer))
       .configured(param.Monitor(loggingMonitor))
-      .configured(param.Label("adminhttp"))
+      .configured(param.Label(ServerName))
       .serve(adminPort(), new NotFoundView andThen adminHttpMuxer)
 
     closeOnExit(adminHttpServer)
