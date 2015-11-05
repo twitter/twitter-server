@@ -2,6 +2,7 @@ import com.twitter.conversions.time._
 import com.twitter.finagle.http.{HttpMuxer, Request, Response}
 import com.twitter.finagle.Service
 import com.twitter.io.Charsets
+import com.twitter.logging.Formatter
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future, Time}
 import java.net.InetSocketAddress
@@ -18,6 +19,12 @@ object AdvancedServer extends TwitterServer {
   //#stats
   val counter = statsReceiver.counter("requests_counter")
   //#stats
+  //#formatter
+  override def defaultFormatter = new Formatter(
+    timezone = Some("UTC"),
+    prefix = "<yyyy-MM-dd HH:mm:ss.SSS> [%.3s] %s: "
+  )
+  //#formatter
 
   val service = new Service[Request, Response] {
     def apply(request: Request) = {
