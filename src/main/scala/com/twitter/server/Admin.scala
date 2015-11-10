@@ -97,6 +97,11 @@ trait Admin { self: App with AdminHttpServer =>
       alias = "Files", group = None, includeInIndex = false),
     Route(
       path = "/admin/registry.json", handler = new RegistryHandler,
-      alias = "Registry", group = Some(Grouping.ProcessInfo), includeInIndex = true)
+      alias = "Registry", group = Some(Grouping.ProcessInfo), includeInIndex = true),
+    Route(
+      path = "/favicon.ico", ResourceHandler.fromJar(
+        baseRequestPath = "/",
+        baseResourcePath = "twitter-server/img"),
+      alias = "Favicon", group = None, includeInIndex = false)
   )
 }
