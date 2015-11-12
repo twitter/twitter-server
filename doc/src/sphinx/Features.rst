@@ -59,6 +59,13 @@ to `stderr` by default with a log level of `INFO`.
 .. includecode:: code/AdvancedServer.scala#log_usage
    :language: scala
 
+To change the format of the log output, a custom `Formatter` is needed.
+This is best done by overriding the `defaultFormatter` provided by the
+`Logging` trait.
+
+.. includecode:: code/AdvancedServer.scala#formatter
+   :language: scala
+
 For more complicated logging schemes, you can extend the Logging trait
 and mix it back into a `TwitterServer`.
 
