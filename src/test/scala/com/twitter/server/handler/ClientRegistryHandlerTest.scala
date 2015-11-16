@@ -25,13 +25,13 @@ class ClientRegistryHandlerTest extends FunSuite {
     val handler = new ClientRegistryHandler(source, registry)
 
     val res = Await.result(handler(Request("/client0")))
-    assert(res.status === Status.Ok)
+    assert(res.status == Status.Ok)
     val content = res.contentString
     assert(content.contains("client0"))
     assert(content.contains("localhost:8080"))
 
     val res1 = Await.result(handler(Request("/client1")))
-    assert(res1.status === Status.NotFound)
+    assert(res1.status == Status.NotFound)
   }
 
   test("client profile") {
@@ -46,7 +46,7 @@ class ClientRegistryHandlerTest extends FunSuite {
 
       tc.advance(1.second)
       val req = Request("/index.html")
-      assert(Await.result(handler(req)).contentString === "")
+      assert(Await.result(handler(req)).contentString == "")
 
       underlying = Map(
         "clnt/client0/loadbalancer/adds" -> Entry(10.0, 10.0),

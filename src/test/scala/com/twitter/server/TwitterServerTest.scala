@@ -57,7 +57,7 @@ class TwitterServerTest extends FunSuite {
   test("TwitterServer.main(args) executes without error") {
     val twitterServer = new TestTwitterServer
     twitterServer.main(args = Array.empty[String])
-    assert(twitterServer.bootstrapSeq ===
+    assert(twitterServer.bootstrapSeq ==
         Seq('Init, 'PreMain, 'Main, 'PostMain, 'Exit))
   }
 
@@ -70,7 +70,7 @@ class TwitterServerTest extends FunSuite {
     }
 
     twitterServer.main(args = Array.empty[String])
-    assert(twitterServer.bootstrapSeq === Seq('Init, 'PreMain, 'Main, 'Exit, 'PostMain))
+    assert(twitterServer.bootstrapSeq == Seq('Init, 'PreMain, 'Main, 'Exit, 'PostMain))
   }
 
   test("Exceptions thrown in handlers include stack traces") {

@@ -28,15 +28,15 @@ class IndexViewTest extends FunSuite {
 
     val svc0 = idx andThen fragment
     val res0 = Await.result(svc0(req))
-    assert(res0.headerMap.get("content-type") === Some("text/html;charset=UTF-8"))
-    assert(res0.status === Status.Ok)
+    assert(res0.headerMap.get("content-type") == Some("text/html;charset=UTF-8"))
+    assert(res0.status == Status.Ok)
     assert(res0.contentString.contains("<html>"))
 
     val svc1 = idx andThen nofragment
     req.headerMap.set("Accept", "*/*")
     val res1 = Await.result(svc1(req))
-    assert(res1.headerMap.get("content-type") === Some("text/plain;charset=UTF-8"))
-    assert(res1.status === Status.Ok)
-    assert(res1.contentString === "hello")
+    assert(res1.headerMap.get("content-type") == Some("text/plain;charset=UTF-8"))
+    assert(res1.status == Status.Ok)
+    assert(res1.contentString == "hello")
   }
 }

@@ -23,12 +23,12 @@ class TextBlockViewTest extends FunSuite {
     val req0 = Request("/")
     req0.headerMap.set("Accept", "text/html")
     val res0 = Await.result(svc(req0))
-    assert(res0.headerMap.get("content-type") === Some("text/html;charset=UTF-8"))
-    assert(res0.contentString === "<pre>hello</pre>")
+    assert(res0.headerMap.get("content-type") == Some("text/html;charset=UTF-8"))
+    assert(res0.contentString == "<pre>hello</pre>")
 
     val req = Request("/")
     val res = Await.result(svc(req))
-    assert(res.headerMap.get("content-type") === Some("text/plain;charset=UTF-8"))
-    assert(res.contentString === "hello")
+    assert(res.headerMap.get("content-type") == Some("text/plain;charset=UTF-8"))
+    assert(res.contentString == "hello")
   }
 }

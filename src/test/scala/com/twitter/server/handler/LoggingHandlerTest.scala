@@ -16,7 +16,7 @@ class LoggingHandlerTest extends FunSuite
     val loggers = Logger.iterator
 
     val res = Await.result(handler(Request("/")))
-    assert(res.status === Status.Ok)
+    assert(res.status == Status.Ok)
     val text = res.contentString
     for (logger <- loggers) {
       assert(text.contains(logger.name))
@@ -25,7 +25,7 @@ class LoggingHandlerTest extends FunSuite
     val browserReq = Request("/")
     browserReq.headerMap.set("User-Agent", "Mozilla")
     val browserRes = Await.result(handler(Request("/")))
-    assert(browserRes.status === Status.Ok)
+    assert(browserRes.status == Status.Ok)
     val html = browserRes.contentString
     for (logger <- loggers) {
       assert(html.contains(logger.name))
@@ -59,7 +59,7 @@ class LoggingHandlerTest extends FunSuite
     Logger.withLoggers(List(l0, l1)) {
       val req = Request("/")
       val res = Await.result(handler(req))
-      assert(res.status === Status.Ok)
+      assert(res.status == Status.Ok)
       val text = res.contentString
       text should include ("root OFF")
       text should include ("l0 ALL")

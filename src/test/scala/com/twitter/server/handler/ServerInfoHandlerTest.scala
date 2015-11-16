@@ -34,7 +34,7 @@ class ServerInfoHandlerTest extends FunSuite {
     val handler = new ServerInfoHandler(this)
     val req = Request("/")
     val res = Await.result(handler(req))
-    assert(res.contentType === Some("application/json;charset=UTF-8"))
+    assert(res.contentType == Some("application/json;charset=UTF-8"))
   }
 
   for (key <- Seq(Seq("build.properties"), Seq("system", "properties"), Seq("system", "env"))) yield {

@@ -30,11 +30,11 @@ class ShutdownHandlerTest extends FunSuite {
     val now = Time.now
     val closer = Closer.mk { deadline =>
       // MinGrace is 1 second
-      assert(deadline === now+1.second)
+      assert(deadline == now+1.second)
     }
     val handler = new ShutdownHandler(closer)
     val rsp = Await.result(handler(Request("/foo")))
-    assert(rsp.status === Status.Ok)
+    assert(rsp.status == Status.Ok)
     assert(closer.closed)
   })
 
@@ -47,7 +47,7 @@ class ShutdownHandlerTest extends FunSuite {
     }
     val handler = new ShutdownHandler(closer)
     val rsp = Await.result(handler(Request("/foo?grace=" + grace.toString)))
-    assert(rsp.status === Status.Ok)
+    assert(rsp.status == Status.Ok)
     assert(closer.closed)
   }
 
@@ -55,7 +55,7 @@ class ShutdownHandlerTest extends FunSuite {
     val closer = Closer.mk { _ => fail() }
     val handler = new ShutdownHandler(closer)
     val rsp = Await.result(handler(Request("/foo?grace=5")))
-    assert(rsp.status === Status.BadRequest)
+    assert(rsp.status == Status.BadRequest)
     assert(!closer.closed)
   }
 }

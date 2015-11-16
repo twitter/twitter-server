@@ -27,11 +27,11 @@ class MetricSourceTest extends FunSuite {
       import ctx._
 
       underlying = Map("clnt/foo/requests" -> Entry(0.0, 10.0))
-      assert(source.get("clnt/foo/requests") === None)
+      assert(source.get("clnt/foo/requests") == None)
 
       tc.advance(1.second)
-      assert(source.get("clnt/foo/requests").get.delta === 0.0)
-      assert(source.get("clnt/foo/requests").get.value === 10.0)
+      assert(source.get("clnt/foo/requests").get.delta == 0.0)
+      assert(source.get("clnt/foo/requests").get.value == 10.0)
     }
   }
 
@@ -41,10 +41,10 @@ class MetricSourceTest extends FunSuite {
       import ctx._
 
       underlying = Map("clnt/foo/requests" -> Entry(0.0, 0.0))
-      assert(source.contains("clnt/foo/requests") === false)
+      assert(source.contains("clnt/foo/requests") == false)
 
       tc.advance(1.second)
-      assert(source.contains("clnt/foo/requests") === true)
+      assert(source.contains("clnt/foo/requests") == true)
     }
   }
 
@@ -56,9 +56,9 @@ class MetricSourceTest extends FunSuite {
       underlying = Map(
         "clnt/foo/requests" -> Entry(0.0, 0.0),
         "clnt/foo/success" -> Entry(0.0, 0.0))
-      assert(source.keySet === Set.empty[String])
+      assert(source.keySet == Set.empty[String])
       tc.advance(1.second)
-      assert(source.keySet === Set("clnt/foo/requests", "clnt/foo/success"))
+      assert(source.keySet == Set("clnt/foo/requests", "clnt/foo/success"))
     }
   }
 }

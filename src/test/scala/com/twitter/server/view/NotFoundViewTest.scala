@@ -24,8 +24,8 @@ class NotFoundViewTest extends FunSuite {
     val req0 = Request("/")
     req0.headerMap.add("Accept", "text/html")
     val res0 = Await.result(svc(req0))
-    assert(res0.headerMap.get("content-type") === Some("text/html;charset=UTF-8"))
-    assert(res0.status === Status.NotFound)
+    assert(res0.headerMap.get("content-type") == Some("text/html;charset=UTF-8"))
+    assert(res0.status == Status.NotFound)
     assert(res0.contentString.contains("<html>"))
   }
 }

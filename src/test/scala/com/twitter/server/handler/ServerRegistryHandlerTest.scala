@@ -22,12 +22,12 @@ class ServerRegistryHandlerTest extends FunSuite {
     val handler = new ServerRegistryHandler(source, registry)
 
     val res = Await.result(handler(http.Request("/server0")))
-    assert(res.status === http.Status.Ok)
+    assert(res.status == http.Status.Ok)
     val content = res.contentString
     assert(content.contains("server0"))
     assert(content.contains(":8080"))
 
     val res1 = Await.result(handler(http.Request("/server1")))
-    assert(res1.status === http.Status.NotFound)
+    assert(res1.status == http.Status.NotFound)
   }
 }

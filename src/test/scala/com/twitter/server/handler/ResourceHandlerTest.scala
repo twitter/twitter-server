@@ -18,41 +18,41 @@ class ResourceHandlerTest extends FunSuite {
   test("404") {
     val handler = new ResourceHandler("/", PartialFunction.empty)
     val res = Await.result(handler(http.Request("nonexistent.filetype")))
-    assert(res.status === http.Status.NotFound)
+    assert(res.status == http.Status.NotFound)
   }
 
   test("400") {
     val handler = new ResourceHandler("/", PartialFunction.empty)
     val res = Await.result(handler(http.Request("../../illegal")))
-    assert(res.status === http.Status.BadRequest)
+    assert(res.status == http.Status.BadRequest)
   }
 
   test("load js") {
     val content = "var foo = function() { }"
     val handler = new ResourceHandler("/", staticResourceResolver(content))
     val res = Await.result(handler(http.Request("test.js")))
-    assert(res.status === http.Status.Ok)
-    assert(res.headerMap.get("content-type") === Some("application/javascript;charset=UTF-8"))
-    assert(res.contentString === content)
+    assert(res.status == http.Status.Ok)
+    assert(res.headerMap.get("content-type") == Some("application/javascript;charset=UTF-8"))
+    assert(res.contentString == content)
   }
 
   test("load css") {
     val content = "#foo { color: blue; }"
     val handler = new ResourceHandler("/", staticResourceResolver(content))
     val res = Await.result(handler(http.Request("test.css")))
-    assert(res.status === http.Status.Ok)
-    assert(res.headerMap.get("content-type") === Some("text/css;charset=UTF-8"))
-    assert(res.contentString === content)
+    assert(res.status == http.Status.Ok)
+    assert(res.headerMap.get("content-type") == Some("text/css;charset=UTF-8"))
+    assert(res.contentString == content)
   }
 
   test("load bytes") {
     val content = "jileuhto8q34ty3fni34oqbo87ybq"
     val handler = new ResourceHandler("/", staticResourceResolver(content))
     val res = Await.result(handler(http.Request("test.raw")))
-    assert(res.status === http.Status.Ok)
-    assert(res.headerMap.get("content-type") === Some("application/octet-stream"))
+    assert(res.status == http.Status.Ok)
+    assert(res.headerMap.get("content-type") == Some("application/octet-stream"))
     val bytes = Buf.ByteArray.Owned.extract(res.content)
-    assert(new String(bytes, Charsets.Iso8859_1) === content)
+    assert(new String(bytes, Charsets.Iso8859_1) == content)
   }
 
   private def createTempFile(filename: String, content: String): File = {
@@ -81,7 +81,7 @@ class ResourceHandlerTest extends FunSuite {
 
   test("fromJar - resource exists") {
     val observed = slurpStream(ResourceHandler.jarResolver(jarPath)(resourceName))
-    assert(observed === resourceContent)
+    assert(observed == resourceContent)
   }
 
   test("fromJar - resource doesn't exist") {
@@ -91,7 +91,7 @@ class ResourceHandlerTest extends FunSuite {
   test("fromDirectory - resource exists") {
     val file = createTempFile(fileName, fileContent)
     val observed = slurpStream(ResourceHandler.directoryResolver(file.getParent)(file.getName))
-    assert(observed === fileContent)
+    assert(observed == fileContent)
   }
 
   test("fromDirectory - resource doesn't exist") {
@@ -102,20 +102,20 @@ class ResourceHandlerTest extends FunSuite {
     val file = createTempFile(resourceName, fileContent)
     val stream = ResourceHandler.directoryOrJarResolver(jarPath, file.getParent)(resourceName)
     val observed = slurpStream(stream)
-    assert(observed === fileContent)
+    assert(observed == fileContent)
   }
 
   test("fromDirectoryOrJar - resource exists only on disk") {
     val file = createTempFile(fileName, fileContent)
     val stream = ResourceHandler.directoryOrJarResolver(jarPath, file.getParent)(fileName)
     val observed = slurpStream(stream)
-    assert(observed === fileContent)
+    assert(observed == fileContent)
   }
 
   test("fromDirectoryOrJar - resource exists only in jar") {
     val stream = ResourceHandler.directoryOrJarResolver(jarPath, "nonexistent_dir")(resourceName)
     val observed = slurpStream(stream)
-    assert(observed === resourceContent)
+    assert(observed == resourceContent)
   }
 
   test("fromDirectoryOrJar - resource doesn't exist") {
