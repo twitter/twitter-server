@@ -34,6 +34,21 @@ class ClientRegistryHandlerTest extends FunSuite {
     assert(res1.status === Status.NotFound)
   }
 
+  test("query a client with a forward slash") {
+    val metricsCtx = new MetricSourceTest.Ctx
+    import metricsCtx._
+
+    val registry = new StackRegistry { def registryName: String = "client" }
+    registry.register("localhost:8080", StackClient.newStack, Stack.Params.empty + param.Label("client0/test"))
+    val handler = new ClientRegistryHandler(source, registry)
+
+    val res = Await.result(handler(Request("/client0/test")))
+    assert(res.status === Status.Ok)
+    val content = res.contentString
+    assert(content.contains("client0/test"))
+    assert(content.contains("localhost:8080"))
+  }
+
   test("client profile") {
     Time.withCurrentTimeFrozen { tc =>
       val metricsCtx = new MetricSourceTest.Ctx

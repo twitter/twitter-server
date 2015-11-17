@@ -141,9 +141,9 @@ class ClientRegistryHandler(
           content = Buf.Utf8(html)
         )
 
-      case name =>
-        val entries = registry.registrants filter { _.name == name }
-        if (entries.isEmpty) new404(s"$name could not be found.") else {
+      case _ =>
+        val entries = registry.registrants filter { r => path.endsWith(r.name) }
+        if (entries.isEmpty) new404(s"$path could not be found.") else {
           val client = entries.head
           val scope = findClientScope(client.name)
           val html = StackRegistryView.render(client, scope)
