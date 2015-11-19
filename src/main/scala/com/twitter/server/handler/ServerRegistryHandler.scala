@@ -63,9 +63,10 @@ private object ServerRegistryHandler {
  * as part of the uri (ex. "/admin/servers/myserver").
  */
 class ServerRegistryHandler(
-  source: MetricSource = new MetricSource,
-  registry: StackRegistry = ServerRegistry
-) extends Service[Request, Response] {
+    uriPrefix: String,
+    source: MetricSource = new MetricSource,
+    registry: StackRegistry = ServerRegistry)
+  extends Service[Request, Response] {
   // Search the metrics source for the stat scope that includes `serverName`.
   // The search namespace includes both "$serverName/" and "srv/$serverName"
   // to take into account finagle's ServerStatsReceiver. Note, unnamed servers are
@@ -80,7 +81,7 @@ class ServerRegistryHandler(
 
   def apply(req: Request): Future[Response] = {
     val (path, _) = parse(req.uri)
-    path.split('/').last match {
+    path.stripPrefix(uriPrefix) match {
       case idx@("index.html" | "index.htm" | "index.txt" | "servers") =>
         val servers = (registry.registrants flatMap {
           case e: StackRegistry.Entry if e.name.nonEmpty =>

@@ -69,9 +69,10 @@ private object ClientRegistryHandler {
  * part of the uri (ex. "/admin/clients/myclient").
  */
 class ClientRegistryHandler(
-  source: MetricSource = new MetricSource,
-  registry: StackRegistry = ClientRegistry
-) extends Service[Request, Response] {
+    uriPrefix: String,
+    source: MetricSource = new MetricSource,
+    registry: StackRegistry = ClientRegistry)
+  extends Service[Request, Response] {
   import ClientRegistryHandler._
 
   // Search the metrics source for the stat scope that includes `clientName`.
@@ -127,7 +128,7 @@ class ClientRegistryHandler(
 
   def apply(req: Request): Future[Response] = {
     val (path, _) = parse(req.uri)
-    path.split('/').last match {
+    path.stripPrefix(uriPrefix) match  {
       case idx@("index.html" | "index.htm" | "index.txt" | "clients") =>
         val leastPerformant = clientProfiles.sorted(profileOrdering).take(4)
         val html = if (leastPerformant.isEmpty) "" else {

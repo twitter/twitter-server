@@ -22,15 +22,22 @@ class ClientRegistryHandlerTest extends FunSuite {
 
     val registry = new StackRegistry { def registryName: String = "client" }
     registry.register("localhost:8080", StackClient.newStack, Stack.Params.empty + param.Label("client0"))
-    val handler = new ClientRegistryHandler(source, registry)
+    registry.register("localhost:8081", StackClient.newStack, Stack.Params.empty + param.Label("s/foo/bar"))
+    val handler = new ClientRegistryHandler("/admin/clients/", source, registry)
 
-    val res = Await.result(handler(Request("/client0")))
+    val res = Await.result(handler(Request("/admin/clients/client0")))
     assert(res.status == Status.Ok)
     val content = res.contentString
     assert(content.contains("client0"))
     assert(content.contains("localhost:8080"))
 
-    val res1 = Await.result(handler(Request("/client1")))
+    val res2 = Await.result(handler(Request("/admin/clients/s/foo/bar")))
+    assert(res2.status == Status.Ok)
+    val content2 = res2.contentString
+    assert(content2.contains("s/foo/bar"))
+    assert(content2.contains("localhost:8081"))
+
+    val res1 = Await.result(handler(Request("/admin/clients/client1")))
     assert(res1.status == Status.NotFound)
   }
 
@@ -42,10 +49,10 @@ class ClientRegistryHandlerTest extends FunSuite {
       val registry = new StackRegistry { def registryName: String = "client"}
       registry.register("localhost:8080", StackClient.newStack, Stack.Params.empty + param.Label("client0"))
 
-      val handler = new ClientRegistryHandler(source, registry)
+      val handler = new ClientRegistryHandler("/admin/clients/", source, registry)
 
       tc.advance(1.second)
-      val req = Request("/index.html")
+      val req = Request("/admin/clients/index.html")
       assert(Await.result(handler(req)).contentString == "")
 
       underlying = Map(

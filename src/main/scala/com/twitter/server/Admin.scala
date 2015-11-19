@@ -16,18 +16,27 @@ object Admin {
     val Metrics = "Metrics"
   }
 
+  /**
+   * Constants for Admin endpoints.
+   */
+  object Path {
+    val Root = "/admin"
+    val Clients = Root + "/clients/"
+    val Servers = Root + "/servers/"
+  }
 }
 
 /**
  * Defines many of the default `/admin/` HTTP routes.
  */
 trait Admin { self: App with AdminHttpServer =>
+  import Admin._
   import AdminHttpServer.Route
   import Admin.Grouping
 
   override protected def routes: Seq[Route] = Seq(
     Route(
-      path = "/admin", handler = new SummaryHandler,
+      path = Path.Root, handler = new SummaryHandler,
       alias = "Summary", group = None, includeInIndex = true),
     Route(
       path = "/admin/server_info", handler = new TextBlockView andThen new ServerInfoHandler(self),
@@ -84,10 +93,10 @@ trait Admin { self: App with AdminHttpServer =>
       path = "/admin/metrics", handler = new MetricQueryHandler,
       alias = "Watch", group = Some(Grouping.Metrics), includeInIndex = true),
     Route(
-      path = "/admin/clients/", handler = new ClientRegistryHandler,
+      path = Path.Clients, handler = new ClientRegistryHandler(Path.Clients),
       alias = "Clients", group = None, includeInIndex = false),
     Route(
-      path = "/admin/servers/", handler = new ServerRegistryHandler,
+      path = Path.Servers, handler = new ServerRegistryHandler(Path.Servers),
       alias = "Servers", group = None, includeInIndex = false),
     Route(
       path = "/admin/files/",
