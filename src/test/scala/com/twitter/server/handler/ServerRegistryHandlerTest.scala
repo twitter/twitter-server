@@ -50,4 +50,19 @@ class ServerRegistryHandlerTest extends FunSuite {
     val res = Await.result(handler(http.Request("/admin/servers/index.html")))
     assert(res.status == http.Status.Ok)
   }
+
+  test("query a server with a slash") {
+    val metricsCtx = new MetricSourceTest.Ctx
+    import metricsCtx._
+
+    val registry = new StackRegistry { def registryName: String = "server" }
+    registry.register(":8080", StackServer.newStack, Stack.Params.empty + param.Label("server0/test"))
+    val handler = new ServerRegistryHandler(source, registry)
+
+    val res = Await.result(handler(http.Request("/server0/test")))
+    assert(res.status === http.Status.Ok)
+    val content = res.contentString
+    assert(content.contains("server0/test"))
+    assert(content.contains(":8080"))
+  }
 }
