@@ -33,7 +33,12 @@ function graphLibLoaded() {
 
   $('#metrics li').on('click', function(e) { render($(e.target)) })
 
-  var fragmentId = $("#"+window.location.hash.replace('#', '').replace(/\//g, "-"))
+  var fragmentId = $("#"+window.location.hash
+    .replace('#', '')
+    .replace(/\//g, "-")
+    // css chars to escape: !"#$%&'()*+,-./:;<=>?@[\]^`{|}~
+    .replace(/(!|"|#|%|&|'|\(|\)|\*|\+|,|-|\.|\/|:|;|<|=|>|\?|@|\[|\\|\]|\^|`|{|\||}|~)/g, "\\$1")
+  )
   if (fragmentId[0] != undefined) {
     $(fragmentId)[0].scrollIntoView(true)
     render(fragmentId)
