@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Features &mdash; TwitterServer 1.15.0 documentation</title>
+    <title>Features &mdash; TwitterServer 1.16.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.15.0',
+        VERSION:     '1.16.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="TwitterServer 1.15.0 documentation" href="index.html" />
+    <link rel="top" title="TwitterServer 1.16.0 documentation" href="index.html" />
     <link rel="next" title="Using TwitterServer from Java" href="Java.html" />
     <link rel="prev" title="TwitterServer" href="index.html" />
    
@@ -65,6 +65,7 @@ introduction.</p>
 <span class="k">import</span> <span class="nn">com.twitter.finagle.http.</span><span class="o">{</span><span class="nc">HttpMuxer</span><span class="o">,</span> <span class="nc">Request</span><span class="o">,</span> <span class="nc">Response</span><span class="o">}</span>
 <span class="k">import</span> <span class="nn">com.twitter.finagle.Service</span>
 <span class="k">import</span> <span class="nn">com.twitter.io.Charsets</span>
+<span class="k">import</span> <span class="nn">com.twitter.logging.Formatter</span>
 <span class="k">import</span> <span class="nn">com.twitter.server.TwitterServer</span>
 <span class="k">import</span> <span class="nn">com.twitter.util.</span><span class="o">{</span><span class="nc">Await</span><span class="o">,</span> <span class="nc">Future</span><span class="o">,</span> <span class="nc">Time</span><span class="o">}</span>
 <span class="k">import</span> <span class="nn">java.net.InetSocketAddress</span>
@@ -75,6 +76,10 @@ introduction.</p>
   <span class="k">val</span> <span class="n">addr</span> <span class="k">=</span> <span class="n">flag</span><span class="o">(</span><span class="s">&quot;bind&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="s">&quot;Bind address&quot;</span><span class="o">)</span>
   <span class="k">val</span> <span class="n">durations</span> <span class="k">=</span> <span class="n">flag</span><span class="o">(</span><span class="s">&quot;alarms&quot;</span><span class="o">,</span> <span class="o">(</span><span class="mf">1.</span><span class="n">second</span><span class="o">,</span> <span class="mf">5.</span><span class="n">second</span><span class="o">),</span> <span class="s">&quot;2 alarm durations&quot;</span><span class="o">)</span>
   <span class="k">val</span> <span class="n">counter</span> <span class="k">=</span> <span class="n">statsReceiver</span><span class="o">.</span><span class="n">counter</span><span class="o">(</span><span class="s">&quot;requests_counter&quot;</span><span class="o">)</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">defaultFormatter</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Formatter</span><span class="o">(</span>
+    <span class="n">timezone</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="s">&quot;UTC&quot;</span><span class="o">),</span>
+    <span class="n">prefix</span> <span class="k">=</span> <span class="s">&quot;&lt;yyyy-MM-dd HH:mm:ss.SSS&gt; [%.3s] %s: &quot;</span>
+  <span class="o">)</span>
 
   <span class="k">val</span> <span class="n">service</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Service</span><span class="o">[</span><span class="kt">Request</span>, <span class="kt">Response</span><span class="o">]</span> <span class="o">{</span>
     <span class="k">def</span> <span class="n">apply</span><span class="o">(</span><span class="n">request</span><span class="k">:</span> <span class="kt">Request</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
@@ -139,6 +144,15 @@ configured via default command line flags: <cite>-log.level</cite> and
 <cite>-log.output</cite>. As you can see from the above <cite>-help</cite> output, it logs
 to <cite>stderr</cite> by default with a log level of <cite>INFO</cite>.</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="o">(</span><span class="s">&quot;Received a request at &quot;</span> <span class="o">+</span> <span class="nc">Time</span><span class="o">.</span><span class="n">now</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>To change the format of the log output, a custom <cite>Formatter</cite> is needed.
+This is best done by overriding the <cite>defaultFormatter</cite> provided by the
+<cite>Logging</cite> trait.</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">override</span> <span class="k">def</span> <span class="n">defaultFormatter</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Formatter</span><span class="o">(</span>
+  <span class="n">timezone</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="s">&quot;UTC&quot;</span><span class="o">),</span>
+  <span class="n">prefix</span> <span class="k">=</span> <span class="s">&quot;&lt;yyyy-MM-dd HH:mm:ss.SSS&gt; [%.3s] %s: &quot;</span>
+<span class="o">)</span>
 </pre></div>
 </div>
 <p>For more complicated logging schemes, you can extend the Logging trait
