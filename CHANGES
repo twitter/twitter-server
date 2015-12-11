@@ -7,6 +7,13 @@ Note that ``RB_ID=#`` correspond to associated messages in commits.
 1.x
 -----
 
+1.17.0
+~~~~~~~
+
+New Features:
+-------------
+  * Add new admin endpoint "/" which redirects requests to "/admin"
+
 1.16.0
 ~~~~~~~
 

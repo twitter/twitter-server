@@ -20,9 +20,11 @@ object Admin {
    * Constants for Admin endpoints.
    */
   object Path {
-    val Root = "/admin"
-    val Clients = Root + "/clients/"
-    val Servers = Root + "/servers/"
+    val Root = ""
+    val Admin = "/admin"
+    val Clients = Admin + "/clients/"
+    val Servers = Admin + "/servers/"
+    val Files = Admin + "/files/"
   }
 }
 
@@ -36,7 +38,10 @@ trait Admin { self: App with AdminHttpServer =>
 
   override protected def routes: Seq[Route] = Seq(
     Route(
-      path = Path.Root, handler = new SummaryHandler,
+      path = Path.Root, handler = new AdminRedirectHandler,
+      alias = "Admin Redirect", group = None, includeInIndex = false),
+    Route(
+      path = Path.Admin, handler = new SummaryHandler,
       alias = "Summary", group = None, includeInIndex = true),
     Route(
       path = "/admin/server_info", handler = new TextBlockView andThen new ServerInfoHandler(self),
@@ -99,9 +104,9 @@ trait Admin { self: App with AdminHttpServer =>
       path = Path.Servers, handler = new ServerRegistryHandler(Path.Servers),
       alias = "Servers", group = None, includeInIndex = false),
     Route(
-      path = "/admin/files/",
+      path = Path.Files,
       handler = ResourceHandler.fromJar(
-        baseRequestPath = "/admin/files/",
+        baseRequestPath = Path.Files,
         baseResourcePath = "twitter-server"),
       alias = "Files", group = None, includeInIndex = false),
     Route(
