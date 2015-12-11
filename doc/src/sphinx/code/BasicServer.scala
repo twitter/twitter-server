@@ -1,5 +1,6 @@
 //#imports
 import com.twitter.finagle.{Http, Service}
+import com.twitter.finagle.http.{Request, Response, Status}
 import com.twitter.io.Charsets
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future}
@@ -9,7 +10,7 @@ import com.twitter.util.{Await, Future}
 object BasicServer extends TwitterServer {
   val service = new Service[Request, Response] {
     def apply(request: Request) = {
-      val response = new Response(request.version, Status.Ok)
+      val response = Response(request.version, Status.Ok)
       response.contentString = "hello"
       Future.value(response)
     }

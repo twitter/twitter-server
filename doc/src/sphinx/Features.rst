@@ -25,16 +25,8 @@ But you can also define flags of composite type:
 .. includecode:: code/AdvancedServer.scala#complex_flag
    :language: scala
 
-We also provide automatic help entry that display information about
+We also provide an automatic help entry that displays information about
 all the flags defined.
-
-Note that you cannot read flags until after the arguments have been
-parsed, which happens before premains have been executed, but after
-the constructor and the inits.  Similarly, you should only declare a
-flag in the constructor, before the arguments have been parsed.
-
-If you access a flag before the parsing phase (e.g. inside a
-constructor), you will see a SEVERE log message.
 
 ::
 
@@ -42,11 +34,24 @@ constructor), you will see a SEVERE log message.
   AdvancedServer
     -alarm_durations='1.seconds,5.seconds': 2 alarm durations
     -help='false': Show this help
-    -admin.port=':8080': Admin http server port
+    -admin.port=':9990': Admin http server port
     -bind=':0': Network interface to use
     -log.level='INFO': Log level
     -log.output='/dev/stderr': Output file
     -what='hello': String to return
+
+Note that you cannot read flags until after the arguments have been
+parsed, which happens before premains have been executed, but after
+the constructor and the inits.  Similarly, you should only declare a
+flag in the constructor, before the arguments have been parsed.
+
+As a precaution, we recommend turning on the `failfastOnFlagsNotParsed`
+option within your server. Having this option turned on means that if
+a `Flag` is attempted to be accessed before the flag has been parsed,
+then an `IllegalStateException` will be thrown.
+
+.. includecode:: code/AdvancedServer.scala#fail_fast
+   :language: scala
 
 Logging
 -------
@@ -79,7 +84,8 @@ Metrics
 
 Note: In order to enable usage of the Metrics library, you must have
 the finagle-stats jar on your classpath.  `finagle-stats` depends on
-libraries which can be found in the maven.twttr.com repository.  There
+libraries which can be found in the
+`https://maven.twttr.com <https://maven.twttr.com>`_ repository.  There
 are instructions on the :doc:`quickstart <index>` for adding it in
 maven or sbt.
 
@@ -98,7 +104,19 @@ And update the value:
    :language: scala
 
 The value of this counter will be exported by the HTTP server and
-accessible at /admin/metrics.json
+accessible at /admin/metrics.json. To see an example of the counter
+incrementing run the following:
+
+::
+
+  $ curl -s localhost:9990/admin/metrics.json | jq '.requests_counter'
+  0
+
+  $ curl -s localhost:9990/echo
+  hello
+
+  $ curl -s localhost:9990/admin/metrics.json | jq '.requests_counter'
+  1
 
 Filtering stats out
 *******************
@@ -164,35 +182,9 @@ HTTP Admin interface
 --------------------
 
 TwitterServer starts an HTTP server (it binds to the port defined by
-the flag `-admin.port`; port 8080 by default). It exports an `HttpMuxer`
+the flag `-admin.port`; port 9990 by default). It exports an `HttpMuxer`
 object in which endpoints are registered.  The library defines a
 series of default endpoints:
-
-::
-
-  $ curl localhost:8080/admin
-  /admin/pprof/contention
-  /admin/pprof/profile
-  /admin/metrics.json
-  /admin/server_info
-  /admin/resolutions
-  /admin/pprof/heap
-  /admin/contention
-  /admin/clients
-  /admin/announcer
-  /admin/shutdown
-  /admin/lint
-  /admin/logging
-  /admin/registry
-  /admin/resolver
-  /admin/tracing
-  /admin/threads
-  /admin/ping
-
-**/admin/resolutions**
-  Returns a set of resolution chains that have run through
-  Resolver. This allows one to see how a particular target is being
-  resolved.
 
 **/admin/announcer**
   Returns a set of announcement chains that have run through the
@@ -202,38 +194,38 @@ series of default endpoints:
 **/admin/pprof/contention**
   Returns a CPU contention profile which identifies blocked threads
   (`Thread.State.BLOCKED`).
-  The output is in `pprof <http://code.google.com/p/gperftools/>`_ format.
+  The output is in `pprof <https://github.com/gperftools/gperftools>`_ format.
   The process will be profiled for 10 seconds at a frequency of 100 hz. These
   values can be controlled via HTTP request parameters `seconds` and `hz`
   respectively.
 
 **/admin/pprof/profile**
   Returns a CPU usage profile. The output is in `pprof
-  <http://code.google.com/p/gperftools/>`_ format.
+  <https://github.com/gperftools/gperftools>`_ format.
   The process will be profiled for 10 seconds at a frequency of 100 hz. These
   values can be controlled via HTTP request parameters `seconds` and `hz`
   respectively.
 
 ::
 
-  $ curl -s localhost:8080/admin/pprof/profile > /tmp/cpu_profiling
+  $ curl -s localhost:9990/admin/pprof/profile > /tmp/cpu_profiling
   $ pprof --text /tmp/cpu_profiling
   Using local file /tmp/cpu_profiling.
   Using local file /tmp/cpu_profiling.
-  Total: 48 samples
-        47  97.9%  97.9%       47  97.9% sun.nio.ch.KQueueArrayWrapper.kevent0
-         1   2.1% 100.0%        1   2.1% java.lang.System.arraycopy
-         0   0.0% 100.0%        1   2.1% com.twitter.concurrent.AsyncQueue.offer
-         0   0.0% 100.0%        1   2.1% com.twitter.concurrent.Scheduler$.submit
-         0   0.0% 100.0%        1   2.1% com.twitter.concurrent.Scheduler$LocalScheduler.run
-         0   0.0% 100.0%        1   2.1% com.twitter.concurrent.Scheduler$LocalScheduler.submit
-         0   0.0% 100.0%        1   2.1% com.twitter.finagle.Filter$$anon$2.apply
+  Total: 83 samples
+        17  20.5%  20.5%       24  28.9% com.twitter.finagle.ProxyServiceFactory$class.status
+         8   9.6%  30.1%       10  12.0% scala.collection.immutable.HashMap$HashTrieMap.updated0
+         5   6.0%  36.1%       70  84.3% scala.collection.Iterator$class.foreach
+         5   6.0%  42.2%        5   6.0% scala.runtime.ScalaRunTime$.hash
+         4   4.8%  47.0%        4   4.8% com.twitter.finagle.transport.Transport$$anon$2.status
+         4   4.8%  51.8%        4   4.8% sun.management.OperatingSystemImpl.getOpenFileDescriptorCount
+         3   3.6%  55.4%        9  10.8% com.twitter.finagle.Filter$$anon$2.status
          ...
 
 **/admin/pprof/heap**
   Returns a heap profile computed by the `heapster agent
-  <https://github.com/mariusaeriksen/heapster>`_.  The output is in
-  `pprof <http://code.google.com/p/gperftools/>`_ format.
+  <https://github.com/mariusae/heapster>`_.  The output is in
+  `pprof <https://github.com/gperftools/gperftools>`_ format.
 
 ::
 
@@ -260,17 +252,12 @@ See the :ref:`metrics <metrics_label>` section for more information.
 
 ::
 
-  > curl "localhost:8090/admin/metrics?m=clnt/crocodile/requests&m=clnt/crocodile/failures"
+  $ curl "localhost:9990/admin/metrics?m=requests_counter"
   [
     {
-      "name" : "clnt/crocodile/requests",
-      "delta" : 643.0,
-      "value" : 517342.0
-    },
-    {
-      "name" : "clnt/crocodile/failures",
-      "delta" : 90.0,
-      "value" : 77430.0
+      "name" : "requests_counter",
+      "delta" : 3.0,
+      "value" : 10.0
     }
   ]
 
@@ -298,7 +285,7 @@ See the :ref:`metrics <metrics_label>` section for more information.
 
 ::
 
-  $ curl localhost:8080/admin/contention
+  $ curl localhost:9990/admin/contention
   Blocked:
   "util-jvm-timer-1" Id=11 TIMED_WAITING on java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject@33aac3c
     at sun.misc.Unsafe.park(Native Method)
@@ -333,7 +320,7 @@ See the :ref:`metrics <metrics_label>` section for more information.
 **/admin/tracing**
   Enable (/admin/tracing?enable=true) or disable tracing (/admin/tracing?disable=true)
 
-See `zipkin <https://github.com/twitter/zipkin>`_ documentation for more info.
+See `zipkin <https://github.com/openzipkin/zipkin>`_ documentation for more info.
 
 **/admin/threads**
   Dumps the call stacks of all the threads (JSON output).

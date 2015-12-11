@@ -1,5 +1,5 @@
 import com.twitter.conversions.time._
-import com.twitter.finagle.http.{HttpMuxer, Request, Response}
+import com.twitter.finagle.http.{HttpMuxer, Request, Response, Status}
 import com.twitter.finagle.Service
 import com.twitter.io.Charsets
 import com.twitter.logging.Formatter
@@ -25,6 +25,9 @@ object AdvancedServer extends TwitterServer {
     prefix = "<yyyy-MM-dd HH:mm:ss.SSS> [%.3s] %s: "
   )
   //#formatter
+  //#fail_fast
+  override def failfastOnFlagsNotParsed: Boolean = true
+  //#fail_fast
 
   val service = new Service[Request, Response] {
     def apply(request: Request) = {
