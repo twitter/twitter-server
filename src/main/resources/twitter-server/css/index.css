@@ -33,6 +33,7 @@ h1,h2,h3,h4,h5,h6 {
   -moz-transition: all 0.5s ease;
   -o-transition: all 0.5s ease;
   transition: all 0.5s ease;
+  z-index: 10;
 }
 
 #contents {
@@ -207,4 +208,9 @@ caption {
   padding-bottom: 8px;
   color: #777;
   text-align: left;
+}
+
+/** Popover */
+.popover-content {
+  word-wrap: break-word;
 }

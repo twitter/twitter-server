@@ -56,7 +56,7 @@ private[server] object StackRegistryView {
               ${
                 (for (StackRegistry.Module(role, desc, params) <- modules) yield {
                   s"""<div class="tab-pane" id="${role}-module">
-                        <div style="display:inline-block; width:50%">
+                        <div style="display:inline-block; min-width:50%">
                           <div class="panel panel-default">
                             <div class="panel-heading">${role}</div>
                             <div class="panel-body"><p>${desc}</p></div>

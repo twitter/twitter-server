@@ -47,9 +47,10 @@ object IndexView {
             case _ => false
           }
           val active = if (isChild) "active" else ""
+          val collapse = if (isChild) "glyphicon-collapse-up" else ""
           sb ++= s"""
             <li class="subnav $active">
-              <span class="glyphicon glyphicon-expand"></span>
+              <span class="glyphicon glyphicon-expand $collapse"></span>
               <span>${id}</span>
               <ul>${renderNav(links)}</ul>
             </li>"""
