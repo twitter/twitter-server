@@ -4,5 +4,6 @@ junit_tests(name='java',
     'twitter-server/src/test:base',
     'twitter-server/src/main/scala'
   ],
+  fatal_warnings=True,
   sources=rglobs('*.java')
 )

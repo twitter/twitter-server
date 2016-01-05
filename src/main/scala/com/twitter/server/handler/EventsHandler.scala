@@ -172,7 +172,7 @@ private object Percentile {
   }
 
   def field(cname: String, field: String): Try[Object] =
-    Try.withFatals(Class.forName(cname).getField(field).get()) {
+    Try.withFatals(Class.forName(cname).getField(field).get((): Unit)) {
       case e: NoClassDefFoundError => Throw(e)
     }
 

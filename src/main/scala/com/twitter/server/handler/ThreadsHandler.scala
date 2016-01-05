@@ -43,13 +43,13 @@ class ThreadsHandler extends Service[Request, Response] {
     if (expectsHtml(req)) htmlResponse(req) else jsonResponse(req)
 
   private def jsonResponse(req: Request): Future[Response] = {
-    val stacks = Thread.getAllStackTraces().asScala.map { case (thread, stack) =>
-      thread.getId().toString ->
-        Map(
-          "thread" -> thread.getName(),
-          "daemon" -> thread.isDaemon(),
-          "state" -> thread.getState(),
-          "priority" -> thread.getPriority(),
+    val stacks = Thread.getAllStackTraces.asScala.map { case (thread, stack) =>
+      thread.getId.toString ->
+        Map[String, Any](
+          "thread" -> thread.getName,
+          "daemon" -> thread.isDaemon,
+          "state" -> thread.getState,
+          "priority" -> thread.getPriority,
           "stack" -> stack.toSeq.map(_.toString)
         )
     }

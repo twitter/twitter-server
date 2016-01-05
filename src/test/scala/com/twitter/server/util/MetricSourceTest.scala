@@ -10,7 +10,7 @@ import org.scalatest.junit.JUnitRunner
 private[server] object MetricSourceTest {
   class Ctx {
     case class Entry(delta: Double, value: Double) extends StatEntry
-    var underlying = Map[String, StatEntry]()
+    private[twitter] var underlying = Map[String, StatEntry]()
     val sr = new StatsRegistry { def apply() = underlying }
     val registry = { () => Seq(sr) }
     val source = new MetricSource(registry, 1.second)

@@ -1,6 +1,5 @@
 import sbt._
 import Keys._
-import Tests._
 import com.typesafe.sbt.SbtSite.site
 import com.typesafe.sbt.site.SphinxSupport.Sphinx
 import sbtunidoc.Plugin.unidocSettings
@@ -60,9 +59,15 @@ object TwitterServer extends Build {
         <exclude org="javax.jms" module="jms" />
       </dependencies>,
 
-    scalacOptions ++= Seq("-encoding", "utf8"),
-    scalacOptions += "-deprecation",
-    javacOptions ++= Seq("-source", "1.7", "-target", "1.7"),
+    scalacOptions ++= Seq(
+      "-deprecation",
+      "-unchecked",
+      "-feature",
+      "-Xlint",
+      "-Xfatal-warnings",
+      "-encoding", "utf8"
+    ),
+    javacOptions ++= Seq("-Xlint:unchecked", "-source", "1.7", "-target", "1.7"),
     javacOptions in doc := Seq("-source", "1.7"),
 
     // This is bad news for things like com.twitter.util.Time
@@ -74,7 +79,7 @@ object TwitterServer extends Build {
     publishMavenStyle := true,
     autoAPIMappings := true,
     apiURL := Some(url("https://twitter.github.io/twitter-server/docs/")),
-    pomExtra := (
+    pomExtra :=
       <url>https://github.com/twitter/twitter-server</url>
       <licenses>
         <license>
@@ -92,7 +97,7 @@ object TwitterServer extends Build {
           <name>Twitter Inc.</name>
           <url>https://www.twitter.com/</url>
         </developer>
-      </developers>),
+      </developers>,
     publishTo <<= version { (v: String) =>
       val nexus = "https://oss.sonatype.org/"
       if (v.trim.endsWith("SNAPSHOT"))
@@ -105,7 +110,7 @@ object TwitterServer extends Build {
   lazy val twitterServer = Project(
     id = "twitter-server",
     base = file("."),
-    settings = Project.defaultSettings ++
+    settings = Defaults.coreDefaultSettings ++
       sharedSettings ++
       unidocSettings
   ).settings(
@@ -123,7 +128,7 @@ object TwitterServer extends Build {
       "com.github.spullara.mustache.java" % "compiler" % mustacheVersion
     ),
     libraryDependencies ++= jacksonLibs,
-    libraryDependencies <++= scalaVersion(xmlLib(_)),
+    libraryDependencies <++= scalaVersion(xmlLib),
     ivyXML :=
       <dependencies>
         <dependency org="com.github.spullara.mustache.java" name="compiler" rev={mustacheVersion}>
@@ -136,12 +141,12 @@ object TwitterServer extends Build {
     id = "twitter-server-doc",
     base = file("doc"),
     settings =
-      Project.defaultSettings ++
+      Defaults.coreDefaultSettings ++
       sharedSettings ++
       site.settings ++
       site.sphinxSupport() ++
       Seq(
-        scalacOptions in doc <++= (version).map(v => Seq("-doc-title", "TwitterServer", "-doc-version", v)),
+        scalacOptions in doc <++= version.map(v => Seq("-doc-title", "TwitterServer", "-doc-version", v)),
         includeFilter in Sphinx := ("*.html" | "*.png" | "*.js" | "*.css" | "*.gif" | "*.txt")
       )
     ).configs(DocTest).settings(
@@ -154,5 +159,5 @@ object TwitterServer extends Build {
     ).dependsOn(twitterServer)
 
   /* Test Configuration for running tests on doc sources */
-  lazy val DocTest = config("testdoc") extend(Test)
+  lazy val DocTest = config("testdoc") extend Test
 }

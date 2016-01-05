@@ -20,6 +20,7 @@ scala_library(name='scala',
     'util/util-logging',
     'util/util-registry',
   ],
+  fatal_warnings=True,
   sources=rglobs('*.scala'),
   resources=['twitter-server/src/main/resources'],
 )
