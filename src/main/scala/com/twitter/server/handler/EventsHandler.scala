@@ -2,7 +2,7 @@ package com.twitter.server.handler
 
 import com.twitter.concurrent.AsyncStream
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{Request, Response}
+import com.twitter.finagle.http.{ParamMap, Request, Response}
 import com.twitter.finagle.tracing.SpanId
 import com.twitter.io.{Reader, Buf}
 import com.twitter.server.handler.EventRecordingHandler._
@@ -22,11 +22,48 @@ private[server] class EventsHandler(sink: Sink) extends Service[Request, Respons
 
   def this() = this(Sink.default)
 
+  private[this] def eventFilterFromParams(params: ParamMap): EventFilter = {
+    val eventTypeFilter = params.get("eventType") match {
+      case Some(eventType) => EventFilter.withEventType(eventType)
+      case None => EventFilter.NoEventFilter
+    }
+
+    val objectValFilter = params.get("objectVal") match {
+      case Some(objectVal) =>
+        EventFilter.withObjectVal(objectVal)
+      case None =>
+        EventFilter.NoEventFilter
+    }
+
+    val spanIdFilter = params.get("spanId") match {
+      case Some(spanId) => EventFilter.withSpanId(spanId)
+      case None => EventFilter.NoEventFilter
+    }
+
+    val traceIdFilter = params.get("traceId") match {
+      case Some(traceId) => EventFilter.withTraceId(traceId)
+      case None => EventFilter.NoEventFilter
+    }
+
+    eventTypeFilter
+      .and(objectValFilter)
+      .and(spanIdFilter)
+      .and(traceIdFilter)
+  }
+
   def apply(req: Request): Future[Response] =
     if (accepts(req, "trace/"))
       respond(TraceEvent, TraceEventSink.serialize(sink))
-    else if (expectsJson(req)) respond(LineDelimitedJson, JsonSink.serialize(sink))
-    else respond(Html, htmlSerialize(sink))
+    else if (expectsJson(req))
+      respond(LineDelimitedJson, JsonSink.serialize(sink))
+    else
+      if (!req.params.isEmpty) {
+        val eventFilter = eventFilterFromParams(
+          req.params.filterNot { case (k, v) => v.isEmpty } )
+        respond(Html, tableBodyHtml(sink.events.toSeq.filter(eventFilter)))
+      } else {
+        respond(Html, Reader.fromBuf(Buf.Utf8(pageHtml(sink))))
+      }
 
   private[this] def respond(contentType: String, reader: Reader): Future[Response] = {
     val response = Response()
@@ -47,11 +84,87 @@ private object EventsHandler {
   val LineDelimitedJson = "application/x-ldjson;charset=UTF-8"
   val TraceEvent = "trace/json;charset=UTF-8"
 
+  object EventFilter {
+
+    def withEventType(eventType: String): EventFilter = new EventFilter {
+      def apply(event: Event): Boolean =
+        event.etype.id.contains(eventType)
+    }
+
+    def withObjectVal(objectVal: String): EventFilter = new EventFilter {
+      def apply(event: Event): Boolean =
+        event.objectVal.toString.contains(objectVal)
+    }
+
+    def withSpanId(spanId: String): EventFilter = new EventFilter {
+      def apply(event: Event): Boolean =
+        spanId == SpanId.toString(event.spanIdVal)
+    }
+
+    def withTraceId(traceId: String): EventFilter = new EventFilter {
+      def apply(event: Event): Boolean =
+        traceId == SpanId.toString(event.traceIdVal)
+    }
+
+    object NoEventFilter extends EventFilter {
+      def apply(event: Event): Boolean =
+        true
+    }
+  }
+
+  abstract class EventFilter extends (Event => Boolean) { self =>
+    def apply(event: Event): Boolean
+
+    def and(that: EventFilter): EventFilter =
+      if (self == EventFilter.NoEventFilter) that
+      else if (that == EventFilter.NoEventFilter) self
+      else
+        new EventFilter {
+          def apply(event: Event): Boolean =
+            self(event) && that(event)
+        }
+  }
+
   val columns: Seq[String] =
     Seq("Event", "When", "LongVal", "ObjectVal", "DoubleVal", "TraceID", "SpanID")
 
   val header: String =
-    columns.mkString("<tr><th>", "</th><th>", "</th></tr>")
+    columns.mkString("<tr><th>", """</th><th>""", "</th><th></th></tr>") +
+      """<tr>
+        <td>
+          <div class="filter-input-group">
+            <input class="filter-input form-control" id="eventTypeFilter" type="text">
+            <span class="filter-input-clear glyphicon glyphicon-remove-circle"></span>
+          </div>
+        </td>
+        <td></td>
+        <td></td>
+        <td>
+          <div class="filter-input-group">
+            <input class="filter-input form-control" id="objectValFilter" type="text">
+            <span class="filter-input-clear glyphicon glyphicon-remove-circle"></span>
+          </div>
+        </td>
+        <td></td>
+        <td>
+          <div class="filter-input-group">
+            <input class="filter-input form-control" id="traceIdFilter" type="text">
+            <span class="filter-input-clear glyphicon glyphicon-remove-circle"></span>
+          </div>
+        </td>
+        <td>
+          <div class="filter-input-group">
+            <input class="filter-input form-control" id="spanIdFilter" type="text">
+            <span class="filter-input-clear glyphicon glyphicon-remove-circle"></span>
+          </div>
+        </td>
+        <td>
+          <form id="filter">
+            <button id="filter-submit" class="btn btn-mini btn-primary" type="submit">Filter</button>
+            <button id="filter-loading" class="btn btn-mini btn-primary"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading</button>
+          </form>
+        </td>
+      </tr>"""
 
   def showObject(o: Object): String = o match {
     case r: LogRecord => s"${r.getLevel.toString} ${r.getMessage}"
@@ -66,45 +179,89 @@ private object EventsHandler {
     if (e.doubleVal == Event.NoDouble) "" else e.doubleVal.toString,
     if (e.traceIdVal == Event.NoTraceId) "" else SpanId.toString(e.traceIdVal),
     if (e.spanIdVal == Event.NoSpanId) "" else SpanId.toString(e.spanIdVal)
-  ).mkString("<tr><td>", "</td><td>", "</td></tr>"))
+  ).mkString("<tr><td>", "</td><td>", "</td><td></td></tr>"))
 
   def newline(buf: Buf): Buf = buf.concat(Buf.Utf8("\n"))
 
-  def tableOf(sink: Sink): AsyncStream[Buf] =
-    Buf.Utf8(helpPage(sink)) +:: Buf.Utf8(
-      s"""<table class="table table-condensed table-striped">
-      <caption>A log of events originating from this server process.</caption>
-      <thead>$header</thead>
-      <tbody>"""
-    ) +:: (
-      // Note: The events iterator can be potentially large, so to avoid fully
-      // buffering a big HTML document, we stream it as soon as it's ready.
-      // HTML tables seemingly were designed with incremental display in mind
-      // (see http://tools.ietf.org/html/rfc1942), so user-agents may even be
-      // able to take advantage of this and begin rendering the table earlier,
-      // and progressively as rows arrive.
-      annotate(fromSeq(sink.events.toSeq)).map(rowOf _ andThen newline) ++
-      AsyncStream.of(Buf.Utf8("</tbody></table>"))
-    )
 
-  def helpPage(sink: Sink): String = """
+  def tableOf(events: Seq[Event]): AsyncStream[Buf] =
+    // Note: The events iterator can be potentially large, so to avoid fully
+    // buffering a big HTML document, we stream it as soon as it's ready.
+    // HTML tables seemingly were designed with incremental display in mind
+    // (see http://tools.ietf.org/html/rfc1942), so user-agents may even be
+    // able to take advantage of this and begin rendering the table earlier,
+    // and progressively as rows arrive.
+      annotate(fromSeq(events)).map(rowOf _ andThen newline)
+
+  def pageHtml(sink: Sink): String = """
   <h2>Events</h2>
   <p>The server publishes interesting events during its operation and this section
   displays a log of the most recent.</p>
   """ + (if (Sink.enabled) {
-    val isRecording = sink.recording
+    val isRecording: Boolean = sink.recording
     val onCheck = if (isRecording) "checked" else ""
     val offCheck = if (isRecording) "" else "checked"
+    val onLoad =
+      """
+      <script>
+         $(document).ready(function() {
+          var displayEvents = function(data) {
+            $("#eventTable > tbody").html(data);
+            $("#filter-loading").hide();
+            $("#filter-submit").show();
+          }
+          var loadEvents = function() {
+            $("#filter-submit").removeClass("active");
+            $("#filter-submit").hide();
+            $("#filter-loading").show();
+            $(".filter-input").blur();
+            $("#eventTable > tbody").empty();
+
+            $.post(
+              "/admin/events",
+              {
+                eventType: $('#eventTypeFilter').val(),
+                objectVal: $('#objectValFilter').val(),
+                spanId: $('#spanIdFilter').val(),
+                traceId: $('#traceIdFilter').val()
+              },
+              displayEvents)
+
+          }
+          $('#filter').submit(function () {
+            loadEvents();
+            return false;
+          });
+          $(':input').keypress(function (e) {
+            if (e.which == 13) {
+              $('#filter').submit();
+              return false;
+            }
+          });
+          $(".filter-input-clear").each(function() {
+            $(this).click(function() {
+              $(this).prev(':input').val('');
+              loadEvents();
+            });
+          });
+          $('input:radio[name=recording]').change(function() {
+            $.post("/admin/events/record/" + this.value, loadEvents)
+            if (this.value == "recordOn") {
+              $("#eventTable").show();
+            } else {
+              $("#eventTable").hide();
+            }
+          });
+          if ($("#rec1").prop("checked") == true) {
+            loadEvents();
+          } else {
+             $("#eventTable").hide()
+          }
+
+         });
+       </script>"""
     val toggle =
       s"""
-      <script>
-      $$(document).ready(function() {
-        $$('input:radio[name=recording]').change(function() {
-          $$.post("/admin/events/" + this.value)
-        });
-      });
-      </script>
-
       <div>Events are only captured when recording is enabled. Current state:</div>
       <div class="radio">
         <label>
@@ -120,7 +277,15 @@ private object EventsHandler {
       </div>
     """
 
-    toggle + """
+    val table =
+      s"""<table id="eventTable" class="table table-condensed table-striped">
+      <caption>A log of events originating from this server process.</caption>
+      <thead>$header</thead>
+      <tbody>
+      </tbody>
+    </table>"""
+
+    onLoad + toggle + """
     <div class="fr-more"><a
     href="javascript:$('.fr-more-info').show(); $('.fr-more').hide()"
     >Read more...</a></div>
@@ -133,8 +298,8 @@ private object EventsHandler {
     </dl></p>
     <div>Example usage:<pre><code>
     $ java -Dcom.twitter.util.events.sinkEnabled=false MyApp
-    </code></pre></div></div>
-    """
+    </code></pre></div></div>""" + table
+
   } else {
     """
     <p>Event capture is currently <strong>disabled</strong>.
@@ -153,9 +318,8 @@ private object EventsHandler {
     """
   })
 
-  def htmlSerialize(sink: Sink): Reader =
-    if (sink != Sink.Null) Reader.concat(tableOf(sink).map(Reader.fromBuf))
-    else Reader.fromBuf(Buf.Utf8(helpPage(sink)))
+  def tableBodyHtml(events: Seq[Event]): Reader =
+    Reader.concat(tableOf(events).map(Reader.fromBuf))
 }
 
 private object Percentile {

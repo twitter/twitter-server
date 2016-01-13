@@ -59,7 +59,7 @@ private object ServerRegistryHandler {
 
 /**
  * Renders information about servers registered to Finagle's ServerRegistry
- * in an html fragment. Server's can be queried by passing in the server name
+ * in an html fragment. Servers can be queried by passing in the server name
  * as part of the uri (ex. "/admin/servers/myserver").
  */
 class ServerRegistryHandler(

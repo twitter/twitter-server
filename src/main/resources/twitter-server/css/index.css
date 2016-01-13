@@ -210,6 +210,55 @@ caption {
   text-align: left;
 }
 
+table input {
+  width: 95%;
+}
+
+.filter-input-group {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+#filter .btn:focus {
+  outline: none;
+}
+
+.filter-input.form-control {
+  padding-right: 23px;
+}
+
+.filter-input-clear {
+  position: absolute;
+  right: 5px;
+  top: 0;
+  bottom: 0;
+  height: 14px;
+  margin: auto;
+  font-size: 14px;
+  cursor: pointer;
+  color: #ccc;
+}
+
+#filter-submit, #filter-loading {
+  width: 100px;
+}
+
+.glyphicon-refresh-animate {
+  -animation: spin .7s infinite linear;
+  -webkit-animation: spin2 .7s infinite linear;
+}
+
+@-webkit-keyframes spin2 {
+  from { -webkit-transform: rotate(0deg);}
+  to { -webkit-transform: rotate(360deg);}
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg);}
+    to { transform: scale(1) rotate(360deg);}
+}
+
 /** Popover */
 .popover-content {
   word-wrap: break-word;
