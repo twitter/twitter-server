@@ -210,10 +210,6 @@ caption {
   text-align: left;
 }
 
-table input {
-  width: 95%;
-}
-
 .filter-input-group {
   position: relative;
   display: inline-block;
