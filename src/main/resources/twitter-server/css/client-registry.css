@@ -68,3 +68,7 @@
 .conn-trouble span {
   color: #f0ad4e;
 }
+
+.dtab {
+  list-style-type: none;
+}

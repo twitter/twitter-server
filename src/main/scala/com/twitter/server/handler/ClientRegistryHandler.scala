@@ -1,13 +1,13 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.client.ClientRegistry
+import com.twitter.finagle.client.{ClientRegistry, EndpointRegistry}
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.util.StackRegistry
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.{parse, new404, newResponse}
 import com.twitter.server.util.MetricSource
-import com.twitter.server.view.StackRegistryView
+import com.twitter.server.view.{EndpointRegistryView, StackRegistryView}
 import com.twitter.util.Future
 
 private object ClientRegistryHandler {
@@ -65,13 +65,13 @@ private object ClientRegistryHandler {
 
 /**
  * Renders information about clients registered to Finagle's ClientRegistry in
- * an html fragment. Client's can be queried by passing in the client name as
+ * an html fragment. Clients can be queried by passing in the client name as
  * part of the uri (ex. "/admin/clients/myclient").
  */
 class ClientRegistryHandler(
     uriPrefix: String,
     source: MetricSource = new MetricSource,
-    registry: StackRegistry = ClientRegistry)
+    stackRegistry: StackRegistry = ClientRegistry)
   extends Service[Request, Response] {
   import ClientRegistryHandler._
 
@@ -105,7 +105,7 @@ class ClientRegistryHandler(
   // represents the health of the client on the request path while availability
   // is a measure of session health.
   private[this] def clientProfiles: Seq[ClientProfile] =
-    (registry.registrants flatMap {
+    (stackRegistry.registrants flatMap {
       case e: StackRegistry.Entry if e.name.nonEmpty =>
         for {
           scope <- findClientScope(e.name)
@@ -143,14 +143,18 @@ class ClientRegistryHandler(
         )
 
       case name =>
-        val entries = registry.registrants filter { _.name == name }
-        if (entries.isEmpty) new404(s"$name could not be found.") else {
-          val client = entries.head
+        val clientEntries = stackRegistry.registrants.filter(_.name == name)
+        if (clientEntries.isEmpty) new404(s"$name could not be found.") else {
+          val client = clientEntries.head
+          val endpointEntry = EndpointRegistry.registry.endpoints(name)
+
           val scope = findClientScope(client.name)
-          val html = StackRegistryView.render(client, scope)
+          val stackHtml = StackRegistryView.render(client, scope)
+          val endpointHtml = EndpointRegistryView.render(endpointEntry)
+
           newResponse(
             contentType = "text/html;charset=UTF-8",
-            content = Buf.Utf8(html)
+            content = Buf.Utf8(stackHtml + endpointHtml)
           )
         }
     }

@@ -39,46 +39,49 @@ private[server] object StackRegistryView {
            }).getOrElse("")
          }
         <br/><br/>
-        <div class="row">
+        <div class="row stack-registry">
           <div class="col-md-12">
-            <!-- tab nav -->
-            <div class="tabbable tabs-left">
-              <ul class="nav nav-tabs">
+            <div class="row">
+              <!-- tab nav -->
+              <div class="tabbable tabs-left">
+                <ul class="nav nav-tabs">
+                  ${
+                     (for (StackRegistry.Module(role, _, _) <- modules) yield {
+                        s"""<li><a href="#${role}-module" data-toggle="tab">${role}</a></li>"""
+                      }).mkString("\n")
+                   }
+                </ul>
+              </div>
+              <!-- tab content -->
+              <div class="tab-content">
                 ${
-                   (for (StackRegistry.Module(role, _, _) <- modules) yield {
-                      s"""<li><a href="#${role}-module" data-toggle="tab">${role}</a></li>"""
-                    }).mkString("\n")
-                 }
-              </ul>
-            </div>
-            <!-- tab content -->
-            <div class="tab-content">
-              ${
-                (for (StackRegistry.Module(role, desc, params) <- modules) yield {
-                  s"""<div class="tab-pane" id="${role}-module">
-                        <div style="display:inline-block; min-width:50%">
-                          <div class="panel panel-default">
-                            <div class="panel-heading">${role}</div>
-                            <div class="panel-body"><p>${desc}</p></div>
-                            ${
-                              if (params.isEmpty) "" else {
-                                 s"""<table class="table table-condensed table-bordered">
-                                  <thead>
-                                    <tr>
-                                      <th>Parameter</th>
-                                      <th>Value</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>${renderParams(params)}</tbody>
-                                </table>"""
+                  (for (StackRegistry.Module(role, desc, params) <- modules) yield {
+                    s"""<div class="tab-pane" id="${role}-module">
+                          <div style="display:inline-block; min-width:50%">
+                            <div class="panel panel-default">
+                              <div class="panel-heading">${role}</div>
+                              <div class="panel-body"><p>${desc}</p></div>
+                              ${
+                                if (params.isEmpty) "" else {
+                                   s"""<table class="table table-condensed table-bordered">
+                                    <thead>
+                                      <tr>
+                                        <th>Parameter</th>
+                                        <th>Value</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>${renderParams(params)}</tbody>
+                                  </table>"""
+                                }
                               }
-                            }
+                            </div>
                           </div>
-                        </div>
-                      </div>"""
-                }).mkString("\n")
-              }
+                        </div>"""
+                  }).mkString("\n")
+                }
+              </div>
             </div>
+          </div>
         </div>"""
   }
 }
