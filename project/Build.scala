@@ -64,7 +64,6 @@ object TwitterServer extends Build {
       "-unchecked",
       "-feature",
       "-Xlint",
-      "-Xfatal-warnings",
       "-encoding", "utf8"
     ),
     javacOptions ++= Seq("-Xlint:unchecked", "-source", "1.7", "-target", "1.7"),
