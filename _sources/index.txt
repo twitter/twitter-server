@@ -11,7 +11,7 @@ Quick-start
 
 TwitterServer is published with Maven:
 
-.. code-block:: xml
+.. parsed-literal::
 
   <repository>
     <id>twttr</id>
@@ -21,7 +21,7 @@ TwitterServer is published with Maven:
 
   <dependency>
     <groupId>com.twitter</groupId>
-    <artifactId>twitter-server_2.10</artifactId>
+    <artifactId>twitter-server_2.11</artifactId>
     <version>\ |release|\ </version>
   </dependency>
 
@@ -62,11 +62,13 @@ process.
 ::
 
   $ java -jar target/myserver-1.0.0-SNAPSHOT.jar &
-  [1] 66569
-  Feb 21, 2013 10:55:57 AM com.twitter.finagle.http.HttpMuxer$$anonfun$5 apply
-  INFO: HttpMuxer[/admin/metrics.json] = com.twitter.finagle.stats.MetricsExporter(<function1>)
-  Feb 21, 2013 10:55:57 AM com.twitter.finagle.http.HttpMuxer$$anonfun$5 apply
-  INFO: HttpMuxer[/stats] = com.twitter.finagle.stats.OstrichExporter(<function1>)
+  [1] 74159
+  I 1210 21:32:39.326 THREAD1: /admin => com.twitter.server.handler.SummaryHandler
+  ...
+  I 1210 21:32:39.332 THREAD1: /favicon.ico => com.twitter.server.handler.ResourceHandler
+  I 1210 21:32:39.340 THREAD1: Serving admin http on 0.0.0.0/0.0.0.0:9990
+  I 1210 21:32:39.361 THREAD1: Finagle version 6.31.0 (rev=50d3bb0eea5ad3ed332111d707184c80fed6a506) built at 20151203-164135
+  I 1210 21:32:39.910 THREAD1: Tracer: com.twitter.finagle.zipkin.thrift.SamplingTracer
 
   $ curl localhost:8888
   hello

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>TwitterServer &mdash; TwitterServer 1.16.0 documentation</title>
+    <title>TwitterServer &mdash; TwitterServer 1.18.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.16.0',
+        VERSION:     '1.18.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="TwitterServer 1.16.0 documentation" href="#" />
+    <link rel="top" title="TwitterServer 1.18.0 documentation" href="#" />
     <link rel="next" title="Features" href="Features.html" />
    
   
@@ -63,24 +63,24 @@ wired in correctly for use in production at Twitter.</p>
 <div class="section" id="quick-start">
 <h2>Quick-start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
 <p>TwitterServer is published with Maven:</p>
-<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;repository&gt;</span>
-  <span class="nt">&lt;id&gt;</span>twttr<span class="nt">&lt;/id&gt;</span>
-  <span class="nt">&lt;name&gt;</span>twttr<span class="nt">&lt;/name&gt;</span>
-  <span class="nt">&lt;url&gt;</span>https://maven.twttr.com/<span class="nt">&lt;/url&gt;</span>
-<span class="nt">&lt;/repository&gt;</span>
+<pre class="literal-block">
+&lt;repository&gt;
+  &lt;id&gt;twttr&lt;/id&gt;
+  &lt;name&gt;twttr&lt;/name&gt;
+  &lt;url&gt;https://maven.twttr.com/&lt;/url&gt;
+&lt;/repository&gt;
 
-<span class="nt">&lt;dependency&gt;</span>
-  <span class="nt">&lt;groupId&gt;</span>com.twitter<span class="nt">&lt;/groupId&gt;</span>
-  <span class="nt">&lt;artifactId&gt;</span>twitter-server_2.10<span class="nt">&lt;/artifactId&gt;</span>
-  <span class="nt">&lt;version&gt;</span>\ |release|\ <span class="nt">&lt;/version&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-</pre></div>
-</div>
+&lt;dependency&gt;
+  &lt;groupId&gt;com.twitter&lt;/groupId&gt;
+  &lt;artifactId&gt;twitter-server_2.11&lt;/artifactId&gt;
+  &lt;version&gt;1.18.0&lt;/version&gt;
+&lt;/dependency&gt;
+</pre>
 <p>or, with sbt:</p>
 <pre class="literal-block">
 resolvers += &quot;twttr&quot; at &quot;<a class="reference external" href="https://maven.twttr.com/">https://maven.twttr.com/</a>&quot;
 
-libraryDependencies += &quot;com.twitter&quot; %% &quot;twitter-server&quot; % &quot;1.16.0&quot;
+libraryDependencies += &quot;com.twitter&quot; %% &quot;twitter-server&quot; % &quot;1.18.0&quot;
 </pre>
 <p>NB: You only need to add the <cite>maven.twttr.com</cite> repository if you want
 to use libraries in Twitter <cite>common</cite>, which are only published to
@@ -88,6 +88,7 @@ to use libraries in Twitter <cite>common</cite>, which are only published to
 <a class="reference internal" href="Features.html"><em>Metrics</em></a>, requires a twitter common library.</p>
 <p>First we’ll need to import a few things into our namespace.</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">com.twitter.finagle.</span><span class="o">{</span><span class="nc">Http</span><span class="o">,</span> <span class="nc">Service</span><span class="o">}</span>
+<span class="k">import</span> <span class="nn">com.twitter.finagle.http.</span><span class="o">{</span><span class="nc">Request</span><span class="o">,</span> <span class="nc">Response</span><span class="o">,</span> <span class="nc">Status</span><span class="o">}</span>
 <span class="k">import</span> <span class="nn">com.twitter.io.Charsets</span>
 <span class="k">import</span> <span class="nn">com.twitter.server.TwitterServer</span>
 <span class="k">import</span> <span class="nn">com.twitter.util.</span><span class="o">{</span><span class="nc">Await</span><span class="o">,</span> <span class="nc">Future</span><span class="o">}</span>
@@ -101,7 +102,7 @@ port 8888. The service bound to this port is a simple hello service.</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">object</span> <span class="nc">BasicServer</span> <span class="k">extends</span> <span class="nc">TwitterServer</span> <span class="o">{</span>
   <span class="k">val</span> <span class="n">service</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Service</span><span class="o">[</span><span class="kt">Request</span>, <span class="kt">Response</span><span class="o">]</span> <span class="o">{</span>
     <span class="k">def</span> <span class="n">apply</span><span class="o">(</span><span class="n">request</span><span class="k">:</span> <span class="kt">Request</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
-      <span class="k">val</span> <span class="n">response</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Response</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="n">version</span><span class="o">,</span> <span class="nc">Status</span><span class="o">.</span><span class="nc">Ok</span><span class="o">)</span>
+      <span class="k">val</span> <span class="n">response</span> <span class="k">=</span> <span class="nc">Response</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="n">version</span><span class="o">,</span> <span class="nc">Status</span><span class="o">.</span><span class="nc">Ok</span><span class="o">)</span>
       <span class="n">response</span><span class="o">.</span><span class="n">contentString</span> <span class="k">=</span> <span class="s">&quot;hello&quot;</span>
       <span class="nc">Future</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="n">response</span><span class="o">)</span>
     <span class="o">}</span>
@@ -122,11 +123,13 @@ is requested.</p>
 <p>After compiling, we can start the server like any other java or scala
 process.</p>
 <div class="highlight-text"><div class="highlight"><pre>$ java -jar target/myserver-1.0.0-SNAPSHOT.jar &amp;
-[1] 66569
-Feb 21, 2013 10:55:57 AM com.twitter.finagle.http.HttpMuxer$$anonfun$5 apply
-INFO: HttpMuxer[/admin/metrics.json] = com.twitter.finagle.stats.MetricsExporter(&lt;function1&gt;)
-Feb 21, 2013 10:55:57 AM com.twitter.finagle.http.HttpMuxer$$anonfun$5 apply
-INFO: HttpMuxer[/stats] = com.twitter.finagle.stats.OstrichExporter(&lt;function1&gt;)
+[1] 74159
+I 1210 21:32:39.326 THREAD1: /admin =&gt; com.twitter.server.handler.SummaryHandler
+...
+I 1210 21:32:39.332 THREAD1: /favicon.ico =&gt; com.twitter.server.handler.ResourceHandler
+I 1210 21:32:39.340 THREAD1: Serving admin http on 0.0.0.0/0.0.0.0:9990
+I 1210 21:32:39.361 THREAD1: Finagle version 6.31.0 (rev=50d3bb0eea5ad3ed332111d707184c80fed6a506) built at 20151203-164135
+I 1210 21:32:39.910 THREAD1: Tracer: com.twitter.finagle.zipkin.thrift.SamplingTracer
 
 $ curl localhost:8888
 hello
@@ -201,7 +204,7 @@ environment. See <a class="reference internal" href="Features.html"><em>features
       <div class="clearer"></div>
     </div>
   <div class="footer">
-    &copy; Copyright 2013 Twitter, Inc.
+    &copy; Copyright 2015 Twitter, Inc.
     Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
   </div>
   
