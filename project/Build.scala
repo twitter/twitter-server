@@ -12,7 +12,6 @@ object TwitterServer extends Build {
   val libVersion = "1.18.0" + suffix
   val utilVersion = "6.32.0" + suffix
   val finagleVersion = "6.33.0" + suffix
-  val mustacheVersion = "0.8.18"
 
   val jacksonVersion = "2.4.4"
   val jacksonLibs = Seq(
@@ -123,17 +122,10 @@ object TwitterServer extends Build {
       util("jvm"),
       util("lint"),
       util("logging"),
-      util("registry"),
-      "com.github.spullara.mustache.java" % "compiler" % mustacheVersion
+      util("registry")
     ),
     libraryDependencies ++= jacksonLibs,
-    libraryDependencies <++= scalaVersion(xmlLib),
-    ivyXML :=
-      <dependencies>
-        <dependency org="com.github.spullara.mustache.java" name="compiler" rev={mustacheVersion}>
-          <exclude org="com.google.guava" name="guava"/>
-        </dependency>
-      </dependencies>
+    libraryDependencies <++= scalaVersion(xmlLib)
   )
 
   lazy val twitterServerDoc = Project(
