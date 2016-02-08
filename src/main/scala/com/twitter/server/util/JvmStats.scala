@@ -88,13 +88,19 @@ object JvmStats {
       memPool.flatMap(p => Option(p.getUsage)).map(_.getUsed).sum
     })
 
-    // the Hotspot JVM exposes the full the size that the metaspace can grow to
+    // the Hotspot JVM exposes the full size that the metaspace can grow to
     // which differs from the value exposed by `MemoryUsage.getMax` from above
-    Jvm().metaspaceUsage.foreach { usage =>
+    val jvm = Jvm()
+    jvm.metaspaceUsage.foreach { usage =>
       gauges.add(memStats.scope("metaspace").addGauge("max_capacity") {
         usage.maxCapacity.inBytes
       })
     }
+
+    val spStats = stats.scope("safepoint")
+    gauges.add(spStats.addGauge("sync_time_millis"){ jvm.safepoint.syncTimeMillis }) 
+    gauges.add(spStats.addGauge("total_time_millis"){ jvm.safepoint.totalTimeMillis }) 
+    gauges.add(spStats.addGauge("count"){ jvm.safepoint.count })
 
     val bufferPool = ManagementFactory.getPlatformMXBeans(classOf[BufferPoolMXBean]).asScala
     val bufferPoolStats = memStats.scope("buffer")
