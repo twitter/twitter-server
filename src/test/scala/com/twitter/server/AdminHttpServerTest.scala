@@ -1,16 +1,13 @@
 package com.twitter.server
 
-import com.twitter.app.App
 import com.twitter.conversions.time._
-import com.twitter.finagle.Http
+import com.twitter.finagle.{Http, ListeningServer}
 import com.twitter.finagle.http.{HttpMuxHandler, Request, Response}
-import com.twitter.finagle.ListeningServer
 import com.twitter.server.util.HttpUtils._
-import com.twitter.util.{Duration, Await, Future}
+import com.twitter.util.{Await, Future}
 import java.net.{InetAddress, InetSocketAddress}
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.concurrent.Eventually
 import org.scalatest.junit.JUnitRunner
 import scala.language.reflectiveCalls
 
@@ -50,15 +47,16 @@ class AdminHttpServerTest extends FunSuite  {
     assert(resp1.contentString.contains("per host metrics!"))
   }
 
-  def closeServer(app: App, server: ListeningServer): Unit = {
-    val port = server.boundAddress.asInstanceOf[InetSocketAddress].getPort
-    val client = Http.client.newService(s"localhost:$port")
+  def closeServer(twitterServer: TwitterServer, adminServer: ListeningServer): Unit = {
+    val adminServerBoundPort = adminServer.boundAddress.asInstanceOf[InetSocketAddress].getPort
+    assert(adminServerBoundPort == twitterServer.adminBoundAddress.getPort)
+    val client = Http.client.newService(s"localhost:$adminServerBoundPort")
 
     Await.result(client(Request("/quitquitquit")), 1.second)
 
     // throws if adminHttpServer does not exit before the grace period,
     // which indicates that we have not closed it properly.
-    Await.result(server, 2.seconds)
+    Await.result(adminServer, 2.seconds)
   }
 
   test("server serves and is closed properly") {

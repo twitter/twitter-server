@@ -7,12 +7,17 @@ Note that ``RB_ID=#`` correspond to associated messages in commits.
 1.x
 -----
 
+New Features:
+-------------
+  * Add AdminHttpServer#boundAddress to expose the bound address of
+    the AdminHttpServer. ``RB_ID=798322``
+
 1.18.0
 ~~~~~~~
 
 New Features:
 -------------
-  * Add new admin endpoint "/" which redirects requests to "/admin"
+  * Add new admin endpoint "/" which redirects requests to "/admin". ``RB_ID=777247``
 
 1.17.0
 ~~~~~~~

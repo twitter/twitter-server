@@ -96,6 +96,15 @@ trait AdminHttpServer { self: App =>
 
   private var allRoutes: Seq[Route] = Seq()
 
+  /**
+   * The address to which the Admin HTTP server is bound.
+   */
+  def adminBoundAddress: InetSocketAddress = {
+    // this should never be a NullServer unless
+    // [[com.twitter.server.AdminHttpServer#premain]] is skipped/broken
+    adminHttpServer.boundAddress.asInstanceOf[InetSocketAddress]
+  }
+
   def addAdminRoutes(newRoutes: Seq[Route]): Unit = synchronized {
     allRoutes = allRoutes ++ newRoutes
     updateMuxer()
