@@ -35,7 +35,7 @@ html_use_smartypants = True
 html_show_sphinx = False
 
 project = u'TwitterServer'
-copyright = u'2015 Twitter, Inc'
+copyright = u'2015–2016 Twitter, Inc'
 version = ''
 release = ''
 htmlhelp_basename = "twitter-server"

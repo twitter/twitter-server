@@ -6,8 +6,8 @@ built. It provides common application components such as an
 administrative HTTP server, tracing, stats, etc. These features are
 wired in correctly for use in production at Twitter.
 
-Quick-start
------------
+Getting Started
+---------------
 
 TwitterServer is published with Maven:
 
@@ -33,19 +33,19 @@ or, with sbt:
 
   libraryDependencies += "com.twitter" %% "twitter-server" % "|release|"
 
-NB: You only need to add the `maven.twttr.com` repository if you want
+NB: You only need to add the ``maven.twttr.com`` repository if you want
 to use libraries in Twitter `common`, which are only published to
-`maven.twttr.com`. For example, `finagle-stats`, which adds
-:doc:`Metrics <Features>`, requires a twitter common library.
+``maven.twttr.com``. For example, ``finagle-stats``, which adds
+:doc:`Metrics <Features>`, requires a twitter `common` library.
 
 First we’ll need to import a few things into our namespace.
 
 .. includecode:: code/BasicServer.scala#imports
    :language: scala
 
-TwitterServer defines its own version of the standard `main`. To use
-it, create an object extended with `com.twitter.server.TwitterServer`,
-and define the `main()` method (no arguments).
+TwitterServer defines its own version of the standard ``main``. To use
+it, create an object extended with ``com.twitter.server.TwitterServer``,
+and define the ``main()`` method (no arguments).
 
 In this example, we use Finagle to start an HTTP server on
 port 8888. The service bound to this port is a simple hello service.
@@ -53,7 +53,7 @@ port 8888. The service bound to this port is a simple hello service.
 .. includecode:: code/BasicServer.scala#server
    :language: scala
 
-`onExit` is used to register code to be run when the process shutdown
+``onExit`` is used to register code to be run when the process shutdown
 is requested.
 
 After compiling, we can start the server like any other java or scala
@@ -73,10 +73,11 @@ process.
   $ curl localhost:8888
   hello
 
-This server is fully configured to run in Twitter's production
+This server is fully configured to run in Twitter’s production
 environment. See :doc:`features <Features>` for more details.
 
-User's guide
+
+User’s guide
 ------------
 
 .. toctree::
@@ -85,3 +86,4 @@ User's guide
    Features
    Java
    Migration
+   FAQ
