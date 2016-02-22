@@ -119,6 +119,7 @@ object TwitterServer extends Build {
       finagle("zipkin"),
       util("app"),
       util("core"),
+      util("events"),
       util("jvm"),
       util("lint"),
       util("logging"),
