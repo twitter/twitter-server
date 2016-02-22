@@ -84,6 +84,7 @@ User’s guide
    :maxdepth: 4
 
    Features
+   Admin
    Java
    Migration
    FAQ
