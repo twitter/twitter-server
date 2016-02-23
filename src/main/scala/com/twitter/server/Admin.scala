@@ -75,7 +75,7 @@ trait Admin { self: App with AdminHttpServer =>
       alias = "Profile", group = Some(Grouping.PerfProfile), includeInIndex = true),
     Route(
       path = "/admin/pprof/contention", handler = new ProfileResourceHandler(Thread.State.BLOCKED),
-      alias = "Contention", group = Some(Grouping.PerfProfile), includeInIndex = true),
+      alias = "Blocked Profile", group = Some(Grouping.PerfProfile), includeInIndex = true),
     Route(
       path = "/admin/ping", handler = new ReplyHandler("pong"),
       alias = "Ping", group = Some(Grouping.Utilities), includeInIndex = true),
