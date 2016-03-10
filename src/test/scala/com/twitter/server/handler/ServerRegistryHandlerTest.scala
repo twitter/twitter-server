@@ -4,7 +4,6 @@ import com.twitter.finagle.server.StackServer
 import com.twitter.finagle.{http, Stack, param}
 import com.twitter.finagle.util.StackRegistry
 import com.twitter.io.Charsets
-import com.twitter.server.util.HttpUtils._
 import com.twitter.server.util.MetricSourceTest
 import com.twitter.util.Await
 import org.junit.runner.RunWith

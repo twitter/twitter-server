@@ -2,7 +2,7 @@ package com.twitter.server.view
 
 import com.twitter.finagle.{Service, SimpleFilter}
 import com.twitter.finagle.http.{Request, Response}
-import com.twitter.io.{Buf, Charsets}
+import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.{expectsHtml, newResponse}
 
 class TextBlockView extends SimpleFilter[Request, Response] {

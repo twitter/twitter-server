@@ -2,7 +2,6 @@ package com.twitter.server
 
 import com.twitter.app.App
 import com.twitter.util.{Duration, Await, Closable}
-import com.twitter.util.TimeConversions._
 
 /**
  * Supports the specification of a default close grace period from a flag.
