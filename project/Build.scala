@@ -9,9 +9,9 @@ object TwitterServer extends Build {
   val branch = Process("git" :: "rev-parse" :: "--abbrev-ref" :: "HEAD" :: Nil).!!.trim
   val suffix = if (branch == "master") "" else "-SNAPSHOT"
 
-  val libVersion = "1.18.0" + suffix
-  val utilVersion = "6.32.0" + suffix
-  val finagleVersion = "6.33.0" + suffix
+  val libVersion = "1.19.0" + suffix
+  val utilVersion = "6.33.0" + suffix
+  val finagleVersion = "6.34.0" + suffix
 
   val jacksonVersion = "2.4.4"
   val jacksonLibs = Seq(
