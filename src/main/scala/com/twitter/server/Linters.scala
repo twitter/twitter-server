@@ -2,6 +2,7 @@ package com.twitter.server
 
 import com.twitter.app.App
 import com.twitter.finagle.client.ClientRegistry
+import com.twitter.finagle.service.FailFastFactory
 import com.twitter.finagle.param
 import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.stats.{StatsReceiverWithCumulativeGauges, LoadedStatsReceiver, BroadcastStatsReceiver}
@@ -29,6 +30,7 @@ trait Linters { app: App =>
       stackRegistryDuplicates(registry)
       nullStatsReceivers(registry)
     }
+    memcacheFailFast()
     rules.add(LoggingRules.MultipleSlf4jImpls)
   }
 
@@ -111,4 +113,23 @@ trait Linters { app: App =>
     rules.add(rule)
   }
 
+  private[this] def memcacheFailFast(): Unit = {
+    val rule = Rule(
+      Category.Configuration,
+      "Memcache client has FailFast enabled",
+      """FailFast is only appropriate when a replica set is present. Memcached
+        |is usually sharded. Consider disabling FailFast or using the
+        |c.t.f.Memcached.client which has recommended settings built in.""".stripMargin
+    ) {
+      ClientRegistry.registrants
+        .filter(_.protocolLibrary == "memcached")
+        .groupBy(_.name)
+        .filter { case (_, entries) =>
+          entries.head.params[FailFastFactory.FailFast].enabled == true
+        }.map { case (label, _) =>
+          Issue(s"$label memcache client should disable FailFast")
+        }.toSeq
+    }
+    GlobalRules.get.add(rule)
+  }
 }

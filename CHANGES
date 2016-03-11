@@ -7,6 +7,11 @@ Note that ``RB_ID=#`` correspond to associated messages in commits.
 1.x
 ------
 
+New Features
+~~~~~~~~~~~~
+
+  * Add a FailFast lint rule for Memcached client. ``RB_ID=808727``
+
 1.19.0
 ------
 
