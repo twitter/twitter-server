@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Features &mdash; TwitterServer 1.18.0 documentation</title>
+    <title>Features &mdash; TwitterServer 1.19.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.18.0',
+        VERSION:     '1.19.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,8 +23,8 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="TwitterServer 1.18.0 documentation" href="index.html" />
-    <link rel="next" title="Using TwitterServer from Java" href="Java.html" />
+    <link rel="top" title="TwitterServer 1.19.0 documentation" href="index.html" />
+    <link rel="next" title="HTTP Admin interface" href="Admin.html" />
     <link rel="prev" title="TwitterServer" href="index.html" />
    
   
@@ -42,7 +42,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="Java.html" title="Using TwitterServer from Java"
+          <a href="Admin.html" title="HTTP Admin interface"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="index.html" title="TwitterServer"
@@ -107,7 +107,7 @@ introduction.</p>
 </div>
 <div class="section" id="flags">
 <h2>Flags<a class="headerlink" href="#flags" title="Permalink to this headline">¶</a></h2>
-<p>The flags implementation, <a class="reference external" href="https://github.com/twitter/util/blob/master/util-app/src/main/scala/com/twitter/app/Flag.scala">found in Twitter&#8217;s util library</a>,
+<p id="id1">The flags implementation, <a class="reference external" href="https://github.com/twitter/util/blob/master/util-app/src/main/scala/com/twitter/app/Flag.scala">found in Twitter&#8217;s util library</a>,
 focuses on simplicity and type safety, parsing flags into Scala values.</p>
 <p>You define your flag like this, in that case the flag type is <cite>String</cite>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">what</span> <span class="k">=</span> <span class="n">flag</span><span class="o">(</span><span class="s">&quot;what&quot;</span><span class="o">,</span> <span class="s">&quot;hello&quot;</span><span class="o">,</span> <span class="s">&quot;String to return&quot;</span><span class="o">)</span>
@@ -225,204 +225,46 @@ parameter pretty=true or pretty=1, eg /admin/metrics.json?pretty=true</p>
 <div class="highlight-text"><div class="highlight"><pre>{
   &quot;requests_counter&quot;: 234,
   &quot;finagle/closechans&quot;: 592,
-  &quot;finagle/closed&quot;: 592,
-  &quot;finagle/closes&quot;: 575,
   &quot;finagle/connection_duration.avg&quot;: 561,
   &quot;finagle/connection_duration.count&quot;: 592,
   &quot;finagle/connection_duration.max&quot;: 299986,
   &quot;finagle/connection_duration.min&quot;: 3,
-  &quot;finagle/connection_duration.p25&quot;: 29,
   &quot;finagle/connection_duration.p50&quot;: 31,
-  &quot;finagle/connection_duration.p75&quot;: 58,
   &quot;finagle/connection_duration.p90&quot;: 111,
   &quot;finagle/connection_duration.p95&quot;: 120,
   &quot;finagle/connection_duration.p99&quot;: 197,
   &quot;finagle/connection_duration.p9990&quot;: 2038,
   &quot;finagle/connection_duration.p9999&quot;: 2038,
   &quot;finagle/connection_duration.sum&quot;: 332690,
-  &quot;finagle/connections&quot;: 2,
-  &quot;finagle/http/failfast/unhealthy_for_ms&quot;: 0,
-  &quot;finagle/http/failfast/unhealthy_num_tries&quot;: 0,
   &quot;finagle/success&quot;: 0
   ...
 }
 </pre></div>
 </div>
+<div class="section" id="jvm-metrics">
+<h4>JVM Metrics<a class="headerlink" href="#jvm-metrics" title="Permalink to this headline">¶</a></h4>
+<p>A wide variety of metrics are exported by TwitterServer which give
+you insight into the JVM&#8217;s garbage collection. These are computed
+in <cite>com.twitter.server.util.JvmStats</cite> and exported as metrics.
+These include metrics related to generation size, threads, and garbage collection
+and are exported as metrics at <cite>jvm/mem</cite>, <cite>jvm/thread</cite>, and <cite>jvm/gc</cite>
+respectively.</p>
+<p>If you are using a Hotspot VM, you get a few additional metrics that
+may be useful. This includes safe point time (<cite>jvm/safepoint</cite>),
+metaspace usage (<cite>jvm/mem/metaspace</cite>) and allocation rates (<cite>jvm/mem/allocations</cite>).
+The eden allocation gauge (<cite>jvm/mem/allocations/eden/bytes</cite>) is a particularly
+relevant metric for service developers. The vast majority of allocations are
+done into the eden space, so this metric can be used to calculate the allocations
+per request which in turn can be used to validate code changes
+don&#8217;t increase garbage collection pressure on the hot path.</p>
 </div>
 </div>
-<div class="section" id="http-admin-interface">
-<h2>HTTP Admin interface<a class="headerlink" href="#http-admin-interface" title="Permalink to this headline">¶</a></h2>
-<p>TwitterServer starts an HTTP server (it binds to the port defined by
-the flag <cite>-admin.port</cite>; port 9990 by default). It exports an <cite>HttpMuxer</cite>
-object in which endpoints are registered.  The library defines a
-series of default endpoints:</p>
-<dl class="docutils">
-<dt><strong>/admin/announcer</strong></dt>
-<dd>Returns a set of announcement chains that have run through the
-Announcer. This allows one to see how a particular target is being
-announced.</dd>
-<dt><strong>/admin/pprof/contention</strong></dt>
-<dd>Returns a CPU contention profile which identifies blocked threads
-(<cite>Thread.State.BLOCKED</cite>).
-The output is in <a class="reference external" href="https://github.com/gperftools/gperftools">pprof</a> format.
-The process will be profiled for 10 seconds at a frequency of 100 hz. These
-values can be controlled via HTTP request parameters <cite>seconds</cite> and <cite>hz</cite>
-respectively.</dd>
-<dt><strong>/admin/pprof/profile</strong></dt>
-<dd>Returns a CPU usage profile. The output is in <a class="reference external" href="https://github.com/gperftools/gperftools">pprof</a> format.
-The process will be profiled for 10 seconds at a frequency of 100 hz. These
-values can be controlled via HTTP request parameters <cite>seconds</cite> and <cite>hz</cite>
-respectively.</dd>
-</dl>
-<div class="highlight-text"><div class="highlight"><pre>$ curl -s localhost:9990/admin/pprof/profile &gt; /tmp/cpu_profiling
-$ pprof --text /tmp/cpu_profiling
-Using local file /tmp/cpu_profiling.
-Using local file /tmp/cpu_profiling.
-Total: 83 samples
-      17  20.5%  20.5%       24  28.9% com.twitter.finagle.ProxyServiceFactory$class.status
-       8   9.6%  30.1%       10  12.0% scala.collection.immutable.HashMap$HashTrieMap.updated0
-       5   6.0%  36.1%       70  84.3% scala.collection.Iterator$class.foreach
-       5   6.0%  42.2%        5   6.0% scala.runtime.ScalaRunTime$.hash
-       4   4.8%  47.0%        4   4.8% com.twitter.finagle.transport.Transport$$anon$2.status
-       4   4.8%  51.8%        4   4.8% sun.management.OperatingSystemImpl.getOpenFileDescriptorCount
-       3   3.6%  55.4%        9  10.8% com.twitter.finagle.Filter$$anon$2.status
-       ...
-</pre></div>
 </div>
-<dl class="docutils">
-<dt><strong>/admin/pprof/heap</strong></dt>
-<dd>Returns a heap profile computed by the <a class="reference external" href="https://github.com/mariusae/heapster">heapster agent</a>.  The output is in
-<a class="reference external" href="https://github.com/gperftools/gperftools">pprof</a> format.</dd>
-</dl>
-<div class="highlight-text"><div class="highlight"><pre>$ java -agentlib:heapster -jar target/myserver-1.0.0-SNAPSHOT.jar
-$ pprof /tmp/heapster_profile
-Welcome to pprof!  For help, type &#39;help&#39;.
-(pprof) top
-Total: 2001520 samples
- 2000024  99.9%  99.9%  2000048  99.9% LTest;main
-    1056   0.1% 100.0%     1056   0.1% Ljava/lang/Object;
-     296   0.0% 100.0%      296   0.0% Ljava/lang/String;toCharArray
-     104   0.0% 100.0%      136   0.0% Ljava/lang/Shutdown;
-</pre></div>
-</div>
-<dl class="docutils">
-<dt><strong>/admin/metrics.json</strong></dt>
-<dd>Export a snapshot of the current statistics of the program. You can
-use the StatsReceiver in your application for add new
-counters/gauges/histograms, simply use the <cite>statsReceiver</cite> variable
-provided by TwitterServer.</dd>
-</dl>
-<p>See the <a class="reference internal" href="#metrics-label"><em>metrics</em></a> section for more information.</p>
-<dl class="docutils">
-<dt><strong>/admin/metrics</strong></dt>
-<dd>Watch specific stats and extract them via http queries.</dd>
-</dl>
-<div class="highlight-text"><div class="highlight"><pre>$ curl &quot;localhost:9990/admin/metrics?m=requests_counter&quot;
-[
-  {
-    &quot;name&quot; : &quot;requests_counter&quot;,
-    &quot;delta&quot; : 3.0,
-    &quot;value&quot; : 10.0
-  }
-]
-</pre></div>
-</div>
-<dl class="docutils">
-<dt><strong>/admin/server_info</strong></dt>
-<dd>Return build informations about this server</dd>
-</dl>
-<div class="highlight-text"><div class="highlight"><pre>{
-  &quot;name&quot; : &quot;myserver&quot;,
-  &quot;version&quot; : &quot;1.0.0-SNAPSHOT&quot;,
-  &quot;build&quot; : &quot;20130221-105425&quot;,
-  &quot;build_revision&quot; : &quot;694299d640d337c58fadf668e44322b17fd0562e&quot;,
-  &quot;build_branch_name&quot; : &quot;refs/heads/twitter-server!doc&quot;,
-  &quot;build_last_few_commits&quot; : [
-    &quot;694299d (HEAD, origin/twitter-server!doc, twitter-server!doc) Merge branch &#39;master&#39; into twitter-server!doc&quot;,
-    &quot;ba1c062 Fix test for sbt + Jeff&#39;s comments&quot;,
-  ],
-  &quot;start_time&quot; : &quot;Thu Feb 21 13:43:32 PST 2013&quot;,
-  &quot;uptime&quot; : 22458
-}
-</pre></div>
-</div>
-<dl class="docutils">
-<dt><strong>/admin/contention</strong></dt>
-<dd>Show call stack of blocked and waiting threads.</dd>
-</dl>
-<div class="highlight-text"><div class="highlight"><pre>$ curl localhost:9990/admin/contention
-Blocked:
-&quot;util-jvm-timer-1&quot; Id=11 TIMED_WAITING on java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject@33aac3c
-  at sun.misc.Unsafe.park(Native Method)
-  -  waiting on java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject@33aac3c
-  at java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:226)
-  at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:2082)
-  at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:1090)
-  at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:807)
-  at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1043)
-  at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1103)
-  at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)
-  ...
-</pre></div>
-</div>
-<dl class="docutils">
-<dt><strong>/admin/clients</strong></dt>
-<dd>Surface client information exposed by Finagle. Per-client configuration parameters and
-values for each module are available at /admin/clients/&lt;client name&gt;.</dd>
-<dt><strong>/admin/servers</strong></dt>
-<dd>Surface server information exposed by Finagle. Per-server configuration parameters and
-values for each module are available at /admin/clients/&lt;client name&gt;.</dd>
-<dt><strong>/admin/registry.json</strong></dt>
-<dd>Displays how the service is currently configured across a variety of dimensions
-including the client stack, server stack, flags, service loader values, and more.</dd>
-<dt><strong>/admin/lint</strong></dt>
-<dd>Runs and displays the results for all registered linters to check for various service issues.</dd>
-<dt><strong>/admin/shutdown</strong></dt>
-<dd>Stop the process gracefully.</dd>
-<dt><strong>/admin/tracing</strong></dt>
-<dd>Enable (/admin/tracing?enable=true) or disable tracing (/admin/tracing?disable=true)</dd>
-</dl>
-<p>See <a class="reference external" href="https://github.com/openzipkin/zipkin">zipkin</a> documentation for more info.</p>
-<dl class="docutils">
-<dt><strong>/admin/threads</strong></dt>
-<dd>Dumps the call stacks of all the threads (JSON output).</dd>
-</dl>
-<div class="highlight-text"><div class="highlight"><pre>{
-  &quot;threads&quot; : {
-    &quot;12&quot; : {
-      &quot;priority&quot; : 5,
-      &quot;state&quot; : &quot;TIMED_WAITING&quot;,
-      &quot;daemon&quot; : true,
-      &quot;thread&quot; : &quot;util-jvm-timer-1&quot;,
-      &quot;stack&quot; : [
-        &quot;sun.misc.Unsafe.park(Native Method)&quot;,
-        &quot;java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:226)&quot;,
-        &quot;java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:2082)&quot;,
-        &quot;java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:1090)&quot;,
-        &quot;java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:807)&quot;,
-        &quot;java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1043)&quot;,
-        &quot;java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1103)&quot;,
-        &quot;java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)&quot;,
-        &quot;java.lang.Thread.run(Thread.java:722)&quot;
-      ]
-    },
-    ...
-  }
-}
-</pre></div>
-</div>
-<dl class="docutils">
-<dt><strong>/admin/ping</strong></dt>
-<dd>Return pong (used for monitoring)</dd>
-<dt><strong>/admin/logging</strong></dt>
-<dd>Display the set of loggers and their current log level. The level of
-each logger can also be modified on-the-fly.</dd>
-</dl>
-<div class="highlight-text"><div class="highlight"><pre>root                              ALL CRITICAL DEBUG ERROR FATAL INFO OFF TRACE WARNING
-com.twitter.ostrich.stats.Metric  ALL CRITICAL DEBUG ERROR FATAL INFO OFF TRACE WARNING
-com.twitter.ostrich.stats.Stats$  ALL CRITICAL DEBUG ERROR FATAL INFO OFF TRACE WARNING
-</pre></div>
-</div>
+<div class="section" id="admin-http-interface">
+<h2>Admin HTTP interface<a class="headerlink" href="#admin-http-interface" title="Permalink to this headline">¶</a></h2>
+<p>TwitterServer provides an HTTP server and includes a variety of tools
+for diagnostics, profiling, and more. The details are covered in-depth
+<a class="reference internal" href="Admin.html#admin-interface"><em>here</em></a>.</p>
 </div>
 <div class="section" id="lifecycle-management">
 <h2>Lifecycle Management<a class="headerlink" href="#lifecycle-management" title="Permalink to this headline">¶</a></h2>
@@ -479,10 +321,13 @@ trait is built.</p>
 <li><a class="reference internal" href="#logging">Logging</a></li>
 <li><a class="reference internal" href="#metrics">Metrics</a><ul>
 <li><a class="reference internal" href="#filtering-stats-out">Filtering stats out</a></li>
-<li><a class="reference internal" href="#pretty-output">Pretty output</a></li>
+<li><a class="reference internal" href="#pretty-output">Pretty output</a><ul>
+<li><a class="reference internal" href="#jvm-metrics">JVM Metrics</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#http-admin-interface">HTTP Admin interface</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#admin-http-interface">Admin HTTP interface</a></li>
 <li><a class="reference internal" href="#lifecycle-management">Lifecycle Management</a></li>
 <li><a class="reference internal" href="#extension">Extension</a></li>
 </ul>
@@ -492,7 +337,7 @@ trait is built.</p>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="index.html" title="previous chapter">TwitterServer</a></li>
-      <li>Next: <a href="Java.html" title="next chapter">Using TwitterServer from Java</a></li>
+      <li>Next: <a href="Admin.html" title="next chapter">HTTP Admin interface</a></li>
   </ul></li>
 </ul>
 <div id="searchbox" style="display: none">
@@ -513,7 +358,7 @@ trait is built.</p>
       <div class="clearer"></div>
     </div>
   <div class="footer">
-    &copy; Copyright 2015 Twitter, Inc.
+    &copy; Copyright 2015–2016 Twitter, Inc.
     Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
   </div>
   

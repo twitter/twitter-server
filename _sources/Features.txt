@@ -11,6 +11,8 @@ introduction.
 Flags
 -----
 
+.. _flags:
+
 The flags implementation, `found in Twitter's util library
 <https://github.com/twitter/util/blob/master/util-app/src/main/scala/com/twitter/app/Flag.scala>`_,
 focuses on simplicity and type safety, parsing flags into Scala values.
@@ -155,213 +157,47 @@ parameter pretty=true or pretty=1, eg /admin/metrics.json?pretty=true
   {
     "requests_counter": 234,
     "finagle/closechans": 592,
-    "finagle/closed": 592,
-    "finagle/closes": 575,
     "finagle/connection_duration.avg": 561,
     "finagle/connection_duration.count": 592,
     "finagle/connection_duration.max": 299986,
     "finagle/connection_duration.min": 3,
-    "finagle/connection_duration.p25": 29,
     "finagle/connection_duration.p50": 31,
-    "finagle/connection_duration.p75": 58,
     "finagle/connection_duration.p90": 111,
     "finagle/connection_duration.p95": 120,
     "finagle/connection_duration.p99": 197,
     "finagle/connection_duration.p9990": 2038,
     "finagle/connection_duration.p9999": 2038,
     "finagle/connection_duration.sum": 332690,
-    "finagle/connections": 2,
-    "finagle/http/failfast/unhealthy_for_ms": 0,
-    "finagle/http/failfast/unhealthy_num_tries": 0,
     "finagle/success": 0
     ...
   }
 
 
-HTTP Admin interface
+JVM Metrics
++++++++++++
+
+A wide variety of metrics are exported by TwitterServer which give
+you insight into the JVM's garbage collection. These are computed
+in `com.twitter.server.util.JvmStats` and exported as metrics.
+These include metrics related to generation size, threads, and garbage collection
+and are exported as metrics at `jvm/mem`, `jvm/thread`, and `jvm/gc`
+respectively.
+
+If you are using a Hotspot VM, you get a few additional metrics that
+may be useful. This includes safe point time (`jvm/safepoint`),
+metaspace usage (`jvm/mem/metaspace`) and allocation rates (`jvm/mem/allocations`).
+The eden allocation gauge (`jvm/mem/allocations/eden/bytes`) is a particularly
+relevant metric for service developers. The vast majority of allocations are
+done into the eden space, so this metric can be used to calculate the allocations
+per request which in turn can be used to validate code changes
+don't increase garbage collection pressure on the hot path.
+
+Admin HTTP interface
 --------------------
 
-TwitterServer starts an HTTP server (it binds to the port defined by
-the flag `-admin.port`; port 9990 by default). It exports an `HttpMuxer`
-object in which endpoints are registered.  The library defines a
-series of default endpoints:
-
-**/admin/announcer**
-  Returns a set of announcement chains that have run through the
-  Announcer. This allows one to see how a particular target is being
-  announced.
-
-**/admin/pprof/contention**
-  Returns a CPU contention profile which identifies blocked threads
-  (`Thread.State.BLOCKED`).
-  The output is in `pprof <https://github.com/gperftools/gperftools>`_ format.
-  The process will be profiled for 10 seconds at a frequency of 100 hz. These
-  values can be controlled via HTTP request parameters `seconds` and `hz`
-  respectively.
-
-**/admin/pprof/profile**
-  Returns a CPU usage profile. The output is in `pprof
-  <https://github.com/gperftools/gperftools>`_ format.
-  The process will be profiled for 10 seconds at a frequency of 100 hz. These
-  values can be controlled via HTTP request parameters `seconds` and `hz`
-  respectively.
-
-::
-
-  $ curl -s localhost:9990/admin/pprof/profile > /tmp/cpu_profiling
-  $ pprof --text /tmp/cpu_profiling
-  Using local file /tmp/cpu_profiling.
-  Using local file /tmp/cpu_profiling.
-  Total: 83 samples
-        17  20.5%  20.5%       24  28.9% com.twitter.finagle.ProxyServiceFactory$class.status
-         8   9.6%  30.1%       10  12.0% scala.collection.immutable.HashMap$HashTrieMap.updated0
-         5   6.0%  36.1%       70  84.3% scala.collection.Iterator$class.foreach
-         5   6.0%  42.2%        5   6.0% scala.runtime.ScalaRunTime$.hash
-         4   4.8%  47.0%        4   4.8% com.twitter.finagle.transport.Transport$$anon$2.status
-         4   4.8%  51.8%        4   4.8% sun.management.OperatingSystemImpl.getOpenFileDescriptorCount
-         3   3.6%  55.4%        9  10.8% com.twitter.finagle.Filter$$anon$2.status
-         ...
-
-**/admin/pprof/heap**
-  Returns a heap profile computed by the `heapster agent
-  <https://github.com/mariusae/heapster>`_.  The output is in
-  `pprof <https://github.com/gperftools/gperftools>`_ format.
-
-::
-
-  $ java -agentlib:heapster -jar target/myserver-1.0.0-SNAPSHOT.jar
-  $ pprof /tmp/heapster_profile
-  Welcome to pprof!  For help, type 'help'.
-  (pprof) top
-  Total: 2001520 samples
-   2000024  99.9%  99.9%  2000048  99.9% LTest;main
-      1056   0.1% 100.0%     1056   0.1% Ljava/lang/Object;
-       296   0.0% 100.0%      296   0.0% Ljava/lang/String;toCharArray
-       104   0.0% 100.0%      136   0.0% Ljava/lang/Shutdown;
-
-**/admin/metrics.json**
-  Export a snapshot of the current statistics of the program. You can
-  use the StatsReceiver in your application for add new
-  counters/gauges/histograms, simply use the `statsReceiver` variable
-  provided by TwitterServer.
-
-See the :ref:`metrics <metrics_label>` section for more information.
-
-**/admin/metrics**
-  Watch specific stats and extract them via http queries.
-
-::
-
-  $ curl "localhost:9990/admin/metrics?m=requests_counter"
-  [
-    {
-      "name" : "requests_counter",
-      "delta" : 3.0,
-      "value" : 10.0
-    }
-  ]
-
-**/admin/server_info**
-  Return build informations about this server
-
-::
-
-  {
-    "name" : "myserver",
-    "version" : "1.0.0-SNAPSHOT",
-    "build" : "20130221-105425",
-    "build_revision" : "694299d640d337c58fadf668e44322b17fd0562e",
-    "build_branch_name" : "refs/heads/twitter-server!doc",
-    "build_last_few_commits" : [
-      "694299d (HEAD, origin/twitter-server!doc, twitter-server!doc) Merge branch 'master' into twitter-server!doc",
-      "ba1c062 Fix test for sbt + Jeff's comments",
-    ],
-    "start_time" : "Thu Feb 21 13:43:32 PST 2013",
-    "uptime" : 22458
-  }
-
-**/admin/contention**
-  Show call stack of blocked and waiting threads.
-
-::
-
-  $ curl localhost:9990/admin/contention
-  Blocked:
-  "util-jvm-timer-1" Id=11 TIMED_WAITING on java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject@33aac3c
-    at sun.misc.Unsafe.park(Native Method)
-    -  waiting on java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject@33aac3c
-    at java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:226)
-    at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:2082)
-    at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:1090)
-    at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:807)
-    at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1043)
-    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1103)
-    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)
-    ...
-
-**/admin/clients**
-  Surface client information exposed by Finagle. Per-client configuration parameters and
-  values for each module are available at /admin/clients/<client name>.
-
-**/admin/servers**
-  Surface server information exposed by Finagle. Per-server configuration parameters and
-  values for each module are available at /admin/clients/<client name>.
-
-**/admin/registry.json**
-  Displays how the service is currently configured across a variety of dimensions
-  including the client stack, server stack, flags, service loader values, and more.
-
-**/admin/lint**
-  Runs and displays the results for all registered linters to check for various service issues.
-
-**/admin/shutdown**
-  Stop the process gracefully.
-
-**/admin/tracing**
-  Enable (/admin/tracing?enable=true) or disable tracing (/admin/tracing?disable=true)
-
-See `zipkin <https://github.com/openzipkin/zipkin>`_ documentation for more info.
-
-**/admin/threads**
-  Dumps the call stacks of all the threads (JSON output).
-
-::
-
-  {
-    "threads" : {
-      "12" : {
-        "priority" : 5,
-        "state" : "TIMED_WAITING",
-        "daemon" : true,
-        "thread" : "util-jvm-timer-1",
-        "stack" : [
-          "sun.misc.Unsafe.park(Native Method)",
-          "java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:226)",
-          "java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:2082)",
-          "java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:1090)",
-          "java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:807)",
-          "java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1043)",
-          "java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1103)",
-          "java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)",
-          "java.lang.Thread.run(Thread.java:722)"
-        ]
-      },
-      ...
-    }
-  }
-
-**/admin/ping**
-  Return pong (used for monitoring)
-
-**/admin/logging**
-  Display the set of loggers and their current log level. The level of
-  each logger can also be modified on-the-fly.
-
-::
-
-  root                              ALL CRITICAL DEBUG ERROR FATAL INFO OFF TRACE WARNING
-  com.twitter.ostrich.stats.Metric  ALL CRITICAL DEBUG ERROR FATAL INFO OFF TRACE WARNING
-  com.twitter.ostrich.stats.Stats$  ALL CRITICAL DEBUG ERROR FATAL INFO OFF TRACE WARNING
+TwitterServer provides an HTTP server and includes a variety of tools
+for diagnostics, profiling, and more. The details are covered in-depth
+:ref:`here <admin_interface>`.
 
 Lifecycle Management
 --------------------
