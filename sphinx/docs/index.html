@@ -1,0 +1,260 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>TwitterServer &mdash; TwitterServer 1.19.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.19.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="TwitterServer 1.19.0 documentation" href="#" />
+    <link rel="next" title="Features" href="Features.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+  <div class=indexwrapper>
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Features.html" title="Features"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">TwitterServer</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="twitterserver">
+<h1>TwitterServer<a class="headerlink" href="#twitterserver" title="Permalink to this headline">¶</a></h1>
+<p>TwitterServer defines a template from which servers at Twitter are
+built. It provides common application components such as an
+administrative HTTP server, tracing, stats, etc. These features are
+wired in correctly for use in production at Twitter.</p>
+<div class="section" id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>TwitterServer is published with Maven:</p>
+<pre class="literal-block">
+&lt;repository&gt;
+  &lt;id&gt;twttr&lt;/id&gt;
+  &lt;name&gt;twttr&lt;/name&gt;
+  &lt;url&gt;https://maven.twttr.com/&lt;/url&gt;
+&lt;/repository&gt;
+
+&lt;dependency&gt;
+  &lt;groupId&gt;com.twitter&lt;/groupId&gt;
+  &lt;artifactId&gt;twitter-server_2.11&lt;/artifactId&gt;
+  &lt;version&gt;1.19.0&lt;/version&gt;
+&lt;/dependency&gt;
+</pre>
+<p>or, with sbt:</p>
+<pre class="literal-block">
+resolvers += &quot;twttr&quot; at &quot;<a class="reference external" href="https://maven.twttr.com/">https://maven.twttr.com/</a>&quot;
+
+libraryDependencies += &quot;com.twitter&quot; %% &quot;twitter-server&quot; % &quot;1.19.0&quot;
+</pre>
+<p>NB: You only need to add the <tt class="docutils literal"><span class="pre">maven.twttr.com</span></tt> repository if you want
+to use libraries in Twitter <cite>common</cite>, which are only published to
+<tt class="docutils literal"><span class="pre">maven.twttr.com</span></tt>. For example, <tt class="docutils literal"><span class="pre">finagle-stats</span></tt>, which adds
+<a class="reference internal" href="Features.html"><em>Metrics</em></a>, requires a twitter <cite>common</cite> library.</p>
+<p>First we’ll need to import a few things into our namespace.</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">com.twitter.finagle.</span><span class="o">{</span><span class="nc">Http</span><span class="o">,</span> <span class="nc">Service</span><span class="o">}</span>
+<span class="k">import</span> <span class="nn">com.twitter.finagle.http.</span><span class="o">{</span><span class="nc">Request</span><span class="o">,</span> <span class="nc">Response</span><span class="o">,</span> <span class="nc">Status</span><span class="o">}</span>
+<span class="k">import</span> <span class="nn">com.twitter.io.Charsets</span>
+<span class="k">import</span> <span class="nn">com.twitter.server.TwitterServer</span>
+<span class="k">import</span> <span class="nn">com.twitter.util.</span><span class="o">{</span><span class="nc">Await</span><span class="o">,</span> <span class="nc">Future</span><span class="o">}</span>
+</pre></div>
+</div>
+<p>TwitterServer defines its own version of the standard <tt class="docutils literal"><span class="pre">main</span></tt>. To use
+it, create an object extended with <tt class="docutils literal"><span class="pre">com.twitter.server.TwitterServer</span></tt>,
+and define the <tt class="docutils literal"><span class="pre">main()</span></tt> method (no arguments).</p>
+<p>In this example, we use Finagle to start an HTTP server on
+port 8888. The service bound to this port is a simple hello service.</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">object</span> <span class="nc">BasicServer</span> <span class="k">extends</span> <span class="nc">TwitterServer</span> <span class="o">{</span>
+  <span class="k">val</span> <span class="n">service</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Service</span><span class="o">[</span><span class="kt">Request</span>, <span class="kt">Response</span><span class="o">]</span> <span class="o">{</span>
+    <span class="k">def</span> <span class="n">apply</span><span class="o">(</span><span class="n">request</span><span class="k">:</span> <span class="kt">Request</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+      <span class="k">val</span> <span class="n">response</span> <span class="k">=</span> <span class="nc">Response</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="n">version</span><span class="o">,</span> <span class="nc">Status</span><span class="o">.</span><span class="nc">Ok</span><span class="o">)</span>
+      <span class="n">response</span><span class="o">.</span><span class="n">contentString</span> <span class="k">=</span> <span class="s">&quot;hello&quot;</span>
+      <span class="nc">Future</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="n">response</span><span class="o">)</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="k">def</span> <span class="n">main</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">server</span> <span class="k">=</span> <span class="nc">Http</span><span class="o">.</span><span class="n">serve</span><span class="o">(</span><span class="s">&quot;:8888&quot;</span><span class="o">,</span> <span class="n">service</span><span class="o">)</span>
+    <span class="n">onExit</span> <span class="o">{</span>
+      <span class="n">server</span><span class="o">.</span><span class="n">close</span><span class="o">()</span>
+    <span class="o">}</span>
+    <span class="nc">Await</span><span class="o">.</span><span class="n">ready</span><span class="o">(</span><span class="n">server</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">onExit</span></tt> is used to register code to be run when the process shutdown
+is requested.</p>
+<p>After compiling, we can start the server like any other java or scala
+process.</p>
+<div class="highlight-text"><div class="highlight"><pre>$ java -jar target/myserver-1.0.0-SNAPSHOT.jar &amp;
+[1] 74159
+I 1210 21:32:39.326 THREAD1: /admin =&gt; com.twitter.server.handler.SummaryHandler
+...
+I 1210 21:32:39.332 THREAD1: /favicon.ico =&gt; com.twitter.server.handler.ResourceHandler
+I 1210 21:32:39.340 THREAD1: Serving admin http on 0.0.0.0/0.0.0.0:9990
+I 1210 21:32:39.361 THREAD1: Finagle version 6.31.0 (rev=50d3bb0eea5ad3ed332111d707184c80fed6a506) built at 20151203-164135
+I 1210 21:32:39.910 THREAD1: Tracer: com.twitter.finagle.zipkin.thrift.SamplingTracer
+
+$ curl localhost:8888
+hello
+</pre></div>
+</div>
+<p>This server is fully configured to run in Twitter’s production
+environment. See <a class="reference internal" href="Features.html"><em>features</em></a> for more details.</p>
+</div>
+<div class="section" id="users-guide">
+<h2>User’s guide<a class="headerlink" href="#users-guide" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Features.html">Features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Features.html#flags">Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Features.html#logging">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Features.html#metrics">Metrics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Features.html#filtering-stats-out">Filtering stats out</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Features.html#pretty-output">Pretty output</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Features.html#jvm-metrics">JVM Metrics</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Features.html#admin-http-interface">Admin HTTP interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Features.html#lifecycle-management">Lifecycle Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Features.html#extension">Extension</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Admin.html">HTTP Admin interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Admin.html#process-info">Process Info</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Admin.html#admin-lint">/admin/lint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Admin.html#admin-threads">/admin/threads</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Admin.html#admin-registry-json">/admin/registry.json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Admin.html#admin-server-info">/admin/server_info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Admin.html#admin-announcer">/admin/announcer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Admin.html#utilities">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Admin.html#admin-events">/admin/events</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Admin.html#admin-tracing">/admin/tracing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Admin.html#admin-logging">/admin/logging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Admin.html#metrics">Metrics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Admin.html#id1">/admin/metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Admin.html#admin-metrics-json">/admin/metrics.json</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Admin.html#profiling">Profiling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Admin.html#admin-pprof-contention">/admin/pprof/contention</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Admin.html#admin-contention">/admin/contention</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Admin.html#admin-pprof-profile">/admin/pprof/profile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Admin.html#admin-pprof-heap">/admin/pprof/heap</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Admin.html#downstream-clients">Downstream Clients</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Admin.html#id4">/admin/clients</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Admin.html#listening-servers">Listening Servers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Admin.html#id5">/admin/servers</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Java.html">Using TwitterServer from Java</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Java.html#main-method">Main Method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Java.html#lifecycle-methods">Lifecycle Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Java.html#reusing-scala-traits">Reusing Scala Traits</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Migration.html">Migration from Ostrich</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Migration.html#stats-format">Stats format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Migration.html#step-by-step-guide">Step by step guide</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="FAQ.html#is-it-twitterserver-or-twitter-server">Is it TwitterServer or twitter-server?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FAQ.html#what-are-some-recommended-best-practices">What are some recommended best practices?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FAQ.html#do-i-have-to-use-finagle-stats">Do I have to use <cite>finagle-stats</cite>?</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><a href="index.html"><h3>TwitterServer</h3></a>
+<p>
+  TwitterServer is a library defining a template from which servers at Twitter are built.
+</p>
+
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="http://github.com/twitter/twitter-server">TwitterServer on GitHub</a></li>
+  <li><a href="http://github.com/twitter/twitter-server/issues">Issue Tracker</a></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Search the contents of this site.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2015–2016 Twitter, Inc.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </div>
+  
+  </body>
+</html>

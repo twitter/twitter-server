@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="ivy-report.xsl"?>
+<ivy-report version="1.0">
+	<info
+		organisation="com.twitter"
+		module="twitter-server-doc_2.11"
+		revision="1.19.0"
+		extra-info.apiURL="https://twitter.github.io/twitter-server/docs/"
+		conf="provided"
+		confs="compile, runtime, test, provided, optional, testdoc, compile-internal, runtime-internal, test-internal, plugin, sources, docs, pom, scala-tool"
+		date="20160318114733"/>
+	<dependencies>
+		<module organisation="org.scoverage" name="scalac-scoverage-plugin_2.11">
+			<revision name="1.1.0" status="release" pubdate="20150426125318" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/scoverage/scalac-scoverage-plugin" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="1">
+				<license name="Apache 2" url="http://www.apache.org/licenses/LICENSE-2.0"/>
+				<metadata-artifact status="no" details="" size="3917" time="0" location="/Users/koliver/.ivy2/cache/org.scoverage/scalac-scoverage-plugin_2.11/ivy-1.1.0.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scoverage/scalac-scoverage-plugin_2.11/1.1.0/scalac-scoverage-plugin_2.11-1.1.0.pom"/>
+				<caller organisation="com.twitter" name="twitter-server-doc_2.11" conf="provided" rev="1.1.0" rev-constraint-default="1.1.0" rev-constraint-dynamic="1.1.0" callerrev="1.19.0"/>
+				<artifacts>
+					<artifact name="scalac-scoverage-plugin_2.11" type="jar" ext="jar" status="no" details="" size="242109" time="0" location="/Users/koliver/.ivy2/cache/org.scoverage/scalac-scoverage-plugin_2.11/jars/scalac-scoverage-plugin_2.11-1.1.0.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/scoverage/scalac-scoverage-plugin_2.11/1.1.0/scalac-scoverage-plugin_2.11-1.1.0.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.scoverage" name="scalac-scoverage-runtime_2.11">
+			<revision name="1.1.0" status="release" pubdate="20150426125306" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/scoverage/scalac-scoverage-plugin" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="0">
+				<license name="Apache 2" url="http://www.apache.org/licenses/LICENSE-2.0"/>
+				<metadata-artifact status="no" details="" size="2952" time="0" location="/Users/koliver/.ivy2/cache/org.scoverage/scalac-scoverage-runtime_2.11/ivy-1.1.0.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scoverage/scalac-scoverage-runtime_2.11/1.1.0/scalac-scoverage-runtime_2.11-1.1.0.pom"/>
+				<caller organisation="com.twitter" name="twitter-server-doc_2.11" conf="provided" rev="1.1.0" rev-constraint-default="1.1.0" rev-constraint-dynamic="1.1.0" callerrev="1.19.0"/>
+				<artifacts>
+					<artifact name="scalac-scoverage-runtime_2.11" type="jar" ext="jar" status="no" details="" size="7320" time="0" location="/Users/koliver/.ivy2/cache/org.scoverage/scalac-scoverage-runtime_2.11/jars/scalac-scoverage-runtime_2.11-1.1.0.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/scoverage/scalac-scoverage-runtime_2.11/1.1.0/scalac-scoverage-runtime_2.11-1.1.0.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+	</dependencies>
+</ivy-report>

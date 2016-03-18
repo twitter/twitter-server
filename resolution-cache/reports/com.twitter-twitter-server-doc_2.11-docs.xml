@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="ivy-report.xsl"?>
+<ivy-report version="1.0">
+	<info
+		organisation="com.twitter"
+		module="twitter-server-doc_2.11"
+		revision="1.19.0"
+		extra-info.apiURL="https://twitter.github.io/twitter-server/docs/"
+		conf="docs"
+		confs="compile, runtime, test, provided, optional, testdoc, compile-internal, runtime-internal, test-internal, plugin, sources, docs, pom, scala-tool"
+		date="20160318114733"/>
+	<dependencies>
+	</dependencies>
+</ivy-report>
