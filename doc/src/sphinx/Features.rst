@@ -120,6 +120,15 @@ incrementing run the following:
   $ curl -s localhost:9990/admin/metrics.json | jq '.requests_counter'
   1
 
+One thing to note is that histograms are windowed, so stats may disappear after
+a minute.  We window histograms so that we have a consistent amount of data each
+time we read the histograms, so that each request has a similar impact on the
+statistics.
+
+If we didn't window histograms, the early requests would have a big influence on
+the computed statistics, and as the application continued to run, each request
+would have progressively less and less of an impact.
+
 Filtering stats out
 *******************
 
