@@ -50,9 +50,12 @@ object JvmStats {
       case _ =>
     }
 
-    val compilation = ManagementFactory.getCompilationMXBean()
-    val compilationStats = stats.scope("compilation")
-    gauges.add(compilationStats.addGauge("time_msec") { compilation.getTotalCompilationTime() })
+    ManagementFactory.getCompilationMXBean() match {
+      case null =>
+      case compilation =>
+        val compilationStats = stats.scope("compilation")
+        gauges.add(compilationStats.addGauge("time_msec") { compilation.getTotalCompilationTime() })
+    }
 
     val classes = ManagementFactory.getClassLoadingMXBean()
     val classLoadingStats = stats.scope("classes")
@@ -102,13 +105,16 @@ object JvmStats {
     gauges.add(spStats.addGauge("total_time_millis"){ jvm.safepoint.totalTimeMillis }) 
     gauges.add(spStats.addGauge("count"){ jvm.safepoint.count })
 
-    val bufferPool = ManagementFactory.getPlatformMXBeans(classOf[BufferPoolMXBean]).asScala
-    val bufferPoolStats = memStats.scope("buffer")
-    bufferPool.foreach { bp =>
-      val name = bp.getName
-      gauges.add(bufferPoolStats.addGauge(name, "count") { bp.getCount })
-      gauges.add(bufferPoolStats.addGauge(name, "used") { bp.getMemoryUsed })
-      gauges.add(bufferPoolStats.addGauge(name, "max") { bp.getTotalCapacity })
+    ManagementFactory.getPlatformMXBeans(classOf[BufferPoolMXBean]) match {
+      case null =>
+      case jBufferPool =>
+        val bufferPoolStats = memStats.scope("buffer")
+        jBufferPool.asScala.foreach { bp =>
+          val name = bp.getName
+          gauges.add(bufferPoolStats.addGauge(name, "count") { bp.getCount })
+          gauges.add(bufferPoolStats.addGauge(name, "used") { bp.getMemoryUsed })
+          gauges.add(bufferPoolStats.addGauge(name, "max") { bp.getTotalCapacity })
+        }
     }
 
     val gcPool = ManagementFactory.getGarbageCollectorMXBeans.asScala
