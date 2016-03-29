@@ -9,7 +9,6 @@ import java.net.{InetAddress, InetSocketAddress}
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import scala.language.reflectiveCalls
 
 class MockMetricsExporter extends HttpMuxHandler {
   val pattern = "/admin/metrics.json"

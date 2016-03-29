@@ -5,7 +5,7 @@ import com.twitter.finagle.zipkin.thrift.ZipkinTracer.Trace
 import com.twitter.io.{Buf, Reader}
 import com.twitter.server.EventSink.Record
 import com.twitter.util.events.{Sink, Event}
-import com.twitter.util.{Await, Return, Throw, Try, Time}
+import com.twitter.util.{Await, Throw, Try, Time}
 import java.net.InetSocketAddress
 import java.util.logging.{Level, LogRecord}
 import org.junit.runner.RunWith
@@ -82,7 +82,7 @@ class JsonSinkTest extends FunSuite with GeneratorDrivenPropertyChecks {
       assert(fromBlind == Nil)
       assert(fromDeser == sink.events.toSeq)
     }
-    
+
   }
 
   test("objectVal: String") {
@@ -186,4 +186,3 @@ private object JsonSinkTest {
     val identity = util.serialize _ andThen util.deserialize
   }
 }
-

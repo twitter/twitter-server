@@ -5,7 +5,6 @@ import com.twitter.finagle.client.StackClient
 import com.twitter.finagle.util.StackRegistry
 import com.twitter.finagle.{Stack, param}
 import com.twitter.finagle.http.{Request, Status}
-import com.twitter.io.Charsets
 import com.twitter.server.util.MetricSourceTest
 import com.twitter.util.Await
 import com.twitter.util.Time

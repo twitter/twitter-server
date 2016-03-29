@@ -1,6 +1,6 @@
 package com.twitter.server.handler
 
-import com.twitter.finagle.{Service, http}
+import com.twitter.finagle.Service
 import com.twitter.finagle.http.{HttpMuxer, Request, Response}
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.{expectsHtml, newOk, newResponse}

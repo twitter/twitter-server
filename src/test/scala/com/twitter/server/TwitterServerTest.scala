@@ -1,6 +1,6 @@
 package com.twitter.server
 
-import com.twitter.finagle.http.{Request, HttpMuxHandler, Response}
+import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.{Http, Service}
 import com.twitter.util._
 import java.io.ByteArrayOutputStream

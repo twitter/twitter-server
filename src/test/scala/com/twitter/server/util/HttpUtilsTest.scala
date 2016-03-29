@@ -2,7 +2,7 @@ package com.twitter.server.util
 
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{HttpMuxer, Request, Response, Status, Version}
-import com.twitter.io.{Buf, Charsets}
+import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils._
 import com.twitter.util.Await
 import org.junit.runner.RunWith

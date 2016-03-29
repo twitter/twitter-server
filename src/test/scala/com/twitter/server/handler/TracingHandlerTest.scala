@@ -1,12 +1,12 @@
 package com.twitter.server.handler
 
-import com.twitter.finagle.http.{Request, Response, Status}
+import com.twitter.finagle.http.{Request, Status}
 import com.twitter.finagle.tracing.Record
 import com.twitter.finagle.tracing.{Trace, Tracer}
 import com.twitter.util.Await
 import org.junit.runner.RunWith
 import org.mockito.Matchers.any
-import org.mockito.Mockito.{never, times, verify}
+import org.mockito.Mockito.{never, verify}
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -23,10 +23,10 @@ class TracingHandlerSpec extends FunSuite with MockitoSugar with BeforeAndAfter 
       Trace.letTracer(tracer) {
         Trace.record("msg")
         verify(tracer, never()).record(any(classOf[Record]))
-  
+
         val request = Request("/", ("enable", "true"))
         assert(Await.result(service(request)).status == Status.Ok)
-  
+
         Trace.record("msg")
         verify(tracer).record(any(classOf[Record]))
       }
@@ -42,12 +42,12 @@ class TracingHandlerSpec extends FunSuite with MockitoSugar with BeforeAndAfter 
       Trace.letTracer(tracer) {
         Trace.record("msg")
         verify(tracer).record(any(classOf[Record]))
-  
+
         val tracer2 = mock[Tracer]
         Trace.letTracer(tracer2) {
           val request = Request("/", ("disable", "true"))
           assert(Await.result(service(request)).status == Status.Ok)
-    
+
           Trace.record("msg")
           verify(tracer2, never()).record(any(classOf[Record]))
         }

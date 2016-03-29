@@ -1,6 +1,6 @@
 package com.twitter.server.handler
 
-import com.twitter.finagle.http.{Request, Response, Status}
+import com.twitter.finagle.http.{Request, Status}
 import com.twitter.util.Await
 import com.twitter.util.registry.{GlobalRegistry, SimpleRegistry}
 import org.junit.runner.RunWith

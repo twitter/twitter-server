@@ -13,7 +13,6 @@ import java.util.concurrent.Executors
 import java.util.logging.Logger
 import org.jboss.netty.channel.ServerChannelFactory
 import org.jboss.netty.channel.socket.nio.{NioWorkerPool, NioServerSocketChannelFactory}
-import scala.language.reflectiveCalls
 
 private object ShadowAdminServer {
   val Executor = Executors.newCachedThreadPool(

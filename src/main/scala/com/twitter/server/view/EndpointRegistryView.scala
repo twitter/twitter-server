@@ -2,7 +2,6 @@ package com.twitter.server.view
 
 import com.twitter.finagle.{Addr, Dentry, Dtab}
 import com.twitter.finagle.Namer.AddrWeightKey
-import com.twitter.finagle.client.EndpointRegistry
 
 private[server] object EndpointRegistryView {
 
