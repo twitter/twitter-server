@@ -45,6 +45,36 @@ object HistogramQueryHandler {
 
   private[HistogramQueryHandler] def countPoints(counts: Seq[BucketAndCount]): Int = 
     counts.foldLeft(0) { case (acc, v) => acc + v.count }
+
+  /** Generates an html table to display key statistics of a histogram */ 
+  private[HistogramQueryHandler] def statsTableHtml: String = {
+    def entry(name: String): String = {
+      s"""
+        <tr>
+          <td>$name:</td>
+          <td id=$name></td>
+        </tr>""" 
+    }
+    s"""
+      <table>
+        <thead>
+          <th colspan="2">Statistics</th>
+        </thead>
+        <tbody>
+          ${entry("Count")}
+          ${entry("Sum")}
+          ${entry("Avg")}
+          ${entry("Max")}
+          ${entry("Min")}
+          ${entry("P-50")}
+          ${entry("P-90")}
+          ${entry("P-95")}
+          ${entry("P-99")}
+          ${entry("P-999")}
+          ${entry("P-9999")}
+        </tbody>
+      </table>"""
+  }
 }
 
 /** 
