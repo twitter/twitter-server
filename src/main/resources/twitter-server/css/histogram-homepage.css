@@ -1,0 +1,19 @@
+#doc-link {
+  color: #428bca;
+}
+
+#metrics-header {
+  color: #428bca;
+  font-size: 55px;
+  font-weight: bold;
+  margin-bottom: 40px;
+  margin-left: 35px;
+}
+
+#metrics {
+  border-right: 1px solid gray;
+}
+
+.metrics-point {
+  font-size: 34px;
+}

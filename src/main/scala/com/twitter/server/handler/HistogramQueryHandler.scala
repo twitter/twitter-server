@@ -46,6 +46,41 @@ object HistogramQueryHandler {
   private[HistogramQueryHandler] def countPoints(counts: Seq[BucketAndCount]): Int = 
     counts.foldLeft(0) { case (acc, v) => acc + v.count }
 
+   // Generates html for the histogram selection page (/admin/histograms)
+  private[HistogramQueryHandler] def renderFront(keys: Seq[String]): String = 
+    s"""
+      <link type="text/css" href="/admin/files/css/metric-query.css" rel="stylesheet"/>
+      <link type="text/css" href="/admin/files/css/histogram-homepage.css" rel="stylesheet"/>
+
+      <div id="metrics-grid" class="row">
+        <div class="col-md-4 snuggle-right">
+          <ul id="metrics" class="list-unstyled">
+            ${ (for (key <- keys.sorted) yield {
+                  s"""<li id="${key.replace("/", "-")}"><a id="special-$key">$key</a></li>"""
+                }).mkString("\n") }
+          </ul>
+        </div>
+        <div class="col-md-8 snuggle-left">
+          <div style="width: 95%; margin: 0 auto;">
+            <div id="metrics-header">Histograms</div>
+            <ul>
+              <li class="metrics-point">Visualize metric distributions</li>
+              <li class="metrics-point">Download histogram contents</li>
+              <li class="metrics-point">For more, read the 
+                <a id="doc-link" href="https://twitter.github.io/twitter-server/Features.html#histograms">docs</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <script> 
+        ${ (for (key <- keys.sorted) yield { 
+          s"""document.getElementById("special-$key").setAttribute("href", window.location.href + "?h=$key&fmt=plot_cdf");"""
+        }).mkString("\n") }
+      </script>
+      """
+
   /** Generates an html table to display key statistics of a histogram */ 
   private[HistogramQueryHandler] def statsTableHtml: String = {
     def entry(name: String): String = {
@@ -155,7 +190,8 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails) exten
           case _ => 
             newResponse(
               contentType = ContentTypeHtml,
-              content = Buf.Utf8("Please provide a histogram as the h parameter"))
+              content = Buf.Utf8(renderFront(histograms.keySet.toSeq))
+            )
         }
       case _ => newResponse(contentType = ContentTypeHtml, content = Buf.Utf8("Invalid endpoint. Did you mean /admin/histograms.json?"))
     }
