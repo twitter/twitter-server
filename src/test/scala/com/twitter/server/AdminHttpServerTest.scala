@@ -83,4 +83,4 @@ class AdminHttpServerTest extends FunSuite  {
       server.main(args = Array.empty[String])
     }
   }
-}
+} 

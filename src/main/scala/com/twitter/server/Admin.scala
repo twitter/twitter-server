@@ -132,6 +132,9 @@ trait Admin { self: App with AdminHttpServer with Stats =>
             val histogramHandler = new HistogramQueryHandler(details)
             standardRoutes ++ Seq(
               Route(
+                path = "/admin/histograms", handler = histogramHandler,
+                alias = "Histograms", group = Some(Grouping.Metrics), includeInIndex = true),
+              Route(
                 path = "/admin/histograms.json", handler = histogramHandler,
                 alias = "/admin/histograms.json", group = Some(Grouping.Metrics), includeInIndex = true)
             )
