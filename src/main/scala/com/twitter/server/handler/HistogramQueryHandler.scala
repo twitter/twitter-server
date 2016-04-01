@@ -46,71 +46,70 @@ object HistogramQueryHandler {
     transform: Seq[BucketAndCount] => Any): String = 
       JsonConverter.writeToString(transform(counts))
 
-   // Generates html for visualizing histograms
+  // Generates html for visualizing histograms
   private[HistogramQueryHandler] val render: String = {
       val css = """<link type="text/css" href="/admin/files/css/histogram-query.css" rel="stylesheet"/>"""
       
-      val chart = """
-        <div class="chart">
-          <div id="curve_chart" style="width: 900px; height: 500px"></div>
-        </div>
-        """
+      val chart = 
+        """<div class="chart">
+             <div id="curve_chart" style="width: 900px; height: 500px"></div>
+           </div>"""
 
       /** Generates an html table to display key statistics of a histogram */ 
       val statsTable = {
         def entry(name: String): String = {
-          s"""
-            <tr>
-              <td>$name:</td>
-              <td id=$name></td>
-            </tr>""" 
+          s"""<tr>
+                <td>$name:</td>
+                <td id=$name></td>
+              </tr>""" 
         }
         s"""
-          <table>
-            <thead>
-              <th colspan="2">Statistics</th>
-            </thead>
-            <tbody>
-              ${entry("Count")}
-              ${entry("Sum")}
-              ${entry("Avg")}
-              ${entry("Max")}
-              ${entry("Min")}
-              ${entry("P-50")}
-              ${entry("P-90")}
-              ${entry("P-95")}
-              ${entry("P-99")}
-              ${entry("P-999")}
-              ${entry("P-9999")}
-            </tbody>
-          </table>"""
+          <div id="stats">
+            <table>
+              <thead>
+                <th colspan="2">Statistics</th>
+              </thead>
+              <tbody>
+                ${entry("Count")}
+                ${entry("Sum")}
+                ${entry("Avg")}
+                ${entry("Max")}
+                ${entry("Min")}
+                ${entry("P-50")}
+                ${entry("P-90")}
+                ${entry("P-95")}
+                ${entry("P-99")}
+                ${entry("P-999")}
+                ${entry("P-9999")}
+              </tbody>
+            </table>
+          </div>"""
       }
 
-      val buttonPanel = """
-        <div id="option-panel">
+      val buttonPanel =
+        """<div id="option-panel">
           <form action="post">
             <span class="option-description">Type:
-              <a id="PDF" class="button-switch button-light-green left-rounded">PDF</a><a id="CDF" class="button-switch button-green right-rounded">CDF</a>
+              <a id="PDF" class="button-switch button-light-green left-rounded" title="Probability density function">PDF</a><a id="CDF" class="button-switch button-green right-rounded" title="Cumulative density function">CDF</a>
             </span>
 
             <span class="option-description">Scale:
-              <a id="reg" class="button-switch button-red left-rounded">Reg</a><a id="log" class="button-switch button-light-red right-rounded">Log</a>
+              <a id="reg" class="button-switch button-red left-rounded" title="Linear scale">Reg</a><a id="log" class="button-switch button-light-red right-rounded" title="Log scale">Log</a>
             </span>
 
             <span class="option-description">Refresh:
-              <a id="refreshOn" class="button-switch button-gray left-rounded">On</a><a id="refreshOff" class="button-switch button-black right-rounded">Off</a>
+              <a id="refreshOn" class="button-switch button-gray left-rounded" title="Refresh the plot every minute">On</a><a id="refreshOff" class="button-switch button-black right-rounded">Off</a>
             </span>
 
-            <span class="option-description-last"><a id="download-link" class="button-download button-blue">Download</a></span>
-
+            <span class="option-description-last"><a id="download-link" class="button-download button-blue" title="Download bucket counts in json">Download</a></span>
           </form>
-        </div>
-        """
+        </div>"""
 
       val scripts = """
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-        <script type="text/javascript" src="/admin/files/js/histogram-query.js"></script>
-        """
+        <script type="text/javascript" src="/admin/files/js/histogram-utils.js"></script>
+        <script type="text/javascript" src="/admin/files/js/histogram-dom.js"></script>
+        <script type="text/javascript" src="/admin/files/js/histogram-main.js"></script>"""
       css + chart + statsTable + buttonPanel + scripts
   }
 
