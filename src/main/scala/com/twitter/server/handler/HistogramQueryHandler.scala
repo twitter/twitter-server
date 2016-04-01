@@ -24,6 +24,9 @@ object HistogramQueryHandler {
    */
   case class BucketAndPercentage(lowerLimit: Long, upperLimit: Long, percentage: Float)
 
+  private[HistogramQueryHandler] def countPoints(counts: Seq[BucketAndCount]): Int = 
+    counts.foldLeft(0) { case (acc, v) => acc + v.count }
+
   // For each key return a percentage
   private[server] def pdf(counts: Seq[BucketAndCount]): Seq[BucketAndPercentage] = {
     val count = countPoints(counts)
@@ -43,15 +46,81 @@ object HistogramQueryHandler {
     transform: Seq[BucketAndCount] => Any): String = 
       JsonConverter.writeToString(transform(counts))
 
-  private[HistogramQueryHandler] def countPoints(counts: Seq[BucketAndCount]): Int = 
-    counts.foldLeft(0) { case (acc, v) => acc + v.count }
+   // Generates html for visualizing histograms
+  private[HistogramQueryHandler] val render: String = {
+      val css = """<link type="text/css" href="/admin/files/css/histogram-query.css" rel="stylesheet"/>"""
+      
+      val chart = """
+        <div class="chart">
+          <div id="curve_chart" style="width: 900px; height: 500px"></div>
+        </div>
+        """
 
-   // Generates html for the histogram selection page (/admin/histograms)
-  private[HistogramQueryHandler] def renderFront(keys: Seq[String]): String = 
-    s"""
+      /** Generates an html table to display key statistics of a histogram */ 
+      val statsTable = {
+        def entry(name: String): String = {
+          s"""
+            <tr>
+              <td>$name:</td>
+              <td id=$name></td>
+            </tr>""" 
+        }
+        s"""
+          <table>
+            <thead>
+              <th colspan="2">Statistics</th>
+            </thead>
+            <tbody>
+              ${entry("Count")}
+              ${entry("Sum")}
+              ${entry("Avg")}
+              ${entry("Max")}
+              ${entry("Min")}
+              ${entry("P-50")}
+              ${entry("P-90")}
+              ${entry("P-95")}
+              ${entry("P-99")}
+              ${entry("P-999")}
+              ${entry("P-9999")}
+            </tbody>
+          </table>"""
+      }
+
+      val buttonPanel = """
+        <div id="option-panel">
+          <form action="post">
+            <span class="option-description">Type:
+              <a id="PDF" class="button-switch button-light-green left-rounded">PDF</a><a id="CDF" class="button-switch button-green right-rounded">CDF</a>
+            </span>
+
+            <span class="option-description">Scale:
+              <a id="reg" class="button-switch button-red left-rounded">Reg</a><a id="log" class="button-switch button-light-red right-rounded">Log</a>
+            </span>
+
+            <span class="option-description">Refresh:
+              <a id="refreshOn" class="button-switch button-gray left-rounded">On</a><a id="refreshOff" class="button-switch button-black right-rounded">Off</a>
+            </span>
+
+            <span class="option-description-last"><a id="download-link" class="button-download button-blue">Download</a></span>
+
+          </form>
+        </div>
+        """
+
+      val scripts = """
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script type="text/javascript" src="/admin/files/js/histogram-query.js"></script>
+        """
+      css + chart + statsTable + buttonPanel + scripts
+  }
+
+  // Generates html for the histogram selection page (/admin/histograms)
+  private[HistogramQueryHandler] def renderFront(keys: Seq[String]): String = {
+    val css = """
       <link type="text/css" href="/admin/files/css/metric-query.css" rel="stylesheet"/>
       <link type="text/css" href="/admin/files/css/histogram-homepage.css" rel="stylesheet"/>
-
+      """
+    val histogramListing = s"""
       <div id="metrics-grid" class="row">
         <div class="col-md-4 snuggle-right">
           <ul id="metrics" class="list-unstyled">
@@ -73,42 +142,16 @@ object HistogramQueryHandler {
           </div>
         </div>
       </div>
+      """
 
+    val scripts = s"""
       <script> 
         ${ (for (key <- keys.sorted) yield { 
           s"""document.getElementById("special-$key").setAttribute("href", window.location.href + "?h=$key&fmt=plot_cdf");"""
         }).mkString("\n") }
       </script>
       """
-
-  /** Generates an html table to display key statistics of a histogram */ 
-  private[HistogramQueryHandler] def statsTableHtml: String = {
-    def entry(name: String): String = {
-      s"""
-        <tr>
-          <td>$name:</td>
-          <td id=$name></td>
-        </tr>""" 
-    }
-    s"""
-      <table>
-        <thead>
-          <th colspan="2">Statistics</th>
-        </thead>
-        <tbody>
-          ${entry("Count")}
-          ${entry("Sum")}
-          ${entry("Avg")}
-          ${entry("Max")}
-          ${entry("Min")}
-          ${entry("P-50")}
-          ${entry("P-90")}
-          ${entry("P-95")}
-          ${entry("P-99")}
-          ${entry("P-999")}
-          ${entry("P-9999")}
-        </tbody>
-      </table>"""
+    css + histogramListing + scripts
   }
 }
 
@@ -137,6 +180,17 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails) exten
   private[this] def renderHistogramsJson(): String = {
     JsonConverter.writeToString(histograms.map {case (key, value) => (key, value.counts)})
   }
+
+  private[this] def htmlResponse(query: String) = 
+    newResponse(
+      contentType = ContentTypeHtml,
+      content = Buf.Utf8 {
+        if (histograms.contains(query))
+          render
+        else
+          s"Key: $query is not a valid histogram."
+      }
+    )
 
   /**
    * Handles requests for all histograms (/admin/histogram.json)
@@ -170,6 +224,9 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails) exten
         params.get("h") match {
           case Some(Seq(query)) =>
             params.get("fmt") match {
+              case Some(Seq("plot_pdf")) | Some(Seq("plot_cdf")) => 
+                htmlResponse(query)
+          
               case Some(Seq("raw")) =>
                 jsonResponse(query, { counts: Seq[BucketAndCount] => 
                   deliverData(counts, x => x) })

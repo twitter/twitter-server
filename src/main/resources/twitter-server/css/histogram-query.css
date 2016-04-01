@@ -1,0 +1,98 @@
+a:hover {
+  color: white;
+  text-decoration: none;
+}
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.button-download {
+  border: none;
+  border-radius: 10px;
+  color: white;
+  display: inline-block;
+  font-size: 17px;
+  padding: 10px 21px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.button-switch {
+  border: none;
+  color: white;
+  display: inline-block;
+  font-size: 14px;
+  padding: 13px 27px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.button-black { background-color: #555555; }
+.button-blue { background-color: #428bca; } 
+.button-gray { background-color: #D3D3D3; }
+.button-green { background-color: #2e4600; }
+.button-light-green { background-color: green;}
+.button-light-red { background-color: #CC6870; }
+.button-red { background-color: #800020; }        
+
+.chart {
+   position: relative;
+   width: 700px;
+}
+
+#option-panel {
+  margin-top: 20px;
+}
+
+.option-description {
+  font-size: 17px;
+  margin-right: 60px;
+}
+
+.option-description-last {
+  font-size: 17px;
+}
+
+.right-rounded {
+  border-bottom-right-radius: 25px;
+  border-top-right-radius: 25px;
+}
+
+.left-rounded {  
+  border-bottom-left-radius: 25px;
+  border-top-left-radius: 25px;
+}
+
+#stats {
+  position: absolute;
+  left: 780px;
+  top: 100px;
+  width: 100px;
+  height: 150px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 150px;
+}
+
+table, th, td {
+  border: 1px solid black;
+  height: 25px;
+  width: 220px;
+}
+
+tbody tr:nth-child(odd) {
+  background: #eee;
+}
+
+th {
+  font-size: 18px;
+  font-weight: normal;
+  padding-left: 30px;
+}
+tr {
+  font-size: 16px;
+  text-align: center;
+}
