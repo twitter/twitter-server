@@ -2,29 +2,25 @@ package com.twitter.server.handler
 
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.Service
-import com.twitter.finagle.stats.{BroadcastStatsReceiver, BucketAndCount, HistogramDetail, 
-  LoadedStatsReceiver, StatsReceiver, WithHistogramDetails}
-import com.twitter.io.{Buf, Charsets}
+import com.twitter.finagle.stats.{BucketAndCount, HistogramDetail, WithHistogramDetails}
+import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.{newResponse, parse}
-import com.twitter.server.util.{JsonConverter, MetricSource}
-import com.twitter.util.{Future, Time}
-import java.text.DecimalFormat;
-import scala.collection.mutable
-import scala.language.reflectiveCalls
+import com.twitter.server.util.JsonConverter
+import com.twitter.util.Future
 
 object HistogramQueryHandler {
 
   val ContentTypeJson = "application/json;charset=UTF-8"
   val ContentTypeHtml = "text/html;charset=UTF-8"
 
-  /** 
+  /**
    * Stores histogram bucket and a percentage.
-   * The percentage is either the density or a 
+   * The percentage is either the density or a
    * cumulative density for the bucket
    */
   case class BucketAndPercentage(lowerLimit: Long, upperLimit: Long, percentage: Float)
 
-  private[HistogramQueryHandler] def countPoints(counts: Seq[BucketAndCount]): Int = 
+  private[HistogramQueryHandler] def countPoints(counts: Seq[BucketAndCount]): Int =
     counts.foldLeft(0) { case (acc, v) => acc + v.count }
 
   // For each key return a percentage
@@ -37,31 +33,31 @@ object HistogramQueryHandler {
   private[server] def cdf(counts: Seq[BucketAndCount]): Seq[BucketAndPercentage] = {
     val count = countPoints(counts)
     var c = 0
-    counts.map { v: BucketAndCount => 
+    counts.map { v: BucketAndCount =>
       c += v.count
       BucketAndPercentage(v.lowerLimit, v.upperLimit, c.toFloat/ count) }
   }
 
-  private[HistogramQueryHandler] def deliverData(counts: Seq[BucketAndCount], 
-    transform: Seq[BucketAndCount] => Any): String = 
+  private[HistogramQueryHandler] def deliverData(counts: Seq[BucketAndCount],
+    transform: Seq[BucketAndCount] => Any): String =
       JsonConverter.writeToString(transform(counts))
 
   // Generates html for visualizing histograms
   private[HistogramQueryHandler] val render: String = {
       val css = """<link type="text/css" href="/admin/files/css/histogram-query.css" rel="stylesheet"/>"""
-      
-      val chart = 
+
+      val chart =
         """<div class="chart">
              <div id="curve_chart" style="width: 900px; height: 500px"></div>
            </div>"""
 
-      /** Generates an html table to display key statistics of a histogram */ 
+      /** Generates an html table to display key statistics of a histogram */
       val statsTable = {
         def entry(name: String): String = {
           s"""<tr>
                 <td>$name:</td>
                 <td id=$name></td>
-              </tr>""" 
+              </tr>"""
         }
         s"""
           <div id="stats">
@@ -134,7 +130,7 @@ object HistogramQueryHandler {
             <ul>
               <li class="metrics-point">Visualize metric distributions</li>
               <li class="metrics-point">Download histogram contents</li>
-              <li class="metrics-point">For more, read the 
+              <li class="metrics-point">For more, read the
                 <a id="doc-link" href="https://twitter.github.io/twitter-server/Features.html#histograms">docs</a>
               </li>
             </ul>
@@ -144,8 +140,8 @@ object HistogramQueryHandler {
       """
 
     val scripts = s"""
-      <script> 
-        ${ (for (key <- keys.sorted) yield { 
+      <script>
+        ${ (for (key <- keys.sorted) yield {
           s"""document.getElementById("special-$key").setAttribute("href", window.location.href + "?h=$key&fmt=plot_cdf");"""
         }).mkString("\n") }
       </script>
@@ -154,7 +150,7 @@ object HistogramQueryHandler {
   }
 }
 
-/** 
+/**
  * A handler which accepts queries via http strings and returns
  * json encoded histogram details
  */
@@ -164,8 +160,8 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails) exten
   // If possible, access histograms inside statsReceiversLoaded
   private[this] def histograms: Map[String, HistogramDetail] = details.histogramDetails
 
-  private[this] def jsonResponse(query: String, 
-    transform: Seq[BucketAndCount] => String) = 
+  private[this] def jsonResponse(query: String,
+    transform: Seq[BucketAndCount] => String) =
       newResponse(
         contentType = ContentTypeJson,
         content = {
@@ -180,7 +176,7 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails) exten
     JsonConverter.writeToString(histograms.map {case (key, value) => (key, value.counts)})
   }
 
-  private[this] def htmlResponse(query: String) = 
+  private[this] def htmlResponse(query: String) =
     newResponse(
       contentType = ContentTypeHtml,
       content = Buf.Utf8 {
@@ -202,9 +198,9 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails) exten
    *
    * "fmt": the type of format used to display results.
    *    The formats we support are raw, pdf, and cdf
-   *    raw: histogram bucket counts 
+   *    raw: histogram bucket counts
    *      (use to do a custom computation with histogram counts)
-   *    pdf: percentage of total for each bucket 
+   *    pdf: percentage of total for each bucket
    *      (use to identify modes of a distribution)
    *    cdf: cumulative percentage of total for each bucket
    *      (use to view more quantiles)
@@ -223,27 +219,27 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails) exten
         params.get("h") match {
           case Some(Seq(query)) =>
             params.get("fmt") match {
-              case Some(Seq("plot_pdf")) | Some(Seq("plot_cdf")) => 
+              case Some(Seq("plot_pdf")) | Some(Seq("plot_cdf")) =>
                 htmlResponse(query)
-          
+
               case Some(Seq("raw")) =>
-                jsonResponse(query, { counts: Seq[BucketAndCount] => 
+                jsonResponse(query, { counts: Seq[BucketAndCount] =>
                   deliverData(counts, x => x) })
 
-              case Some(Seq("pdf")) => 
-                jsonResponse(query, { counts: Seq[BucketAndCount] => 
+              case Some(Seq("pdf")) =>
+                jsonResponse(query, { counts: Seq[BucketAndCount] =>
                   deliverData(counts, x => pdf(x)) })
 
-              case Some(Seq("cdf")) => 
-                jsonResponse(query, { counts: Seq[BucketAndCount] => 
+              case Some(Seq("cdf")) =>
+                jsonResponse(query, { counts: Seq[BucketAndCount] =>
                   deliverData(counts, x => cdf(x)) })
 
-              case _ => 
+              case _ =>
                 newResponse(
                   contentType = ContentTypeHtml,
                   content = Buf.Utf8("Please provide a format: fmt = raw | pdf | cdf"))
             }
-          case _ => 
+          case _ =>
             newResponse(
               contentType = ContentTypeHtml,
               content = Buf.Utf8(renderFront(histograms.keySet.toSeq))
