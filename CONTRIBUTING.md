@@ -132,7 +132,7 @@ the `doc/src/sphinx` directory and then build the site with the following
 command:
 
 ``` bash
-./sbt 'project finagle-doc' make-site
+./sbt twitter-server-doc/make-site
 ```
 
 You can then view the site locally at `doc/target/site/index.html`.

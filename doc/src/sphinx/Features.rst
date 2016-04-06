@@ -166,21 +166,24 @@ parameter pretty=true or pretty=1, eg /admin/metrics.json?pretty=true
   {
     "requests_counter": 234,
     "finagle/closechans": 592,
+    "finagle/closed": 592,
+    "finagle/closes": 575,
     "finagle/connection_duration.avg": 561,
     "finagle/connection_duration.count": 592,
     "finagle/connection_duration.max": 299986,
     "finagle/connection_duration.min": 3,
     "finagle/connection_duration.p50": 31,
-    "finagle/connection_duration.p90": 111,
     "finagle/connection_duration.p95": 120,
     "finagle/connection_duration.p99": 197,
     "finagle/connection_duration.p9990": 2038,
     "finagle/connection_duration.p9999": 2038,
     "finagle/connection_duration.sum": 332690,
+    "finagle/connections": 2,
+    "finagle/http/failfast/unhealthy_for_ms": 0,
+    "finagle/http/failfast/unhealthy_num_tries": 0,
     "finagle/success": 0
     ...
   }
-
 
 JVM Metrics
 +++++++++++
@@ -200,6 +203,126 @@ relevant metric for service developers. The vast majority of allocations are
 done into the eden space, so this metric can be used to calculate the allocations
 per request which in turn can be used to validate code changes
 don't increase garbage collection pressure on the hot path.
+
+Histograms
+----------
+
+`TwitterServer` exports histogram-style metrics from your service, which
+typically represent a quality of a common event.  These events might include
+queries (how wide is my query?), requests (how long did my request take?),
+retries (how many retries did I have), etc.  Visualizing these histograms can
+help us better understand the different classes of events that can happen.  For
+example, maybe you think some of your requests are slow because your garbage
+collection pauses are too long.  You might compare latency histograms from
+before and after increasing your heap size to check whether you were
+right. Assessing this is much harder with only the standard statistics (p50,
+p90, etc), but with the full PDF, you can see the bad mode flatten out.
+
+As with Metrics, in order to work with histograms you must have the
+finagle-stats jar on your classpath.
+
+.. image:: ../../img/HistogramHomepage.png
+
+API Parameters
+**************
+
+The following parameters control how a histogram is displayed.
+
+1) "h": the name of the histogram you want to see.
+2) "fmt": the desired format: raw | pdf | cdf | plot_pdf | plot_cdf
+3) "log_scale": the scale used for the x-axis: true | false
+
+For visualization, we provide both PDF and CDF options.  A PDF is a probability
+distribution function, which is a plot from the value of the histogram to a the
+proportion of events that had that value.  It's useful for seeing the different
+modes of a distribution, which typically represent different classes of
+events. A CDF is a cumulative distribution function, which is a plot from the
+value of the histogram to the proportion of events that had that value OR had
+less than that value.  This effectively does smoothing, in case there aren't
+very many samples.
+
+The `plot_*` formats are rendered in a chart UI, while other formats export the
+histograms buckets. A histogram bucket consists of a lower and upper limit and a
+count. Any value falling inside a bucket's limits is treated the same and adds 1
+to the count.
+
+Here's an example where we query histogram counts for request latency. Each
+bucket is mapped to the number of requests which had a latency less than or
+equal to the bucket's upper limit.
+
+::
+
+  $ curl http://a.twitter.server/admin/histograms?h=clnt/p2cslowservertest-server/request_latency_ms&fmt=raw
+
+  {
+    "lowerLimit" : 5,
+    "upperLimit" : 6,
+    "count" : 28
+  },
+  {
+    "lowerLimit" : 6,
+    "upperLimit" : 7,
+    "count" : 9188
+  },
+  {
+    "lowerLimit" : 7,
+    "upperLimit" : 8,
+    "count" : 25164
+  }
+
+Here's an example where we query a cumulative density function (CDF). Each
+bucket is mapped to a percentage of requests which had a latency less than or
+equal to the bucket's upper limit.
+
+::
+
+  $ curl http://a.twitter.server/admin/histograms?h=clnt/p2cslowservertest-server/request_latency_ms&fmt=cdf
+
+  {
+    "lowerLimit" : 5,
+    "upperLimit" : 6,
+    "percentage" : 6.444885E-5
+  },
+  {
+    "lowerLimit" : 6,
+    "upperLimit" : 7,
+    "percentage" : 0.03286891
+  },
+  {
+    "lowerLimit" : 7,
+    "upperLimit" : 8,
+    "percentage" : 0.15292539
+  },
+  {
+    "lowerLimit" : 8,
+    "upperLimit" : 9,
+    "percentage" : 0.26998794
+  },
+  {
+    "lowerLimit" : 9,
+    "upperLimit" : 10,
+    "percentage" : 0.41753477
+  }
+
+Plotting the "finagle/timer/deviation_ms" cumulative density function:
+
+::
+
+  $ chrome http://a.twitter.server/admin/histograms?h=clnt/p2cslowservertest-server/request_latency_ms&fmt=plot_cdf
+
+.. image:: ../../img/HistogramCDF.png
+
+
+While plotting graphs of your metrics, you can switch between formats using the
+buttons.  Log scale is typically good for looking at high percentiles.
+
+Custom Implementations
+**********************
+
+Histograms are normally only available for services that use a
+`MetricsStatsReceiver` (default), but it is also possible to provide a custom
+one. A custom `StatsReceiver` must implement the `WithHistogramDetails` trait,
+and it should be service-loaded.
 
 Admin HTTP interface
 --------------------
