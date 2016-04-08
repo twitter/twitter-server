@@ -5,7 +5,7 @@
  */ 
 function generateUrl(fmt, log_scale) {
   return window.location.href.split("?")[0] +
-    "?h=" + encodeURIComponent(params.h) +
+    "?h=" + params.h +
     "&fmt=" + encodeURIComponent(fmt) + 
     "&log_scale=" + encodeURIComponent(log_scale);
 }

@@ -48,7 +48,8 @@ function refresh() {
   statisticsRefreshRequest();
   histogramRefreshRequest(function() {
     drawChart(params.h, params.log_scale, extractFormat(params.fmt).toUpperCase());
-  })
+  });
+  window.history.pushState('Object', 'Title', generateUrl(params.fmt, params.log_scale));
 }
 
 /** Reload data every 5 seconds */
