@@ -5,7 +5,8 @@ import com.twitter.finagle.client.ClientRegistry
 import com.twitter.finagle.service.FailFastFactory
 import com.twitter.finagle.param
 import com.twitter.finagle.server.ServerRegistry
-import com.twitter.finagle.stats.{StatsReceiverWithCumulativeGauges, LoadedStatsReceiver, BroadcastStatsReceiver}
+import com.twitter.finagle.stats.{StatsReceiverWithCumulativeGauges, LoadedStatsReceiver,
+  DelegatingStatsReceiver}
 import com.twitter.finagle.util.StackRegistry
 import com.twitter.server.lint.LoggingRules
 import com.twitter.util.lint._
@@ -45,28 +46,20 @@ trait Linters { app: App =>
         "Alternatively, having none loaded indicates that the service will not " +
         "have any telemetry reported which is dangerous way to operate a service."
     ) {
-      LoadedStatsReceiver.self match {
-        case bsr: BroadcastStatsReceiver =>
-          val srs = bsr.statsReceivers
-          if (srs.size == 1) {
-            Nil
-          } else if (srs.isEmpty) {
-            Seq(Issue("No StatsReceivers registered"))
-          } else {
-            Seq(Issue(s"Multiple StatsReceivers registered: ${srs.mkString(", ")}"))
-          }
-        case _ =>
-          Nil
+      val srs = DelegatingStatsReceiver.all(LoadedStatsReceiver)
+      if (srs.size == 1) {
+        Nil
+      } else if (srs.isEmpty) {
+        Seq(Issue("No StatsReceivers registered"))
+      } else {
+        Seq(Issue(s"Multiple StatsReceivers registered: ${srs.mkString(", ")}"))
       }
     }
     rules.add(rule)
   }
 
   private[this] def tooManyCumulativeGauges(): Unit = {
-    val srs = LoadedStatsReceiver.self match {
-      case bsr: BroadcastStatsReceiver => bsr.statsReceivers
-      case s => Seq(s)
-    }
+    val srs = DelegatingStatsReceiver.all(LoadedStatsReceiver)
     srs.foreach {
       case srwg: StatsReceiverWithCumulativeGauges =>
         srwg.registerLargeGaugeLinter(rules)

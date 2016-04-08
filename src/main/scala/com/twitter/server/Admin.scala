@@ -1,8 +1,8 @@
 package com.twitter.server
 
 import com.twitter.app.App
-import com.twitter.finagle.stats.LoadedStatsReceiver
-import com.twitter.finagle.stats.WithHistogramDetails
+import com.twitter.finagle.stats.{WithHistogramDetails, DelegatingStatsReceiver,
+  AggregateWithHistogramDetails}
 import com.twitter.server.handler._
 import com.twitter.server.view._
 
@@ -38,7 +38,7 @@ trait Admin { self: App with AdminHttpServer with Stats =>
   import AdminHttpServer.Route
   import Admin.Grouping
 
-  override protected def routes: Seq[Route] = { 
+  override protected def routes: Seq[Route] = {
     val standardRoutes = Seq(
       Route(
         path = Path.Root, handler = new AdminRedirectHandler,
@@ -121,26 +121,27 @@ trait Admin { self: App with AdminHttpServer with Stats =>
           baseResourcePath = "twitter-server/img"),
         alias = "Favicon", group = None, includeInIndex = false)
     )
- 
+
     // If histograms are available, add an additional endpoint
-    statsReceiver match {
-      // TODO: should be changed to annotate StatsReceivers
-      // that can delegate to other StatsReceivers
-      case lsr: LoadedStatsReceiver.type => 
-        lsr.self match {
-          case details: WithHistogramDetails => 
-            val histogramHandler = new HistogramQueryHandler(details)
-            standardRoutes ++ Seq(
-              Route(
-                path = "/admin/histograms", handler = histogramHandler,
-                alias = "Histograms", group = Some(Grouping.Metrics), includeInIndex = true),
-              Route(
-                path = "/admin/histograms.json", handler = histogramHandler,
-                alias = "/admin/histograms.json", group = Some(Grouping.Metrics), includeInIndex = true)
-            )
-          case _ => standardRoutes
-        }
-      case _ => standardRoutes
+    val histos = DelegatingStatsReceiver.all(statsReceiver)
+      .collect { case histo: WithHistogramDetails => histo }
+    standardRoutes ++ {
+      if (histos.nonEmpty) {
+        val aggregate = AggregateWithHistogramDetails(histos)
+
+        val histogramHandler = new HistogramQueryHandler(aggregate)
+        Seq(
+          Route(
+            path = "/admin/histograms", handler = histogramHandler,
+            alias = "Histograms", group = Some(Grouping.Metrics), includeInIndex = true),
+          Route(
+            path = "/admin/histograms.json",
+            handler = histogramHandler,
+            alias = "/admin/histograms.json",
+            group = Some(Grouping.Metrics),
+            includeInIndex = false)
+        )
+      } else Nil
     }
   }
 }
