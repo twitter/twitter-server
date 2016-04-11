@@ -232,11 +232,11 @@ The following parameters control how a histogram is displayed.
 2) "fmt": the desired format: raw | pdf | cdf | plot_pdf | plot_cdf
 3) "log_scale": the scale used for the x-axis: true | false
 
-For visualization, we provide both PDF and CDF options.  A PDF is a probability
-distribution function, which is a plot from the value of the histogram to a the
-proportion of events that had that value.  It's useful for seeing the different
-modes of a distribution, which typically represent different classes of
-events. A CDF is a cumulative distribution function, which is a plot from the
+For visualization, we provide both PDF_ and CDF_ options.  A PDF is a
+probability density function, which is a plot from the value of the histogram to
+the proportion of events that had that value.  It's useful for seeing the
+different modes of a distribution, which typically represent different classes
+of events. A CDF is a cumulative distribution function, which is a plot from the
 value of the histogram to the proportion of events that had that value OR had
 less than that value.  This effectively does smoothing, in case there aren't
 very many samples.
@@ -270,7 +270,7 @@ equal to the bucket's upper limit.
     "count" : 25164
   }
 
-Here's an example where we query a cumulative density function (CDF). Each
+Here's an example where we query a cumulative distribution function (CDF). Each
 bucket is mapped to a percentage of requests which had a latency less than or
 equal to the bucket's upper limit.
 
@@ -304,13 +304,15 @@ equal to the bucket's upper limit.
     "percentage" : 0.41753477
   }
 
-Plotting the "finagle/timer/deviation_ms" cumulative density function:
+Plotting the "finagle/timer/deviation_ms" cumulative distribution function:
 
 ::
 
   $ chrome http://a.twitter.server/admin/histograms?h=clnt/p2cslowservertest-server/request_latency_ms&fmt=plot_cdf
 
 .. image:: ../../img/HistogramCDF.png
+.. _CDF: https://en.wikipedia.org/wiki/Cumulative_distribution_function
+.. _PDF: https://en.wikipedia.org/wiki/Probability_density_function
 
 
 While plotting graphs of your metrics, you can switch between formats using the
