@@ -56,12 +56,24 @@ object Lifecycle {
    * Give the application control over when to present to Mesos as being ready
    * for traffic. When the method `warmupComplete()` is invoked, the application
    * is considered ready.
+   * @note Mesos doesn't gate traffic on /health so all pre-bind warmup needs to
+   *       happen in `prebindWarmup()`
    */
   trait Warmup {
     HttpMuxer.addHandler("/health", new ReplyHandler(""))
 
-    def warmupComplete(): Unit = {
+    /**
+     * Prebind warmup code. Used for warmup tasks that we want to run before we
+     * accept traffic.
+     */
+    def prebindWarmup(): Unit = {
       new PromoteToOldGen().beforeServing()
+    }
+
+    /**
+     * The service is bound to a port and warmed up, announce health.
+     */
+    def warmupComplete(): Unit = {
       HttpMuxer.addHandler("/health", new ReplyHandler("OK\n"))
     }
   }

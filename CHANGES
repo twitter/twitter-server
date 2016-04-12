@@ -7,6 +7,12 @@ Note that ``RB_ID=#`` correspond to associated messages in commits.
 1.x
 ------
 
+Runtime Behavior Changes
+~~~~~~~~~~~~~~~~~~~~~~~~
+  * Introduce a new lifecycle event `prebindWarmup` for warmup code
+    which needs to run before the service handles traffic. GC has
+    moved from `warmupComplete` to `prebindWarmup`. ``RB_ID=819411``
+
 New Features
 ~~~~~~~~~~~~
 
