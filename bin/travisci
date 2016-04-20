@@ -31,7 +31,8 @@ if [ "$TWITTER_SERVER_BRANCH" != "master" ]; then
   cd $TWITTER_SERVER_TMP_DIR
   git clone https://github.com/twitter/scrooge.git --branch develop
   cd scrooge
-  ./sbt ++$SCALA_VERSION scrooge-core/publishLocal
+  ./sbt ++$SCALA_VERSION scrooge-publish-local/publish-local
+  ./sbt scrooge-sbt-plugin/publish-local
   # finagle-thrift, finagle-zipkin
   cd $TWITTER_SERVER_TMP_DIR/finagle
   ./sbt ++$SCALA_VERSION finagle-thrift/publishLocal
