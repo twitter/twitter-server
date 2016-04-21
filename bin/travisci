@@ -20,13 +20,6 @@ if [ "$TWITTER_SERVER_BRANCH" != "master" ]; then
   git clone https://github.com/twitter/ostrich.git --branch develop
   cd ostrich
   ./sbt ++$SCALA_VERSION publishLocal
-  # finagle-core, finagle-http
-  cd $TWITTER_SERVER_TMP_DIR
-  git clone https://github.com/twitter/finagle.git --branch develop
-  cd finagle
-  ./sbt ++$SCALA_VERSION finagle-core/publishLocal
-  ./sbt ++$SCALA_VERSION finagle-http/publishLocal
-  ./sbt ++$SCALA_VERSION finagle-http-compat/publishLocal
   # scrooge-core
   cd $TWITTER_SERVER_TMP_DIR
   git clone https://github.com/twitter/scrooge.git --branch develop
@@ -34,7 +27,14 @@ if [ "$TWITTER_SERVER_BRANCH" != "master" ]; then
   ./sbt ++$SCALA_VERSION scrooge-publish-local/publishLocal
   # See notes in Scrooge's Build.scala's scrooge-publish-local project.
   # sbt plugins can currently only be built using Scala 2.10.
-  ./sbt ++2.10.6 scrooge-sbt-plugin/publishLocal
+  ./sbt ++2.10.6 scrooge-generator/publishLocal scrooge-sbt-plugin/publishLocal
+  # finagle-core, finagle-http
+  cd $TWITTER_SERVER_TMP_DIR
+  git clone https://github.com/twitter/finagle.git --branch develop
+  cd finagle
+  ./sbt ++$SCALA_VERSION finagle-core/publishLocal
+  ./sbt ++$SCALA_VERSION finagle-http/publishLocal
+  ./sbt ++$SCALA_VERSION finagle-http-compat/publishLocal
   # finagle-thrift, finagle-zipkin
   cd $TWITTER_SERVER_TMP_DIR/finagle
   ./sbt ++$SCALA_VERSION finagle-thrift/publishLocal
