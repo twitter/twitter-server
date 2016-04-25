@@ -10,6 +10,7 @@ import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.tracing.NullTracer
 import com.twitter.server.util.HttpUtils
 import com.twitter.server.view.{IndexView, NotFoundView}
+import com.twitter.util.registry.Library
 import com.twitter.util.{Future, Monitor}
 import java.net.InetSocketAddress
 import java.util.logging.{Level, Logger}
@@ -118,6 +119,12 @@ trait AdminHttpServer { self: App =>
   // For now these routes will be added to allRoutes in premain
   protected def routes: Seq[Route] = Nil
 
+  /**
+    * Name used for registration in the [[com.twitter.util.registry.Library]]
+    * @return library name to register in the Library registry.
+    */
+  protected def libraryName: String = "twitter-server"
+
   private[this] def updateMuxer() = {
     // a logger used to log all sync and async exceptions
     // that occur in the admin server.
@@ -203,6 +210,7 @@ trait AdminHttpServer { self: App =>
       .serve(adminPort(), new NotFoundView andThen adminHttpMuxer)
 
     closeOnExit(adminHttpServer)
+    Library.register(libraryName, Map.empty)
   }
 
   premain {

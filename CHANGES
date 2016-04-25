@@ -16,6 +16,7 @@ Runtime Behavior Changes
 New Features
 ~~~~~~~~~~~~
 
+  * Update to register TwitterServer as library in /admin/registry.json. ``RB_ID=825129``
   * Add a FailFast lint rule for Memcached client. ``RB_ID=808727``
 
 1.19.0
