@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Using TwitterServer from Java &mdash; TwitterServer 1.19.0 documentation</title>
+    <title>Using TwitterServer from Java &mdash; TwitterServer 1.20.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.19.0',
+        VERSION:     '1.20.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="TwitterServer 1.19.0 documentation" href="index.html" />
+    <link rel="top" title="TwitterServer 1.20.0 documentation" href="index.html" />
     <link rel="next" title="Migration from Ostrich" href="Migration.html" />
     <link rel="prev" title="HTTP Admin interface" href="Admin.html" />
    
@@ -31,11 +31,11 @@
   <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
 
   </head>
-  <body>
+  <body role="document">
   
   
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -47,29 +47,29 @@
         <li class="right" >
           <a href="Admin.html" title="HTTP Admin interface"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">TwitterServer</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">TwitterServer</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="using-twitterserver-from-java">
 <h1>Using TwitterServer from Java<a class="headerlink" href="#using-twitterserver-from-java" title="Permalink to this headline">¶</a></h1>
-<p>It&#8217;s possible to use <a class="reference internal" href="Features.html"><em>TwitterServer&#8217;s features</em></a> in Java by
+<p>It&#8217;s possible to use <a class="reference internal" href="Features.html"><span class="doc">TwitterServer&#8217;s features</span></a> in Java by
 extending the abstract class <cite>AbstractTwitterServer</cite> (a Java-friendly version
 of the <cite>TwitterServer</cite> trait).</p>
 <p>In the following example, we define a <cite>JavaServer</cite> that simply prints a log
 message while initializing.</p>
-<div class="highlight-java"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">com.twitter.server.AbstractTwitterServer</span>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">com.twitter.server.AbstractTwitterServer</span>
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">JavaServer</span> <span class="kd">extends</span> <span class="n">AbstractTwitterServer</span> <span class="o">{</span>
 
   <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-      <span class="k">new</span> <span class="nf">JavaServer</span><span class="o">().</span><span class="na">main</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
+      <span class="k">new</span> <span class="n">JavaServer</span><span class="o">().</span><span class="na">main</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
     <span class="o">}</span>
   <span class="o">}</span>
 
@@ -85,9 +85,9 @@ message while initializing.</p>
 <p>The primary difference between Scala&#8217;s <cite>TwitterServer</cite> and Java&#8217;s <cite>AbstractTwitterServer</cite>
 is that in Java you have to explicitly define a <cite>main</cite> method in a separate class (i.e.,
 an inner class <cite>JavaServer$Main</cite>) and manually launch the server as shown below.</p>
-<div class="highlight-java"><div class="highlight"><pre><span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
   <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">new</span> <span class="nf">JavaServer</span><span class="o">().</span><span class="na">main</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
+    <span class="k">new</span> <span class="n">JavaServer</span><span class="o">().</span><span class="na">main</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
   <span class="o">}</span>
 <span class="o">}</span>
 </pre></div>
@@ -101,7 +101,7 @@ concrete instance instead of calling the high-order functions <cite>premain</cit
 etc., which is still possible but quite painful to do in Java. For example, the
 following code shows how to override the <cite>onInit</cite> method, which will be executed
 on application initialization.</p>
-<div class="highlight-java"><div class="highlight"><pre><span class="nd">@Override</span>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="nd">@Override</span>
 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onInit</span><span class="o">()</span> <span class="o">{</span>
   <span class="n">log</span><span class="o">().</span><span class="na">info</span><span class="o">(</span><span class="s">&quot;Java Server initialization...&quot;</span><span class="o">);</span>
 <span class="o">}</span>
@@ -127,7 +127,7 @@ it&#8217;s not possible to define/use Scala traits in Java, so we have to do it 
 <p>To reuse Scala traits in Java (via trait mixing), in a separate Scala file define
 an <cite>abstract</cite> Scala class (e.g., <cite>StackServer</cite>) that extends all the traits you
 want to reuse.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">com.twitter.server.AbstractTwitterServer</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">com.twitter.server.AbstractTwitterServer</span>
 <span class="k">import</span> <span class="nn">com.twitter.server.</span><span class="o">{</span><span class="nc">Lifecycle</span><span class="o">,</span> <span class="nc">Deciderable</span><span class="o">}</span>
 
 <span class="k">abstract</span> <span class="k">class</span> <span class="nc">StackServer</span> <span class="k">extends</span> <span class="nc">AbstractTwitterServer</span>
@@ -137,10 +137,10 @@ want to reuse.</p>
 </div>
 <p>Now you can extend this abstract class in Java and inherit the behaviour defined
 by Scala traits.</p>
-<div class="highlight-java"><div class="highlight"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JavaStackServer</span> <span class="kd">extends</span> <span class="n">StackServer</span> <span class="o">{</span>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JavaStackServer</span> <span class="kd">extends</span> <span class="n">StackServer</span> <span class="o">{</span>
   <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-      <span class="k">new</span> <span class="nf">JavaStackServer</span><span class="o">().</span><span class="na">main</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
+      <span class="k">new</span> <span class="n">JavaStackServer</span><span class="o">().</span><span class="na">main</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
     <span class="o">}</span>
   <span class="o">}</span>
 <span class="o">}</span>
@@ -153,7 +153,7 @@ by Scala traits.</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><a href="index.html"><h3>TwitterServer</h3></a>
 <p>
   TwitterServer is a library defining a template from which servers at Twitter are built.

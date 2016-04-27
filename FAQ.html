@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>FAQ &mdash; TwitterServer 1.19.0 documentation</title>
+    <title>FAQ &mdash; TwitterServer 1.20.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.19.0',
+        VERSION:     '1.20.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,18 +23,18 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="TwitterServer 1.19.0 documentation" href="index.html" />
+    <link rel="top" title="TwitterServer 1.20.0 documentation" href="index.html" />
     <link rel="prev" title="Migration from Ostrich" href="Migration.html" />
    
   
   <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
 
   </head>
-  <body>
+  <body role="document">
   
   
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -43,14 +43,14 @@
         <li class="right" >
           <a href="Migration.html" title="Migration from Ostrich"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">TwitterServer</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">TwitterServer</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="faq">
 <h1>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h1>
@@ -61,11 +61,11 @@
 <div class="section" id="what-are-some-recommended-best-practices">
 <h2>What are some recommended best practices?<a class="headerlink" href="#what-are-some-recommended-best-practices" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
-<li>Override <tt class="docutils literal"><span class="pre">com.twitter.app.App.failfastOnFlagsNotParsed</span></tt> to <tt class="docutils literal"><span class="pre">true</span></tt>.
+<li>Override <code class="docutils literal"><span class="pre">com.twitter.app.App.failfastOnFlagsNotParsed</span></code> to <code class="docutils literal"><span class="pre">true</span></code>.
 This is so that you fail-fast instead of being surprised by code that is
 reading from flags before they have been parsed.</li>
 <li>Do not register application routes onto
-<tt class="docutils literal"><span class="pre">com.twitter.server.HttpMuxer$</span></tt> or <tt class="docutils literal"><span class="pre">com.twitter.server.AdminHttpServer$</span></tt>
+<code class="docutils literal"><span class="pre">com.twitter.server.HttpMuxer$</span></code> or <code class="docutils literal"><span class="pre">com.twitter.server.AdminHttpServer$</span></code>
 as that they are intended to be used for administration/internal pages.</li>
 </ol>
 </div>
@@ -80,7 +80,7 @@ However, some features are only available or work best when using that library.<
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><a href="index.html"><h3>TwitterServer</h3></a>
 <p>
   TwitterServer is a library defining a template from which servers at Twitter are built.

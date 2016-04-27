@@ -146,6 +146,34 @@ provided by TwitterServer.
 This endpoint is available when you are using the `finagle-stats` library.
 See the :ref:`metrics <metrics_label>` section for more information.
 
+/admin/histograms
+~~~~~~~~~~~~~~~~~
+
+Visualize and download histogram-style metrics.  The metrics endpoint exposes a
+summary of the histogram, but it doesn't expose the full histogram.  The full
+histogram can be useful for seeing the different modes of your metric, which often
+represent different states of your program.
+
+This endpoint is available when you are using the `finagle-stats` library.
+See the :ref:`metrics <metrics_label>` section for more information.
+
+For more details, please see the features
+`documentation <https://twitter.github.io/twitter-server/Features.html>`_.
+
+.. image:: ../../img/HistogramCDF.png
+
+/admin/histograms.json
+~~~~~~~~~~~~~~~~~~~~~~
+
+Export a snapshot of a histogram-style metric in json. This exports the entire
+histogram, which can be used for correctly aggregating over a cluster, or to
+efficiently record historic histogram data, or to compare modes in different
+usages patterns, like times of day.  You may add new histograms by adding new
+stats to your `statsReceiver` variable.
+
+This endpoint is available when you are using the `finagle-stats` library.
+See the :ref:`metrics <metrics_label>` section for more information.
+
 Profiling
 ---------
 

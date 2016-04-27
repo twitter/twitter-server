@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Features &mdash; TwitterServer 1.19.0 documentation</title>
+    <title>Features &mdash; TwitterServer 1.20.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.19.0',
+        VERSION:     '1.20.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="TwitterServer 1.19.0 documentation" href="index.html" />
+    <link rel="top" title="TwitterServer 1.20.0 documentation" href="index.html" />
     <link rel="next" title="HTTP Admin interface" href="Admin.html" />
     <link rel="prev" title="TwitterServer" href="index.html" />
    
@@ -31,11 +31,11 @@
   <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
 
   </head>
-  <body>
+  <body role="document">
   
   
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -47,21 +47,21 @@
         <li class="right" >
           <a href="index.html" title="TwitterServer"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">TwitterServer</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">TwitterServer</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="features">
 <h1>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h1>
 <p>We’ll walk through the features provided by TwitterServer by
 examining a slightly more advanced version of the example shown in the
 introduction.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">com.twitter.conversions.time._</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">com.twitter.conversions.time._</span>
 <span class="k">import</span> <span class="nn">com.twitter.finagle.http.</span><span class="o">{</span><span class="nc">HttpMuxer</span><span class="o">,</span> <span class="nc">Request</span><span class="o">,</span> <span class="nc">Response</span><span class="o">,</span> <span class="nc">Status</span><span class="o">}</span>
 <span class="k">import</span> <span class="nn">com.twitter.finagle.Service</span>
 <span class="k">import</span> <span class="nn">com.twitter.io.Charsets</span>
@@ -110,17 +110,17 @@ introduction.</p>
 <p id="id1">The flags implementation, <a class="reference external" href="https://github.com/twitter/util/blob/master/util-app/src/main/scala/com/twitter/app/Flag.scala">found in Twitter&#8217;s util library</a>,
 focuses on simplicity and type safety, parsing flags into Scala values.</p>
 <p>You define your flag like this, in that case the flag type is <cite>String</cite>:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">what</span> <span class="k">=</span> <span class="n">flag</span><span class="o">(</span><span class="s">&quot;what&quot;</span><span class="o">,</span> <span class="s">&quot;hello&quot;</span><span class="o">,</span> <span class="s">&quot;String to return&quot;</span><span class="o">)</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">what</span> <span class="k">=</span> <span class="n">flag</span><span class="o">(</span><span class="s">&quot;what&quot;</span><span class="o">,</span> <span class="s">&quot;hello&quot;</span><span class="o">,</span> <span class="s">&quot;String to return&quot;</span><span class="o">)</span>
 </pre></div>
 </div>
 <p>But you can also define flags of composite type:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">addr</span> <span class="k">=</span> <span class="n">flag</span><span class="o">(</span><span class="s">&quot;bind&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="s">&quot;Bind address&quot;</span><span class="o">)</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">addr</span> <span class="k">=</span> <span class="n">flag</span><span class="o">(</span><span class="s">&quot;bind&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="s">&quot;Bind address&quot;</span><span class="o">)</span>
 <span class="k">val</span> <span class="n">durations</span> <span class="k">=</span> <span class="n">flag</span><span class="o">(</span><span class="s">&quot;alarms&quot;</span><span class="o">,</span> <span class="o">(</span><span class="mf">1.</span><span class="n">second</span><span class="o">,</span> <span class="mf">5.</span><span class="n">second</span><span class="o">),</span> <span class="s">&quot;2 alarm durations&quot;</span><span class="o">)</span>
 </pre></div>
 </div>
 <p>We also provide an automatic help entry that displays information about
 all the flags defined.</p>
-<div class="highlight-text"><div class="highlight"><pre>$ java -jar target/myserver-1.0.0-SNAPSHOT.jar -help
+<div class="highlight-text"><div class="highlight"><pre><span></span>$ java -jar target/myserver-1.0.0-SNAPSHOT.jar -help
 AdvancedServer
   -alarm_durations=&#39;1.seconds,5.seconds&#39;: 2 alarm durations
   -help=&#39;false&#39;: Show this help
@@ -139,7 +139,7 @@ flag in the constructor, before the arguments have been parsed.</p>
 option within your server. Having this option turned on means that if
 a <cite>Flag</cite> is attempted to be accessed before the flag has been parsed,
 then an <cite>IllegalStateException</cite> will be thrown.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">override</span> <span class="k">def</span> <span class="n">failfastOnFlagsNotParsed</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">true</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">override</span> <span class="k">def</span> <span class="n">failfastOnFlagsNotParsed</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">true</span>
 </pre></div>
 </div>
 </div>
@@ -149,13 +149,13 @@ then an <cite>IllegalStateException</cite> will be thrown.</p>
 configured via default command line flags: <cite>-log.level</cite> and
 <cite>-log.output</cite>. As you can see from the above <cite>-help</cite> output, it logs
 to <cite>stderr</cite> by default with a log level of <cite>INFO</cite>.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="o">(</span><span class="s">&quot;Received a request at &quot;</span> <span class="o">+</span> <span class="nc">Time</span><span class="o">.</span><span class="n">now</span><span class="o">)</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="o">(</span><span class="s">&quot;Received a request at &quot;</span> <span class="o">+</span> <span class="nc">Time</span><span class="o">.</span><span class="n">now</span><span class="o">)</span>
 </pre></div>
 </div>
 <p>To change the format of the log output, a custom <cite>Formatter</cite> is needed.
 This is best done by overriding the <cite>defaultFormatter</cite> provided by the
 <cite>Logging</cite> trait.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">override</span> <span class="k">def</span> <span class="n">defaultFormatter</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Formatter</span><span class="o">(</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">override</span> <span class="k">def</span> <span class="n">defaultFormatter</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Formatter</span><span class="o">(</span>
   <span class="n">timezone</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="s">&quot;UTC&quot;</span><span class="o">),</span>
   <span class="n">prefix</span> <span class="k">=</span> <span class="s">&quot;&lt;yyyy-MM-dd HH:mm:ss.SSS&gt; [%.3s] %s: &quot;</span>
 <span class="o">)</span>
@@ -172,23 +172,23 @@ handler on the admin interface.</p>
 the finagle-stats jar on your classpath.  <cite>finagle-stats</cite> depends on
 libraries which can be found in the
 <a class="reference external" href="https://maven.twttr.com">https://maven.twttr.com</a> repository.  There
-are instructions on the <a class="reference internal" href="index.html"><em>quickstart</em></a> for adding it in
+are instructions on the <a class="reference internal" href="index.html"><span class="doc">quickstart</span></a> for adding it in
 maven or sbt.</p>
 <p>The <cite>statsReceiver</cite> field of <cite>TwitterServer</cite> defines a sink for
 metrics. With it you can update counters and stats (histograms) or
 define gauges (instantaneous values).</p>
 <p>For instance, you define your stats:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">counter</span> <span class="k">=</span> <span class="n">statsReceiver</span><span class="o">.</span><span class="n">counter</span><span class="o">(</span><span class="s">&quot;requests_counter&quot;</span><span class="o">)</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">counter</span> <span class="k">=</span> <span class="n">statsReceiver</span><span class="o">.</span><span class="n">counter</span><span class="o">(</span><span class="s">&quot;requests_counter&quot;</span><span class="o">)</span>
 </pre></div>
 </div>
 <p>And update the value:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">counter</span><span class="o">.</span><span class="n">incr</span><span class="o">()</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">counter</span><span class="o">.</span><span class="n">incr</span><span class="o">()</span>
 </pre></div>
 </div>
 <p>The value of this counter will be exported by the HTTP server and
 accessible at /admin/metrics.json. To see an example of the counter
 incrementing run the following:</p>
-<div class="highlight-text"><div class="highlight"><pre>$ curl -s localhost:9990/admin/metrics.json | jq &#39;.requests_counter&#39;
+<div class="highlight-text"><div class="highlight"><pre><span></span>$ curl -s localhost:9990/admin/metrics.json | jq &#39;.requests_counter&#39;
 0
 
 $ curl -s localhost:9990/echo
@@ -198,6 +198,13 @@ $ curl -s localhost:9990/admin/metrics.json | jq &#39;.requests_counter&#39;
 1
 </pre></div>
 </div>
+<p>One thing to note is that histograms are windowed, so stats may disappear after
+a minute.  We window histograms so that we have a consistent amount of data each
+time we read the histograms, so that each request has a similar impact on the
+statistics.</p>
+<p>If we didn&#8217;t window histograms, the early requests would have a big influence on
+the computed statistics, and as the application continued to run, each request
+would have progressively less and less of an impact.</p>
 <div class="section" id="filtering-stats-out">
 <h3>Filtering stats out<a class="headerlink" href="#filtering-stats-out" title="Permalink to this headline">¶</a></h3>
 <p>Metrics can be too expensive to store. By passing a comma-separated
@@ -208,11 +215,11 @@ other words, you can still access all of the stats normally, but this
 adds the option to fetch the filtered list.</p>
 <p>For example, to filter out all stats starting with jvm and also any
 p90 stats, one can pass the following to TwitterServer:</p>
-<div class="highlight-text"><div class="highlight"><pre>-com.twitter.finagle.stats.statsFilter=&quot;jvm.*,.*\.p90&quot;
+<div class="highlight-text"><div class="highlight"><pre><span></span>-com.twitter.finagle.stats.statsFilter=&quot;jvm.*,.*\.p90&quot;
 </pre></div>
 </div>
 <p>To query the reduced list:</p>
-<div class="highlight-text"><div class="highlight"><pre>/admin/metrics.json?filtered=true
+<div class="highlight-text"><div class="highlight"><pre><span></span>/admin/metrics.json?filtered=true
 </pre></div>
 </div>
 <p>Note that this only works with <cite>finagle-stats</cite> and doesn&#8217;t work with
@@ -222,20 +229,24 @@ p90 stats, one can pass the following to TwitterServer:</p>
 <h3>Pretty output<a class="headerlink" href="#pretty-output" title="Permalink to this headline">¶</a></h3>
 <p>If you would like a pretty version of the json output, add the
 parameter pretty=true or pretty=1, eg /admin/metrics.json?pretty=true</p>
-<div class="highlight-text"><div class="highlight"><pre>{
+<div class="highlight-text"><div class="highlight"><pre><span></span>{
   &quot;requests_counter&quot;: 234,
   &quot;finagle/closechans&quot;: 592,
+  &quot;finagle/closed&quot;: 592,
+  &quot;finagle/closes&quot;: 575,
   &quot;finagle/connection_duration.avg&quot;: 561,
   &quot;finagle/connection_duration.count&quot;: 592,
   &quot;finagle/connection_duration.max&quot;: 299986,
   &quot;finagle/connection_duration.min&quot;: 3,
   &quot;finagle/connection_duration.p50&quot;: 31,
-  &quot;finagle/connection_duration.p90&quot;: 111,
   &quot;finagle/connection_duration.p95&quot;: 120,
   &quot;finagle/connection_duration.p99&quot;: 197,
   &quot;finagle/connection_duration.p9990&quot;: 2038,
   &quot;finagle/connection_duration.p9999&quot;: 2038,
   &quot;finagle/connection_duration.sum&quot;: 332690,
+  &quot;finagle/connections&quot;: 2,
+  &quot;finagle/http/failfast/unhealthy_for_ms&quot;: 0,
+  &quot;finagle/http/failfast/unhealthy_num_tries&quot;: 0,
   &quot;finagle/success&quot;: 0
   ...
 }
@@ -260,11 +271,116 @@ don&#8217;t increase garbage collection pressure on the hot path.</p>
 </div>
 </div>
 </div>
+<div class="section" id="histograms">
+<h2>Histograms<a class="headerlink" href="#histograms" title="Permalink to this headline">¶</a></h2>
+<p><cite>TwitterServer</cite> exports histogram-style metrics from your service, which
+typically represent a quality of a common event.  These events might include
+queries (how wide is my query?), requests (how long did my request take?),
+retries (how many retries did I have), etc.  Visualizing these histograms can
+help us better understand the different classes of events that can happen.  For
+example, maybe you think some of your requests are slow because your garbage
+collection pauses are too long.  You might compare latency histograms from
+before and after increasing your heap size to check whether you were
+right. Assessing this is much harder with only the standard statistics (p50,
+p90, etc), but with the full PDF, you can see the bad mode flatten out.</p>
+<p>As with Metrics, in order to work with histograms you must have the
+finagle-stats jar on your classpath.</p>
+<img alt="_images/HistogramHomepage.png" src="_images/HistogramHomepage.png" />
+<div class="section" id="api-parameters">
+<h3>API Parameters<a class="headerlink" href="#api-parameters" title="Permalink to this headline">¶</a></h3>
+<p>The following parameters control how a histogram is displayed.</p>
+<ol class="arabic simple">
+<li>&#8220;h&#8221;: the name of the histogram you want to see.</li>
+<li>&#8220;fmt&#8221;: the desired format: raw | pdf | cdf | plot_pdf | plot_cdf</li>
+<li>&#8220;log_scale&#8221;: the scale used for the x-axis: true | false</li>
+</ol>
+<p>For visualization, we provide both <a class="reference external" href="https://en.wikipedia.org/wiki/Probability_density_function">PDF</a> and <a class="reference external" href="https://en.wikipedia.org/wiki/Cumulative_distribution_function">CDF</a> options.  A PDF is a
+probability density function, which is a plot from the value of the histogram to
+the proportion of events that had that value.  It&#8217;s useful for seeing the
+different modes of a distribution, which typically represent different classes
+of events. A CDF is a cumulative distribution function, which is a plot from the
+value of the histogram to the proportion of events that had that value OR had
+less than that value.  This effectively does smoothing, in case there aren&#8217;t
+very many samples.</p>
+<p>The <cite>plot_*</cite> formats are rendered in a chart UI, while other formats export the
+histograms buckets. A histogram bucket consists of a lower and upper limit and a
+count. Any value falling inside a bucket&#8217;s limits is treated the same and adds 1
+to the count.</p>
+<p>Here&#8217;s an example where we query histogram counts for request latency. Each
+bucket is mapped to the number of requests which had a latency less than or
+equal to the bucket&#8217;s upper limit.</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>$ curl http://a.twitter.server/admin/histograms?h=clnt/p2cslowservertest-server/request_latency_ms&amp;fmt=raw
+
+{
+  &quot;lowerLimit&quot; : 5,
+  &quot;upperLimit&quot; : 6,
+  &quot;count&quot; : 28
+},
+{
+  &quot;lowerLimit&quot; : 6,
+  &quot;upperLimit&quot; : 7,
+  &quot;count&quot; : 9188
+},
+{
+  &quot;lowerLimit&quot; : 7,
+  &quot;upperLimit&quot; : 8,
+  &quot;count&quot; : 25164
+}
+</pre></div>
+</div>
+<p>Here&#8217;s an example where we query a cumulative distribution function (CDF). Each
+bucket is mapped to a percentage of requests which had a latency less than or
+equal to the bucket&#8217;s upper limit.</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>$ curl http://a.twitter.server/admin/histograms?h=clnt/p2cslowservertest-server/request_latency_ms&amp;fmt=cdf
+
+{
+  &quot;lowerLimit&quot; : 5,
+  &quot;upperLimit&quot; : 6,
+  &quot;percentage&quot; : 6.444885E-5
+},
+{
+  &quot;lowerLimit&quot; : 6,
+  &quot;upperLimit&quot; : 7,
+  &quot;percentage&quot; : 0.03286891
+},
+{
+  &quot;lowerLimit&quot; : 7,
+  &quot;upperLimit&quot; : 8,
+  &quot;percentage&quot; : 0.15292539
+},
+{
+  &quot;lowerLimit&quot; : 8,
+  &quot;upperLimit&quot; : 9,
+  &quot;percentage&quot; : 0.26998794
+},
+{
+  &quot;lowerLimit&quot; : 9,
+  &quot;upperLimit&quot; : 10,
+  &quot;percentage&quot; : 0.41753477
+}
+</pre></div>
+</div>
+<p>Plotting the &#8220;finagle/timer/deviation_ms&#8221; cumulative distribution function:</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>$ chrome http://a.twitter.server/admin/histograms?h=clnt/p2cslowservertest-server/request_latency_ms&amp;fmt=plot_cdf
+</pre></div>
+</div>
+<img alt="_images/HistogramCDF.png" src="_images/HistogramCDF.png" />
+<p>While plotting graphs of your metrics, you can switch between formats using the
+buttons.  Log scale is typically good for looking at high percentiles.</p>
+</div>
+<div class="section" id="custom-implementations">
+<h3>Custom Implementations<a class="headerlink" href="#custom-implementations" title="Permalink to this headline">¶</a></h3>
+<p>Histograms are normally only available for services that use a
+<cite>MetricsStatsReceiver</cite> (default), but it is also possible to provide a custom
+one. A custom <cite>StatsReceiver</cite> must implement the <cite>WithHistogramDetails</cite> trait,
+and it should be service-loaded.</p>
+</div>
+</div>
 <div class="section" id="admin-http-interface">
 <h2>Admin HTTP interface<a class="headerlink" href="#admin-http-interface" title="Permalink to this headline">¶</a></h2>
 <p>TwitterServer provides an HTTP server and includes a variety of tools
 for diagnostics, profiling, and more. The details are covered in-depth
-<a class="reference internal" href="Admin.html#admin-interface"><em>here</em></a>.</p>
+<a class="reference internal" href="Admin.html#admin-interface"><span class="std std-ref">here</span></a>.</p>
 </div>
 <div class="section" id="lifecycle-management">
 <h2>Lifecycle Management<a class="headerlink" href="#lifecycle-management" title="Permalink to this headline">¶</a></h2>
@@ -280,7 +396,7 @@ the Lifecycle.Warmup trait with your server.</dd>
 <dd>Quit the process.</dd>
 </dl>
 <p>These entries are the default, but if you need you can add your own handler to this HTTP server:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="nc">HttpMuxer</span><span class="o">.</span><span class="n">addHandler</span><span class="o">(</span><span class="s">&quot;/echo&quot;</span><span class="o">,</span> <span class="n">service</span><span class="o">)</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">HttpMuxer</span><span class="o">.</span><span class="n">addHandler</span><span class="o">(</span><span class="s">&quot;/echo&quot;</span><span class="o">,</span> <span class="n">service</span><span class="o">)</span>
 <span class="nc">HttpMuxer</span><span class="o">.</span><span class="n">addHandler</span><span class="o">(</span><span class="s">&quot;/echo/&quot;</span><span class="o">,</span> <span class="n">service</span><span class="o">)</span>
 </pre></div>
 </div>
@@ -303,7 +419,7 @@ trait is built.</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><a href="index.html"><h3>TwitterServer</h3></a>
 <p>
   TwitterServer is a library defining a template from which servers at Twitter are built.
@@ -325,6 +441,11 @@ trait is built.</p>
 <li><a class="reference internal" href="#jvm-metrics">JVM Metrics</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li><a class="reference internal" href="#histograms">Histograms</a><ul>
+<li><a class="reference internal" href="#api-parameters">API Parameters</a></li>
+<li><a class="reference internal" href="#custom-implementations">Custom Implementations</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#admin-http-interface">Admin HTTP interface</a></li>

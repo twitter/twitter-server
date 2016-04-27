@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>TwitterServer &mdash; TwitterServer 1.19.0 documentation</title>
+    <title>TwitterServer &mdash; TwitterServer 1.20.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.19.0',
+        VERSION:     '1.20.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,20 +23,20 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="TwitterServer 1.19.0 documentation" href="#" />
+    <link rel="top" title="TwitterServer 1.20.0 documentation" href="#" />
     <link rel="next" title="Features" href="Features.html" />
    
   
   <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
 
   </head>
-  <body>
+  <body role="document">
   
   
   <div class=indexwrapper>
   
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -45,14 +45,14 @@
         <li class="right" >
           <a href="Features.html" title="Features"
              accesskey="N">next</a> |</li>
-        <li><a href="#">TwitterServer</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="#">TwitterServer</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="twitterserver">
 <h1>TwitterServer<a class="headerlink" href="#twitterserver" title="Permalink to this headline">¶</a></h1>
@@ -73,33 +73,33 @@ wired in correctly for use in production at Twitter.</p>
 &lt;dependency&gt;
   &lt;groupId&gt;com.twitter&lt;/groupId&gt;
   &lt;artifactId&gt;twitter-server_2.11&lt;/artifactId&gt;
-  &lt;version&gt;1.19.0&lt;/version&gt;
+  &lt;version&gt;1.20.0&lt;/version&gt;
 &lt;/dependency&gt;
 </pre>
 <p>or, with sbt:</p>
 <pre class="literal-block">
 resolvers += &quot;twttr&quot; at &quot;<a class="reference external" href="https://maven.twttr.com/">https://maven.twttr.com/</a>&quot;
 
-libraryDependencies += &quot;com.twitter&quot; %% &quot;twitter-server&quot; % &quot;1.19.0&quot;
+libraryDependencies += &quot;com.twitter&quot; %% &quot;twitter-server&quot; % &quot;1.20.0&quot;
 </pre>
-<p>NB: You only need to add the <tt class="docutils literal"><span class="pre">maven.twttr.com</span></tt> repository if you want
+<p>NB: You only need to add the <code class="docutils literal"><span class="pre">maven.twttr.com</span></code> repository if you want
 to use libraries in Twitter <cite>common</cite>, which are only published to
-<tt class="docutils literal"><span class="pre">maven.twttr.com</span></tt>. For example, <tt class="docutils literal"><span class="pre">finagle-stats</span></tt>, which adds
-<a class="reference internal" href="Features.html"><em>Metrics</em></a>, requires a twitter <cite>common</cite> library.</p>
+<code class="docutils literal"><span class="pre">maven.twttr.com</span></code>. For example, <code class="docutils literal"><span class="pre">finagle-stats</span></code>, which adds
+<a class="reference internal" href="Features.html"><span class="doc">Metrics</span></a>, requires a twitter <cite>common</cite> library.</p>
 <p>First we’ll need to import a few things into our namespace.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">com.twitter.finagle.</span><span class="o">{</span><span class="nc">Http</span><span class="o">,</span> <span class="nc">Service</span><span class="o">}</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">com.twitter.finagle.</span><span class="o">{</span><span class="nc">Http</span><span class="o">,</span> <span class="nc">Service</span><span class="o">}</span>
 <span class="k">import</span> <span class="nn">com.twitter.finagle.http.</span><span class="o">{</span><span class="nc">Request</span><span class="o">,</span> <span class="nc">Response</span><span class="o">,</span> <span class="nc">Status</span><span class="o">}</span>
 <span class="k">import</span> <span class="nn">com.twitter.io.Charsets</span>
 <span class="k">import</span> <span class="nn">com.twitter.server.TwitterServer</span>
 <span class="k">import</span> <span class="nn">com.twitter.util.</span><span class="o">{</span><span class="nc">Await</span><span class="o">,</span> <span class="nc">Future</span><span class="o">}</span>
 </pre></div>
 </div>
-<p>TwitterServer defines its own version of the standard <tt class="docutils literal"><span class="pre">main</span></tt>. To use
-it, create an object extended with <tt class="docutils literal"><span class="pre">com.twitter.server.TwitterServer</span></tt>,
-and define the <tt class="docutils literal"><span class="pre">main()</span></tt> method (no arguments).</p>
+<p>TwitterServer defines its own version of the standard <code class="docutils literal"><span class="pre">main</span></code>. To use
+it, create an object extended with <code class="docutils literal"><span class="pre">com.twitter.server.TwitterServer</span></code>,
+and define the <code class="docutils literal"><span class="pre">main()</span></code> method (no arguments).</p>
 <p>In this example, we use Finagle to start an HTTP server on
 port 8888. The service bound to this port is a simple hello service.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">object</span> <span class="nc">BasicServer</span> <span class="k">extends</span> <span class="nc">TwitterServer</span> <span class="o">{</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">object</span> <span class="nc">BasicServer</span> <span class="k">extends</span> <span class="nc">TwitterServer</span> <span class="o">{</span>
   <span class="k">val</span> <span class="n">service</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Service</span><span class="o">[</span><span class="kt">Request</span>, <span class="kt">Response</span><span class="o">]</span> <span class="o">{</span>
     <span class="k">def</span> <span class="n">apply</span><span class="o">(</span><span class="n">request</span><span class="k">:</span> <span class="kt">Request</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
       <span class="k">val</span> <span class="n">response</span> <span class="k">=</span> <span class="nc">Response</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="n">version</span><span class="o">,</span> <span class="nc">Status</span><span class="o">.</span><span class="nc">Ok</span><span class="o">)</span>
@@ -118,11 +118,11 @@ port 8888. The service bound to this port is a simple hello service.</p>
 <span class="o">}</span>
 </pre></div>
 </div>
-<p><tt class="docutils literal"><span class="pre">onExit</span></tt> is used to register code to be run when the process shutdown
+<p><code class="docutils literal"><span class="pre">onExit</span></code> is used to register code to be run when the process shutdown
 is requested.</p>
 <p>After compiling, we can start the server like any other java or scala
 process.</p>
-<div class="highlight-text"><div class="highlight"><pre>$ java -jar target/myserver-1.0.0-SNAPSHOT.jar &amp;
+<div class="highlight-text"><div class="highlight"><pre><span></span>$ java -jar target/myserver-1.0.0-SNAPSHOT.jar &amp;
 [1] 74159
 I 1210 21:32:39.326 THREAD1: /admin =&gt; com.twitter.server.handler.SummaryHandler
 ...
@@ -136,7 +136,7 @@ hello
 </pre></div>
 </div>
 <p>This server is fully configured to run in Twitter’s production
-environment. See <a class="reference internal" href="Features.html"><em>features</em></a> for more details.</p>
+environment. See <a class="reference internal" href="Features.html"><span class="doc">features</span></a> for more details.</p>
 </div>
 <div class="section" id="users-guide">
 <h2>User’s guide<a class="headerlink" href="#users-guide" title="Permalink to this headline">¶</a></h2>
@@ -151,6 +151,11 @@ environment. See <a class="reference internal" href="Features.html"><em>features
 <li class="toctree-l4"><a class="reference internal" href="Features.html#jvm-metrics">JVM Metrics</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Features.html#histograms">Histograms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Features.html#api-parameters">API Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Features.html#custom-implementations">Custom Implementations</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Features.html#admin-http-interface">Admin HTTP interface</a></li>
@@ -176,6 +181,8 @@ environment. See <a class="reference internal" href="Features.html"><em>features
 <li class="toctree-l2"><a class="reference internal" href="Admin.html#metrics">Metrics</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Admin.html#id1">/admin/metrics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Admin.html#admin-metrics-json">/admin/metrics.json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Admin.html#admin-histograms">/admin/histograms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Admin.html#admin-histograms-json">/admin/histograms.json</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Admin.html#profiling">Profiling</a><ul>
@@ -221,7 +228,7 @@ environment. See <a class="reference internal" href="Features.html"><em>features
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><a href="index.html"><h3>TwitterServer</h3></a>
 <p>
   TwitterServer is a library defining a template from which servers at Twitter are built.
