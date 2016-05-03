@@ -1,15 +1,9 @@
 package com.twitter.server.util
 
 import com.twitter.finagle.stats.StatsReceiver
-import com.twitter.concurrent.Scheduler
 
 object TwitterStats {
 
-  def register(statsReceiver: StatsReceiver): Unit = {
-    val scheduler = statsReceiver.scope("scheduler")
+  def register(statsReceiver: StatsReceiver): Unit = ()
 
-    scheduler.provideGauge("dispatches") {
-      Scheduler.numDispatches.toFloat
-    }
-  }
 }
