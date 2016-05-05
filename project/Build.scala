@@ -24,18 +24,15 @@ object TwitterServer extends Build {
   def util(which: String) = "com.twitter" %% ("util-"+which) % utilVersion
   def finagle(which: String) = "com.twitter" %% ("finagle-"+which) % finagleVersion
 
-  def xmlLib(scalaVersion: String) = CrossVersion.partialVersion(scalaVersion) match {
-    case Some((2, scalaMajor)) if scalaMajor >= 11 => Seq(
+  def xmlLib(scalaVersion: String) =
+    Seq(
       "org.scala-lang.modules" %% "scala-xml" % "1.0.5"
     )
-    case _ => Seq.empty
-  }
 
   val sharedSettings = Seq(
     version := libVersion,
     organization := "com.twitter",
-    scalaVersion := "2.11.7",
-    crossScalaVersions := Seq("2.10.6", "2.11.7"),
+    scalaVersion := "2.11.8",
     libraryDependencies ++= Seq(
       "org.scalacheck" %% "scalacheck" % "1.12.2" % "test",
       "org.scalatest" %% "scalatest" % "2.2.4" % "test",
@@ -44,12 +41,7 @@ object TwitterServer extends Build {
     ),
     resolvers += "twitter-repo" at "https://maven.twttr.com",
 
-    ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := (
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, 10)) => false
-        case _ => true
-      }
-    ),
+    ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := true,
 
     ivyXML :=
       <dependencies>
@@ -59,14 +51,14 @@ object TwitterServer extends Build {
       </dependencies>,
 
     scalacOptions ++= Seq(
+     "-target:jvm-1.8",
       "-deprecation",
       "-unchecked",
-      "-feature",
-      "-Xlint",
+      "-feature", "-Xlint",
       "-encoding", "utf8"
     ),
-    javacOptions ++= Seq("-Xlint:unchecked", "-source", "1.7", "-target", "1.7"),
-    javacOptions in doc := Seq("-source", "1.7"),
+    javacOptions ++= Seq("-Xlint:unchecked", "-source", "1.8", "-target", "1.8"),
+    javacOptions in doc := Seq("-source", "1.8"),
 
     // This is bad news for things like com.twitter.util.Time
     parallelExecution in Test := false,
