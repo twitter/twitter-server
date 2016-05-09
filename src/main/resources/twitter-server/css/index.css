@@ -140,11 +140,14 @@ nav li span {
 
 nav li span.glyphicon {
   padding-left: 20px;
-  cursor: pointer;
 }
 
 nav .subnav li {
   padding-left: 40px;
+}
+
+nav .subnav-title {
+  cursor: pointer;
 }
 
 /** Shared */

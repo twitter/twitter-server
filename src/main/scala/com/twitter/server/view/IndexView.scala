@@ -33,9 +33,12 @@ object IndexView {
         case Link(id, href) +: rest =>
           val selected = if (href == uri) "selected" else ""
           sb ++= s"""
-            <li id="${id}" class="selectable $selected">
-              <a href="${href}">${id}</a>
-            </li>"""
+            <a href="${href}">
+              <li id="${id}" class="selectable $selected">
+                ${id}
+              </li>
+            </a>
+            """
           renderNav(rest, sb)
 
         case Group(id, links) +: rest =>
@@ -50,8 +53,10 @@ object IndexView {
           val collapse = if (isChild) "glyphicon-collapse-up" else ""
           sb ++= s"""
             <li class="subnav $active">
-              <span class="glyphicon glyphicon-expand $collapse"></span>
-              <span>${id}</span>
+              <div class="subnav-title selectable">
+                <span class="glyphicon glyphicon-expand $collapse"></span>
+                <span>${id}</span>
+              </div>
               <ul>${renderNav(links)}</ul>
             </li>"""
           renderNav(rest, sb)

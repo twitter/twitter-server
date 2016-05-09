@@ -5,10 +5,10 @@ $(document).ready(function() {
     $("#toggle span").toggleClass("glyphicon-chevron-right");
   })
 
-  $("nav li span.glyphicon").click(function() {
-    $(this).parent().find('ul').slideToggle()
-    $(this).toggleClass("glyphicon-collapse-up")
-  })
+  $("nav .subnav-title").click(function() {
+    $(this).parent().find('ul').slideToggle();
+    $(this).find('.glyphicon').toggleClass("glyphicon-collapse-up");
+  });
 
   var confirmationLinks = {
   "/abortabortabort": "abort",
