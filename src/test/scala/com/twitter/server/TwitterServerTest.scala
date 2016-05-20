@@ -76,11 +76,12 @@ class TwitterServerTest extends FunSuite {
   test("Exceptions thrown in handlers include stack traces") {
     val twitterServer = new TestTwitterServer {
       val mockExceptionHandler = new MockExceptionHandler
-      override def routes = super.routes ++ Seq(
-        AdminHttpServer.mkRoute(
-          "/exception_please.json", mockExceptionHandler, "mockExceptionHandler", None, false))
 
       override def main() {
+        addAdminRoute( 
+          AdminHttpServer.mkRoute(
+            "/exception_please.json", mockExceptionHandler, "mockExceptionHandler", None, false))
+
         val port = adminHttpServer.boundAddress.asInstanceOf[InetSocketAddress].getPort
 
         val logger = Logger.getLogger(getClass.getName)
