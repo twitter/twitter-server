@@ -10,15 +10,20 @@ Note that ``RB_ID=#`` correspond to associated messages in commits.
 Breaking API Changes
 ~~~~~~~~~~~~~~~~~~~~
 
+   * twitter-server: Removed AdminHttpServer#mkRoutex method. This method
+     was created during the migration away from direct usage of netty
+     http types and is now redundant. ``RB_ID=835083``
    * Builds are now only for Java 8 and Scala 2.11. See the
      `blog post <https://finagle.github.io/blog/2016/04/20/scala-210-and-java7/>`_
      for details. ``RB_ID=828898``
 
+   
 1.20.0
 ------
 
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
+
   * Introduce a new lifecycle event `prebindWarmup` for warmup code
     which needs to run before the service handles traffic. GC has
     moved from `warmupComplete` to `prebindWarmup`. ``RB_ID=819411``

@@ -57,19 +57,6 @@ object AdminHttpServer {
   }
 
   /**
-   * Create a Route using a Finagle service interface and a service using finagle-http
-   */
-  def mkRoutex(
-    path: String,
-    handler: Service[Request, Response],
-    alias: String,
-    group: Option[String],
-    includeInIndex: Boolean
-  ): Route = {
-    Route(path, handler, alias, group, includeInIndex)
-  }
-
-  /**
    * The name used for the finagle server.
    */
   val ServerName = "adminhttp"
