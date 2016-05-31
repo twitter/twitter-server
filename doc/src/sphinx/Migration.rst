@@ -37,8 +37,6 @@ Ostrich:
 
   {
     "counters": {
-      "finagle/closechans": 594,
-      "finagle/closed": 594,
       "finagle/closes": 576,
 
     },
@@ -72,8 +70,6 @@ Commons Metrics:
 ::
 
   {
-    "finagle/closechans": 592,
-    "finagle/closed": 592,
     "finagle/closes": 575,
     "finagle/connection_duration.avg": 561,
     "finagle/connection_duration.count": 592,
@@ -100,8 +96,6 @@ With ``-com.twitter.finagle.stats.format=ostrich``:
 ::
 
   {
-    "finagle/closechans": 592,
-    "finagle/closed": 592,
     "finagle/closes": 575,
     "finagle/connection_duration.average": 561,
     "finagle/connection_duration.count": 592,
