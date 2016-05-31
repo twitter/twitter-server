@@ -16,7 +16,7 @@ object HistogramQueryHandler {
   /**
    * Stores histogram bucket and a percentage.
    * The percentage is either the density or a
-   * cumulative density for the bucket
+   * cumulative distribution for the bucket
    */
   case class BucketAndPercentage(lowerLimit: Long, upperLimit: Long, percentage: Float)
 
@@ -86,7 +86,7 @@ object HistogramQueryHandler {
         """<div id="option-panel">
           <form action="post">
             <span class="option-description">Type:
-              <a id="PDF" class="button-switch button-light-green left-rounded" title="Probability density function">PDF</a><a id="CDF" class="button-switch button-green right-rounded" title="Cumulative density function">CDF</a>
+              <a id="PDF" class="button-switch button-light-green left-rounded" title="Probability density function">PDF</a><a id="CDF" class="button-switch button-green right-rounded" title="Cumulative distribution function">CDF</a>
             </span>
 
             <span class="option-description">Scale:
