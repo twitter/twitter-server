@@ -50,29 +50,37 @@ private[server] class EventsHandler(sink: Sink) extends Service[Request, Respons
       .and(spanIdFilter)
       .and(traceIdFilter)
   }
-
-  def apply(req: Request): Future[Response] =
-    if (accepts(req, "trace/"))
-      respond(TraceEvent, TraceEventSink.serialize(sink))
-    else if (expectsJson(req))
-      respond(LineDelimitedJson, JsonSink.serialize(sink))
-    else
+  /* 
+   * @des Gives a nice syntactic sugar for the EventsHandler type Object/Class . It defines EventsHandler's main functionality.  
+   * @param String Request :req accepts the Request object to process. 
+   * @return Future[Response] : returns the Future objcet containg array of Responses
+   */
+  def apply(req: Request): Future[Response] =                                
+    if (accepts(req, "trace/"))                                             // handle case where it accept request url "trace/*"
+      respond(TraceEvent, TraceEventSink.serialize(sink))                   // tracking event in respond using server utility sink type of TraceEvent by serialization of sink
+    else if (expectsJson(req))                                              // if request expects JSON
+      respond(LineDelimitedJson, JsonSink.serialize(sink))                  // tracking event in respond using server utility sink type of Json by serialization of sink.
+    else                                                                    // setting respond using a utility JsonSink to serialize the [[com.twitter.util.events.Sink]] to JSON.
       if (!req.params.isEmpty) {
-        val eventFilter = eventFilterFromParams(
-          req.params.filterNot { case (k, v) => v.isEmpty } )
-        respond(Html, tableBodyHtml(sink.events.toSeq.filter(eventFilter)))
+        val eventFilter = eventFilterFromParams(                            // constructing a event filter for sink.events.toSeq.filter.
+          req.params.filterNot { case (k, v) => v.isEmpty } )               // defining filter logic
+        respond(Html, tableBodyHtml(sink.events.toSeq.filter(eventFilter))) // setting the respond in html
       } else {
-        respond(Html, Reader.fromBuf(Buf.Utf8(pageHtml(sink))))
+        respond(Html, Reader.fromBuf(Buf.Utf8(pageHtml(sink))))              // respond html using UTF 8 buffer.
       }
-
-  private[this] def respond(contentType: String, reader: Reader): Future[Response] = {
-    val response = Response()
-    response.contentType = contentType
-    response.setChunked(true)
-    Reader.copy(reader, response.writer).onFailure { e =>
-      log.info("Encountered an error while writing the event stream: " + e)
-    }.ensure(response.writer.close())
-    Future.value(response)
+  /*
+   * @des set the content type of Response add copy stream data from Reader Stream to Writer Stream . 
+   * @param String contentType : specifing the content type of the data in Output Response Stream , Reader reader: specify the input Stream. 
+   * @return Future[Response] : returns the Future objcet containg array of Responses
+   */
+  private[this] def respond(contentType: String, reader: Reader): Future[Response] = {  
+    val response = Response()                                               // creating new Response Object
+    response.contentType = contentType                                      // set the content type of Response   
+    response.setChunked(true)                                               // set chunck = true denotes response data is in chunks : chunks of Responses 
+    Reader.copy(reader, response.writer).onFailure { e =>                   // copy data from reader to writer stream while handling the
+      log.info("Encountered an error while writing the event stream: " + e) // failure case in stream data transfer . 
+    }.ensure(response.writer.close())                                       // close the response writer.
+    Future.value(response)                                                  // adding a perticular response in Future
   }
 }
 
