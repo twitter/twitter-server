@@ -4,5 +4,4 @@ resolvers += Resolver.url("artifactory-sbt-plugin-releases",
 resolvers += Classpaths.sbtPluginReleases
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "0.8.1")
-addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.0.0")
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.2.0")
