@@ -1,7 +1,7 @@
 package com.twitter.server.util
 
 import com.twitter.finagle.tracing.Annotation
-import com.twitter.finagle.zipkin.thrift.ZipkinTracer.Trace
+import com.twitter.finagle.zipkin.core.SamplingTracer.Trace
 import com.twitter.io.{Buf, Reader}
 import com.twitter.server.EventSink.Record
 import com.twitter.util.events.{Sink, Event}

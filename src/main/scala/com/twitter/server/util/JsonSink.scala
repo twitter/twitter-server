@@ -1,6 +1,6 @@
 package com.twitter.server.util
 
-import com.twitter.finagle.zipkin.thrift.ZipkinTracer
+import com.twitter.finagle.zipkin.core.SamplingTracer
 import com.twitter.server.EventSink
 import com.twitter.io.Buf
 import com.twitter.util.events.Event
@@ -31,7 +31,7 @@ private[util] trait JsonSink extends Deserializer with Serializer {
  * }}}
  */
 object JsonSink extends JsonSink {
-  import ZipkinTracer.Trace
+  import SamplingTracer.Trace
   import EventSink.Record
 
   val types = Seq(Trace, Record)
