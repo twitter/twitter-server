@@ -1,6 +1,6 @@
 package com.twitter.server.util
 
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
+import com.fasterxml.jackson.core.util.{DefaultIndenter, DefaultPrettyPrinter}
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.twitter.finagle.http.{Response, Status, Version}
@@ -10,7 +10,7 @@ object JsonConverter {
   private[this] val writer = {
     val mapper = new ObjectMapper().registerModule(DefaultScalaModule)
     val printer = new DefaultPrettyPrinter
-    printer.indentArraysWith(new DefaultPrettyPrinter.Lf2SpacesIndenter)
+    printer.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE)
     mapper.writer(printer)
   }
 
