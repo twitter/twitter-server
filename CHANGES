@@ -7,6 +7,12 @@ Note that ``RB_ID=#`` correspond to associated messages in commits.
 1.x
 -----
 
+New Features
+~~~~~~~~~~~~
+
+   * Add optional HTTP request parameter `filter` to `/admin/registry.json`
+     allowing for simple filtering of the returned JSON. ``RB_ID=842784``
+
 Breaking API Changes
 ~~~~~~~~~~~~~~~~~~~~
 

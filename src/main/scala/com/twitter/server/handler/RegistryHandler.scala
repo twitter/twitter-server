@@ -5,24 +5,79 @@ import com.twitter.finagle.http.{Request, Response}
 import com.twitter.server.util.HttpUtils.newOk
 import com.twitter.server.util.JsonConverter
 import com.twitter.util.Future
-import com.twitter.util.registry.{Formatter, GlobalRegistry}
+import com.twitter.util.registry.{Formatter, GlobalRegistry, Registry, SimpleRegistry}
+
+private object RegistryHandler {
+  sealed trait Matcher {
+    def matches(key: String): Boolean
+  }
+  class LiteralMatcher(word: String) extends Matcher {
+    def matches(key: String): Boolean = word == key
+  }
+  object WildcardMatcher extends Matcher {
+    def matches(key: String): Boolean = true
+  }
+}
 
 /**
  * A [[com.twitter.finagle.Service]] for displaying the current state of the
  * registry.
  *
- * It's intended to be used as a handler for TwitterServer, and
- * doesn't take any arguments yet.  As an admin endpoint, it displays
- * the entire registry in JSON.
+ * It's intended to be used as a handler for TwitterServer.
+ * As an admin endpoint, it displays the `GlobalRegistry` in JSON format.
+ *
+ * It takes an optional HTTP request parameter, "filter", which allows for
+ * simple filtering of the returned data.
+ *
+ * See the
+ * [[http://twitter.github.io/twitter-server/Admin.html#admin-registry-json user guide]]
+ * for additional details.
  */
 class RegistryHandler extends Service[Request, Response] {
+  import RegistryHandler._
+
   // TODO: have nice default HTML rendering for json output
   def apply(req: Request): Future[Response] = {
-    newOk(jsonResponse())
+    val filterParam = req.params.get("filter")
+    newOk(jsonResponse(filterParam))
   }
 
-  private[handler] def jsonResponse(): String = {
+  private[this] def filterRegistry(
+    filter: Option[String]
+  ): Registry = {
     val registry = GlobalRegistry.get
-    JsonConverter.writeToString(Formatter.asMap(registry))
+    filter match {
+      case None => registry
+      case Some(f) =>
+        val tokens = f.split("/").toList.dropWhile(_ == Formatter.RegistryKey)
+        if (tokens.isEmpty) {
+          registry
+        } else {
+          val matchers: Seq[Matcher] =
+            tokens.map { t =>
+              if (t == "*") WildcardMatcher
+              else new LiteralMatcher(t)
+            }
+
+          val filtered = new SimpleRegistry()
+          registry.foreach { entry =>
+            if (matchers.length <= entry.key.length) {
+              val allMatch = matchers.zip(entry.key).forall { case (matcher, word) =>
+                matcher.matches(word)
+              }
+              if (allMatch)
+                filtered.put(entry.key, entry.value)
+            }
+          }
+          filtered
+        }
+    }
   }
+
+  private[handler] def jsonResponse(filter: Option[String]): String = {
+    val filtered: Registry = filterRegistry(filter)
+    val asMap: Map[String, Object] = Formatter.asMap(filtered)
+    JsonConverter.writeToString(asMap)
+  }
+
 }

@@ -56,6 +56,19 @@ system properties, environment variables, build properties and more.
 
 .. image:: ../../img/registry.png
 
+The HTTP request parameter `filter` allows for simple filtering of the returned data.
+The value takes the form "path/to/data" and returns registry entries whose prefix
+matches the parameter. A glob, `*`, can be used to match any component of the path.
+For example, using "filter=registry/server/http" will output all Finagle Http servers.
+Using "filter=registry/client/\*/user_service" would output all Finagle clients with
+a label of "user_service" regardless of protocol.
+
+Due to the usage of `/` as a delimiter, it means you cannot match components
+containing a `/`. The choice of `*` as a glob also means you cannot match registry
+components with the exact value of `*`. For these use cases, there is the
+more powerful `jq <https://stedolan.github.io/jq/>`_ command-line JSON processing
+tool.
+
 /admin/server_info
 ~~~~~~~~~~~~~~~~~~
 
