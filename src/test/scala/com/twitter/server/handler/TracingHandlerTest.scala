@@ -1,12 +1,11 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.http.{Request, Status}
-import com.twitter.finagle.tracing.Record
-import com.twitter.finagle.tracing.{Trace, Tracer}
+import com.twitter.finagle.tracing.{Record, Trace, TraceId, Tracer}
 import com.twitter.util.Await
 import org.junit.runner.RunWith
 import org.mockito.Matchers.any
-import org.mockito.Mockito.{never, verify}
+import org.mockito.Mockito.{never, verify, when}
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -17,6 +16,8 @@ class TracingHandlerSpec extends FunSuite with MockitoSugar with BeforeAndAfter 
 
   test("enable tracing") {
     val tracer = mock[Tracer]
+    when(tracer.isActivelyTracing(any[TraceId])).thenReturn(true)
+
     try {
       // FIXME: This relies on a global.
       Trace.disable()
@@ -37,6 +38,8 @@ class TracingHandlerSpec extends FunSuite with MockitoSugar with BeforeAndAfter 
 
   test("disable tracing") {
     val tracer = mock[Tracer]
+    when(tracer.isActivelyTracing(any[TraceId])).thenReturn(true)
+
     try {
       Trace.enable()
       Trace.letTracer(tracer) {
