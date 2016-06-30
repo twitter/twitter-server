@@ -108,6 +108,7 @@ object TwitterServer extends Build {
     libraryDependencies ++= Seq(
       finagle("core"),
       finagle("http"),
+      finagle("toggle"),
       finagle("zipkin-core"),
       util("app"),
       util("core"),

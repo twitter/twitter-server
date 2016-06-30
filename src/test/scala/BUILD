@@ -2,6 +2,7 @@
 
 junit_tests(name='scala',
   dependencies=[
+    'finagle/finagle-toggle',
     'twitter-server/src/test:base',
     'twitter-server/src/main/scala'
   ],
