@@ -1,6 +1,7 @@
 package com.twitter.server.view
 
 import com.twitter.finagle.util.StackRegistry
+import com.twitter.server.util.HtmlUtils.escapeHtml
 
 private[server] object StackRegistryView {
   /**
@@ -18,23 +19,23 @@ private[server] object StackRegistryView {
     def renderParams(params: Seq[(String, String)]): String =
       (for ((field, value) <- params) yield {
         s"""<tr>
-              <td>${field}</td>
-              <td>${value}</td>
+              <td>${escapeHtml(field)}</td>
+              <td>${escapeHtml(value)}</td>
             </tr>"""
       }).mkString("\n")
 
     val modules = entry.modules
 
     s"""<h2>
-          ${entry.name}
-          <small>${entry.addr}</small>
+          ${escapeHtml(entry.name)}
+          <small>${escapeHtml(entry.addr)}</small>
         </h2>
         ${
            (for (scope <- statScope) yield {
             s"""<a href="/admin/metrics#${scope}/requests"
                 class="btn btn-default">
               <span class="glyphicon glyphicon-stats"></span>
-                Watch metrics for ${entry.name}
+                Watch metrics for ${escapeHtml(entry.name)}
               </a>"""
            }).getOrElse("")
          }
@@ -47,7 +48,7 @@ private[server] object StackRegistryView {
                 <ul class="nav nav-tabs">
                   ${
                      (for (StackRegistry.Module(role, _, _) <- modules) yield {
-                        s"""<li><a href="#${role}-module" data-toggle="tab">${role}</a></li>"""
+                        s"""<li><a href="#${role}-module" data-toggle="tab">${escapeHtml(role)}</a></li>"""
                       }).mkString("\n")
                    }
                 </ul>
@@ -59,8 +60,8 @@ private[server] object StackRegistryView {
                     s"""<div class="tab-pane" id="${role}-module">
                           <div style="display:inline-block; min-width:50%">
                             <div class="panel panel-default">
-                              <div class="panel-heading">${role}</div>
-                              <div class="panel-body"><p>${desc}</p></div>
+                              <div class="panel-heading">${escapeHtml(role)}</div>
+                              <div class="panel-body"><p>${escapeHtml(desc)}</p></div>
                               ${
                                 if (params.isEmpty) "" else {
                                    s"""<table class="table table-condensed table-bordered">

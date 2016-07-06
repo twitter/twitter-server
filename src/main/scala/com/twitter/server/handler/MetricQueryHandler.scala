@@ -3,6 +3,7 @@ package com.twitter.server.handler
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.io.Buf
+import com.twitter.server.util.HtmlUtils.escapeHtml
 import com.twitter.server.util.HttpUtils.{newResponse, parse}
 import com.twitter.server.util.{JsonConverter, MetricSource}
 import com.twitter.util.Future
@@ -16,7 +17,7 @@ private object MetricQueryHandler {
           <div class="col-md-4 snuggle-right">
             <ul id="metrics" class="list-unstyled">
               ${ (for (key <- keys.toSeq.sorted) yield {
-                    s"""<li id="${key.replace("/", "-")}">$key</li>"""
+                    s"""<li id="${key.replace("/", "-")}">${escapeHtml(key)}</li>"""
                   }).mkString("\n") }
             </ul>
           </div>

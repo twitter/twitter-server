@@ -4,6 +4,7 @@ import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.Service
 import com.twitter.finagle.stats.{BucketAndCount, HistogramDetail, WithHistogramDetails}
 import com.twitter.io.Buf
+import com.twitter.server.util.HtmlUtils.escapeHtml
 import com.twitter.server.util.HttpUtils.{newResponse, parse}
 import com.twitter.server.util.JsonConverter
 import com.twitter.util.Future
@@ -55,7 +56,7 @@ object HistogramQueryHandler {
       val statsTable = {
         def entry(name: String): String = {
           s"""<tr>
-                <td>$name:</td>
+                <td>${escapeHtml(name)}:</td>
                 <td id=$name></td>
               </tr>"""
         }
@@ -120,7 +121,7 @@ object HistogramQueryHandler {
         <div class="col-md-4 snuggle-right">
           <ul id="metrics" class="list-unstyled">
             ${ (for (key <- keys.sorted) yield {
-                  s"""<li id="${key.replace("/", "-")}"><a id="special-$key">$key</a></li>"""
+                  s"""<li id="${key.replace("/", "-")}"><a id="special-$key">${escapeHtml(key)}</a></li>"""
                 }).mkString("\n") }
           </ul>
         </div>

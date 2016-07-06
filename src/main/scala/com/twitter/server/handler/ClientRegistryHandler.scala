@@ -5,6 +5,7 @@ import com.twitter.finagle.client.{ClientRegistry, EndpointRegistry}
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.util.StackRegistry
 import com.twitter.io.Buf
+import com.twitter.server.util.HtmlUtils.escapeHtml
 import com.twitter.server.util.HttpUtils.{parse, new404, newResponse}
 import com.twitter.server.util.MetricSource
 import com.twitter.server.view.{EndpointRegistryView, StackRegistryView}
@@ -32,22 +33,22 @@ private object ClientRegistryHandler {
 
   /** Renders `profiles` in an html template. */
   def render(title: String, profiles: Seq[ClientProfile]): String =
-    s"""<h4 class="header text-center">${title}</h4>
+    s"""<h4 class="header text-center">${escapeHtml(title)}</h4>
         <hr/>
         <div id="clients" class="row">
         ${
           (for (ClientProfile(name, addr, scope, sr, unavailable) <- profiles) yield {
             s"""<div class="col-md-3">
                   <div class="client">
-                    <h4 class="name"><a href="/admin/clients/$name">${name}</a></h4>
-                    <p class="dest text-muted">$addr</p>
+                    <h4 class="name"><a href="/admin/clients/$name">${escapeHtml(name)}</a></h4>
+                    <p class="dest text-muted">${escapeHtml(addr)}</p>
                     ${
                       if (unavailable == 0) "" else {
                         s"""<a href="/admin/metrics#$scope/loadbalancer/available"
                             data-toggle="tooltip" data-placement="top"
                             class="conn-trouble btn-xs btn-default">
                             <span class="glyphicon glyphicon-exclamation-sign"
-                            aria-hidden="true"></span> $unavailable unavailable endpoint(s)</a>"""
+                            aria-hidden="true"></span> ${escapeHtml(unavailable.toString)} unavailable endpoint(s)</a>"""
                       }
                     }
                     <hr/>

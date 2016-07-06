@@ -4,6 +4,7 @@ import com.twitter.concurrent.AsyncStream
 import com.twitter.finagle.{Service, SimpleFilter}
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.io.{Reader, Buf}
+import com.twitter.server.util.HtmlUtils.escapeHtml
 import com.twitter.server.util.HttpUtils.{expectsHtml, newResponse}
 import com.twitter.util.Future
 
@@ -35,7 +36,7 @@ object IndexView {
           sb ++= s"""
             <a href="${href}">
               <li id="${id}" class="selectable $selected">
-                ${id}
+                ${escapeHtml(id)}
               </li>
             </a>
             """
@@ -55,7 +56,7 @@ object IndexView {
             <li class="subnav $active">
               <div class="subnav-title selectable">
                 <span class="glyphicon glyphicon-expand $collapse"></span>
-                <span>${id}</span>
+                <span>${escapeHtml(id)}</span>
               </div>
               <ul>${renderNav(links)}</ul>
             </li>"""

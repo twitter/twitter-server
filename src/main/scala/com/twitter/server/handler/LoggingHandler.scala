@@ -4,6 +4,7 @@ import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.io.Buf
 import com.twitter.logging.{Level, Logger}
+import com.twitter.server.util.HtmlUtils.escapeHtml
 import com.twitter.server.util.HttpUtils.{expectsHtml, newResponse, parse}
 import com.twitter.util.Future
 import java.net.URLEncoder
@@ -27,14 +28,14 @@ private object LoggingHandler {
   def renderText(loggers: Seq[Logger], updateMsg: String): String = {
     val out = loggers.toSeq.map { logger =>
       val loggerName = if (logger.name == "") "root" else logger.name
-      s"$loggerName ${getLevel(logger)}"
+      escapeHtml(s"$loggerName ${getLevel(logger)}")
     }.mkString("\n")
-    if (updateMsg.isEmpty) s"$out" else s"$updateMsg\n$out"
+    if (updateMsg.isEmpty) s"$out" else s"${escapeHtml(updateMsg)}\n$out"
   }
 
   def renderHtml(loggers: Seq[Logger], levels: Seq[Level], updateMsg: String): String =
     s"""<table class="table table-striped table-condensed">
-        <caption>$updateMsg</caption>
+        <caption>${escapeHtml(updateMsg)}</caption>
         <thead>
           <tr>
             <th>com.twitter.logging.Logger</th>
@@ -45,7 +46,7 @@ private object LoggingHandler {
           (for (logger <- loggers) yield {
             val loggerName = if (logger.name == "") "root" else logger.name
             s"""<tr>
-                <td><h5>$loggerName</h5></td>
+                <td><h5>${escapeHtml(loggerName)}</h5></td>
                 <td><div class="btn-group" role="group">
                   ${
                      (for (level <- levels) yield {
@@ -93,10 +94,10 @@ class LoggingHandler extends Service[Request, Response] {
           logger <- Logger.iterator.find(_.name == name)
         } yield {
           logger.setLevel(level)
-          s"""Changed ${if (logger.name == "") "root" else logger.name} to Level.$level"""
+          escapeHtml(s"""Changed ${if (logger.name == "") "root" else logger.name} to Level.$level""")
         }
 
-        updated.getOrElse(s"Unable to change $name to Level.$level!")
+        escapeHtml(updated.getOrElse(s"Unable to change $name to Level.$level!"))
 
       case _ => ""
     }

@@ -38,6 +38,7 @@ if [ "$TWITTER_SERVER_BRANCH" != "master" ]; then
   # finagle-thrift, finagle-zipkin
   cd $TWITTER_SERVER_TMP_DIR/finagle
   ./sbt ++$SCALA_VERSION finagle-thrift/publishLocal
+  ./sbt ++$SCALA_VERSION finagle-toggle/publishLocal
   ./sbt ++$SCALA_VERSION finagle-zipkin-core/publishLocal
   ./sbt ++$SCALA_VERSION finagle-zipkin/publishLocal
   # clean up

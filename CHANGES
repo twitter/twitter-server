@@ -7,6 +7,12 @@ Note that ``RB_ID=#`` correspond to associated messages in commits.
 1.x
 -----
 
+Bug Fixes
+~~~~~~~~~
+
+   * twitter-server: escape user input that is rendered in HTML, and make
+     bin/travisci publish finagle-toggle. ``RB_ID=848579``
+
 New Features
 ~~~~~~~~~~~~
 

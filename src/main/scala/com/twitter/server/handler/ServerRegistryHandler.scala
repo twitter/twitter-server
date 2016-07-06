@@ -5,6 +5,7 @@ import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.util.StackRegistry
 import com.twitter.io.Buf
+import com.twitter.server.util.HtmlUtils.escapeHtml
 import com.twitter.server.util.HttpUtils.{new404, newResponse, parse}
 import com.twitter.server.util.MetricSource
 import com.twitter.server.view.StackRegistryView
@@ -20,7 +21,7 @@ private object ServerRegistryHandler {
              (for {
                  (scope, entry) <- servers
                } yield {
-                 s"""<li><a href="#${entry.name}-entry" data-toggle="tab">$scope</a></li>"""
+                 s"""<li><a href="#${entry.name}-entry" data-toggle="tab">${escapeHtml(scope)}</a></li>"""
              }).mkString("\n")
            }
         </ul>

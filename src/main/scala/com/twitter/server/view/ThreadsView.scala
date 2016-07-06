@@ -1,6 +1,8 @@
 package com.twitter.server.view
 
 import com.twitter.server.handler.ThreadsHandler.{StackTrace, ThreadInfo}
+import com.twitter.server.util.HtmlUtils.escapeHtml
+import com.twitter.server.view.ThreadsView._
 
 private object ThreadsView {
 
@@ -58,11 +60,6 @@ private[server] class ThreadsView(
     all: Seq[ThreadInfo],
     deadlockedIds: Seq[Long])
 {
-  import com.twitter.server.view.ThreadsView._
-
-  private def escapeHtml(s: String): String =
-    xml.Utility.escape(s)
-
   private def summary: String = {
     val filtered = all.filter { info =>
       deadlockedIds.contains(info.thread.getId)
@@ -71,7 +68,7 @@ private[server] class ThreadsView(
     val deadlockLinks = if (filtered.isEmpty) "none" else {
       filtered.map { info =>
         val id = info.thread.getId
-        s"""<a href='#threadId-$id'>$id</a>"""
+        s"""<a href='#threadId-$id'>${escapeHtml(id.toString)}</a>"""
       }.mkString(", ")
     }
 
@@ -119,7 +116,7 @@ private[server] class ThreadsView(
     val daemonText =
       if (thread.isDaemon) "Yes" else "<strong><span class=\"text-danger\">No</span></strong>"
     val threadState =
-      s"${if (t.isIdle) "Idle" else "Active"} <small>(${thread.getState})</small>"
+      s"${if (t.isIdle) "Idle" else "Active"} <small>(${escapeHtml(thread.getState.toString)})</small>"
     val domId = s"threadId-${thread.getId}"
     val stackDomId = s"threadId-stack-${thread.getId}"
 
@@ -130,11 +127,11 @@ private[server] class ThreadsView(
           <span class="glyphicon glyphicon-expand"></span> <span class="text-muted"><small>Stack</small></span>
         </a>
       </td>
-      <td>${thread.getId}</td>
-      <td>${escapeHtml(thread.getName)}</td>
-      <td>$threadState</td>
-      <td>$daemonText</td>
-      <td>${thread.getPriority}</td>
+      <td>${thread.getId.toString}</td>
+      <td>${thread.getName}</td>
+      <td>${threadState}</td>
+      <td>${daemonText}</td>
+      <td>${thread.getPriority.toString}</td>
     </tr>
     <tr id="$stackDomId" class="$rowClassStyle $rowClassStackIdle $StackTraceRowClass">
       <td colspan="6">

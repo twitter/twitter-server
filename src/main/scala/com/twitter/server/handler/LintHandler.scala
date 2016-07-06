@@ -4,6 +4,7 @@ import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Response, Request}
 import com.twitter.io.Buf
 import com.twitter.server.handler.LintHandler.LintView
+import com.twitter.server.util.HtmlUtils.escapeHtml
 import com.twitter.server.util.HttpUtils._
 import com.twitter.server.util.JsonConverter
 import com.twitter.util.Future
@@ -113,9 +114,6 @@ private object LintHandler {
   });
 </script>"""
 
-    private def escapeHtml(s: String): String =
-      xml.Utility.escape(s)
-
     def summary: String = {
       val numIssues = nots.foldLeft(0) { case (total, (_, issues)) =>
         total + issues.size
@@ -132,19 +130,19 @@ private object LintHandler {
         <tbody>
           <tr>
             <td><strong>Number of rules run</strong></td>
-            <td>${rules.size}</td>
+            <td>${escapeHtml(rules.size.toString)}</td>
           </tr>
           <tr>
             <td><strong>Number of rules ok</strong></td>
-            <td>${oks.size}</td>
+            <td>${escapeHtml(oks.size.toString)}</td>
           </tr>
           <tr>
             <td><strong>Number of rules failed</strong></td>
-            <td>${nots.size}</td>
+            <td>${escapeHtml(nots.size.toString)}</td>
           </tr>
           <tr>
             <td><strong>Number of issues found</strong></td>
-            <td>$numIssues</td>
+            <td>${escapeHtml(numIssues.toString)}</td>
           </tr>
         </tbody>
       </table>
@@ -174,7 +172,7 @@ private object LintHandler {
     def failedRows: String = {
       val data = nots.map { case (rule, issues) =>
         issues.map { issue =>
-          failedRow(rule, issue)
+          escapeHtml(failedRow(rule, issue))
         }.mkString("")
       }.mkString("")
 

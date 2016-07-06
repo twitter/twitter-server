@@ -5,6 +5,7 @@ import com.twitter.finagle.http.{Request, Response}
 import com.twitter.io.Buf
 import com.twitter.util.Future
 import com.twitter.util.events.Sink
+import com.twitter.server.util.HtmlUtils.escapeHtml
 import com.twitter.server.util.HttpUtils.newResponse
 import java.util.logging.Logger
 
@@ -33,7 +34,7 @@ private[server] class EventRecordingHandler(
 
     newResponse(
       contentType = "text/html;charset=UTF-8",
-      content = Buf.Utf8(reply))
+      content = Buf.Utf8(escapeHtml(reply)))
   }
 
   private[handler] def updateRecording(uri: String): String = {
