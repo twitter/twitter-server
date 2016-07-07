@@ -116,7 +116,7 @@ trait Admin { self: App with AdminHttpServer with Stats =>
         path = "/admin/registry.json", handler = new RegistryHandler,
         alias = "Registry", group = Some(Grouping.ProcessInfo), includeInIndex = true),
       Route(
-        path = "/admin/toggles.json", handler = new ToggleHandler(),
+        path = "/admin/toggles", handler = new ToggleHandler(),
         alias = "Toggles", group = Some(Grouping.ProcessInfo), includeInIndex = true),
       Route(
         path = "/favicon.ico", ResourceHandler.fromJar(

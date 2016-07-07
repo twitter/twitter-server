@@ -19,6 +19,10 @@ New Features
    * Add optional HTTP request parameter `filter` to `/admin/registry.json`
      allowing for simple filtering of the returned JSON. ``RB_ID=842784``
 
+   * Add admin endpoint, `/admin/toggles`, for
+     `c.t.finagle.toggle.StandardToggleMap` registered `Toggles`.
+     ``RB_ID=847434``
+
 Breaking API Changes
 ~~~~~~~~~~~~~~~~~~~~
 
