@@ -165,8 +165,6 @@ parameter pretty=true or pretty=1, eg /admin/metrics.json?pretty=true
 
   {
     "requests_counter": 234,
-    "finagle/closechans": 592,
-    "finagle/closed": 592,
     "finagle/closes": 575,
     "finagle/connection_duration.avg": 561,
     "finagle/connection_duration.count": 592,
