@@ -136,6 +136,10 @@ object JvmStats {
       val eden = allocationStats.scope("eden")
       gauges.add(eden.addGauge("bytes") { allocations.eden })
     }
+
+    // return ms from ns while retaining precision
+    gauges.add(stats.addGauge("application_time_millis") { jvm.applicationTime.toFloat / 1000000 })
+    gauges.add(stats.addGauge("tenuring_threshold") { jvm.tenuringThreshold })
   }
 
 }
