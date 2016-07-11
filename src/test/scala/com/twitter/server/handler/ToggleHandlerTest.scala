@@ -1,18 +1,19 @@
 package com.twitter.server.handler
 
-import com.twitter.finagle.toggle.{Toggle, ToggleMap}
+import com.twitter.finagle.toggle.{NullToggleMap, Toggle, ToggleMap}
 import com.twitter.server.handler.ToggleHandler._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import scala.collection.immutable
+import scala.collection.mutable.ArrayBuffer
 
 @RunWith(classOf[JUnitRunner])
 class ToggleHandlerTest extends FunSuite {
 
   test("renders empty registeredLibraries") {
     val handler = new ToggleHandler(() => Map.empty)
-    assert(handler.jsonResponse ==
+    assert(handler.getResponse(ParsedPath(None, None)) ==
       """{
         |  "libraries" : [ ]
         |}""".stripMargin)
@@ -23,7 +24,8 @@ class ToggleHandlerTest extends FunSuite {
       "com.twitter.Empty1" -> new ToggleMap.Immutable(immutable.Seq.empty),
       "com.twitter.Empty2" -> new ToggleMap.Immutable(immutable.Seq.empty)
     )
-    val libs = new ToggleHandler(() => mappings).toLibraries
+    val libs = new ToggleHandler(() => mappings)
+      .toLibraries(ParsedPath(None, None))
 
     // check we have all the library names
     assert(mappings.keySet == libs.libraries.map(_.libraryName).toSet)
@@ -49,7 +51,8 @@ class ToggleHandlerTest extends FunSuite {
     val tm0 = new ToggleMap.Immutable(immutable.Seq(t0, t1))
     val tm1 = new ToggleMap.Immutable(immutable.Seq(t0b, t2))
     val mappings = Map("com.twitter.With" -> tm0.orElse(tm1))
-    val libs = new ToggleHandler(() => mappings).toLibraries
+    val libs = new ToggleHandler(() => mappings)
+      .toLibraries(ParsedPath(None, None))
 
     // check the populated ToggleMap
     val withLib = libs.libraries.find(_.libraryName == "com.twitter.With").get
@@ -79,6 +82,173 @@ class ToggleHandlerTest extends FunSuite {
       Current(t2.id, t2.fraction, t2.description),
       Seq(Component(t2.source,t2.fraction)))
     assert(expected2 == libToggle(t2.id))
+  }
+
+  test("toLibraries with filter on libraryName") {
+    val mut0 = ToggleMap.newMutable()
+    mut0.put("com.twitter.map0toggle0", 1.0)
+    val mut1 = ToggleMap.newMutable()
+    mut1.put("com.twitter.map1toggle0", 1.0)
+
+    val mappings = Map("com.twitter.map0" -> mut0, "com.twitter.map1" -> mut1)
+    val handler = new ToggleHandler(() => mappings)
+
+    val libs = handler.toLibraries(ParsedPath(Some("com.twitter.map1"), None))
+    assert(1 == libs.libraries.size)
+    val lib = libs.libraries.head
+    assert("com.twitter.map1" == lib.libraryName)
+  }
+
+  test("toLibraries with filter on libraryName and id") {
+    val mut0 = ToggleMap.newMutable()
+    mut0.put("com.twitter.map0toggle0", 1.0)
+    mut0.put("com.twitter.map0toggle1", 1.0)
+    val mut1 = ToggleMap.newMutable()
+    mut1.put("com.twitter.map1toggle0", 1.0)
+
+    val mappings = Map("com.twitter.map0" -> mut0, "com.twitter.map1" -> mut1)
+    val handler = new ToggleHandler(() => mappings)
+
+    val libs = handler.toLibraries(
+      ParsedPath(Some("com.twitter.map0"), Some("com.twitter.map0toggle1")))
+    assert(1 == libs.libraries.size)
+    val lib = libs.libraries.head
+    assert("com.twitter.map0" == lib.libraryName)
+    assert(1 == lib.toggles.size)
+    val libToggle = lib.toggles.head
+    assert("com.twitter.map0toggle1" == libToggle.current.id)
+  }
+
+  test("setToggle") {
+    // initialize some state
+    val libName = "com.handler.Mutable"
+    val id = "com.handler.T0"
+    val mut = ToggleMap.newMutable()
+    val tog = mut(id)
+    val handler = new ToggleHandler(() => Map(libName -> mut))
+    assert(!tog.isDefinedAt(30))
+
+    // mutate it
+    val errors = handler.setToggle(libName, id, Some("1.0"))
+    assert(errors.isEmpty, errors.mkString(", "))
+    assert(tog.isDefinedAt(30))
+    assert(tog(30))
+
+    // mutate it again.
+    val errors2 = handler.setToggle(libName, id, Some("0.0"))
+    assert(errors2.isEmpty, errors.mkString(", "))
+    assert(tog.isDefinedAt(30))
+    assert(!tog(30))
+  }
+
+  test("setToggle missing Mutable ToggleMap") {
+    val libName = "some.other.lib"
+    val handler = new ToggleHandler(() => Map(libName -> NullToggleMap))
+
+    val errors = handler.setToggle(libName, "com.handler.T0", Some("0.0"))
+    assert(errors.nonEmpty)
+    assert(errors.contains("Mutable ToggleMap not found for 'some.other.lib'"))
+  }
+
+  test("setToggle missing fraction") {
+    val libName = "com.handler.Mutable"
+    val handler = new ToggleHandler(() => Map(libName -> ToggleMap.newMutable()))
+
+    val errors = handler.setToggle(libName, "com.handler.T0", None)
+    assert(errors.nonEmpty)
+    assert(errors.contains("Missing query parameter: 'fraction'"))
+  }
+
+  test("setToggle invalid fraction that is not a Double") {
+    val libName = "com.handler.Mutable"
+    val handler = new ToggleHandler(() => Map(libName -> ToggleMap.newMutable()))
+
+    val errors = handler.setToggle(libName, "com.handler.T0", Some("derp"))
+    assert(errors.nonEmpty)
+    assert(errors.exists(_.contains("Fraction must be [0.0-1.0]")))
+  }
+
+  test("setToggle invalid fraction that is out of range") {
+    val libName = "com.handler.Mutable"
+    val handler = new ToggleHandler(() => Map(libName -> ToggleMap.newMutable()))
+
+    val errors = handler.setToggle(libName, "com.handler.T0", Some("10.5"))
+    assert(errors.nonEmpty)
+    assert(errors.exists(_.contains("Fraction must be [0.0-1.0]")))
+  }
+
+  test("deleteToggle") {
+    // initialize some state
+    val libName = "com.handler.Mutable"
+    val id = "com.handler.T0"
+    val mut = ToggleMap.newMutable()
+    mut.put(id, 1.0)
+    val tog = mut(id)
+    val handler = new ToggleHandler(() => Map(libName -> mut))
+    assert(tog.isDefinedAt(30))
+    assert(tog(30))
+
+    // delete it
+    val errors = handler.deleteToggle(libName, id)
+    assert(errors.isEmpty, errors.mkString(", "))
+    assert(!tog.isDefinedAt(30))
+  }
+
+  test("deleteToggle missing Mutable ToggleMap") {
+    val libName = "some.other.lib"
+    val handler = new ToggleHandler(() => Map(libName -> NullToggleMap))
+
+    val errors = handler.deleteToggle(libName, "com.handler.T0")
+    assert(errors.nonEmpty)
+    assert(errors.contains("Mutable ToggleMap not found for 'some.other.lib'"))
+  }
+
+  test("parsePath") {
+    def assertParsePathOk(
+      path: String,
+      expectedLibraryName: Option[String],
+      expectedId: Option[String]
+    ): Unit = {
+      val handler = new ToggleHandler(() => Map("com.twitter.lib" -> NullToggleMap))
+      val errors = new ArrayBuffer[String]()
+      val parsed = handler.parsePath(path, errors)
+      assert(errors.isEmpty, errors.mkString(", "))
+      assert(expectedLibraryName == parsed.libraryName)
+      assert(expectedId == parsed.id)
+    }
+
+    assertParsePathOk("/admin/toggles", None, None)
+    assertParsePathOk("/admin/toggles/", None, None)
+    assertParsePathOk("/admin/toggles/com.twitter.lib", Some("com.twitter.lib"), None)
+    assertParsePathOk("/admin/toggles/com.twitter.lib/com.twitter.lib.Toggle",
+      Some("com.twitter.lib"), Some("com.twitter.lib.Toggle"))
+  }
+
+  test("parsePath invalid path format") {
+    val handler = new ToggleHandler(() => Map("com.twitter.lib" -> NullToggleMap))
+    def assertPathFormat(path: String): Unit = {
+      val errors = new ArrayBuffer[String]()
+      handler.parsePath(path, errors)
+      assert(errors.exists(_.startsWith("Path must be of the form /admin/toggles")))
+    }
+
+    assertPathFormat("")
+    assertPathFormat("/admin/toggle")
+    assertPathFormat("admin/toggles")
+  }
+
+  test("parsePath unknown libraryName") {
+    val handler = new ToggleHandler(() => Map("com.twitter.lib" -> NullToggleMap))
+    val errors = new ArrayBuffer[String]()
+    handler.parsePath("/admin/toggles/com.twitter.erm", errors)
+    assert(errors.contains("Unknown library name: 'com.twitter.erm'"))
+  }
+
+  test("parsePath invalid id") {
+    val handler = new ToggleHandler(() => Map("com.twitter.lib" -> NullToggleMap))
+    val errors = new ArrayBuffer[String]()
+    handler.parsePath("/admin/toggles/com.twitter.lib/FLEEK", errors)
+    assert(errors.contains("Invalid id: 'FLEEK'"))
   }
 
 }
