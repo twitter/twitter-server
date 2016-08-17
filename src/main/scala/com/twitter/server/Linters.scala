@@ -19,6 +19,7 @@ trait Linters { app: App =>
   def linterRules: Seq[Rule] = {
     TooManyCumulativeGaugesRules() ++
     Seq(
+      SchedulerBlockingRule(),
       NumberOfStatsReceiversRule(),
       StackRegistryDuplicatesRule(ClientRegistry, Set.empty),
       StackRegistryDuplicatesRule(ServerRegistry, Set.empty),
