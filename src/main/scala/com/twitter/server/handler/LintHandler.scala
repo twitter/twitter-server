@@ -161,7 +161,6 @@ private object LintHandler {
     }
 
     def failedRow(rule: Rule, issue: Issue): String = {
-      val desc = escapeHtml(rule.description)
       s"""
       <tr>
         <td>${nameWithDescription(rule)}</td>
@@ -172,7 +171,7 @@ private object LintHandler {
     def failedRows: String = {
       val data = nots.map { case (rule, issues) =>
         issues.map { issue =>
-          escapeHtml(failedRow(rule, issue))
+          failedRow(rule, issue)
         }.mkString("")
       }.mkString("")
 
