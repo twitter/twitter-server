@@ -30,7 +30,8 @@ object SchedulerBlockingRule {
         |Blocking the Scheduler via usage of `com.twitter.util.Await` can
         |cause unexpected slowness, a decrease in throughput, and potentially
         |deadlocks for your application. Developers should instead write
-        |code in terms of the `Future` combinators. To help track down the code
+        |code in terms of the `Future` combinators or do the blocking in
+        |a `com.twitter.util.FuturePool`. To help track down the code
         |doing the blocking, you can set the System property
         |`-Dcom.twitter.concurrent.schedulerSampleBlockingFraction=$fraction`
         |which is defined in `com.twitter.concurrent.LocalScheduler` and it will
