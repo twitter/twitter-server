@@ -132,6 +132,59 @@ each logger can also be modified on-the-fly.
 
 .. image:: ../../img/logging.png
 
+/admin/toggles
+~~~~~~~~~~~~~~
+
+See and modify the server's in-memory mutable `com.twitter.finagle.toggle.Toggles`.
+
+`GET` requests show the current state of all `StandardToggleMap StandardToggleMaps`.
+Requests should be of the form `/admin/toggles{/$libraryName}{/$id}`.
+Note that the library name and toggle id components are optional and allow
+for filtering the output on those constraints.
+The output is JSON and it looks roughly like:
+
+::
+
+  {
+    "libraries": [
+      {
+        "libraryName" : "$libraryName",
+        "toggles" : [
+          {
+            "current" : {
+              "id" : "$id",
+              "fraction" : $fraction,
+              "description" : "$description"
+            },
+            "components" : [
+              {
+                "source" : "$ToggleMapSource",
+                "fraction" : $fraction
+              },
+              { <other sources here> }
+            ]
+          },
+          { <other toggles here> }
+        ]
+      },
+      { <other libraries here> }
+    ]
+  }
+
+There will be a hash for each library registered with
+`com.twitter.finagle.toggle.StandardToggleMap`. For each `Toggle`
+the "current" hash shows the current configuration while the
+"components" array has a hash per `ToggleMap` source. These
+are ordered by evaluation order and as such, sources earlier in a
+component array are used first.
+
+`PUT` requests allow for updates/creation of the mutable `Toggles`
+while `DELETE` requests allow for removal. These apply only to the
+`ToggleMap.Mutable` `ToggleMaps` within a `StandardToggleMap`.
+Requests must be of the form `/admin/toggles/$libraryName/$id`.
+For create and update, and an additional `fraction` request parameter
+must be set as well.
+
 Metrics
 -------
 
