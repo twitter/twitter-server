@@ -2,7 +2,7 @@ package com.twitter.server
 
 import com.twitter.conversions.time._
 import com.twitter.finagle.{Http, ListeningServer}
-import com.twitter.finagle.http.{HttpMuxHandler, Request, Response}
+import com.twitter.finagle.http._
 import com.twitter.server.util.HttpUtils._
 import com.twitter.util.{Await, Future}
 import java.net.{InetAddress, InetSocketAddress}
@@ -50,8 +50,7 @@ class AdminHttpServerTest extends FunSuite  {
     val adminServerBoundPort = adminServer.boundAddress.asInstanceOf[InetSocketAddress].getPort
     assert(adminServerBoundPort == twitterServer.adminBoundAddress.getPort)
     val client = Http.client.newService(s"localhost:$adminServerBoundPort")
-
-    Await.result(client(Request("/quitquitquit")), 1.second)
+    Await.result(client(Request(Method.Post, "/quitquitquit")), 1.second)
 
     // throws if adminHttpServer does not exit before the grace period,
     // which indicates that we have not closed it properly.
@@ -82,5 +81,23 @@ class AdminHttpServerTest extends FunSuite  {
     server.shadowAdminPort.let(new InetSocketAddress(InetAddress.getLoopbackAddress, 0)) {
       server.main(args = Array.empty[String])
     }
+  }
+
+  test("GET does not close server") {
+    val server = new TestTwitterServer {
+      override def main(): Unit = {
+        checkServer(adminHttpServer)
+        // Try to close the server with a GET
+        val adminServerBoundPort = adminHttpServer.boundAddress.asInstanceOf[InetSocketAddress].getPort
+        assert(adminServerBoundPort == this.adminBoundAddress.getPort)
+        val client = Http.client.newService(s"localhost:$adminServerBoundPort")
+        val res = Await.result(client(Request(Method.Get, "/quitquitquit")), 1.second)
+        assert(res.status == Status.MethodNotAllowed)
+        // Check that the server is still up
+        checkServer(adminHttpServer)
+        Await.result(close(5.seconds))
+      }
+    }
+    server.main(args = Array.empty[String])
   }
 } 

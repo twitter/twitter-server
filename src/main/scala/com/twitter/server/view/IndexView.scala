@@ -33,13 +33,25 @@ object IndexView {
 
         case Link(id, href) +: rest =>
           val selected = if (href == uri) "selected" else ""
-          sb ++= s"""
+          if (id == "/abortabortabort" || id == "/quitquitquit") {
+            sb ++= s"""
+            <form method="post" id="${id}-form" action="${href}">
+              <a href="#" onclick="document.getElementById('${id}-form').submit()">
+                <li id="${id}" class="selectable $selected">
+                  ${id}
+                </li>
+              </a>
+            </form>
+            """
+          } else {
+            sb ++= s"""
             <a href="${href}">
               <li id="${id}" class="selectable $selected">
                 ${escapeHtml(id)}
               </li>
             </a>
             """
+          }
           renderNav(rest, sb)
 
         case Group(id, links) +: rest =>

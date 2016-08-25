@@ -36,6 +36,12 @@ Breaking API Changes
      `blog post <https://finagle.github.io/blog/2016/04/20/scala-210-and-java7/>`_
      for details. ``RB_ID=828898``
 
+Runtime Behavior Changes
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+   * twitter-server: ShutdownHandler and AbortHandler accept only POST
+     requests and ignore non-POST requests. ``RB_ID=848212``
+
    
 1.20.0
 ------

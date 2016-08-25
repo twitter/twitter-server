@@ -1,7 +1,7 @@
 package com.twitter.server.handler
 
 import com.twitter.conversions.time._
-import com.twitter.finagle.http.{Status, Request}
+import com.twitter.finagle.http.{Status, Request, Method}
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Closable, Time, Await, Future}
 import org.junit.runner.RunWith
@@ -33,7 +33,7 @@ class ShutdownHandlerTest extends FunSuite {
       assert(deadline == now+1.second)
     }
     val handler = new ShutdownHandler(closer)
-    val rsp = Await.result(handler(Request("/foo")))
+    val rsp = Await.result(handler(Request(Method.Post, "/foo")))
     assert(rsp.status == Status.Ok)
     assert(closer.closed)
   })
@@ -46,7 +46,7 @@ class ShutdownHandlerTest extends FunSuite {
       assert(deadline < expectedDeadline + 1.second)
     }
     val handler = new ShutdownHandler(closer)
-    val rsp = Await.result(handler(Request("/foo?grace=" + grace.toString)))
+    val rsp = Await.result(handler(Request(Method.Post, "/foo?grace=" + grace.toString)))
     assert(rsp.status == Status.Ok)
     assert(closer.closed)
   }
@@ -54,8 +54,19 @@ class ShutdownHandlerTest extends FunSuite {
   test("fail when an invalid grace parameter is specified") {
     val closer = Closer.mk { _ => fail() }
     val handler = new ShutdownHandler(closer)
-    val rsp = Await.result(handler(Request("/foo?grace=5")))
+    val rsp = Await.result(handler(Request(Method.Post, "/foo?grace=5")))
     assert(rsp.status == Status.BadRequest)
+    assert(!closer.closed)
+  }
+
+  test("do not close when given a GET request") {
+    val now = Time.now
+    val closer = Closer.mk { deadline =>
+      assert(deadline == now+1.second)
+    }
+    val handler = new ShutdownHandler(closer)
+    val rsp = Await.result(handler(Request(Method.Get, "/foo")))
+    assert(rsp.status == Status.MethodNotAllowed)
     assert(!closer.closed)
   }
 }
