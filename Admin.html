@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>HTTP Admin interface &mdash; TwitterServer 1.21.0 documentation</title>
+    <title>HTTP Admin interface &mdash; TwitterServer 1.22.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.21.0',
+        VERSION:     '1.22.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="TwitterServer 1.21.0 documentation" href="index.html" />
+    <link rel="top" title="TwitterServer 1.22.0 documentation" href="index.html" />
     <link rel="next" title="Using TwitterServer from Java" href="Java.html" />
     <link rel="prev" title="Features" href="Features.html" />
    
@@ -159,6 +159,54 @@ regarding tracing.</p>
 <p>Display the set of loggers and their current log level. The level of
 each logger can also be modified on-the-fly.</p>
 <img alt="_images/logging.png" src="_images/logging.png" />
+</div>
+<div class="section" id="admin-toggles">
+<h3>/admin/toggles<a class="headerlink" href="#admin-toggles" title="Permalink to this headline">¶</a></h3>
+<p>See and modify the server&#8217;s in-memory mutable <cite>com.twitter.finagle.toggle.Toggles</cite>.</p>
+<p><cite>GET</cite> requests show the current state of all <cite>StandardToggleMap StandardToggleMaps</cite>.
+Requests should be of the form <cite>/admin/toggles{/$libraryName}{/$id}</cite>.
+Note that the library name and toggle id components are optional and allow
+for filtering the output on those constraints.
+The output is JSON and it looks roughly like:</p>
+<div class="highlight-text"><div class="highlight"><pre>{
+  &quot;libraries&quot;: [
+    {
+      &quot;libraryName&quot; : &quot;$libraryName&quot;,
+      &quot;toggles&quot; : [
+        {
+          &quot;current&quot; : {
+            &quot;id&quot; : &quot;$id&quot;,
+            &quot;fraction&quot; : $fraction,
+            &quot;description&quot; : &quot;$description&quot;
+          },
+          &quot;components&quot; : [
+            {
+              &quot;source&quot; : &quot;$ToggleMapSource&quot;,
+              &quot;fraction&quot; : $fraction
+            },
+            { &lt;other sources here&gt; }
+          ]
+        },
+        { &lt;other toggles here&gt; }
+      ]
+    },
+    { &lt;other libraries here&gt; }
+  ]
+}
+</pre></div>
+</div>
+<p>There will be a hash for each library registered with
+<cite>com.twitter.finagle.toggle.StandardToggleMap</cite>. For each <cite>Toggle</cite>
+the &#8220;current&#8221; hash shows the current configuration while the
+&#8220;components&#8221; array has a hash per <cite>ToggleMap</cite> source. These
+are ordered by evaluation order and as such, sources earlier in a
+component array are used first.</p>
+<p><cite>PUT</cite> requests allow for updates/creation of the mutable <cite>Toggles</cite>
+while <cite>DELETE</cite> requests allow for removal. These apply only to the
+<cite>ToggleMap.Mutable</cite> <cite>ToggleMaps</cite> within a <cite>StandardToggleMap</cite>.
+Requests must be of the form <cite>/admin/toggles/$libraryName/$id</cite>.
+For create and update, and an additional <cite>fraction</cite> request parameter
+must be set as well.</p>
 </div>
 </div>
 <div class="section" id="metrics">
@@ -324,6 +372,7 @@ values for each module are available at <cite>/admin/clients/&lt;client name&gt;
 <li><a class="reference internal" href="#admin-events">/admin/events</a></li>
 <li><a class="reference internal" href="#admin-tracing">/admin/tracing</a></li>
 <li><a class="reference internal" href="#admin-logging">/admin/logging</a></li>
+<li><a class="reference internal" href="#admin-toggles">/admin/toggles</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#metrics">Metrics</a><ul>

@@ -195,7 +195,9 @@ respectively.
 
 If you are using a Hotspot VM, you get a few additional metrics that
 may be useful. This includes safe point time (`jvm/safepoint`),
-metaspace usage (`jvm/mem/metaspace`) and allocation rates (`jvm/mem/allocations`).
+metaspace usage (`jvm/mem/metaspace`), allocation rates (`jvm/mem/allocations`),
+time running application code since start (`jvm/application_time_millis`),
+and tenuring threshold (`jvm/tenuring_threshold`).
 The eden allocation gauge (`jvm/mem/allocations/eden/bytes`) is a particularly
 relevant metric for service developers. The vast majority of allocations are
 done into the eden space, so this metric can be used to calculate the allocations
