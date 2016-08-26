@@ -10,6 +10,15 @@ Note that ``RB_ID=#`` correspond to associated messages in commits.
 1.22.0
 ------
 
+Runtime Behavior Changes
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+   * twitter-server: ShutdownHandler and AbortHandler accept only POST
+     requests and ignore non-POST requests. ``RB_ID=848212``
+
+1.21.0
+------
+
 Bug Fixes
 ~~~~~~~~~
 
@@ -35,14 +44,7 @@ Breaking API Changes
    * Builds are now only for Java 8 and Scala 2.11. See the
      `blog post <https://finagle.github.io/blog/2016/04/20/scala-210-and-java7/>`_
      for details. ``RB_ID=828898``
-
-Runtime Behavior Changes
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-   * twitter-server: ShutdownHandler and AbortHandler accept only POST
-     requests and ignore non-POST requests. ``RB_ID=848212``
-
-   
+  
 1.20.0
 ------
 
