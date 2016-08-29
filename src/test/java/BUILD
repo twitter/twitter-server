@@ -1,8 +1,13 @@
 junit_tests(name='java',
   dependencies=[
     '3rdparty/jvm/org/scala-lang:scala-library',
-    'twitter-server/src/test:base',
-    'twitter-server/src/main/scala'
+    'twitter-server/src/main/scala',
+    '3rdparty/jvm/junit:junit',
+    '3rdparty/jvm/org/mockito:mockito-all',
+    '3rdparty/jvm/org/scalacheck:scalacheck',
+    'util/util-app/src/main/scala:scala',
+    'util/util-core/src/main/scala:scala',
+    'util/util-logging/src/main/scala:scala',
   ],
   fatal_warnings=False,
   sources=rglobs('*.java')
