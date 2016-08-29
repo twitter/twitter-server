@@ -107,7 +107,7 @@ object TwitterServer extends Build {
     name := "twitter-server",
     libraryDependencies ++= Seq(
       finagle("core"),
-      finagle("http"),
+      finagle("netty4-http"),
       finagle("toggle"),
       finagle("zipkin-core"),
       util("app"),
