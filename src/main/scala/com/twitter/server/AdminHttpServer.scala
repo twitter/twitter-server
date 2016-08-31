@@ -1,14 +1,13 @@
 package com.twitter.server
 
 import com.twitter.app.App
+import com.twitter.finagle.{Http, ListeningServer, NullServer, Service, param}
 import com.twitter.finagle.client.ClientRegistry
 import com.twitter.finagle.filter.ServerAdmissionControl
 import com.twitter.finagle.http.{HttpMuxer, Request, Response}
-import com.twitter.finagle.netty4.http.exp.Netty4Impl
 import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.tracing.NullTracer
-import com.twitter.finagle.{Http, ListeningServer, NullServer, Service, param}
 import com.twitter.server.util.HttpUtils
 import com.twitter.server.view.{IndexView, NotFoundView}
 import com.twitter.util.registry.Library
@@ -188,7 +187,6 @@ trait AdminHttpServer { self: App =>
     }
     log.info(s"Serving admin http on ${adminPort()}")
     adminHttpServer = Http.server
-      .configured(Netty4Impl)
       .configured(param.Stats(NullStatsReceiver))
       .configured(param.Tracer(NullTracer))
       .configured(param.Monitor(loggingMonitor))
