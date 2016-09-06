@@ -3,21 +3,15 @@ package com.twitter.server
 import com.twitter.app.App
 import com.twitter.concurrent.NamedPoolThreadFactory
 import com.twitter.finagle.http.{HttpMuxer, HttpMuxHandler}
-import com.twitter.finagle.netty3.Netty3Listener
+import com.twitter.finagle.netty4
+import com.twitter.finagle.netty4.http.exp.Netty4Impl
 import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.tracing.NullTracer
 import com.twitter.finagle.util.LoadService
 import com.twitter.finagle.{Http, ListeningServer, NullServer, param}
+import io.netty.channel.nio.NioEventLoopGroup
 import java.net.InetSocketAddress
-import java.util.concurrent.Executors
 import java.util.logging.Logger
-import org.jboss.netty.channel.ServerChannelFactory
-import org.jboss.netty.channel.socket.nio.{NioWorkerPool, NioServerSocketChannelFactory}
-
-private object ShadowAdminServer {
-  val Executor = Executors.newCachedThreadPool(
-    new NamedPoolThreadFactory("twitter-server/netty3", true /*daemon*/))
-}
 
 /**
  * An admin http server which serves requests outside the default
@@ -31,13 +25,10 @@ private object ShadowAdminServer {
  * are an accurate proxy of server health.
  */
 trait ShadowAdminServer { self: App with AdminHttpServer =>
-  import ShadowAdminServer._
 
   @volatile protected var shadowHttpServer: ListeningServer = NullServer
   val shadowAdminPort = flag("shadow.admin.port", new InetSocketAddress(defaultHttpPort+1),
     "Shadow admin http server port")
-
-  def shadowWorkerPool: NioWorkerPool = new NioWorkerPool(Executor, 1)
 
   premain {
     val log = Logger.getLogger(getClass.getName)
@@ -54,15 +45,14 @@ trait ShadowAdminServer { self: App with AdminHttpServer =>
       case (muxer, h) => muxer.withHandler(h.pattern, h)
     }
 
-    val channelFactory: ServerChannelFactory =
-      new NioServerSocketChannelFactory(Executor, shadowWorkerPool) {
-        override def releaseExternalResources() = () // no-op
-      }
+    val shadowEventLoop = new NioEventLoopGroup(1 /*nThreads*/ ,
+      new NamedPoolThreadFactory("twitter-server/netty", makeDaemons = true))
 
     shadowHttpServer = Http.server
       .configured(param.Stats(NullStatsReceiver))
+      .configured(Netty4Impl)
       .configured(param.Tracer(NullTracer))
-      .configured(Netty3Listener.ChannelFactory(channelFactory))
+      .configured(netty4.param.WorkerPool(shadowEventLoop))
       .serve(shadowAdminPort(), muxer)
     closeOnExit(shadowHttpServer)
   }
