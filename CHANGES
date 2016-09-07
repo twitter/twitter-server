@@ -7,6 +7,11 @@ Note that ``RB_ID=#`` correspond to associated messages in commits.
 1.x
 -----
 
+1.23.0
+------
+
+No Changes
+
 1.22.0
 ------
 
@@ -44,7 +49,7 @@ Breaking API Changes
    * Builds are now only for Java 8 and Scala 2.11. See the
      `blog post <https://finagle.github.io/blog/2016/04/20/scala-210-and-java7/>`_
      for details. ``RB_ID=828898``
-  
+
 1.20.0
 ------
 
