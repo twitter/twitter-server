@@ -20,11 +20,19 @@ and is being actively developed and maintained.
 
 Browse the [user guide](https://twitter.github.io/twitter-server/).
 
+## Releases
+
+[Releases](https://maven-badges.herokuapp.com/maven-central/com.twitter/twitter-server_2.11)
+are done on an approximately monthly schedule. While [semver](http://semver.org/)
+is not followed, the [changelogs](CHANGES) are detailed and include sections on
+public API breaks and changes in runtime behavior.
+
 ## Getting involved
 
 * Website: https://twitter.github.io/twitter-server/
 * Source: https://github.com/twitter/twitter-server/
 * Mailing List: [finaglers@googlegroups.com](https://groups.google.com/forum/#!forum/finaglers)
+* Chat: https://gitter.im/twitter/finagle
 
 ## Contributing
 
