@@ -15,11 +15,17 @@ No Changes
 1.22.0
 ------
 
+New Features
+~~~~~~~~~~~~
+
+  * No longer need to add an additional resolver that points to maven.twttr.com.
+    ``RB_ID=878967``
+
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-   * twitter-server: ShutdownHandler and AbortHandler accept only POST
-     requests and ignore non-POST requests. ``RB_ID=848212``
+   * ShutdownHandler and AbortHandler accept only POST requests and ignore
+     non-POST requests. ``RB_ID=848212``
 
 1.21.0
 ------
@@ -27,8 +33,8 @@ Runtime Behavior Changes
 Bug Fixes
 ~~~~~~~~~
 
-   * twitter-server: escape user input that is rendered in HTML, and make
-     bin/travisci publish finagle-toggle. ``RB_ID=848579``
+   * Escape user input that is rendered in HTML, and make bin/travisci publish
+     finagle-toggle. ``RB_ID=848579``
 
 New Features
 ~~~~~~~~~~~~
@@ -43,9 +49,10 @@ New Features
 Breaking API Changes
 ~~~~~~~~~~~~~~~~~~~~
 
-   * twitter-server: Removed AdminHttpServer#mkRoutex method. This method
-     was created during the migration away from direct usage of netty
-     http types and is now redundant. ``RB_ID=835083``
+   * Removed AdminHttpServer#mkRoutex method. This method was created during the
+     migration away from direct usage of netty http types and is now
+     redundant. ``RB_ID=835083``
+
    * Builds are now only for Java 8 and Scala 2.11. See the
      `blog post <https://finagle.github.io/blog/2016/04/20/scala-210-and-java7/>`_
      for details. ``RB_ID=828898``

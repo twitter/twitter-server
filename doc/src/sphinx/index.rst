@@ -33,9 +33,9 @@ or, with sbt:
 
   libraryDependencies += "com.twitter" %% "twitter-server" % "|release|"
 
-NB: You only need to add the ``maven.twttr.com`` repository if you want
-to use libraries in Twitter `common`, which are only published to
-``maven.twttr.com``. For example, ``finagle-stats``, which adds
+NB: You only need to add the ``maven.twttr.com`` repository if you want to use
+libraries in Twitter `common`, which are only published to ``maven.twttr.com``,
+and you're using 1.23.0 or earlier. For example, ``finagle-stats``, which adds
 :doc:`Metrics <Features>`, requires a twitter `common` library.
 
 First we’ll need to import a few things into our namespace.

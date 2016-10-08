@@ -84,12 +84,11 @@ handler on the admin interface.
 Metrics
 -------
 
-Note: In order to enable usage of the Metrics library, you must have
-the finagle-stats jar on your classpath.  `finagle-stats` depends on
-libraries which can be found in the
-`https://maven.twttr.com <https://maven.twttr.com>`_ repository.  There
-are instructions on the :doc:`quickstart <index>` for adding it in
-maven or sbt.
+Note: In order to enable usage of the Metrics library, you must have the
+finagle-stats jar on your classpath.  Before version 6.39.0, `finagle-stats`
+depended on libraries which can be found in the `https://maven.twttr.com
+<https://maven.twttr.com>`_ repository.  There are instructions on the
+:doc:`quickstart <index>` for adding it in maven or sbt.
 
 The `statsReceiver` field of `TwitterServer` defines a sink for
 metrics. With it you can update counters and stats (histograms) or
