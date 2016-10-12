@@ -138,7 +138,7 @@ private object Json {
   import com.fasterxml.jackson.module.scala.DefaultScalaModule
   import java.lang.reflect.{Type, ParameterizedType}
 
-  @JsonInclude(JsonInclude.Include.NON_NULL)
+  @JsonInclude(JsonInclude.Include.NON_ABSENT)
   case class Envelope[A](
       id: String,
       when: Long,

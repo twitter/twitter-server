@@ -13,7 +13,7 @@ object TwitterServer extends Build {
   val utilVersion = "6.38.0" + suffix
   val finagleVersion = "6.39.0" + suffix
 
-  val jacksonVersion = "2.6.5"
+  val jacksonVersion = "2.8.3"
   val jacksonLibs = Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
