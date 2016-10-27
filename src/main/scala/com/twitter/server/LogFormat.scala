@@ -9,13 +9,13 @@ import java.io.{PrintWriter, StringWriter}
 import scala.reflect.NameTransformer
 
 trait LogFormat { app: App with Logging =>
-  override def defaultFormatter = new LogFormatter
+  override def defaultFormatter: Formatter = new LogFormatter
 }
 
 /**
  * Implements "glog" style log formatting.
  */
-class LogFormatter extends Formatter {
+final class LogFormatter extends Formatter {
   private val levels = Map[Level, Char](
     Level.FINEST -> 'D',
     Level.FINER -> 'D',
