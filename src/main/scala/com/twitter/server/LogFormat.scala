@@ -10,6 +10,9 @@ import scala.reflect.NameTransformer
 
 trait LogFormat { app: App with Logging =>
   override def defaultFormatter: Formatter = new LogFormatter
+  premain {
+    configureLoggerFactories()
+  }
 }
 
 /**
