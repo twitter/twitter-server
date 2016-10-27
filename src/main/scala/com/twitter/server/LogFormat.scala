@@ -15,7 +15,7 @@ trait LogFormat { app: App with Logging =>
 /**
  * Implements "glog" style log formatting.
  */
-final class LogFormatter extends Formatter {
+private class LogFormatter extends Formatter {
   private val levels = Map[Level, Char](
     Level.FINEST -> 'D',
     Level.FINER -> 'D',
