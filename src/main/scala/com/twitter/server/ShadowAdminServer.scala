@@ -4,7 +4,6 @@ import com.twitter.app.App
 import com.twitter.concurrent.NamedPoolThreadFactory
 import com.twitter.finagle.http.{HttpMuxer, HttpMuxHandler}
 import com.twitter.finagle.netty4
-import com.twitter.finagle.netty4.http.exp.Netty4Impl
 import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.tracing.NullTracer
 import com.twitter.finagle.util.LoadService
@@ -50,7 +49,7 @@ trait ShadowAdminServer { self: App with AdminHttpServer =>
 
     shadowHttpServer = Http.server
       .configured(param.Stats(NullStatsReceiver))
-      .configured(Netty4Impl)
+      .configured(Http.Netty4Impl)
       .configured(param.Tracer(NullTracer))
       .configured(netty4.param.WorkerPool(shadowEventLoop))
       .serve(shadowAdminPort(), muxer)
