@@ -1,4 +1,4 @@
-target(name='twitter-server',
+target(
   dependencies=[
     'twitter-server/src/main/scala'
   ]

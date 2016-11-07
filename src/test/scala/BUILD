@@ -1,6 +1,6 @@
 # test twitter-server
 
-junit_tests(name='scala',
+junit_tests(
   dependencies=[
     'finagle/finagle-toggle',
     'twitter-server/src/test:base',
