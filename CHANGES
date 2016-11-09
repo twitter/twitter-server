@@ -7,6 +7,12 @@ Note that ``RB_ID=#`` correspond to associated messages in commits.
 1.x
 -----
 
+New Features
+~~~~~~~~~~~~
+
+  * Add ability to specify admin interface UI grouping, alias, and path for admin
+    handlers using the newly added Route and RouteUi. ``RB_ID=886829``
+
 1.24.0
 ------
 

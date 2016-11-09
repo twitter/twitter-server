@@ -1,17 +1,38 @@
 package com.twitter.server
 
-import com.twitter.app.{GlobalFlag, App}
-import com.twitter.finagle.http.HttpMuxer
+import com.twitter.app.{App, GlobalFlag}
+import com.twitter.finagle.http.{HttpMuxer, Route, RouteIndex}
 import com.twitter.server.handler._
+import com.twitter.server.view.IndexView
 import java.lang.management.ManagementFactory
 import java.util.concurrent.atomic.AtomicBoolean
 import scala.collection.JavaConverters._
 
 trait Lifecycle { self: App =>
   // Mesos/Aurora lifecycle endpoints
-  HttpMuxer.addHandler("/abortabortabort", new AbortHandler)
-  HttpMuxer.addHandler("/quitquitquit", new ShutdownHandler(this))
-  HttpMuxer.addHandler("/health", new ReplyHandler("OK\n"))
+  val group = "Misc"
+  HttpMuxer.addHandler(
+    Route(
+      pattern = "/abortabortabort",
+      handler = new AbortHandler,
+      index = Some(RouteIndex(
+        alias = IndexView.AbortServer,
+        group = group))))
+  HttpMuxer.addHandler(
+    Route(
+      pattern = "/quitquitquit",
+      handler = new ShutdownHandler(this),
+      index = Some(RouteIndex(
+        alias = IndexView.QuitServer,
+        group = group))))
+  HttpMuxer.addHandler(
+    Route(
+      pattern = "/health",
+      handler = new ReplyHandler("OK\n"),
+      index = Some(RouteIndex(
+        alias = "Health",
+        group = group))))
+
 }
 
 object promoteBeforeServing extends GlobalFlag[Boolean](true,
@@ -60,7 +81,7 @@ object Lifecycle {
    *       happen in `prebindWarmup()`
    */
   trait Warmup {
-    HttpMuxer.addHandler("/health", new ReplyHandler(""))
+    HttpMuxer.addHandler(Route("/health", new ReplyHandler("")))
 
     /**
      * Prebind warmup code. Used for warmup tasks that we want to run before we
@@ -74,7 +95,7 @@ object Lifecycle {
      * The service is bound to a port and warmed up, announce health.
      */
     def warmupComplete(): Unit = {
-      HttpMuxer.addHandler("/health", new ReplyHandler("OK\n"))
+      HttpMuxer.addHandler(Route("/health", new ReplyHandler("OK\n")))
     }
   }
 }

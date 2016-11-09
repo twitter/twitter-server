@@ -3,6 +3,7 @@ package com.twitter.server
 import com.twitter.app.App
 import com.twitter.finagle.client.ClientRegistry
 import com.twitter.finagle.filter.ServerAdmissionControl
+import com.twitter.finagle.http
 import com.twitter.finagle.http.{HttpMuxer, Request, Response}
 import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.stats.NullStatsReceiver
@@ -42,6 +43,25 @@ object AdminHttpServer {
     alias: String,
     group: Option[String],
     includeInIndex: Boolean)
+
+  object Route {
+    def from(route: http.Route): Route = route.index match {
+      case Some(index) =>
+        mkRoute(
+          path = index.path.getOrElse(route.pattern),
+          handler = route.handler,
+          alias = index.alias,
+          group = Some(index.group),
+          includeInIndex = true)
+      case None =>
+        mkRoute(
+          path = route.pattern,
+          handler = route.handler,
+          alias = route.pattern,
+          group = None,
+          includeInIndex = false)
+    }
+  }
 
   /**
    * Create a Route using a Finagle service interface
@@ -116,31 +136,16 @@ trait AdminHttpServer { self: App =>
     // a logger used to log all sync and async exceptions
     // that occur in the admin server.
     val log = Logger.getLogger(getClass.getName)
-
-    // Stat libraries join the global muxer namespace.
-    // Special case and group them here.
-    val (metricLinks, otherLinks) = {
-      val links = HttpMuxer.patterns.map {
-        case path@"/admin/metrics.json" =>
-          IndexView.Link(path, s"$path?pretty=true")
-        case path => IndexView.Link(path, path)
-      }
-      links partition {
-        case IndexView.Link("/admin/metrics.json", _) => true
-        case IndexView.Link("/admin/per_host_metrics.json", _) => true
-        case IndexView.Link("/stats.json", _) => true
-        case _ => false
-      }
-    }
+    val rts = allRoutes ++ HttpMuxer.routes.map(Route.from(_))
 
     // convert local routes into the IndexView data model
     val localRoutes =
-      allRoutes.filter(_.includeInIndex).groupBy(_.group) flatMap {
+      rts.filter(_.includeInIndex).groupBy(_.group).flatMap {
         case (group, rs) =>
-          val links = rs map { r => IndexView.Link(r.alias, r.path) }
-          if (!group.isDefined) links else {
-            val linx = if (group != Some("Metrics")) links else links++metricLinks
-            Seq(IndexView.Group(group.get, linx))
+          val links = rs.map { r => IndexView.Link(r.alias, r.path) }
+          group match {
+            case Some(g) => Seq(IndexView.Group(g, links))
+            case None => links
           }
       }
 
@@ -163,8 +168,7 @@ trait AdminHttpServer { self: App =>
         IndexView.Group("Downstream Clients", clientLinks.sorted(IndexView.EntryOrdering))
       }
 
-      val miscGroup = IndexView.Group("Misc", otherLinks)
-      miscGroup +: clientGroup +: serverGroup +: localRoutes.toSeq
+      clientGroup +: serverGroup +: localRoutes.toSeq
     }
 
     // create a service which multiplexes across all endpoints.

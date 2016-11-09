@@ -22,6 +22,9 @@ object IndexView {
     }
   }
 
+  private[server] val AbortServer = "Abort Server"
+  private[server] val QuitServer = "Quit Server"
+
   /** Render nav and contents into an html template. */
   def render(title: String, uri: String, nav: Seq[Entry], contents: Reader): Reader = {
 
@@ -32,12 +35,14 @@ object IndexView {
         case Seq() => sb.toString
 
         case Link(id, href) +: rest =>
+          // Spaces are replaced with '-' since HTML IDs do not permit whitespace
+          val formattedId = id.replace(' ', '-')
           val selected = if (href == uri) "selected" else ""
-          if (id == "/abortabortabort" || id == "/quitquitquit") {
+          if (id == AbortServer || id == QuitServer) {
             sb ++= s"""
-            <form method="post" id="${id}-form" action="${href}">
-              <a href="#" onclick="document.getElementById('${id}-form').submit()">
-                <li id="${id}" class="selectable $selected">
+            <form method="post" id="${formattedId}-form" action="${href}">
+              <a href="#" onclick="document.getElementById('${formattedId}-form').submit()">
+                <li id="${formattedId}" class="selectable $selected">
                   ${id}
                 </li>
               </a>
@@ -46,7 +51,7 @@ object IndexView {
           } else {
             sb ++= s"""
             <a href="${href}">
-              <li id="${id}" class="selectable $selected">
+              <li id="${formattedId}" class="selectable $selected">
                 ${escapeHtml(id)}
               </li>
             </a>

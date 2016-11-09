@@ -11,8 +11,8 @@ $(document).ready(function() {
   });
 
   var confirmationLinks = {
-  "/abortabortabort": "abort",
-  "/quitquitquit": "quit",
+  "Abort-Server": "abort",
+  "Quit-Server": "quit",
   "Shutdown": "shutdown"
   }
 
