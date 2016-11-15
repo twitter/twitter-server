@@ -24,11 +24,6 @@ object TwitterServer extends Build {
   def util(which: String) = "com.twitter" %% ("util-"+which) % utilVersion
   def finagle(which: String) = "com.twitter" %% ("finagle-"+which) % finagleVersion
 
-  def xmlLib(scalaVersion: String) =
-    Seq(
-      "org.scala-lang.modules" %% "scala-xml" % "1.0.5"
-    )
-
   val sharedSettings = Seq(
     version := libVersion,
     organization := "com.twitter",
@@ -117,8 +112,7 @@ object TwitterServer extends Build {
       util("logging"),
       util("registry")
     ),
-    libraryDependencies ++= jacksonLibs,
-    libraryDependencies <++= scalaVersion(xmlLib)
+    libraryDependencies ++= jacksonLibs
   )
 
   lazy val twitterServerDoc = Project(

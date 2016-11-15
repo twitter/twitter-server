@@ -13,6 +13,11 @@ New Features
   * Add ability to specify admin interface UI grouping, alias, and path for admin
     handlers using the newly added Route and RouteUi. ``RB_ID=886829``
 
+Runtime Behavior Changes
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+  * Removed `scala-xml` dependency. ``RB_ID=890315``
+
 1.24.0
 ------
 
