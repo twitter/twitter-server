@@ -1,29 +1,30 @@
 package com.twitter.server.view
 
 import com.twitter.concurrent.AsyncStream
+import com.twitter.finagle.http.Method
+import com.twitter.finagle.http.Method.{Get, Post}
 import com.twitter.finagle.{Service, SimpleFilter}
 import com.twitter.finagle.http.{Request, Response}
-import com.twitter.io.{Reader, Buf}
+import com.twitter.io.{Buf, Reader}
 import com.twitter.server.util.HtmlUtils.escapeHtml
 import com.twitter.server.util.HttpUtils.{expectsHtml, newResponse}
 import com.twitter.util.Future
 
 object IndexView {
   sealed trait Entry
-  case class Link(id: String, href: String) extends Entry
+  case class Link(id: String, href: String, method: Method = Get) extends Entry {
+    assert(method == Get || method == Post, s"Unsupported method: $method")
+  }
   case class Group(id: String, links: Seq[Entry]) extends Entry
 
   implicit object EntryOrdering extends Ordering[Entry] {
     def compare(a: Entry, b: Entry) = (a, b) match {
-      case (Link(_, _), Group(_, _)) => -1
-      case (Group(_, _), Link(_, _)) => 1
-      case (Link(id1, _), Link(id2, _)) => id1 compare id2
+      case (Link(_, _, _), Group(_, _)) => -1
+      case (Group(_, _), Link(_, _, _)) => 1
+      case (Link(id1, _, _), Link(id2, _, _)) => id1 compare id2
       case (Group(id1, _), Group(id2, _)) => id1 compare id2
     }
   }
-
-  private[server] val AbortServer = "Abort Server"
-  private[server] val QuitServer = "Quit Server"
 
   /** Render nav and contents into an html template. */
   def render(title: String, uri: String, nav: Seq[Entry], contents: Reader): Reader = {
@@ -34,29 +35,32 @@ object IndexView {
     ): String = ls match {
         case Seq() => sb.toString
 
-        case Link(id, href) +: rest =>
+        case Link(id, href, Post) +: rest =>
           // Spaces are replaced with '-' since HTML IDs do not permit whitespace
           val formattedId = id.replace(' ', '-')
           val selected = if (href == uri) "selected" else ""
-          if (id == AbortServer || id == QuitServer) {
             sb ++= s"""
-            <form method="post" id="${formattedId}-form" action="${href}">
-              <a href="#" onclick="document.getElementById('${formattedId}-form').submit()">
-                <li id="${formattedId}" class="selectable $selected">
-                  ${id}
-                </li>
-              </a>
-            </form>
-            """
-          } else {
-            sb ++= s"""
+              <form method="post" id="${formattedId}-form" action="${href}">
+                <a href="#" onclick="document.getElementById('${formattedId}-form').submit()">
+                  <li id="${formattedId}" class="selectable $selected">
+                    ${id}
+                  </li>
+                </a>
+              </form>
+              """
+          renderNav(rest, sb)
+
+        case Link(id, href, Get) +: rest =>
+          // Spaces are replaced with '-' since HTML IDs do not permit whitespace
+          val formattedId = id.replace(' ', '-')
+          val selected = if (href == uri) "selected" else ""
+          sb ++= s"""
             <a href="${href}">
               <li id="${formattedId}" class="selectable $selected">
                 ${escapeHtml(id)}
               </li>
             </a>
             """
-          }
           renderNav(rest, sb)
 
         case Group(id, links) +: rest =>
@@ -64,7 +68,7 @@ object IndexView {
             // Instead of strictly checking for href == uri,
             // we are a bit more liberal to allow for "catch-all"
             // endpoints (ex. /admin/clients/).
-            case Link(_, href) => !href.stripPrefix(uri).contains("/")
+            case Link(_, href, _) => !href.stripPrefix(uri).contains("/")
             case _ => false
           }
           val active = if (isChild) "active" else ""

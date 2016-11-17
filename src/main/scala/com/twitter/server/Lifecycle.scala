@@ -1,9 +1,9 @@
 package com.twitter.server
 
 import com.twitter.app.{App, GlobalFlag}
+import com.twitter.finagle.http.Method.Post
 import com.twitter.finagle.http.{HttpMuxer, Route, RouteIndex}
 import com.twitter.server.handler._
-import com.twitter.server.view.IndexView
 import java.lang.management.ManagementFactory
 import java.util.concurrent.atomic.AtomicBoolean
 import scala.collection.JavaConverters._
@@ -16,15 +16,17 @@ trait Lifecycle { self: App =>
       pattern = "/abortabortabort",
       handler = new AbortHandler,
       index = Some(RouteIndex(
-        alias = IndexView.AbortServer,
-        group = group))))
+        alias = "Abort Server",
+        group = group,
+        method = Post))))
   HttpMuxer.addHandler(
     Route(
       pattern = "/quitquitquit",
       handler = new ShutdownHandler(this),
       index = Some(RouteIndex(
-        alias = IndexView.QuitServer,
-        group = group))))
+        alias = "Quit Server",
+        group = group,
+        method = Post))))
   HttpMuxer.addHandler(
     Route(
       pattern = "/health",

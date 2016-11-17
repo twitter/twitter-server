@@ -4,7 +4,8 @@ import com.twitter.app.App
 import com.twitter.finagle.client.ClientRegistry
 import com.twitter.finagle.filter.ServerAdmissionControl
 import com.twitter.finagle.http
-import com.twitter.finagle.http.{HttpMuxer, Request, Response}
+import com.twitter.finagle.http.Method.Get
+import com.twitter.finagle.http.{HttpMuxer, Method, Request, Response}
 import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.tracing.NullTracer
@@ -36,13 +37,17 @@ object AdminHttpServer {
    *
    * @param includeInIndex Indicates whether the route is included
    * as part of the admin server index.
+   *
+   * @param method Specifies which HTTP Method to use from
+   * [[com.twitter.finagle.http.Method]]. The default is [[Method.Get]].
    */
   case class Route(
     path: String,
     handler: Service[Request, Response],
     alias: String,
     group: Option[String],
-    includeInIndex: Boolean)
+    includeInIndex: Boolean,
+    method: Method = Get)
 
   object Route {
     def from(route: http.Route): Route = route.index match {
@@ -52,7 +57,8 @@ object AdminHttpServer {
           handler = route.handler,
           alias = index.alias,
           group = Some(index.group),
-          includeInIndex = true)
+          includeInIndex = true,
+          method = index.method)
       case None =>
         mkRoute(
           path = route.pattern,
@@ -71,9 +77,10 @@ object AdminHttpServer {
     handler: Service[Request, Response],
     alias: String,
     group: Option[String],
-    includeInIndex: Boolean
+    includeInIndex: Boolean,
+    method: Method = Get
   ): Route = {
-    Route(path, handler, alias, group, includeInIndex)
+    Route(path, handler, alias, group, includeInIndex, method)
   }
 
   /**
@@ -142,7 +149,7 @@ trait AdminHttpServer { self: App =>
     val localRoutes =
       rts.filter(_.includeInIndex).groupBy(_.group).flatMap {
         case (group, rs) =>
-          val links = rs.map { r => IndexView.Link(r.alias, r.path) }
+          val links = rs.map { r => IndexView.Link(r.alias, r.path, r.method) }
           group match {
             case Some(g) => Seq(IndexView.Group(g, links))
             case None => links
