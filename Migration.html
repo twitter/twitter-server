@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Migration from Ostrich &mdash; TwitterServer 1.23.0 documentation</title>
+    <title>Migration from Ostrich &#8212; TwitterServer 1.25.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.23.0',
+        VERSION:     '1.25.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="TwitterServer 1.23.0 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="TwitterServer 1.25.0 documentation" href="index.html" />
     <link rel="next" title="FAQ" href="FAQ.html" />
     <link rel="prev" title="Using TwitterServer from Java" href="Java.html" />
    
@@ -31,11 +33,11 @@
   <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
 
   </head>
-  <body>
+  <body role="document">
   
   
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -47,14 +49,14 @@
         <li class="right" >
           <a href="Java.html" title="Using TwitterServer from Java"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">TwitterServer</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">TwitterServer</a> &#187;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="migration-from-ostrich">
 <h1>Migration from Ostrich<a class="headerlink" href="#migration-from-ostrich" title="Permalink to this headline">¶</a></h1>
@@ -65,25 +67,25 @@ TwitterServer.</p>
 replaces Ostrich’s stats library.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Ostrich stats are still present on <tt class="docutils literal"><span class="pre">/stats</span></tt> if <cite>finagle-ostrich4</cite> is
+<p class="last">Ostrich stats are still present on <code class="docutils literal"><span class="pre">/stats</span></code> if <cite>finagle-ostrich4</cite> is
 in your runtime classpath.</p>
 </div>
 <p>By using two
 <a class="reference external" href="https://github.com/twitter/util/blob/master/util-app/src/main/scala/com/twitter/app/Flag.scala">flags</a>,
-the admin HTTP endpoint <tt class="docutils literal"><span class="pre">/admin/stats.json</span></tt> supports an Ostrich
+the admin HTTP endpoint <code class="docutils literal"><span class="pre">/admin/stats.json</span></code> supports an Ostrich
 compatibility mode:</p>
-<div class="highlight-text"><div class="highlight"><pre>-com.twitter.finagle.stats.useCounterDeltas=true
+<div class="highlight-text"><div class="highlight"><pre><span></span>-com.twitter.finagle.stats.useCounterDeltas=true
 -com.twitter.finagle.stats.format=ostrich
 </pre></div>
 </div>
 <p>If these flags are both set,
-HTTP requests to <tt class="docutils literal"><span class="pre">/admin/stats.json</span></tt> with the <tt class="docutils literal"><span class="pre">period=60</span></tt> query string
+HTTP requests to <code class="docutils literal"><span class="pre">/admin/stats.json</span></code> with the <code class="docutils literal"><span class="pre">period=60</span></code> query string
 parameter will replicate Ostrich&#8217;s behavior by computing deltas on counters
 every minute and formatting histograms with the same labels Ostrich uses.</p>
 <div class="section" id="stats-format">
 <h2>Stats format<a class="headerlink" href="#stats-format" title="Permalink to this headline">¶</a></h2>
 <p>Ostrich:</p>
-<div class="highlight-text"><div class="highlight"><pre>{
+<div class="highlight-text"><div class="highlight"><pre><span></span>{
   &quot;counters&quot;: {
     &quot;finagle/closes&quot;: 576,
 
@@ -115,7 +117,7 @@ every minute and formatting histograms with the same labels Ostrich uses.</p>
 </pre></div>
 </div>
 <p>Commons Metrics:</p>
-<div class="highlight-text"><div class="highlight"><pre>{
+<div class="highlight-text"><div class="highlight"><pre><span></span>{
   &quot;finagle/closes&quot;: 575,
   &quot;finagle/connection_duration.avg&quot;: 561,
   &quot;finagle/connection_duration.count&quot;: 592,
@@ -138,8 +140,8 @@ every minute and formatting histograms with the same labels Ostrich uses.</p>
 }
 </pre></div>
 </div>
-<p>With <tt class="docutils literal"><span class="pre">-com.twitter.finagle.stats.format=ostrich</span></tt>:</p>
-<div class="highlight-text"><div class="highlight"><pre>{
+<p>With <code class="docutils literal"><span class="pre">-com.twitter.finagle.stats.format=ostrich</span></code>:</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>{
   &quot;finagle/closes&quot;: 575,
   &quot;finagle/connection_duration.average&quot;: 561,
   &quot;finagle/connection_duration.count&quot;: 592,
@@ -172,7 +174,7 @@ Commons Metrics is <em>far</em> more precise than Ostrich.</p>
 </div>
 <p>For example, here are the difference between the two libraries for 10k
 random numbers between 1 and 10,000:</p>
-<div class="highlight-text"><div class="highlight"><pre>scala&gt; &quot;real p50:%d  ostrich:%d  metrics:%d&quot;.format(p50, op50, mp50)
+<div class="highlight-text"><div class="highlight"><pre><span></span>scala&gt; &quot;real p50:%d  ostrich:%d  metrics:%d&quot;.format(p50, op50, mp50)
 res7: String = real p50:5066  ostrich:5210  metrics:5066
 
 scala&gt; &quot;real p90:%d  ostrich:%d  metrics:%d&quot;.format(p90, op90, mp90)
@@ -191,7 +193,7 @@ yourself.</p>
 <li>Convert your code to TwitterServer</li>
 </ul>
 <p>Your server will run as before and expose stats through Ostrich&#8217;s
-<tt class="docutils literal"><span class="pre">/stats</span></tt> endpoint.</p>
+<code class="docutils literal"><span class="pre">/stats</span></code> endpoint.</p>
 <ul class="simple">
 <li>Update your dashboard</li>
 </ul>
@@ -216,7 +218,7 @@ that your new alerts and dashboards are correct.</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><a href="index.html"><h3>TwitterServer</h3></a>
 <p>
   TwitterServer is a library defining a template from which servers at Twitter are built.
