@@ -1,7 +1,6 @@
 import com.twitter.conversions.time._
 import com.twitter.finagle.http.{HttpMuxer, Request, Response, Status}
 import com.twitter.finagle.Service
-import com.twitter.io.Charsets
 import com.twitter.logging.Formatter
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future, Time}

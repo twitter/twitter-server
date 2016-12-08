@@ -1,7 +1,6 @@
 //#imports
 import com.twitter.finagle.{Http, Service}
 import com.twitter.finagle.http.{Request, Response, Status}
-import com.twitter.io.Charsets
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future}
 //#imports

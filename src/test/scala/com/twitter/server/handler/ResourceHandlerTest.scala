@@ -1,9 +1,10 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.http
-import com.twitter.io.{Buf, Charsets}
+import com.twitter.io.Buf
 import com.twitter.util.Await
 import java.io.{ByteArrayInputStream, File, FileWriter, InputStream}
+import java.nio.charset.StandardCharsets.ISO_8859_1
 import java.nio.file.Files
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
@@ -52,7 +53,7 @@ class ResourceHandlerTest extends FunSuite {
     assert(res.status == http.Status.Ok)
     assert(res.headerMap.get("content-type") == Some("application/octet-stream"))
     val bytes = Buf.ByteArray.Owned.extract(res.content)
-    assert(new String(bytes, Charsets.Iso8859_1) == content)
+    assert(new String(bytes, ISO_8859_1) == content)
   }
 
   private def createTempFile(filename: String, content: String): File = {

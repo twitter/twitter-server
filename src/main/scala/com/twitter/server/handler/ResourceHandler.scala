@@ -2,11 +2,11 @@ package com.twitter.server.handler
 
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response, Status}
-import com.twitter.io.{Buf, Charsets}
+import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.{new404, newResponse, parse}
 import com.twitter.util.{Future, FuturePool, JavaSingleton}
 import java.io.{File, FileInputStream, InputStream}
-import java.nio.charset.Charset
+import java.nio.charset.{Charset, StandardCharsets}
 import scala.io.Source
 
 /**
@@ -32,9 +32,9 @@ class ResourceHandler(
     val exts = path.split('.')
     val ext = if (exts.nonEmpty) exts.last else ""
     ext match {
-      case "js" => (Charsets.Utf8, s"application/javascript;charset=UTF-8")
-      case "css" => (Charsets.Utf8, s"text/css;charset=UTF-8")
-      case _ => (Charsets.Iso8859_1, s"application/octet-stream")
+      case "js" => (StandardCharsets.UTF_8, s"application/javascript;charset=UTF-8")
+      case "css" => (StandardCharsets.UTF_8, s"text/css;charset=UTF-8")
+      case _ => (StandardCharsets.ISO_8859_1, s"application/octet-stream")
     }
   }
 
