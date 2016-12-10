@@ -9,6 +9,8 @@ junit_tests(
     'util/util-core/src/main/scala:scala',
     'util/util-logging/src/main/scala:scala',
     'util/util-stats/src/main/scala:scala',
+    'finagle/finagle-core/src/main/scala:scala',
+    'util/util-lint/src/main/scala:scala',
   ],
   fatal_warnings=False,
   sources=rglobs('*.java')
