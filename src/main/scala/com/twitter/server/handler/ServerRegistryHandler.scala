@@ -35,8 +35,8 @@ private object ServerRegistryHandler {
                         <!-- server stats -->
                         <div class="server-info col-md-3">
                           <dl class="server-stats dl-horizontal">
-                            <dt><a href="/admin/metrics#$scope/load">Load:</a></dt>
-                            <dd id="${scopeDash}-load" data-key="$scope/load">...</dd>
+                            <dt><a href="/admin/metrics#$scope/pending">Pending:</a></dt>
+                            <dd id="${scopeDash}-pending" data-key="$scope/pending">...</dd>
 
                             <dt><a href="/admin/metrics#$scope/failures">Failures:</a></dt>
                             <dd id="${scopeDash}-failures" data-key="$scope/failures">...</dd>
@@ -75,8 +75,8 @@ class ServerRegistryHandler(
   private[this] def findScope(serverName: String): Option[String] = {
     val k0 = s"$serverName"
     val k1 = s"srv/$serverName"
-    if (source.contains(s"$k0/load")) Some(k0)
-    else if (source.contains(s"$k1/load")) Some(k1)
+    if (source.contains(s"$k0/pending")) Some(k0)
+    else if (source.contains(s"$k1/pending")) Some(k1)
     else None
   }
 

@@ -7,6 +7,12 @@ Note that ``RB_ID=#`` correspond to associated messages in commits.
 1.x
 -----
 
+Bug Fixes
+~~~~~~~~~
+
+   * Server graphs are now displaying again on the Twitter Server Summary page.
+     ``RB_ID=898422``
+
 1.25.0
 ------
 
