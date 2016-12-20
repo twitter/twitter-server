@@ -3,7 +3,7 @@ import Keys._
 import com.typesafe.sbt.SbtSite.site
 import com.typesafe.sbt.site.SphinxSupport.Sphinx
 import sbtunidoc.Plugin.unidocSettings
-import scoverage.ScoverageSbtPlugin
+import scoverage.ScoverageKeys
 
 object TwitterServer extends Build {
   val branch = Process("git" :: "rev-parse" :: "--abbrev-ref" :: "HEAD" :: Nil).!!.trim
@@ -27,15 +27,16 @@ object TwitterServer extends Build {
   val sharedSettings = Seq(
     version := libVersion,
     organization := "com.twitter",
-    scalaVersion := "2.11.8",
+    scalaVersion := "2.12.1",
+    crossScalaVersions := Seq("2.11.8", "2.12.1"),
     libraryDependencies ++= Seq(
-      "org.scalacheck" %% "scalacheck" % "1.13.1" % "test",
+      "org.scalacheck" %% "scalacheck" % "1.13.4" % "test",
       "org.scalatest" %% "scalatest" % "3.0.0" % "test",
       "junit" % "junit" % "4.10" % "test",
       "org.mockito" % "mockito-all" % "1.9.5" % "test"
     ),
 
-    ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := true,
+    ScoverageKeys.coverageHighlighting := true,
 
     ivyXML :=
       <dependencies>
