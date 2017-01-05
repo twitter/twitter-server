@@ -4,7 +4,7 @@
 [![Codecov branch](https://img.shields.io/codecov/c/github/twitter/twitter-server/develop.svg)](http://codecov.io/github/twitter/twitter-server?branch=develop)
 [![Project status](https://img.shields.io/badge/status-active-brightgreen.svg)](#status)
 [![Gitter](https://img.shields.io/badge/gitter-join%20chat-green.svg)](https://gitter.im/twitter/finagle?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Maven Central](https://img.shields.io/maven-central/v/com.twitter/twitter-server_2.11.svg)](https://maven-badges.herokuapp.com/maven-central/com.twitter/twitter-server_2.11)
+[![Maven Central](https://img.shields.io/maven-central/v/com.twitter/twitter-server_2.12.svg)](https://maven-badges.herokuapp.com/maven-central/com.twitter/twitter-server_2.12)
 
 TwitterServer defines a template from which servers at Twitter are
 built. It provides common application components such as an
@@ -22,7 +22,7 @@ Browse the [user guide](https://twitter.github.io/twitter-server/).
 
 ## Releases
 
-[Releases](https://maven-badges.herokuapp.com/maven-central/com.twitter/twitter-server_2.11)
+[Releases](https://maven-badges.herokuapp.com/maven-central/com.twitter/twitter-server_2.12)
 are done on an approximately monthly schedule. While [semver](http://semver.org/)
 is not followed, the [changelogs](CHANGES) are detailed and include sections on
 public API breaks and changes in runtime behavior.

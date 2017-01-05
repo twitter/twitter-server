@@ -21,7 +21,7 @@ TwitterServer is published with Maven:
 
   <dependency>
     <groupId>com.twitter</groupId>
-    <artifactId>twitter-server_2.11</artifactId>
+    <artifactId>twitter-server_2.12</artifactId>
     <version>\ |release|\ </version>
   </dependency>
 
