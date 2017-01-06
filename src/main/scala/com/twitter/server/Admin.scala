@@ -59,6 +59,9 @@ trait Admin { self: App with AdminHttpServer with Stats =>
         path = "/admin/lint.json", handler = new LintHandler(),
         alias = "Lint", group = Some(Grouping.ProcessInfo), includeInIndex = false),
       Route(
+        path = "/admin/failedlint", handler = new FailedLintRuleHandler,
+        alias = "Failed Lint Rules", group = None, includeInIndex = false),
+      Route(
         path = "/admin/threads", handler = new ThreadsHandler,
         alias = "Threads", group = Some(Grouping.ProcessInfo), includeInIndex = true),
       Route(

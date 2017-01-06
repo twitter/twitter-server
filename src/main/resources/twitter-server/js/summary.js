@@ -4,6 +4,7 @@ var waitForDom = setInterval(function() {
     loadProcInfo()
     loadClientInfo()
     loadServerInfo()
+    loadLintInfo()
   }
 }, 250)
 
@@ -70,5 +71,14 @@ function loadServerInfo() {
     dataType: "text",
     cache: false,
     success: function(data) { $("#server-info").html(data) }
+  })
+}
+
+function loadLintInfo() {
+  $.ajax({
+    url: $("#lint-warnings").data("refresh-uri") + "?",
+    dataType: "text",
+    cache: false,
+    success: function(data) { $("#lint-warnings").html(data) }
   })
 }

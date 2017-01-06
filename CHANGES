@@ -7,6 +7,11 @@ Note that ``RB_ID=#`` correspond to associated messages in commits.
 1.x
 -----
 
+New Features
+~~~~~~~~~~~~
+
+  * Add lint error warning on admin summary page. ``RB_ID=898202``
+
 1.26.0
 ------
 

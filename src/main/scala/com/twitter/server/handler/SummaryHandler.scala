@@ -13,8 +13,9 @@ private object SummaryHandler {
     finagleVersion: String,
     procInfo: Seq[String]
   ): String =
-    s"""<script type="application/javascript" src="/admin/files/js/summary.js"></script>
+      s"""<script type="application/javascript" src="/admin/files/js/summary.js"></script>
       <link type="text/css" href="/admin/files/css/summary.css" rel="stylesheet">
+      <div id="lint-warnings" data-refresh-uri="/admin/failedlint"></div>
       <div id="process-info" class="text-center well well-sm" data-refresh-uri="/admin/metrics">
         <ul class="list-inline">
           <li><span class="glyphicon glyphicon-info-sign"/></li>
