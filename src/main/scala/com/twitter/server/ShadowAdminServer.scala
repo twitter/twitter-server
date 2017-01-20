@@ -33,8 +33,9 @@ trait ShadowAdminServer { self: App with AdminHttpServer =>
     val log = Logger.getLogger(getClass.getName)
     log.info(s"Serving BlackBox http server on port ${shadowAdminPort().getPort}")
 
-    // Both ostrich and metrics export a `HttpMuxHandler`
+    // Ostrich, commons stats, and metrics export a `HttpMuxHandler`
     val handlers = LoadService[HttpMuxHandler]() filter { handler =>
+      handler.pattern == "/vars.json" ||
       handler.pattern == "/stats.json" ||
       handler.pattern == "/admin/metrics.json" ||
       handler.pattern == "/admin/per_host_metrics.json"

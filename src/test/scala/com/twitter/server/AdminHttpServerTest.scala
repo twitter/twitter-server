@@ -22,6 +22,12 @@ class MockOstrichExporter extends HttpMuxHandler {
     newOk("metrics!")
 }
 
+class MockCommonsExporter extends HttpMuxHandler {
+  val pattern = "/vars.json"
+  def apply(req: Request): Future[Response] =
+    newOk("commons stats!")
+}
+
 class MockHostMetricsExporter extends HttpMuxHandler {
   val pattern = "/admin/per_host_metrics.json"
   def apply(req: Request): Future[Response] =
@@ -36,8 +42,11 @@ class AdminHttpServerTest extends FunSuite  {
     val port = server.boundAddress.asInstanceOf[InetSocketAddress].getPort
     val client = Http.client.newService(s"localhost:$port")
 
-    val resp0 = Await.result(client(Request("/stats.json")), 1.second)
-    assert(resp0.contentString.contains("metrics!"))
+    val ostrich = Await.result(client(Request("/stats.json")), 1.second)
+    assert(ostrich.contentString.contains("metrics!"))
+
+    val commons = Await.result(client(Request("/vars.json")), 1.second)
+    assert(commons.contentString.contains("commons stats!"))
 
     val resp = Await.result(client(Request("/admin/metrics.json")), 1.second)
     assert(resp.contentString.contains("standard metrics!"))
