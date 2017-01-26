@@ -3,15 +3,14 @@
 # Documentation config
 #
 
-import sys, os
+import sys, os, datetime
 
 sys.path.append(os.path.abspath('exts'))
 sys.path.append(os.path.abspath('utils'))
 
 import sbt_versions
 
-# highlight_language = 'scala'
-highlight_language = 'text'  # this way we don't get ugly syntax coloring
+highlight_language = 'text'
 extensions = ['sphinx.ext.extlinks', 'includecode']
 templates_path = ['_templates']
 source_suffix = '.rst'
@@ -24,18 +23,17 @@ html_theme = 'flask'
 html_short_title = 'TwitterServer'
 html_sidebars = {
    'index':    ['sidebarintro.html', 'searchbox.html'],
-    '**':      ['sidebarintro.html', 'localtoc.html', 'relations.html', 'searchbox.html']
+   '**':       ['sidebarintro.html', 'localtoc.html', 'relations.html', 'searchbox.html']
 }
+html_favicon = '_static/favicon.ico'
 html_theme_options = {
   'index_logo': None
 }
 
-# These don't seem to work?
-html_use_smartypants = True
 html_show_sphinx = False
 
 project = u'TwitterServer'
-copyright = u'2015–2016 Twitter, Inc'
+copyright = u'{} Twitter, Inc'.format(datetime.datetime.now().year)
 version = ''
 release = ''
 htmlhelp_basename = "twitter-server"
