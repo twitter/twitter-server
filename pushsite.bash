@@ -8,9 +8,6 @@ trap "rm -fr $dir" 0 1 2
 echo 'making site...' 1>&2
 ./sbt --warn twitter-server-doc/make-site
 
-echo 'making unidoc...' 1>&2
-./sbt --warn unidoc
-
 echo 'cloning...' 1>&2
 git clone -b gh-pages --single-branch git@github.com:twitter/twitter-server.git $dir >/dev/null 2>&1
 
