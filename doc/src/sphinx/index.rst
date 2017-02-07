@@ -9,15 +9,9 @@ wired in correctly for use in production at Twitter.
 Getting Started
 ---------------
 
-TwitterServer is published with Maven:
+TwitterServer is published to Maven central:
 
 .. parsed-literal::
-
-  <repository>
-    <id>twttr</id>
-    <name>twttr</name>
-    <url>https://maven.twttr.com/</url>
-  </repository>
 
   <dependency>
     <groupId>com.twitter</groupId>
@@ -29,14 +23,7 @@ or, with sbt:
 
 .. parsed-literal::
 
-  resolvers += "twttr" at "https://maven.twttr.com/"
-
   libraryDependencies += "com.twitter" %% "twitter-server" % "|release|"
-
-NB: You only need to add the ``maven.twttr.com`` repository if you want to use
-libraries in Twitter `common`, which are only published to ``maven.twttr.com``,
-and you're using 1.23.0 or earlier. For example, ``finagle-stats``, which adds
-:doc:`Metrics <Features>`, requires a twitter `common` library.
 
 First we’ll need to import a few things into our namespace.
 
