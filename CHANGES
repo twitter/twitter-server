@@ -7,6 +7,11 @@ Note that ``RB_ID=#`` correspond to associated messages in commits.
 1.x
 -----
 
+Dependencies
+~~~~~~~~~~~~
+
+  * Bump guava to 19.0. ``RB_ID=907807``
+
 1.27.0
 ------
 

@@ -18,7 +18,7 @@ object TwitterServer extends Build {
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
     "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion exclude("com.google.guava", "guava"),
-    "com.google.guava" % "guava" % "16.0.1"
+    "com.google.guava" % "guava" % "19.0"
   )
 
   def util(which: String) = "com.twitter" %% ("util-"+which) % utilVersion
