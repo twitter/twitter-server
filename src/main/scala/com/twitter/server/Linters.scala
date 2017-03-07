@@ -2,7 +2,7 @@ package com.twitter.server
 
 import com.twitter.app.App
 import com.twitter.finagle.client.ClientRegistry
-import com.twitter.finagle.netty4.trackReferenceLeaks
+import com.twitter.finagle.netty4.referenceLeakLintRule
 import com.twitter.finagle.server.ServerRegistry
 import com.twitter.server.lint._
 import com.twitter.util.lint._
@@ -28,7 +28,7 @@ trait Linters { app: App =>
       NullStatsReceiversRule(ServerRegistry),
       MemcacheFailFastRule(ClientRegistry),
       LoggingRules.MultipleSlf4jImpls,
-      trackReferenceLeaks.leakDetectedRule()
+      referenceLeakLintRule.rule()
     )
   }
 
