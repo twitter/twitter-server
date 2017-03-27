@@ -2,14 +2,15 @@
 
 junit_tests(
   dependencies=[
-    'finagle/finagle-toggle',
-    'twitter-server/src/test:base',
-    'twitter-server/src/main/scala',
     '3rdparty/jvm/com/fasterxml/jackson/core:jackson-databind',
     '3rdparty/jvm/com/fasterxml/jackson/module:jackson-module-scala',
     'finagle/finagle-core/src/main/scala:scala',
     'finagle/finagle-http/src/main/scala:scala',
+    'finagle/finagle-toggle',
     'finagle/finagle-zipkin-core/src/main/scala:scala',
+    'twitter-server/src/main/scala',
+    'twitter-server/src/test/resources',
+    'twitter-server/src/test:base',
     'util/util-app/src/main/scala:scala',
     'util/util-core/src/main/scala:scala',
     'util/util-events/src/main/scala:scala',
@@ -20,5 +21,4 @@ junit_tests(
   ],
   fatal_warnings=True,
   sources=rglobs('*.scala'),
-  resources=['twitter-server/src/test/resources']
 )

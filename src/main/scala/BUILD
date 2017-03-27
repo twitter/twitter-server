@@ -18,6 +18,7 @@ scala_library(
     'finagle/finagle-toggle',
     'finagle/finagle-zipkin',
     'finagle/finagle-zipkin-core',
+    'twitter-server/src/main/resources',
     'util/util-app',
     'util/util-core/src/main/scala:scala',
     'util/util-events/src/main/scala:scala',
@@ -29,7 +30,6 @@ scala_library(
   ],
   fatal_warnings=True,
   sources=rglobs('*.scala'),
-  resources=['twitter-server/src/main/resources'],
   # Exposes a service-loaded class.
   scope='forced',
 )
