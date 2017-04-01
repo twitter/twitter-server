@@ -125,6 +125,9 @@ trait Admin { self: App with AdminHttpServer with Stats =>
         path = "/admin/toggles/", handler = new ToggleHandler(),
         alias = "Toggles", group = None, includeInIndex = false),
       Route(
+        path = TunableHandler.Path, handler = new TunableHandler(),
+        alias = "Tunables", group = None, includeInIndex = false),
+      Route(
         path = "/favicon.ico", ResourceHandler.fromJar(
           baseRequestPath = "/",
           baseResourcePath = "twitter-server/img"),

@@ -104,6 +104,7 @@ object TwitterServer extends Build {
       finagle("core"),
       finagle("http"),
       finagle("toggle"),
+      finagle("tunable"),
       finagle("zipkin-core"),
       util("app"),
       util("core"),
@@ -111,7 +112,8 @@ object TwitterServer extends Build {
       util("jvm"),
       util("lint"),
       util("logging"),
-      util("registry")
+      util("registry"),
+      util("tunable")
     ),
     libraryDependencies ++= jacksonLibs
   )
