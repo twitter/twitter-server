@@ -102,6 +102,55 @@ class TunableHandlerTest extends FunSuite {
     assert(resp.contentString == expected)
   }
 
+  test("GET: returns tunables for all ids") {
+    val map1 = TunableMap.newMutable("map1")
+    map1.put("key1", 5.seconds)
+    val map2 = TunableMap.newMutable("map2")
+    map2.put("key2", "value2")
+
+    val registry = Map[String, TunableMap]("foo" -> map1, "bar" -> map2)
+    val handler = new TunableHandler(() => registry)
+
+    val req = Request(Method.Get, "/admin/tunables")
+
+    val resp = Await.result(handler(req), 1.second)
+    assert(resp.status == Status.Ok)
+    val expected =
+      """[
+        |  {
+        |    "id" : "bar",
+        |    "tunables" : [
+        |      {
+        |        "id" : "key2",
+        |        "value" : "value2",
+        |        "components" : [
+        |          {
+        |            "source" : "map2",
+        |            "value" : "value2"
+        |          }
+        |        ]
+        |      }
+        |    ]
+        |  },
+        |  {
+        |    "id" : "foo",
+        |    "tunables" : [
+        |      {
+        |        "id" : "key1",
+        |        "value" : "5.seconds",
+        |        "components" : [
+        |          {
+        |            "source" : "map1",
+        |            "value" : "5.seconds"
+        |          }
+        |        ]
+        |      }
+        |    ]
+        |  }
+        |]""".stripMargin
+    assert(resp.contentString == expected)
+  }
+
   test("PUT: Updates tunable map with new tunables") {
     val map = TunableMap.newMutable()
     val registry = Map[String, TunableMap]("foo" -> map)

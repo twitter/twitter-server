@@ -126,6 +126,9 @@ trait Admin { self: App with AdminHttpServer with Stats =>
         alias = "Toggles", group = None, includeInIndex = false),
       Route(
         path = TunableHandler.Path, handler = new TunableHandler(),
+        alias = "Tunables", group = Some(Grouping.ProcessInfo), includeInIndex = true),
+      Route(
+        path = TunableHandler.PathForId, handler = new TunableHandler(),
         alias = "Tunables", group = None, includeInIndex = false),
       Route(
         path = "/favicon.ico", ResourceHandler.fromJar(

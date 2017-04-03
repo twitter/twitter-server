@@ -99,7 +99,7 @@ class TunableHandler private[handler] (
     }
 
   private[this] def handleGet(req: Request): Future[Response] = {
-    val id = req.path.stripPrefix(Path)
+    val id = req.path.stripPrefix(PathForId)
     registeredIdsFn().get(id) match {
       case None =>
         respond(Status.NotFound, s"TunableMap not found for id: $id")
@@ -107,6 +107,15 @@ class TunableHandler private[handler] (
         val view = toTunableMapView(id, map)
         respond(Status.Ok, JsonConverter.writeToString(view))
     }
+  }
+
+  private[this] def handleGetAll(): Future[Response] = {
+    val view = registeredIdsFn().toSeq.sortBy {
+      case (id, _) => id
+    }.map {
+      case (id, map) => toTunableMapView(id, map)
+    }
+    respond(Status.Ok, JsonConverter.writeToString(view))
   }
 
   private[this] def toTunableMapView(id: String, tunableMap: TunableMap): TunableMapView = {
@@ -139,7 +148,7 @@ class TunableHandler private[handler] (
       val json = req.contentString
       JsonTunableMapper().parse(json) match {
         case Return(tunableMap) =>
-          val id = req.path.stripPrefix(Path)
+          val id = req.path.stripPrefix(PathForId)
           findMutable(registeredIdsFn(), id) match {
             case None =>
               respond(Status.NotFound, s"Mutable TunableMap not found for id: $id")
@@ -161,7 +170,7 @@ class TunableHandler private[handler] (
       val json = req.contentString
       JsonTunableMapper().parse(json) match {
         case Return(tunableMap) =>
-          val id = req.path.stripPrefix(Path)
+          val id = req.path.stripPrefix(PathForId)
           findMutable(registeredIdsFn(), id) match {
             case None =>
               respond(Status.NotFound, s"Mutable TunableMap not found for id: $id")
@@ -178,24 +187,37 @@ class TunableHandler private[handler] (
       respond(Status.BadRequest, s"Expected Content-Type ${MediaType.Json} for DELETE request")
   }
 
-  def apply(req: Request): Future[Response] = req.method match {
-    case Method.Get =>
-      handleGet(req)
-    case Method.Put =>
-      handlePut(req)
-    case Method.Delete =>
-      handleDelete(req)
-    case unsupported =>
-      respond(
-        Status.MethodNotAllowed,
-        s"Unsupported HTTP method: $unsupported",
-        Seq((Fields.Allow, "GET, PUT, DELETE")))
+  def apply(req: Request): Future[Response] = req.path match {
+    case Path =>  req.method match {
+      case Method.Get =>
+        handleGetAll()
+      case unsupported =>
+        respond(
+          Status.MethodNotAllowed,
+          s"Unsupported HTTP method: $unsupported",
+          Seq((Fields.Allow, "GET")))
+    }
+    case _ => req.method match {
+      case Method.Get =>
+        handleGet(req)
+      case Method.Put =>
+        handlePut(req)
+      case Method.Delete =>
+        handleDelete(req)
+      case unsupported =>
+        respond(
+          Status.MethodNotAllowed,
+          s"Unsupported HTTP method: $unsupported",
+          Seq((Fields.Allow, "GET, PUT, DELETE")))
+    }
   }
 }
 
 object TunableHandler {
 
-  val Path = "/admin/tunables/"
+  val Path = "/admin/tunables"
+
+  val PathForId = Path + "/"
 
   private val log: Logger = Logger.get()
 }
