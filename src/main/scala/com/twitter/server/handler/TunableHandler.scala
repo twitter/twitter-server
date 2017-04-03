@@ -6,8 +6,10 @@ import com.twitter.finagle.tunable.StandardTunableMap
 import com.twitter.io.Buf
 import com.twitter.logging.Logger
 import com.twitter.server.util.HttpUtils._
+import com.twitter.server.util.JsonConverter
 import com.twitter.util.{Throw, Return, Future}
 import com.twitter.util.tunable.{JsonTunableMapper, TunableMap}
+import scala.collection.mutable
 
 /**
  * In-memory Tunables can be manipulated using the endpoint `/admin/tunables/`. PUT and DELETE
@@ -46,6 +48,37 @@ class TunableHandler private[handler] (
 
   def this() = this(() => StandardTunableMap.registeredIds)
 
+  // Classes used to compose a "view" of a TunableMap, which is returned to the user as a JSON
+  // string.
+
+  /**
+   * View of a [[TunableMap]] suitable for presentation
+   *
+   * @param id  id which this [[TunableMap]] representation corresponds to
+   * @param tunables  representation of the [[Tunable]]s in the [[TunableMap]]
+   */
+  private[this] case class TunableMapView(id: String, tunables: Seq[TunableView])
+
+  /**
+   * View of a [[Tunable]] suitable for presentation
+   *
+   * @param id  id of the [[Tunable]]
+   * @param value  the current value of the [[Tunable]]
+   * @param components  the components that this [[Tunable]] is composed of. These compositions
+   *                    are a reflection of the composition of [[TunableMap]]s that make up the
+   *                    [[TunableMap]] for a given id. If a [[Tunable]] with the same key occurs
+   *                    in multiple of these maps, the different values will be the [[Components]]
+   */
+  private[this] case class TunableView(id: String, value: String, components: Seq[Component])
+
+  /**
+   * View of a [[Tunable]] value that composes a [[Tunbable]] in a composed [[TunableMap]]
+   *
+   * @param source  the source of the value, i.e. `TunableMap.Entry.source`
+   * @param value   value of the component
+   */
+  private[this] case class Component(source: String, value: String)
+
   private[this] def respond(
     status: Status,
     content: String,
@@ -64,6 +97,42 @@ class TunableHandler private[handler] (
         case mut: TunableMap.Mutable => mut
       }
     }
+
+  private[this] def handleGet(req: Request): Future[Response] = {
+    val id = req.path.stripPrefix(Path)
+    registeredIdsFn().get(id) match {
+      case None =>
+        respond(Status.NotFound, s"TunableMap not found for id: $id")
+      case Some(map) =>
+        val view = toTunableMapView(id, map)
+        respond(Status.Ok, JsonConverter.writeToString(view))
+    }
+  }
+
+  private[this] def toTunableMapView(id: String, tunableMap: TunableMap): TunableMapView = {
+
+    val currentsMap: Map[String, TunableMap.Entry[_]] = tunableMap.entries.map {
+      case entry@TunableMap.Entry(key, _, _) => key.id -> entry
+    }.toMap
+
+    val componentsMap = mutable.Map.empty[String, mutable.ArrayBuffer[Component]]
+
+    for {
+      map <- TunableMap.components(tunableMap)
+      entry <- map.entries
+    } yield {
+      val components: mutable.ArrayBuffer[Component] =
+        componentsMap.getOrElse(entry.key.id, mutable.ArrayBuffer.empty[Component])
+      componentsMap.put(entry.key.id, components += Component(entry.source, entry.value.toString))
+    }
+
+    val tunables = componentsMap.map { case (id, components) =>
+      val md = currentsMap(id)
+      TunableView(id, md.value.toString, components)
+    }.toSeq
+
+    TunableMapView(id, tunables)
+  }
 
   private[this] def handlePut(req: Request): Future[Response] = req.contentType match {
     case Some(MediaType.Json) =>
@@ -110,6 +179,8 @@ class TunableHandler private[handler] (
   }
 
   def apply(req: Request): Future[Response] = req.method match {
+    case Method.Get =>
+      handleGet(req)
     case Method.Put =>
       handlePut(req)
     case Method.Delete =>
@@ -118,7 +189,7 @@ class TunableHandler private[handler] (
       respond(
         Status.MethodNotAllowed,
         s"Unsupported HTTP method: $unsupported",
-        Seq((Fields.Allow, "PUT, DELETE")))
+        Seq((Fields.Allow, "GET, PUT, DELETE")))
   }
 }
 

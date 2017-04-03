@@ -8,13 +8,13 @@ import org.scalatest.FunSuite
 
 class TunableHandlerTest extends FunSuite {
 
-  test("Non-{DELETE, PUT} request returns 'MethodNotAllowed response") {
+  test("Non-{DELETE, GET, PUT} request returns 'MethodNotAllowed response") {
     val handler = new TunableHandler
     val resp = handler(Request(Method.Post, "/"))
     assert(Await.result(resp, 1.second).status == Status.MethodNotAllowed)
   }
 
-  def testErrorHandling(method: Method) = {
+  def testJsonErrorHandling(method: Method) = {
     test(method + ": Returns response with error if Media-Type is not JSON") {
       val handler = new TunableHandler
       val req = Request(method, "/")
@@ -31,7 +31,9 @@ class TunableHandlerTest extends FunSuite {
       val resp = handler(req)
       assert(Await.result(resp, 1.second).contentString.contains("Failed to parse JSON"))
     }
+  }
 
+  def testIdErrorHandling(method: Method) = {
     test(method + ": Returns response with Status.NotFound if id in path is not registered") {
       val handler = new TunableHandler
       val req = Request(method, "/admin/tunables/foo")
@@ -44,8 +46,61 @@ class TunableHandlerTest extends FunSuite {
     }
   }
 
-  testErrorHandling(Method.Put)
-  testErrorHandling(Method.Delete)
+  testIdErrorHandling(Method.Get)
+
+  testJsonErrorHandling(Method.Put)
+  testIdErrorHandling(Method.Put)
+
+  testJsonErrorHandling(Method.Delete)
+  testIdErrorHandling(Method.Delete)
+
+  test("GET: returns tunables for id") {
+    val map1 = TunableMap.newMutable("map1")
+    map1.put("key1", 5.seconds)
+    val map2 = TunableMap.newMutable("map2")
+    map2.put("key1", 3.seconds)
+    map2.put("key2", "value2")
+    val composed = TunableMap.of(map1, map2)
+
+    val registry = Map[String, TunableMap]("foo" -> composed)
+    val handler = new TunableHandler(() => registry)
+
+    val req = Request(Method.Get, "/admin/tunables/foo")
+
+    val resp = Await.result(handler(req), 1.second)
+    assert(resp.status == Status.Ok)
+    val expected =
+      """{
+        |  "id" : "foo",
+        |  "tunables" : [
+        |    {
+        |      "id" : "key2",
+        |      "value" : "value2",
+        |      "components" : [
+        |        {
+        |          "source" : "map2",
+        |          "value" : "value2"
+        |        }
+        |      ]
+        |    },
+        |    {
+        |      "id" : "key1",
+        |      "value" : "5.seconds",
+        |      "components" : [
+        |        {
+        |          "source" : "map1",
+        |          "value" : "5.seconds"
+        |        },
+        |        {
+        |          "source" : "map2",
+        |          "value" : "3.seconds"
+        |        }
+        |      ]
+        |    }
+        |  ]
+        |}""".stripMargin
+    assert(resp.contentString == expected)
+  }
 
   test("PUT: Updates tunable map with new tunables") {
     val map = TunableMap.newMutable()
