@@ -1,5 +1,6 @@
 package com.twitter.server.handler
 
+import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.toggle.{NullToggleMap, Toggle, ToggleMap}
 import com.twitter.server.handler.ToggleHandler._
 import org.junit.runner.RunWith
@@ -69,17 +70,17 @@ class ToggleHandlerTest extends FunSuite {
       withLib.toggles.find(_.current.id == id).get
     }
     val expected0 = LibraryToggle(
-      Current(t0.id, t0.fraction, t0b.description),
+      Current(t0.id, t0.fraction, None, t0b.description),
       Seq(Component(t0.source, t0.fraction), Component(t0b.source, t0b.fraction)))
     assert(expected0 == libToggle(t0.id))
 
     val expected1 = LibraryToggle(
-      Current(t1.id, t1.fraction, t1.description),
+      Current(t1.id, t1.fraction, None, t1.description),
       Seq(Component(t1.source, t1.fraction)))
     assert(expected1 == libToggle(t1.id))
 
     val expected2 = LibraryToggle(
-      Current(t2.id, t2.fraction, t2.description),
+      Current(t2.id, t2.fraction, None, t2.description),
       Seq(Component(t2.source,t2.fraction)))
     assert(expected2 == libToggle(t2.id))
   }
@@ -117,6 +118,34 @@ class ToggleHandlerTest extends FunSuite {
     assert(1 == lib.toggles.size)
     val libToggle = lib.toggles.head
     assert("com.twitter.map0toggle1" == libToggle.current.id)
+  }
+
+  test("toLibraries includes last values") {
+    val mut = ToggleMap.newMutable()
+    mut.put("com.twitter.map0toggle0", 0.0)
+    mut.put("com.twitter.map0toggle1", 1.0)
+    mut.put("com.twitter.map0toggleNoneThen1", 1.0)
+    val tm = ToggleMap.observed(mut, NullStatsReceiver)
+
+    // use 2 of the toggles, causing the values to be captured
+    tm("com.twitter.map0toggle0")(5)
+    tm("com.twitter.map0toggle1")(5)
+
+    val mappings = Map("com.twitter.map0" -> tm)
+    val handler = new ToggleHandler(() => mappings)
+
+    def currentForId(id: String): ToggleHandler.Current = {
+      val libs = handler.toLibraries(ParsedPath(Some("com.twitter.map0"), Some(id)))
+      libs.libraries.head.toggles.head.current
+    }
+
+    assert(currentForId("com.twitter.map0toggle0").lastValue.contains(false))
+    assert(currentForId("com.twitter.map0toggle1").lastValue.contains(true))
+    assert(currentForId("com.twitter.map0toggleNoneThen1").lastValue.isEmpty)
+
+    // update the value and validate we see the change
+    tm("com.twitter.map0toggleNoneThen1")(5)
+    assert(currentForId("com.twitter.map0toggleNoneThen1").lastValue.contains(true))
   }
 
   test("setToggle") {

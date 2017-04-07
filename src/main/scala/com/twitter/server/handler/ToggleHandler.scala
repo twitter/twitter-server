@@ -21,9 +21,14 @@ private[handler] object ToggleHandler {
    *
    * @param id corresponds to `Toggle.Metadata.id`
    * @param fraction corresponds to `Toggle.Metadata.fraction`
+   * @param lastValue indicates the last value observed by `Toggle.apply`
    * @param description corresponds to `Toggle.Metadata.description`
    */
-  case class Current(id: String, fraction: Double, description: Option[String])
+  case class Current(
+      id: String,
+      fraction: Double,
+      lastValue: Option[Boolean],
+      description: Option[String])
 
   /**
    * The components that compose the "current" `Toggle`.
@@ -342,7 +347,11 @@ class ToggleHandler private[handler] (
 
     idToComponents.map { case (id, details) =>
       val md = idToMetadata(id)
-      LibraryToggle(Current(id, md.fraction, md.description), details)
+      val lastApply = toggleMap(id) match {
+        case captured: Toggle.Captured => captured.lastApply
+        case _ => None
+      }
+      LibraryToggle(Current(id, md.fraction, lastApply, md.description), details)
     }.toSeq
   }
 
