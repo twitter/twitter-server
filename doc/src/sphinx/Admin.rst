@@ -185,6 +185,68 @@ Requests must be of the form `/admin/toggles/$libraryName/$id`.
 For create and update, and an additional `fraction` request parameter
 must be set as well.
 
+/admin/tunables
+~~~~~~~~~~~~~~~
+
+See and modify the server's in-memory mutable `com.twitter.util.tunable.Tunables`.
+
+`GET` requests to `/admin/tunables` show the current state of all registered
+`StandardTunableMap StandardTunableMaps`. The returned JSON is of the form:
+
+::
+
+  [
+    {
+      "id" : "$id",
+      "tunables" : [
+        {
+          "id" : "$tunableId",
+          "value" : "$value",
+          "components" : [
+            {
+              "source" : "$TunableMapSource",
+              "value" : "$value"
+            },
+            { <other components here> }
+          ]
+        },
+        { <other tunables here> }
+      ]
+    },
+    { <other ids here> }
+  ]
+
+`GET` requests to `/admin/tunables/$id` show the current state of the StandardTunableMap
+registered for `$id`.
+
+`PUT` and `DELETE` requests to `/admin/tunables/$id` update the in-memory Tunables for `$id`
+and should have a JSON body in the same format as a `Tunable` configuration file,
+detailed in
+`JsonTunableMapper <https://github.com/twitter/util/blob/master/util-tunable/src/main/scala/com/twitter/util/tunable/JsonTunableMapper.scala>`_:
+
+::
+
+  {
+    "tunables":
+      [
+         {
+            "id" : "$tunableId",
+            "value" : $value,
+            "type" : "$class"
+         },
+         { <other updates here>
+      ]
+  }
+
+For a `PUT` request, these `Tunables` will be updated or added. Note that `PUT` requests
+will *not* cause any existing `Tunables` to be removed.
+
+For a `DELETE` request, these `Tunables` will cleared from the `TunableMap`. The `Tunables` are keyed
+by "id" and "type"; the "value" for each of `Tunables` to delete can be any valid value for this
+`Tunable`. Because the value of a `Tunable` is the result of a composition of `TunableMaps`
+(see `StandardTunableMap <https://github.com/twitter/finagle/blob/master/finagle-tunable/src/main/scala/com/twitter/finagle/tunable/StandardTunableMap.scala>`_), deleting an in-memory Tunable will cause the value from the
+composition of the other TunableMaps to be used.
+
 Metrics
 -------
 
