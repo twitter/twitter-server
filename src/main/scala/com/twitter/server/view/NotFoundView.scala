@@ -25,7 +25,7 @@ object NotFoundView {
               to your class path.
               <br/>
               For more information, please see
-              <a href="http://twitter.github.io/twitter-server/Features.html#http-admin-interface">
+              <a href="https://twitter.github.io/twitter-server/Features.html#http-admin-interface">
                 the twitter-server docs
               </a> or return to <a href="/admin">/admin</a>.
               </em>

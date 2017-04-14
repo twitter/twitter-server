@@ -30,7 +30,7 @@ private object RegistryHandler {
  * simple filtering of the returned data.
  *
  * See the
- * [[http://twitter.github.io/twitter-server/Admin.html#admin-registry-json user guide]]
+ * [[https://twitter.github.io/twitter-server/Admin.html#admin-registry-json user guide]]
  * for additional details.
  */
 class RegistryHandler extends Service[Request, Response] {

@@ -39,7 +39,7 @@ object SchedulerBlockingRule {
         |
         |The metric for this lint rule is exported at "scheduler/blocking_ms"
         |and more details can be found at:
-        |http://twitter.github.io/finagle/guide/Metrics.html#scheduler
+        |https://twitter.github.io/finagle/guide/Metrics.html#scheduler
       """.stripMargin
     ) {
       val blocking = Duration.fromNanoseconds(scheduler.blockingTimeNanos)
