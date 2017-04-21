@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>HTTP Admin interface &#8212; TwitterServer 1.28.0 documentation</title>
+    <title>HTTP Admin interface &#8212; TwitterServer 1.29.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.28.0',
+        VERSION:     '1.29.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="TwitterServer 1.28.0 documentation" href="index.html" />
+    <link rel="top" title="TwitterServer 1.29.0 documentation" href="index.html" />
     <link rel="next" title="Using TwitterServer from Java" href="Java.html" />
     <link rel="prev" title="Features" href="Features.html" />
    
@@ -211,6 +211,60 @@ Requests must be of the form <cite>/admin/toggles/$libraryName/$id</cite>.
 For create and update, and an additional <cite>fraction</cite> request parameter
 must be set as well.</p>
 </div>
+<div class="section" id="admin-tunables">
+<h3>/admin/tunables<a class="headerlink" href="#admin-tunables" title="Permalink to this headline">¶</a></h3>
+<p>See and modify the server&#8217;s in-memory mutable <cite>com.twitter.util.tunable.Tunables</cite>.</p>
+<p><cite>GET</cite> requests to <cite>/admin/tunables</cite> show the current state of all registered
+<cite>StandardTunableMap StandardTunableMaps</cite>. The returned JSON is of the form:</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>[
+  {
+    &quot;id&quot; : &quot;$id&quot;,
+    &quot;tunables&quot; : [
+      {
+        &quot;id&quot; : &quot;$tunableId&quot;,
+        &quot;value&quot; : &quot;$value&quot;,
+        &quot;components&quot; : [
+          {
+            &quot;source&quot; : &quot;$TunableMapSource&quot;,
+            &quot;value&quot; : &quot;$value&quot;
+          },
+          { &lt;other components here&gt; }
+        ]
+      },
+      { &lt;other tunables here&gt; }
+    ]
+  },
+  { &lt;other ids here&gt; }
+]
+</pre></div>
+</div>
+<p><cite>GET</cite> requests to <cite>/admin/tunables/$id</cite> show the current state of the StandardTunableMap
+registered for <cite>$id</cite>.</p>
+<p><cite>PUT</cite> and <cite>DELETE</cite> requests to <cite>/admin/tunables/$id</cite> update the in-memory Tunables for <cite>$id</cite>
+and should have a JSON body in the same format as a <cite>Tunable</cite> configuration file,
+detailed in
+<a class="reference external" href="https://github.com/twitter/util/blob/master/util-tunable/src/main/scala/com/twitter/util/tunable/JsonTunableMapper.scala">JsonTunableMapper</a>:</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>{
+  &quot;tunables&quot;:
+    [
+       {
+          &quot;id&quot; : &quot;$tunableId&quot;,
+          &quot;value&quot; : $value,
+          &quot;type&quot; : &quot;$class&quot;
+       },
+       { &lt;other updates here&gt;
+    ]
+}
+</pre></div>
+</div>
+<p>For a <cite>PUT</cite> request, these <cite>Tunables</cite> will be updated or added. Note that <cite>PUT</cite> requests
+will <em>not</em> cause any existing <cite>Tunables</cite> to be removed.</p>
+<p>For a <cite>DELETE</cite> request, these <cite>Tunables</cite> will cleared from the <cite>TunableMap</cite>. The <cite>Tunables</cite> are keyed
+by &#8220;id&#8221; and &#8220;type&#8221;; the &#8220;value&#8221; for each of <cite>Tunables</cite> to delete can be any valid value for this
+<cite>Tunable</cite>. Because the value of a <cite>Tunable</cite> is the result of a composition of <cite>TunableMaps</cite>
+(see <a class="reference external" href="https://github.com/twitter/finagle/blob/master/finagle-tunable/src/main/scala/com/twitter/finagle/tunable/StandardTunableMap.scala">StandardTunableMap</a>), deleting an in-memory Tunable will cause the value from the
+composition of the other TunableMaps to be used.</p>
+</div>
 </div>
 <div class="section" id="metrics">
 <h2>Metrics<a class="headerlink" href="#metrics" title="Permalink to this headline">¶</a></h2>
@@ -376,6 +430,7 @@ values for each module are available at <cite>/admin/clients/&lt;client name&gt;
 <li><a class="reference internal" href="#admin-tracing">/admin/tracing</a></li>
 <li><a class="reference internal" href="#admin-logging">/admin/logging</a></li>
 <li><a class="reference internal" href="#admin-toggles">/admin/toggles</a></li>
+<li><a class="reference internal" href="#admin-tunables">/admin/tunables</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#metrics">Metrics</a><ul>
