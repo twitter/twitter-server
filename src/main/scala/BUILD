@@ -17,7 +17,6 @@ scala_library(
     'finagle/finagle-netty4-http',
     'finagle/finagle-toggle',
     'finagle/finagle-tunable/src/main/scala:scala',
-    'finagle/finagle-zipkin',
     'finagle/finagle-zipkin-core',
     'twitter-server/src/main/resources',
     'util/util-app',
