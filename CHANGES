@@ -7,6 +7,12 @@ Note that ``RB_ID=#`` correspond to associated messages in commits.
 1.x
 -----
 
+Breaking API Changes
+~~~~~~~~~~~~~~~~~~~~
+
+  * Removed `c.t.server.Closer` trait. Behavior has been moved to
+   `c.t.app.App`. ``RB_ID=915485``
+
 1.29.0
 ------
 
