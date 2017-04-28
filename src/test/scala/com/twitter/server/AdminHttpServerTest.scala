@@ -12,24 +12,28 @@ import org.scalatest.junit.JUnitRunner
 
 class MockMetricsExporter extends HttpMuxHandler {
   val pattern = "/admin/metrics.json"
+  def route: Route = Route(pattern, this)
   def apply(req: Request): Future[Response] =
     newOk("standard metrics!")
 }
 
 class MockOstrichExporter extends HttpMuxHandler {
   val pattern = "/stats.json"
+  def route: Route = Route(pattern, this)
   def apply(req: Request): Future[Response] =
     newOk("metrics!")
 }
 
 class MockCommonsExporter extends HttpMuxHandler {
   val pattern = "/vars.json"
+  def route: Route = Route(pattern, this)
   def apply(req: Request): Future[Response] =
     newOk("commons stats!")
 }
 
 class MockHostMetricsExporter extends HttpMuxHandler {
   val pattern = "/admin/per_host_metrics.json"
+  def route: Route = Route(pattern, this)
   def apply(req: Request): Future[Response] =
     newOk("per host metrics!")
 }
