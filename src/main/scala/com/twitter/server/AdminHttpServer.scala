@@ -9,7 +9,7 @@ import com.twitter.finagle.http.{HttpMuxer, Method, Request, Response}
 import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.tracing.NullTracer
-import com.twitter.finagle.{Http, ListeningServer, NullServer, Service, param}
+import com.twitter.finagle.{Http, ListeningServer, NullServer, Service}
 import com.twitter.server.util.HttpUtils
 import com.twitter.server.view.{IndexView, NotFoundView}
 import com.twitter.util.registry.Library
@@ -139,6 +139,20 @@ trait AdminHttpServer { self: App =>
     */
   protected def libraryName: String = "twitter-server"
 
+  /**
+   * This method allows for further configuration of the http server for parameters not exposed by
+   * this trait or for overriding defaults provided herein, e.g.,
+   *
+   * {{{
+   * override def configureAdminHttpServer(server: Http.Server): Http.Server =
+   *  server.withMonitor(myMonitor)
+   * }}}
+   *
+   * @param server - the [[com.twitter.finagle.Http.Server]] to configure.
+   * @return a configured Http.Server.
+   */
+  protected def configureAdminHttpServer(server: Http.Server): Http.Server = server
+
   private[this] def updateMuxer() = {
     // a logger used to log all sync and async exceptions
     // that occur in the admin server.
@@ -198,15 +212,16 @@ trait AdminHttpServer { self: App =>
     }
 
     log.info(s"Serving admin http on ${adminPort()}")
-    adminHttpServer = Http.server
-      .configured(Http.Netty4Impl)
-      .configured(param.Stats(NullStatsReceiver))
-      .configured(param.Tracer(NullTracer))
-      .configured(param.Monitor(loggingMonitor))
-      .configured(param.Label(ServerName))
-      // disable admission control, since we want the server to report stats
-      // especially when it's in a bad state.
-      .configured(ServerAdmissionControl.Param(false))
+    adminHttpServer = configureAdminHttpServer(
+      Http.server
+        .configured(Http.Netty4Impl)
+        .withStatsReceiver(NullStatsReceiver)
+        .withTracer(NullTracer)
+        .withMonitor(loggingMonitor)
+        .withLabel(ServerName)
+        // disable admission control, since we want the server to report stats
+        // especially when it's in a bad state.
+        .configured(ServerAdmissionControl.Param(false)))
       .serve(adminPort(), new NotFoundView andThen adminHttpMuxer)
 
     closeOnExit(adminHttpServer)
