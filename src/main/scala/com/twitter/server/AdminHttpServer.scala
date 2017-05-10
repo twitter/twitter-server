@@ -224,7 +224,7 @@ trait AdminHttpServer { self: App =>
         .configured(ServerAdmissionControl.Param(false)))
       .serve(adminPort(), new NotFoundView andThen adminHttpMuxer)
 
-    closeOnExit(adminHttpServer)
+    closeOnExitLast(adminHttpServer)
     Library.register(libraryName, Map.empty)
   }
 

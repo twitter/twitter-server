@@ -6,6 +6,11 @@ Note that ``RB_ID=#`` correspond to associated messages in commits.
 
 1.x
 -----
+Runtime Behavior Changes
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+  * The admin server now waits for other registered closables to shut down
+    before commencing its own shutdown. ``RB_ID=916421``
 
 Breaking API Changes
 ~~~~~~~~~~~~~~~~~~~~
