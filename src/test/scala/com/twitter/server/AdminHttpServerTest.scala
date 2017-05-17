@@ -143,6 +143,7 @@ class AdminHttpServerTest
     }
   }
 
+  if (!sys.props.contains("SKIP_FLAKY"))
   test("admin server respects deadline") {
     Time.withCurrentTimeFrozen { ctl =>
       val server = new TestTwitterServer {
