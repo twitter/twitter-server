@@ -149,32 +149,51 @@ function refreshHistogram(updatedValues) {
 }
 
 /** 
- * Refreshes the statistics table from an object 
+ * Refreshes the statistics table from an object.
  * @param {Object} updatedMetrics Standard finagle performance metrics
- **/
+ *
+ * The JSON object will look roughly like:
+    {
+      "name" : "finagle/timer/deviation_ms"
+      "count" : 1051,
+      "sum" : 10520,
+      "average" : 10,
+      "min" : 5,
+      "max" : 52,
+      "percentiles" : {
+        "p50" : 10,
+        "p90" : 12,
+        "p95" : 12,
+        "p99" : 13,
+        "p999" : 20,
+        "p9999" : 52,
+      }
+    }
+ */
 function refreshStatistics(updatedMetrics) {
-  var fields = Array("avg", "count", "max", "min", "p50", "p90", "p95", "p99", "p9990", "p9999", "sum");
-  var updatedStatistics = {};
-  fields.forEach(function(entry) {
-    updatedStatistics[entry] = updatedMetrics[params.h + "." + entry];
-  })
-
   function changeText(id, text) {
-    document.getElementById(id).innerHTML = text;
+    var elem = document.getElementById(id);
+    if (elem !== undefined) {
+      if (text === undefined) {
+        elem.innerHTML = 'undefined';
+      } else {
+        elem.innerHTML = text;
+      }
+    }
   }
 
-  function changeFloat(id, num) {
-    changeText(id, num.toFixed(2));
-  }
-  changeText("P-50", updatedStatistics.p50);
-  changeText("P-90", updatedStatistics.p90);
-  changeText("P-95", updatedStatistics.p90);
-  changeText("P-99", updatedStatistics.p99);
-  changeText("P-999", updatedStatistics.p9990);
-  changeText("P-9999", updatedStatistics.p9999);
-  changeText("Count", updatedStatistics.count);
-  changeText("Sum" , updatedStatistics.sum); 
-  changeFloat("Avg", updatedStatistics.avg);
-  changeText("Min", updatedStatistics.min);
-  changeText("Max", updatedStatistics.max);
+  changeText("detail_count", updatedMetrics.count);
+  changeText("detail_sum" , updatedMetrics.sum);
+  changeText("detail_average", updatedMetrics.average);
+  changeText("detail_min", updatedMetrics.min);
+  changeText("detail_max", updatedMetrics.max);
+
+  var percentiles = updatedMetrics.percentiles
+  changeText("detail_p50", percentiles.p50);
+  changeText("detail_p90", percentiles.p90);
+  changeText("detail_p95", percentiles.p90);
+  changeText("detail_p99", percentiles.p99);
+  changeText("detail_p999", percentiles.p999);
+  changeText("detail_p9999", percentiles.p9999);
+
 }
