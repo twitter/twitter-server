@@ -143,12 +143,13 @@ class AdminHttpServerTest
     }
   }
 
-  if (!sys.props.contains("SKIP_FLAKY"))
   test("admin server respects deadline") {
     Time.withCurrentTimeFrozen { ctl =>
       val server = new TestTwitterServer {
 
         override protected lazy val shutdownTimer = new MockTimer
+
+        override protected def exitOnError(reason: String): Unit = ()
 
         override def main(): Unit = {
           val drainingClosable = Closable.make { _ => Future.never }
