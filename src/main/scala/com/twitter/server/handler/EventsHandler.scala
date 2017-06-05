@@ -50,29 +50,43 @@ private[server] class EventsHandler(sink: Sink) extends Service[Request, Respons
       .and(spanIdFilter)
       .and(traceIdFilter)
   }
-
-  def apply(req: Request): Future[Response] =
-    if (accepts(req, "trace/"))
-      respond(TraceEvent, TraceEventSink.serialize(sink))
-    else if (expectsJson(req))
+  /** 
+   * It defines EventsHandler's main functionality.  
+   * @param req accepts the Request object to process. 
+   * @return The event data.
+   */
+  def apply(req: Request): Future[Response] = 
+    if (accepts(req, "trace/"))        
+      respond(TraceEvent, TraceEventSink.serialize(sink)) 
+    else if (expectsJson(req))                              
       respond(LineDelimitedJson, JsonSink.serialize(sink))
-    else
+      //  returns the serialized version of the sink
       if (!req.params.isEmpty) {
-        val eventFilter = eventFilterFromParams(
+        // setting respond using a utility JsonSink to serialize the
+        // [[com.twitter.util.events.Sink]] to HTML.
+        val eventFilter = eventFilterFromParams(                            
           req.params.filterNot { case (k, v) => v.isEmpty } )
         respond(Html, tableBodyHtml(sink.events.toSeq.filter(eventFilter)))
       } else {
         respond(Html, Reader.fromBuf(Buf.Utf8(pageHtml(sink))))
       }
-
-  private[this] def respond(contentType: String, reader: Reader): Future[Response] = {
-    val response = Response()
-    response.contentType = contentType
-    response.setChunked(true)
+  /**
+   * set the content type of Response add copy stream data from 
+   * Reader Stream to Writer Stream . 
+   * @param contentType specify the content type of 
+   * the data in Output Response Stream 
+   * @param reader specify the given input Stream. 
+   * @return Future[Response] returns the Future objcet 
+   * containg array of Responses.
+   */
+  private[this] def respond(contentType: String, reader: Reader): Future[Response] = {  
+    val response = Response()         
+    response.contentType = contentType   
+    response.setChunked(true) 
     Reader.copy(reader, response.writer).onFailure { e =>
-      log.info("Encountered an error while writing the event stream: " + e)
-    }.ensure(response.writer.close())
-    Future.value(response)
+      log.info("Encountered an error while writing the event stream: " + e) 
+    }.ensure(response.writer.close())                                      
+    Future.value(response)                                
   }
 }
 
