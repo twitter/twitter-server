@@ -2,16 +2,16 @@ package com.twitter.server
 
 import com.twitter.app.App
 import com.twitter.finagle.tracing.Trace
-import com.twitter.logging.{Level => TwLevel}
+import com.twitter.logging.{ Level => TwLevel, _}
 import com.twitter.util.Time
-import java.util.logging.{Formatter, Level, LogRecord, Logger}
+import java.util.logging.{Level, LogRecord}
 import java.io.{PrintWriter, StringWriter}
 import scala.reflect.NameTransformer
 
-trait LogFormat { app: App =>
+trait LogFormat { app: App with Logging =>
+  override def defaultFormatter: Formatter = new LogFormatter
   premain {
-    for (h <- Logger.getLogger("").getHandlers)
-      h.setFormatter(new LogFormatter)
+    configureLoggerFactories()
   }
 }
 
