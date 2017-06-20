@@ -12,9 +12,12 @@ scala_library(
     '3rdparty/jvm/com/fasterxml/jackson/core:jackson-databind',
     '3rdparty/jvm/com/fasterxml/jackson/module:jackson-module-scala',
     '3rdparty/jvm/io/netty:netty',
+    '3rdparty/jvm/io/netty:netty4',
+    'finagle/finagle-base-http/src/main/scala:scala',
     'finagle/finagle-core',
     'finagle/finagle-http/src/main/scala:scala',
     'finagle/finagle-netty4-http',
+    'finagle/finagle-netty4/src/main/scala:scala',
     'finagle/finagle-toggle',
     'finagle/finagle-tunable/src/main/scala:scala',
     'finagle/finagle-zipkin-core',
@@ -33,4 +36,5 @@ scala_library(
   sources=rglobs('*.scala'),
   # Exposes a service-loaded class.
   scope='forced',
+  strict_deps=True,
 )
