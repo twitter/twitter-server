@@ -1,15 +1,12 @@
 package com.twitter.server.util
 
-import com.twitter.finagle.tracing.Annotation
-import com.twitter.finagle.zipkin.core.SamplingTracer.Trace
 import com.twitter.io.{Buf, Reader}
 import com.twitter.server.EventSink.Record
-import com.twitter.util.events.{Sink, Event}
-import com.twitter.util.{Await, Throw, Try, Time}
-import java.net.InetSocketAddress
+import com.twitter.util.events.{Event, Sink}
+import com.twitter.util.{Await, Throw, Time, Try}
 import java.util.logging.{Level, LogRecord}
 import org.junit.runner.RunWith
-import org.scalacheck.{Gen, Arbitrary}
+import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
@@ -26,8 +23,6 @@ class JsonSinkTest extends FunSuite with GeneratorDrivenPropertyChecks {
     // Make these arbitrary?
     sink.event(Record, objectVal = new LogRecord(Level.INFO, "hello"))
     sink.event(Record, objectVal = new LogRecord(Level.INFO, "world"))
-    sink.event(Trace, objectVal = Annotation.Message("goodbye"))
-    sink.event(Trace, objectVal = Annotation.LocalAddr(new InetSocketAddress(0)))
 
     val identity = JsonSink.serialize _ andThen JsonSink.deserialize
     val events = identity(sink)
@@ -46,19 +41,6 @@ class JsonSinkTest extends FunSuite with GeneratorDrivenPropertyChecks {
       s""""id":"${Record.id}"""",
       s""""when":${sink.events.next.when.inMilliseconds}""",
       s""""data":{"level":"INFO","message":"hello"}"""
-    ).mkString("{", ",", "}\r\n"))
-  }
-
-  test("JsonSink.serialize: Trace") {
-    val sink = Sink.of(mutable.ListBuffer.empty)
-    sink.event(Trace, objectVal = Annotation.Message("hello"))
-    val reader = JsonSink.serialize(sink)
-    val f = Reader.readAll(reader).map(buf => Buf.Utf8.unapply(buf).get)
-
-    assert(Await.result(f) == Seq(
-      s""""id":"${Trace.id}"""",
-      s""""when":${sink.events.next.when.inMilliseconds}""",
-      s""""data":["${classOf[Annotation.Message].getName}",{"content":"hello"}]"""
     ).mkString("{", ",", "}\r\n"))
   }
 
