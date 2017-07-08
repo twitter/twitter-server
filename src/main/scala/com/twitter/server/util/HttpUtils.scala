@@ -1,7 +1,7 @@
 package com.twitter.server.util
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{MediaType, Request, Response, Status, Version}
+import com.twitter.finagle.http.{MediaType, Request, Response, Status, Version, HttpMuxer}
 import com.twitter.io.Buf
 import com.twitter.util.Future
 import org.jboss.netty.handler.codec.http.QueryStringDecoder
@@ -16,23 +16,11 @@ private[server] object HttpUtils {
    * the response of the last service is used. If the given list of `services`
    * is empty the resulting services will be always answering with 404.
    */
-  def combine(services: Seq[Service[Request, Response]]): Service[Request, Response] =
+  def combine(services: Seq[HttpMuxer]): Service[Request, Response] =
     Service.mk[Request, Response] { req =>
-      def loop(services: Seq[Service[Request, Response]]): Future[Response] =
-        services match {
-          case service +: Nil => service(req)
-          case service +: tail =>
-            service(req).flatMap { rep =>
-              if (rep.status == Status.NotFound)
-                loop(tail)
-              else
-                Future.value(rep)
-            }
-          case Nil =>
-            Future.value(Response(req.version, Status.NotFound))
-        }
-
-      loop(services)
+      val routes = services.flatMap(_.route(req))
+      if (routes.nonEmpty) routes.maxBy(_.pattern.length).handler(req)
+      else Future.value(Response(req.version, Status.NotFound))
     }
 
   /**

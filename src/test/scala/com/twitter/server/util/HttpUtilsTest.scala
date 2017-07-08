@@ -1,17 +1,20 @@
 package com.twitter.server.util
 
+import com.twitter.conversions.time._
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{HttpMuxer, Request, Response, Status, Version}
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils._
-import com.twitter.util.Await
+import com.twitter.util.{Await, Future}
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class HttpUtilsTest extends FunSuite {
-  test("combine") {
+  private[this] def await[A](a: Future[A]): A = Await.result(a, 5.seconds)
+
+  test("combine can combine two muxers") {
     val hello = new Service[Request, Response] {
       def apply(req: Request) = newOk("hello")
     }
@@ -25,29 +28,91 @@ class HttpUtilsTest extends FunSuite {
 
     val svc = combine(Seq(muxer0, muxer1))
 
-    val res0 = Await.result(svc(Request("/hello")))
+    val res0 = await(svc(Request("/hello")))
     assert(res0.contentString == "hello")
 
-    val res1 = Await.result(svc(Request("/world")))
+    val res1 = await(svc(Request("/world")))
     assert(res1.contentString == "world")
+  }
 
+  test("combine order doesn't matter for different paths") {
+    val hello = new Service[Request, Response] {
+      def apply(req: Request) = newOk("hello")
+    }
 
-    val muxer2 = new HttpMuxer().withHandler("/hello",
-      new Service[Request, Response] {
-        def apply(req: Request) = newOk("sup")
-      }
-    )
+    val world = new Service[Request, Response] {
+      def apply(req: Request) = newOk("world")
+    }
 
-    val svcSeq1 = combine(Seq(muxer0, muxer1, muxer2))
-    val res2 = Await.result(svcSeq1(Request("/hello")))
-    assert(res2.contentString == "hello")
+    val muxer0 = new HttpMuxer().withHandler("/hello", hello)
+    val muxer1 = new HttpMuxer().withHandler("/world", world)
 
-    val svcSeq2 = combine(Seq(muxer2, muxer0, muxer1))
-    val res3 = Await.result(svcSeq2(Request("/hello")))
-    assert(res3.contentString == "sup")
+    Seq(muxer0, muxer1).permutations.foreach { seq =>
+      val svc = combine(seq)
 
-    val res4 = Await.result(svcSeq1(Request("/an404")))
-    assert(res4.status == Status.NotFound)
+      val res0 = await(svc(Request("/hello")))
+      assert(res0.contentString == "hello")
+
+      val res1 = await(svc(Request("/world")))
+      assert(res1.contentString == "world")
+    }
+  }
+
+  test("combine always chooses the longer prefix") {
+    val hello = new Service[Request, Response] {
+      def apply(req: Request) = newOk("hello")
+    }
+
+    val world = new Service[Request, Response] {
+      def apply(req: Request) = newOk("world")
+    }
+
+    val muxer0 = new HttpMuxer().withHandler("/hello", hello)
+    val muxer1 = new HttpMuxer().withHandler("/hello1", world)
+
+    Seq(muxer0, muxer1).permutations.foreach { seq =>
+      val svc = combine(seq)
+
+      val res = await(svc(Request("/hello1")))
+      assert(res.contentString == "world")
+    }
+  }
+
+  test("combine order is respected for identical paths") {
+    val hello = new Service[Request, Response] {
+      def apply(req: Request) = newOk("hello")
+    }
+
+    val world = new Service[Request, Response] {
+      def apply(req: Request) = newOk("world")
+    }
+    val muxer0 = new HttpMuxer().withHandler("/hello", hello)
+    val muxer1 = new HttpMuxer().withHandler("/hello", world)
+
+    val svcSeq0 = combine(Seq(muxer0, muxer1))
+    val res0 = await(svcSeq0(Request("/hello")))
+    assert(res0.contentString == "hello")
+
+    val svcSeq1 = combine(Seq(muxer1, muxer0))
+    val res1 = await(svcSeq1(Request("/hello")))
+    assert(res1.contentString == "world")
+  }
+
+  test("combine can 404 properly") {
+    val hello = new Service[Request, Response] {
+      def apply(req: Request) = newOk("hello")
+    }
+
+    val world = new Service[Request, Response] {
+      def apply(req: Request) = newOk("world")
+    }
+    val muxer0 = new HttpMuxer().withHandler("/hello", hello)
+    val muxer1 = new HttpMuxer().withHandler("/world", world)
+
+    val svc = combine(Seq(muxer0, muxer1))
+
+    val res = await(svc(Request("/an404")))
+    assert(res.status == Status.NotFound)
   }
 
   test("expects") {
@@ -73,7 +138,7 @@ class HttpUtilsTest extends FunSuite {
   }
 
   test("newResponse") {
-    val res = Await.result(newResponse(
+    val res = await(newResponse(
       version = Version.Http11,
       status = Status.Ok,
       headers = Seq(("host", "localhost")),
@@ -87,14 +152,14 @@ class HttpUtilsTest extends FunSuite {
   }
 
   test("newOk") {
-    val res = Await.result(newOk("hello"))
+    val res = await(newOk("hello"))
     assert(res.status == Status.Ok)
     assert(res.headerMap.get("content-type") == Some("text/plain;charset=UTF-8"))
     assert(res.contentString == "hello")
   }
 
   test("new404") {
-    val res = Await.result(new404("not found"))
+    val res = await(new404("not found"))
     assert(res.status == Status.NotFound)
     assert(res.headerMap.get("content-type") == Some("text/plain;charset=UTF-8"))
     assert(res.contentString == "not found")

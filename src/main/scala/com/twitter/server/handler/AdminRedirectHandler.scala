@@ -8,14 +8,26 @@ import com.twitter.server.util.HttpUtils.newResponse
 import com.twitter.util.Future
 import java.net.URI
 
-class AdminRedirectHandler extends Service[Request, Response] {
+class AdminRedirectHandler private(
+    pathMatcher: Option[String => Boolean])
+  extends Service[Request, Response] {
 
-  def apply(req: Request): Future[Response] = {
+  def this() = this(None)
+  def this(pathMatcher: String => Boolean) = this(Some(pathMatcher))
+
+  private[this] def mkResponse(status: Status): Future[Response] =
     newResponse(
-      status = Status.TemporaryRedirect,
+      status = status,
       contentType = "text/plain;charset=UTF-8",
       content = Buf.Empty,
       headers = Seq((Fields.Location, URI.create(Path.Admin)))
     )
+
+  def apply(req: Request): Future[Response] = pathMatcher match {
+    case Some(pred) =>
+      if (pred(req.path)) mkResponse(Status.TemporaryRedirect)
+      else mkResponse(Status.NotFound)
+    case None =>
+      mkResponse(Status.TemporaryRedirect)
   }
 }

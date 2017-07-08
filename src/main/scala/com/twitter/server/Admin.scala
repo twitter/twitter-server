@@ -47,6 +47,12 @@ trait Admin { self: App with AdminHttpServer with Stats =>
         path = Path.Admin, handler = new SummaryHandler,
         alias = "Summary", group = None, includeInIndex = true),
       Route(
+        path = Path.Admin + "/",
+        // this redirects to admin if the path is exactly Path.Admin + "/"
+        // and shows a 404 otherwise.
+        handler = new NotFoundView andThen new AdminRedirectHandler(_ == Path.Admin + "/"),
+        alias = "Admin Redirect", group = None, includeInIndex = false),
+      Route(
         path = "/admin/server_info", handler = new TextBlockView andThen new ServerInfoHandler(self),
         alias = "Build Properties", group = Some(Grouping.ProcessInfo), includeInIndex = true),
       Route(
