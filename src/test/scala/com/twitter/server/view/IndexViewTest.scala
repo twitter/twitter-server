@@ -1,10 +1,10 @@
 package com.twitter.server.view
 
-import com.twitter.finagle.http.{Request, Response, Status}
+import com.twitter.finagle.http.{Request, Response, Status, Version}
 import com.twitter.finagle.Service
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.{newOk, newResponse}
-import com.twitter.util.Await
+import com.twitter.util.{Await, Future}
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -38,5 +38,23 @@ class IndexViewTest extends FunSuite {
     assert(res1.headerMap.get("content-type") == Some("text/plain;charset=UTF-8"))
     assert(res1.status == Status.Ok)
     assert(res1.contentString == "hello")
+  }
+
+  test("handles missing content-type header") {
+    val svc = new Service[Request, Response] {
+      def apply(req: Request) = {
+        val response = Response(Version.Http11, Status.Ok)
+        response.content = Buf.Utf8("string")
+        Future.value(response)
+      }
+    }
+
+    val idx = new IndexView("test", "", () => Seq())
+    val req = Request("/")
+    req.headerMap.set("Accept", "text/html")
+
+    val res = Await.result(idx(req, svc))
+    assert(res.status == Status.Ok)
+    assert(res.contentType.isEmpty)
   }
 }

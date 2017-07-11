@@ -143,7 +143,7 @@ class IndexView(title: String, uri: String, index: () => Seq[IndexView.Entry])
   def apply(req: Request, svc: Service[Request, Response]) =
     if (!expectsHtml(req)) svc(req)
     else svc(req) flatMap { res =>
-      val contentType = res.headerMap.get("content-type").orNull
+      val contentType = res.headerMap.get("content-type").getOrElse("")
       val content = res.contentString
       res match {
         case _ if !isFragment(contentType, content) => Future.value(res)
