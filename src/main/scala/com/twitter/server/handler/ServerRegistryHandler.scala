@@ -84,7 +84,7 @@ class ServerRegistryHandler(
     val (path, _) = parse(req.uri)
     path.stripPrefix(uriPrefix) match {
       case idx@("index.html" | "index.htm" | "index.txt" | "servers") =>
-        val servers = (registry.registrants flatMap {
+        val servers = (registry.registrants.flatMap {
           case e: StackRegistry.Entry if e.name.nonEmpty =>
             for (scope <- findScope(e.name)) yield (scope, e)
 

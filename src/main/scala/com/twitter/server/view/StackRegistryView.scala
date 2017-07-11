@@ -24,6 +24,10 @@ private[server] object StackRegistryView {
             </tr>"""
       }).mkString("\n")
 
+    // Including turn an item to an id attribute, use underscores instead of plus signs
+    def toUri(item: String): String =
+      item.replace(' ', '_')
+
     val modules = entry.modules
 
     s"""<h2>
@@ -48,7 +52,7 @@ private[server] object StackRegistryView {
                 <ul class="nav nav-tabs">
                   ${
                      (for (StackRegistry.Module(role, _, _) <- modules) yield {
-                        s"""<li><a href="#${role}-module" data-toggle="tab">${escapeHtml(role)}</a></li>"""
+                        s"""<li><a href="#${toUri(role)}-module" data-toggle="tab">${escapeHtml(role)}</a></li>"""
                       }).mkString("\n")
                    }
                 </ul>
@@ -57,7 +61,7 @@ private[server] object StackRegistryView {
               <div class="tab-content">
                 ${
                   (for (StackRegistry.Module(role, desc, params) <- modules) yield {
-                    s"""<div class="tab-pane" id="${role}-module">
+                    s"""<div class="tab-pane" id="${toUri(role)}-module">
                           <div style="display:inline-block; min-width:50%">
                             <div class="panel panel-default">
                               <div class="panel-heading">${escapeHtml(role)}</div>
