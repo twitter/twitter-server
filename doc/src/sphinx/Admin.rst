@@ -234,7 +234,7 @@ detailed in
             "value" : $value,
             "type" : "$class"
          },
-         { <other updates here>
+         { <other updates here> }
       ]
   }
 
