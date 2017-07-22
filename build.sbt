@@ -89,10 +89,10 @@ val sharedSettings = Seq(
 
 lazy val twitterServer = Project(
   id = "twitter-server",
-  base = file("."),
-  settings = Defaults.coreDefaultSettings ++
-    sharedSettings ++
-    unidocSettings
+  base = file(".")
+).settings(
+  sharedSettings,
+  unidocSettings
 ).settings(
   name := "twitter-server",
   libraryDependencies ++= Seq(
@@ -115,24 +115,23 @@ lazy val twitterServer = Project(
 
 lazy val twitterServerDoc = Project(
   id = "twitter-server-doc",
-  base = file("doc"),
-  settings =
-    Defaults.coreDefaultSettings ++
-    sharedSettings ++
-    site.settings ++
-    site.sphinxSupport() ++
-    Seq(
-      scalacOptions in doc ++= Seq("-doc-title", "TwitterServer", "-doc-version", version.value),
-      includeFilter in Sphinx := ("*.html" | "*.png" | "*.js" | "*.css" | "*.gif" | "*.txt")
-    )
-  ).configs(DocTest).settings(
-    inConfig(DocTest)(Defaults.testSettings): _*
-  ).settings(
-    unmanagedSourceDirectories in DocTest += baseDirectory.value / "src/sphinx/code",
+  base = file("doc")
+).settings(
+  sharedSettings,
+  site.settings,
+  site.sphinxSupport(),
+  Seq(
+    scalacOptions in doc ++= Seq("-doc-title", "TwitterServer", "-doc-version", version.value),
+    includeFilter in Sphinx := ("*.html" | "*.png" | "*.js" | "*.css" | "*.gif" | "*.txt")
+  )
+).configs(DocTest).settings(
+  inConfig(DocTest)(Defaults.testSettings): _*
+).settings(
+  unmanagedSourceDirectories in DocTest += baseDirectory.value / "src/sphinx/code",
 
-    // Make the "test" command run both, test and doctest:test
-    test := Seq(test in Test, test in DocTest).dependOn.value
-  ).dependsOn(twitterServer)
+  // Make the "test" command run both, test and doctest:test
+  test := Seq(test in Test, test in DocTest).dependOn.value
+).dependsOn(twitterServer)
 
 /* Test Configuration for running tests on doc sources */
 lazy val DocTest = config("testdoc") extend Test
