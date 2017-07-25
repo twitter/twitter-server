@@ -83,9 +83,9 @@ object TwitterServer extends Build {
           <url>https://www.twitter.com/</url>
         </developer>
       </developers>,
-    publishTo <<= version { (v: String) =>
+    publishTo := {
       val nexus = "https://oss.sonatype.org/"
-      if (v.trim.endsWith("SNAPSHOT"))
+      if (version.value.trim.endsWith("SNAPSHOT"))
         Some("snapshots" at nexus + "content/repositories/snapshots")
       else
         Some("releases"  at nexus + "service/local/staging/deploy/maven2")
@@ -127,16 +127,16 @@ object TwitterServer extends Build {
       site.settings ++
       site.sphinxSupport() ++
       Seq(
-        scalacOptions in doc <++= version.map(v => Seq("-doc-title", "TwitterServer", "-doc-version", v)),
+        scalacOptions in doc ++= Seq("-doc-title", "TwitterServer", "-doc-version", version.value),
         includeFilter in Sphinx := ("*.html" | "*.png" | "*.js" | "*.css" | "*.gif" | "*.txt")
       )
     ).configs(DocTest).settings(
       inConfig(DocTest)(Defaults.testSettings): _*
     ).settings(
-      unmanagedSourceDirectories in DocTest <+= baseDirectory { _ / "src/sphinx/code" },
+      unmanagedSourceDirectories in DocTest += baseDirectory.value / "src/sphinx/code",
 
       // Make the "test" command run both, test and doctest:test
-      test <<= Seq(test in Test, test in DocTest).dependOn
+      test := Seq(test in Test, test in DocTest).dependOn.value
     ).dependsOn(twitterServer)
 
   /* Test Configuration for running tests on doc sources */
