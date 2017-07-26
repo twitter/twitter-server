@@ -26,10 +26,12 @@ private object LoggingHandler {
   }
 
   def renderText(loggers: Seq[Logger], updateMsg: String): String = {
-    val out = loggers.toSeq.map { logger =>
-      val loggerName = if (logger.name == "") "root" else logger.name
-      escapeHtml(s"$loggerName ${getLevel(logger)}")
-    }.mkString("\n")
+    val out = loggers.toSeq
+      .map { logger =>
+        val loggerName = if (logger.name == "") "root" else logger.name
+        escapeHtml(s"$loggerName ${getLevel(logger)}")
+      }
+      .mkString("\n")
     if (updateMsg.isEmpty) s"$out" else s"${escapeHtml(updateMsg)}\n$out"
   }
 
@@ -42,29 +44,29 @@ private object LoggingHandler {
             <th>com.twitter.logging.Level</th>
           </tr>
         </thead>
-        ${
-          (for (logger <- loggers) yield {
-            val loggerName = if (logger.name == "") "root" else logger.name
-            s"""<tr>
+        ${(for (logger <- loggers) yield {
+      val loggerName = if (logger.name == "") "root" else logger.name
+      s"""<tr>
                 <td><h5>${escapeHtml(loggerName)}</h5></td>
                 <td><div class="btn-group" role="group">
-                  ${
-                     (for (level <- levels) yield {
-                       val isActive = getLevel(logger) == level
-                       val activeCss = if (!isActive) "btn-default" else {
-                        "btn-primary active disabled"
-                       }
-                       val href = if (isActive) "" else {
-                         s"""?logger=${URLEncoder.encode(loggerName, "UTF-8")}&level=${level.name}"""
-                       }
-                       s"""<a class="btn btn-sm $activeCss"
+                  ${(for (level <- levels) yield {
+        val isActive = getLevel(logger) == level
+        val activeCss =
+          if (!isActive) "btn-default"
+          else {
+            "btn-primary active disabled"
+          }
+        val href =
+          if (isActive) ""
+          else {
+            s"""?logger=${URLEncoder.encode(loggerName, "UTF-8")}&level=${level.name}"""
+          }
+        s"""<a class="btn btn-sm $activeCss"
                               href="$href">${level.name}</a>"""
-                     }).mkString("\n")
-                   }
+      }).mkString("\n")}
                 </div></td>
                 </tr>"""
-            }).mkString("\n")
-         }
+    }).mkString("\n")}
          </table>"""
 }
 
@@ -94,7 +96,9 @@ class LoggingHandler extends Service[Request, Response] {
           logger <- Logger.iterator.find(_.name == name)
         } yield {
           logger.setLevel(level)
-          escapeHtml(s"""Changed ${if (logger.name == "") "root" else logger.name} to Level.$level""")
+          escapeHtml(
+            s"""Changed ${if (logger.name == "") "root" else logger.name} to Level.$level"""
+          )
         }
 
         escapeHtml(updated.getOrElse(s"Unable to change $name to Level.$level!"))

@@ -18,13 +18,11 @@ private[server] object EventRecordingHandler {
   val RecordOff = "recordOff"
 }
 
-
 /**
  * Modifies the state of the [[Sink sink's]] event recording.
  */
-private[server] class EventRecordingHandler(
-    sink: Sink = Sink.default)
-  extends Service[Request, Response] {
+private[server] class EventRecordingHandler(sink: Sink = Sink.default)
+    extends Service[Request, Response] {
 
   import EventRecordingHandler._
 
@@ -32,9 +30,7 @@ private[server] class EventRecordingHandler(
     val uri = req.uri
     val reply = updateRecording(uri)
 
-    newResponse(
-      contentType = "text/html;charset=UTF-8",
-      content = Buf.Utf8(escapeHtml(reply)))
+    newResponse(contentType = "text/html;charset=UTF-8", content = Buf.Utf8(escapeHtml(reply)))
   }
 
   private[handler] def updateRecording(uri: String): String = {

@@ -17,20 +17,17 @@ private object ServerRegistryHandler {
         <script type="application/javascript" src="/admin/files/js/server-registry.js"></script>
         <script type="application/javascript" src="/admin/files/js/chart-renderer.js"></script>
         <ul id="server-tabs" class="nav nav-tabs" data-refresh-uri="/admin/metrics">
-          ${
-             (for {
-                 (scope, entry) <- servers
-               } yield {
-                 s"""<li><a href="#${entry.name}-entry" data-toggle="tab">${escapeHtml(scope)}</a></li>"""
-             }).mkString("\n")
-           }
+          ${(for {
+      (scope, entry) <- servers
+    } yield {
+      s"""<li><a href="#${entry.name}-entry" data-toggle="tab">${escapeHtml(scope)}</a></li>"""
+    }).mkString("\n")}
         </ul>
         <!-- Tab panes -->
         <div id="servers" class="tab-content">
-          ${
-             (for ((scope, entry) <- servers) yield {
-                val scopeDash = scope.replace("/", "-")
-                s"""<div class="tab-pane borders" id="${entry.name}-entry">
+          ${(for ((scope, entry) <- servers) yield {
+      val scopeDash = scope.replace("/", "-")
+      s"""<div class="tab-pane borders" id="${entry.name}-entry">
                       <div class="row">
                         <!-- server stats -->
                         <div class="server-info col-md-3">
@@ -53,8 +50,7 @@ private object ServerRegistryHandler {
                       </div>
 
                     </div>"""
-             }).mkString("\n")
-           }
+    }).mkString("\n")}
         </div>"""
 }
 
@@ -64,10 +60,10 @@ private object ServerRegistryHandler {
  * as part of the uri (ex. "/admin/servers/myserver").
  */
 class ServerRegistryHandler(
-    uriPrefix: String,
-    source: MetricSource = new MetricSource,
-    registry: StackRegistry = ServerRegistry)
-  extends Service[Request, Response] {
+  uriPrefix: String,
+  source: MetricSource = new MetricSource,
+  registry: StackRegistry = ServerRegistry
+) extends Service[Request, Response] {
   // Search the metrics source for the stat scope that includes `serverName`.
   // The search namespace includes both "$serverName/" and "srv/$serverName"
   // to take into account finagle's ServerStatsReceiver. Note, unnamed servers are
@@ -83,7 +79,7 @@ class ServerRegistryHandler(
   def apply(req: Request): Future[Response] = {
     val (path, _) = parse(req.uri)
     path.stripPrefix(uriPrefix) match {
-      case idx@("index.html" | "index.htm" | "index.txt" | "servers") =>
+      case idx @ ("index.html" | "index.htm" | "index.txt" | "servers") =>
         val servers = (registry.registrants.flatMap {
           case e: StackRegistry.Entry if e.name.nonEmpty =>
             for (scope <- findScope(e.name)) yield (scope, e)
@@ -101,7 +97,8 @@ class ServerRegistryHandler(
 
       case name =>
         val entries = registry.registrants filter { _.name == name }
-        if (entries.isEmpty) new404(s"$name could not be found.") else {
+        if (entries.isEmpty) new404(s"$name could not be found.")
+        else {
           val server = entries.head
           val scope = findScope(server.name)
           val html = StackRegistryView.render(server, scope)

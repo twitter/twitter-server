@@ -39,13 +39,15 @@ class NotFoundView extends SimpleFilter[Request, Response] {
 
   def apply(req: Request, svc: Service[Request, Response]) =
     if (!expectsHtml(req)) svc(req)
-    else svc(req) flatMap { res =>
-      if (res.status != Status.NotFound) Future.value(res) else {
-        newResponse(
-          contentType = "text/html;charset=UTF-8",
-          status = Status.NotFound,
-          content = Buf.Utf8(NotFoundHtml)
-        )
+    else
+      svc(req) flatMap { res =>
+        if (res.status != Status.NotFound) Future.value(res)
+        else {
+          newResponse(
+            contentType = "text/html;charset=UTF-8",
+            status = Status.NotFound,
+            content = Buf.Utf8(NotFoundHtml)
+          )
+        }
       }
-    }
 }

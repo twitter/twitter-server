@@ -17,8 +17,8 @@ private object ThreadsView {
 
   private[this] val StateTooltipContents =
     "See <a href='http://docs.oracle.com/javase/7/docs/api/java/lang/Thread.State.html'>Thread.State</a>" +
-    "Javadocs for details. Idle may include threads that are 'runnable' but are not doing any real " +
-    "work, for example threads in epoll wait."
+      "Javadocs for details. Idle may include threads that are 'runnable' but are not doing any real " +
+      "work, for example threads in epoll wait."
 
   private val TableHeader = s"""
     <table class="table table-hover table-condensed">
@@ -56,21 +56,22 @@ private object ThreadsView {
  *
  * @param deadlockedIds Each value corresponds to a `Thread.getId` that is deadlocked.
  */
-private[server] class ThreadsView(
-    all: Seq[ThreadInfo],
-    deadlockedIds: Seq[Long])
-{
+private[server] class ThreadsView(all: Seq[ThreadInfo], deadlockedIds: Seq[Long]) {
   private def summary: String = {
     val filtered = all.filter { info =>
       deadlockedIds.contains(info.thread.getId)
     }
 
-    val deadlockLinks = if (filtered.isEmpty) "none" else {
-      filtered.map { info =>
-        val id = info.thread.getId
-        s"""<a href='#threadId-$id'>${escapeHtml(id.toString)}</a>"""
-      }.mkString(", ")
-    }
+    val deadlockLinks =
+      if (filtered.isEmpty) "none"
+      else {
+        filtered
+          .map { info =>
+            val id = info.thread.getId
+            s"""<a href='#threadId-$id'>${escapeHtml(id.toString)}</a>"""
+          }
+          .mkString(", ")
+      }
 
     s"""
 <div class="row">

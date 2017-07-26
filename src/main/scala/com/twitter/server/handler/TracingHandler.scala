@@ -9,7 +9,7 @@ import java.util.logging.Logger
 
 private class FinagleTracing(klass: Class[_]) {
   private val enableM = klass.getDeclaredMethod("enable")
-  private val disableM  = klass.getDeclaredMethod("disable")
+  private val disableM = klass.getDeclaredMethod("disable")
 
   def enable() { enableM.invoke(null) }
   def disable() { disableM.invoke(null) }
@@ -47,7 +47,8 @@ class TracingHandler extends Service[Request, Response] {
           status = Status.InternalServerError,
           contentType = "text/html;charset=UTF-8",
           content = Buf.Utf8(
-            "Could not initialize Finagle tracing classes. Possibly old version of Finagle.")
+            "Could not initialize Finagle tracing classes. Possibly old version of Finagle."
+          )
         )
     }
 

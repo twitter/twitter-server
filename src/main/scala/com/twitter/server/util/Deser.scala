@@ -45,16 +45,17 @@ private[server] trait Deserializer {
    * Find an Event.Type for this id.
    */
   protected def getType(id: String): Option[Event.Type] =
-    types.find(_.id == id) 
+    types.find(_.id == id)
 
-  private[this] final def readEvent(line: Buf): Try[Event] = for {
-    id <- typeId(line)
-    etype <- getType(id) match {
-      case None => Throw(new IllegalArgumentException(s"no type found for: $id"))
-      case Some(etype) => Return(etype)
-    }
-    event <- etype.deserialize(line)
-  } yield event
+  private[this] final def readEvent(line: Buf): Try[Event] =
+    for {
+      id <- typeId(line)
+      etype <- getType(id) match {
+        case None => Throw(new IllegalArgumentException(s"no type found for: $id"))
+        case Some(etype) => Return(etype)
+      }
+      event <- etype.deserialize(line)
+    } yield event
 
   /**
    * Parse a byte stream into a list of events.
@@ -79,14 +80,15 @@ private[util] object Helpers {
    */
   def getLines(reader: Reader, sep: Buf, acc: Buf = Buf.Empty): AsyncStream[Buf] =
     indexOf(acc, sep) match {
-      case -1 => for {
-        opt <- fromFuture(reader.read(Int.MaxValue))
-        buf <- opt match {
-          case None if acc.length == 0 => AsyncStream.empty
-          case None => AsyncStream.of(acc)
-          case Some(b) => getLines(reader, sep, acc.concat(b))
-        }
-      } yield buf
+      case -1 =>
+        for {
+          opt <- fromFuture(reader.read(Int.MaxValue))
+          buf <- opt match {
+            case None if acc.length == 0 => AsyncStream.empty
+            case None => AsyncStream.of(acc)
+            case Some(b) => getLines(reader, sep, acc.concat(b))
+          }
+        } yield buf
 
       case ix =>
         val (line, remainder) = splitAt(acc, ix, sep.length)

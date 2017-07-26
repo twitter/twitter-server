@@ -11,7 +11,7 @@ private[handler] object NoLoggingHandler {
     "You have not configured any logging implementation for TwitterServer."
   val MissingLoggingImplMessageBody: String =
     "Please add a dependency on one of: twitter-server-logback-classic, or " +
-    "twitter-server-jdk14, or twitter-server-log4j12."
+      "twitter-server-jdk14, or twitter-server-log4j12."
 }
 
 class NoLoggingHandler extends Service[Request, Response] {
@@ -26,7 +26,8 @@ class NoLoggingHandler extends Service[Request, Response] {
     } else {
       newResponse(
         contentType = "text/html;charset=UTF-8",
-        content = Buf.Utf8(s"<h2>$MissingLoggingImplMessageHeader</h2><br/>$MissingLoggingImplMessageBody")
+        content =
+          Buf.Utf8(s"<h2>$MissingLoggingImplMessageHeader</h2><br/>$MissingLoggingImplMessageBody")
       )
     }
   }

@@ -12,17 +12,18 @@ import com.twitter.util.Future
  * it outputs the patterns from the globals [[com.twitter.finagle.http.HttpMuxer]]
  * and [[com.twitter.finagle.http.HttpMuxer]].
  */
-class IndexHandler(
-    prefix: String = "/",
-    patterns: Seq[String] = HttpMuxer.patterns)
-  extends Service[Request, Response] {
+class IndexHandler(prefix: String = "/", patterns: Seq[String] = HttpMuxer.patterns)
+    extends Service[Request, Response] {
   def apply(req: Request): Future[Response] = {
     val paths = patterns.filter(_.startsWith(prefix))
-    val links = paths map { p => s"<a href='$p'>${escapeHtml(p)}</a>" }
+    val links = paths map { p =>
+      s"<a href='$p'>${escapeHtml(p)}</a>"
+    }
     if (!expectsHtml(req)) newOk(paths.mkString("\n"))
-    else newResponse(
-      contentType = "text/html;charset=UTF-8",
-      content = Buf.Utf8(links.mkString("<br />\n"))
-    )
+    else
+      newResponse(
+        contentType = "text/html;charset=UTF-8",
+        content = Buf.Utf8(links.mkString("<br />\n"))
+      )
   }
 }

@@ -58,31 +58,35 @@ class LintHandler extends Service[Request, Response] {
       .map(rule => rule -> rule())
       .partition { case (_, res) => res.isEmpty }
 
-    val numIssues = nots.foldLeft(0) { case (total, (_, issues)) =>
-      total + issues.size
+    val numIssues = nots.foldLeft(0) {
+      case (total, (_, issues)) =>
+        total + issues.size
     }
 
-    val failureIssues = nots.map { case (rule, issues) =>
-      jsonRule(rule) ++
-        Map("issues" -> issues.map(i => jsonString(i.details)))
+    val failureIssues = nots.map {
+      case (rule, issues) =>
+        jsonRule(rule) ++
+          Map("issues" -> issues.map(i => jsonString(i.details)))
     }
 
-    val okRules = oks.map { case (rule, _) =>
-      rule.id
+    val okRules = oks.map {
+      case (rule, _) =>
+        rule.id
     }
 
-    Map("lint_results" ->
-      Map(
-        "metadata" ->
-          Map(
-            "num_rules_run" -> rules.size,
-            "num_rules_ok" -> oks.size,
-            "num_rules_failed" -> nots.size,
-            "num_issues_found" -> numIssues
-          ),
-        "failed_rules" -> failureIssues,
-        "ok_rules" -> okRules
-      )
+    Map(
+      "lint_results" ->
+        Map(
+          "metadata" ->
+            Map(
+              "num_rules_run" -> rules.size,
+              "num_rules_ok" -> oks.size,
+              "num_rules_failed" -> nots.size,
+              "num_issues_found" -> numIssues
+            ),
+          "failed_rules" -> failureIssues,
+          "ok_rules" -> okRules
+        )
     )
   }
 
@@ -93,11 +97,7 @@ private object LintHandler {
   /**
    * Web UI for [[LintHandler]].
    */
-  class LintView(
-      rules: Seq[Rule],
-      oks: Seq[Rule],
-      nots: Seq[(Rule, Seq[Issue])])
-  {
+  class LintView(rules: Seq[Rule], oks: Seq[Rule], nots: Seq[(Rule, Seq[Issue])]) {
 
     def apply(): String = {
       scriptHeader +
@@ -115,8 +115,9 @@ private object LintHandler {
 </script>"""
 
     def summary: String = {
-      val numIssues = nots.foldLeft(0) { case (total, (_, issues)) =>
-        total + issues.size
+      val numIssues = nots.foldLeft(0) {
+        case (total, (_, issues)) =>
+          total + issues.size
       }
 
       s"""
@@ -153,7 +154,7 @@ private object LintHandler {
 
     def nameWithDescription(rule: Rule): String = {
       val desc = escapeHtml(rule.description)
-     s"""
+      s"""
       <a href="#" data-toggle="popover" title="Description" data-content="$desc" data-trigger="hover focus">
         ${escapeHtml(rule.name)}
       </a>
@@ -169,11 +170,16 @@ private object LintHandler {
     }
 
     def failedRows: String = {
-      val data = nots.map { case (rule, issues) =>
-        issues.map { issue =>
-          failedRow(rule, issue)
-        }.mkString("")
-      }.mkString("")
+      val data = nots
+        .map {
+          case (rule, issues) =>
+            issues
+              .map { issue =>
+                failedRow(rule, issue)
+              }
+              .mkString("")
+        }
+        .mkString("")
 
       s"""
 <div class="row">
@@ -197,15 +203,17 @@ private object LintHandler {
     }
 
     def okRows: String = {
-      val data = oks.map { rule =>
-        s"""
+      val data = oks
+        .map { rule =>
+          s"""
         <tr>
           <td>
             ${nameWithDescription(rule)}
           </td>
         </tr>
         """
-      }.mkString("")
+        }
+        .mkString("")
 
       s"""
 <div class="row">

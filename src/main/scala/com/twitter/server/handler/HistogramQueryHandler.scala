@@ -15,13 +15,14 @@ object HistogramQueryHandler {
   private val ContentTypeHtml = "text/html;charset=UTF-8"
 
   private case class Summary(
-      name: String,
-      count: Long,
-      sum: Long,
-      average: Option[Long],
-      min: Option[Long],
-      max: Option[Long],
-      percentiles: Map[String, Long])
+    name: String,
+    count: Long,
+    sum: Long,
+    average: Option[Long],
+    min: Option[Long],
+    max: Option[Long],
+    percentiles: Map[String, Long]
+  )
 
   /** the name and percentile thresholds used for summaries */
   private val SummaryThresholds = Seq(
@@ -30,7 +31,8 @@ object HistogramQueryHandler {
     "p95" -> 0.95,
     "p99" -> 0.99,
     "p999" -> 0.999,
-    "p9999" -> 0.9999)
+    "p9999" -> 0.9999
+  )
 
   /**
    * Stores histogram bucket and a percentage.
@@ -45,7 +47,9 @@ object HistogramQueryHandler {
   // For each key return a percentage
   private[server] def pdf(counts: Seq[BucketAndCount]): Seq[BucketAndPercentage] = {
     val count = countPoints(counts)
-    counts.map { v => BucketAndPercentage(v.lowerLimit, v.upperLimit, v.count.toFloat/count) }
+    counts.map { v =>
+      BucketAndPercentage(v.lowerLimit, v.upperLimit, v.count.toFloat / count)
+    }
   }
 
   // For each key return a cumulative percentage
@@ -54,31 +58,35 @@ object HistogramQueryHandler {
     var c = 0
     counts.map { v: BucketAndCount =>
       c += v.count
-      BucketAndPercentage(v.lowerLimit, v.upperLimit, c.toFloat/ count) }
+      BucketAndPercentage(v.lowerLimit, v.upperLimit, c.toFloat / count)
+    }
   }
 
-  private[HistogramQueryHandler] def deliverData(counts: Seq[BucketAndCount],
-    transform: Seq[BucketAndCount] => Any): String =
-      JsonConverter.writeToString(transform(counts))
+  private[HistogramQueryHandler] def deliverData(
+    counts: Seq[BucketAndCount],
+    transform: Seq[BucketAndCount] => Any
+  ): String =
+    JsonConverter.writeToString(transform(counts))
 
   // Generates html for visualizing histograms
   private[HistogramQueryHandler] val render: String = {
-      val css = """<link type="text/css" href="/admin/files/css/histogram-query.css" rel="stylesheet"/>"""
+    val css =
+      """<link type="text/css" href="/admin/files/css/histogram-query.css" rel="stylesheet"/>"""
 
-      val chart =
-        """<div class="chart">
+    val chart =
+      """<div class="chart">
              <div id="curve_chart" style="width: 900px; height: 500px"></div>
            </div>"""
 
-      /** Generates an html table to display key statistics of a histogram */
-      val statsTable = {
-        def entry(id: String, display: String): String = {
-          s"""<tr>
+    /** Generates an html table to display key statistics of a histogram */
+    val statsTable = {
+      def entry(id: String, display: String): String = {
+        s"""<tr>
                 <td style="text-align:left">${escapeHtml(display)}</td>
                 <td style="text-align:left" id="$id"></td>
               </tr>"""
-        }
-        s"""
+      }
+      s"""
           <div id="stats">
             <table>
               <thead>
@@ -99,10 +107,10 @@ object HistogramQueryHandler {
               </tbody>
             </table>
           </div>"""
-      }
+    }
 
-      val buttonPanel =
-        """<div id="option-panel">
+    val buttonPanel =
+      """<div id="option-panel">
           <form action="post">
             <span class="option-description">Type:
               <a id="PDF" class="button-switch button-light-green left-rounded" title="Probability density function">PDF</a><a id="CDF" class="button-switch button-green right-rounded" title="Cumulative distribution function">CDF</a>
@@ -120,17 +128,19 @@ object HistogramQueryHandler {
           </form>
         </div>"""
 
-      val scripts = """
+    val scripts =
+      """
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
         <script type="text/javascript" src="/admin/files/js/histogram-utils.js"></script>
         <script type="text/javascript" src="/admin/files/js/histogram-dom.js"></script>
         <script type="text/javascript" src="/admin/files/js/histogram-main.js"></script>"""
-      css + chart + statsTable + buttonPanel + scripts
+    css + chart + statsTable + buttonPanel + scripts
   }
 
   // Generates html for the histogram selection page (/admin/histograms)
   private[HistogramQueryHandler] def renderFront(keys: Seq[String]): String = {
-    val css = """
+    val css =
+      """
       <link type="text/css" href="/admin/files/css/metric-query.css" rel="stylesheet"/>
       <link type="text/css" href="/admin/files/css/histogram-homepage.css" rel="stylesheet"/>
       """
@@ -138,9 +148,9 @@ object HistogramQueryHandler {
       <div id="metrics-grid" class="row">
         <div class="col-md-4 snuggle-right">
           <ul id="metrics" class="list-unstyled">
-            ${ (for (key <- keys.sorted) yield {
-                  s"""<li id="${key.replace("/", "-")}"><a id="special-$key">${escapeHtml(key)}</a></li>"""
-                }).mkString("\n") }
+            ${(for (key <- keys.sorted) yield {
+      s"""<li id="${key.replace("/", "-")}"><a id="special-$key">${escapeHtml(key)}</a></li>"""
+    }).mkString("\n")}
           </ul>
         </div>
         <div class="col-md-8 snuggle-left">
@@ -160,9 +170,9 @@ object HistogramQueryHandler {
 
     val scripts = s"""
       <script>
-        ${ (for (key <- keys.sorted) yield {
-          s"""document.getElementById("special-$key").setAttribute("href", window.location.href + "?h=$key&fmt=plot_cdf");"""
-        }).mkString("\n") }
+        ${(for (key <- keys.sorted) yield {
+      s"""document.getElementById("special-$key").setAttribute("href", window.location.href + "?h=$key&fmt=plot_cdf");"""
+    }).mkString("\n")}
       </script>
       """
     css + histogramListing + scripts
@@ -173,7 +183,8 @@ object HistogramQueryHandler {
  * A handler which accepts queries via http strings and returns
  * json encoded histogram details
  */
-private[server] class HistogramQueryHandler(details: WithHistogramDetails) extends Service[Request, Response] {
+private[server] class HistogramQueryHandler(details: WithHistogramDetails)
+    extends Service[Request, Response] {
   import HistogramQueryHandler._
 
   // If possible, access histograms inside statsReceiversLoaded
@@ -183,20 +194,21 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails) exten
     query: String,
     transform: Seq[BucketAndCount] => String
   ): Future[Response] =
-      newResponse(
-        contentType = ContentTypeJson,
-        content = {
-          val text = histograms.get(query) match {
-            case Some(h) => transform(h.counts)
-            case None => s"Key: $query is not a valid histogram."
-          }
-          Buf.Utf8(text)
+    newResponse(
+      contentType = ContentTypeJson,
+      content = {
+        val text = histograms.get(query) match {
+          case Some(h) => transform(h.counts)
+          case None => s"Key: $query is not a valid histogram."
         }
-      )
+        Buf.Utf8(text)
+      }
+    )
 
   private[this] def renderHistogramsJson: String =
-    JsonConverter.writeToString(histograms.map { case (key, value) =>
-      (key, value.counts)
+    JsonConverter.writeToString(histograms.map {
+      case (key, value) =>
+        (key, value.counts)
     })
 
   // needs a special case for the upper bound sentinel.
@@ -242,8 +254,9 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails) exten
         }
       }
 
-      val percentiles: Map[String, Long] = SummaryThresholds.map { case (name, p) =>
-        name -> percentile(count, p)
+      val percentiles: Map[String, Long] = SummaryThresholds.map {
+        case (name, p) =>
+          name -> percentile(count, p)
       }.toMap
 
       Summary(
@@ -253,7 +266,8 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails) exten
         average = average,
         min = min,
         max = max,
-        percentiles = percentiles)
+        percentiles = percentiles
+      )
     }
   }
 
@@ -344,20 +358,24 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails) exten
 
               case Some(Seq("raw")) =>
                 jsonResponse(query, { counts: Seq[BucketAndCount] =>
-                  deliverData(counts, x => x) })
+                  deliverData(counts, x => x)
+                })
 
               case Some(Seq("pdf")) =>
                 jsonResponse(query, { counts: Seq[BucketAndCount] =>
-                  deliverData(counts, x => pdf(x)) })
+                  deliverData(counts, x => pdf(x))
+                })
 
               case Some(Seq("cdf")) =>
                 jsonResponse(query, { counts: Seq[BucketAndCount] =>
-                  deliverData(counts, x => cdf(x)) })
+                  deliverData(counts, x => cdf(x))
+                })
 
               case _ =>
                 newResponse(
                   contentType = ContentTypeHtml,
-                  content = Buf.Utf8("Please provide a format: fmt = raw | pdf | cdf"))
+                  content = Buf.Utf8("Please provide a format: fmt = raw | pdf | cdf")
+                )
             }
           case _ =>
             newResponse(
@@ -365,9 +383,11 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails) exten
               content = Buf.Utf8(renderFront(histograms.keySet.toSeq))
             )
         }
-      case _ => newResponse(
-        contentType = ContentTypeHtml,
-        content = Buf.Utf8("Invalid endpoint. Did you mean /admin/histograms.json?"))
+      case _ =>
+        newResponse(
+          contentType = ContentTypeHtml,
+          content = Buf.Utf8("Invalid endpoint. Did you mean /admin/histograms.json?")
+        )
     }
   }
 }

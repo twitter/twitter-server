@@ -35,24 +35,23 @@ class FailedLintRuleHandler extends Service[Request, Response] {
 
   def apply(req: Request): Future[Response] = {
     val failedRules = failedLintRules
-    val res = if (failedRules.isEmpty) ""
-    else {
-      s"""<div class="alert alert-warning alert-dismissable fade in" role="alert">
+    val res =
+      if (failedRules.isEmpty) ""
+      else {
+        s"""<div class="alert alert-warning alert-dismissable fade in" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
-        <strong>WARNING: ${ failedRules.length } Lint Error(s) Found</strong>
+        <strong>WARNING: ${failedRules.length} Lint Error(s) Found</strong>
         <br/>
         <p>
-          ${
-            (for (rule <- failedRules) yield {
-              s"<li>${ rule.name }</li>"
-            }).mkString("\n")
-          }
+          ${(for (rule <- failedRules) yield {
+          s"<li>${rule.name}</li>"
+        }).mkString("\n")}
           For more information, please see the <a href="/admin/lint">lint</a> page.
         </p>
       </div>"""
-    }
+      }
 
     newResponse(
       contentType = "text/plain;charset=UTF-8",

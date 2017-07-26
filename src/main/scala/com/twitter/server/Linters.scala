@@ -19,17 +19,17 @@ trait Linters { app: App =>
   /** Exposed for testing */
   def linterRules: Seq[Rule] = {
     TooManyCumulativeGaugesRules() ++
-    Seq(
-      SchedulerBlockingRule(),
-      NumberOfStatsReceiversRule(),
-      StackRegistryDuplicatesRule(ClientRegistry, Set.empty),
-      StackRegistryDuplicatesRule(ServerRegistry, Set.empty),
-      NullStatsReceiversRule(ClientRegistry),
-      NullStatsReceiversRule(ServerRegistry),
-      MemcacheFailFastRule(ClientRegistry),
-      LoggingRules.MultipleSlf4jImpls,
-      referenceLeakLintRule.rule()
-    )
+      Seq(
+        SchedulerBlockingRule(),
+        NumberOfStatsReceiversRule(),
+        StackRegistryDuplicatesRule(ClientRegistry, Set.empty),
+        StackRegistryDuplicatesRule(ServerRegistry, Set.empty),
+        NullStatsReceiversRule(ClientRegistry),
+        NullStatsReceiversRule(ServerRegistry),
+        MemcacheFailFastRule(ClientRegistry),
+        LoggingRules.MultipleSlf4jImpls,
+        referenceLeakLintRule.rule()
+      )
   }
 
   /** Exposed for testing */

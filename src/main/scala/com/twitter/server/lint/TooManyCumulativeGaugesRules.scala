@@ -1,7 +1,11 @@
 package com.twitter.server.lint
 
-import com.twitter.finagle.stats.{DelegatingStatsReceiver, LoadedStatsReceiver, StatsReceiver,
-  StatsReceiverWithCumulativeGauges}
+import com.twitter.finagle.stats.{
+  DelegatingStatsReceiver,
+  LoadedStatsReceiver,
+  StatsReceiver,
+  StatsReceiverWithCumulativeGauges
+}
 import com.twitter.util.lint.Rule
 
 object TooManyCumulativeGaugesRules {
@@ -12,7 +16,9 @@ object TooManyCumulativeGaugesRules {
 
   /** Exposed for testing */
   private[lint] def apply(statsReceivers: Seq[StatsReceiver]): Seq[Rule] =
-    statsReceivers.collect { case srwg: StatsReceiverWithCumulativeGauges =>
-      srwg.largeGaugeLinterRule }
+    statsReceivers.collect {
+      case srwg: StatsReceiverWithCumulativeGauges =>
+        srwg.largeGaugeLinterRule
+    }
 
 }

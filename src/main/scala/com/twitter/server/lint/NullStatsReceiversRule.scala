@@ -13,7 +13,7 @@ object NullStatsReceiversRule {
 
   def isAdminServer(stackReg: StackRegistry)(entry: StackRegistry.Entry): Boolean =
     stackReg.registryName == ServerRegistry.registryName &&
-    entry.name == AdminHttpServer.ServerName
+      entry.name == AdminHttpServer.ServerName
 
   def toIssue(stackReg: StackRegistry)(entry: StackRegistry.Entry): Issue =
     Issue(s"${stackReg.registryName} name=${entry.name}")
@@ -26,8 +26,7 @@ object NullStatsReceiversRule {
         "Wire in a `StatsReceiver` via `ClientBuilder.reportTo()` or " +
         "`Stack.configured(param.Stats)`"
     ) {
-      stackReg
-        .registrants
+      stackReg.registrants
         .filter(isNullStats)
         .filterNot(isAdminServer(stackReg))
         .map(toIssue(stackReg))

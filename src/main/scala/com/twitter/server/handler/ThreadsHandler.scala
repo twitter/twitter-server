@@ -14,10 +14,7 @@ private[server] object ThreadsHandler {
 
   type StackTrace = Seq[StackTraceElement]
 
-  case class ThreadInfo(
-      thread: Thread,
-      stack: StackTrace,
-      isIdle: Boolean)
+  case class ThreadInfo(thread: Thread, stack: StackTrace, isIdle: Boolean)
 
   private val IdleClassAndMethod: Set[(String, String)] = Set(
     ("sun.nio.ch.EPollArrayWrapper", "epollWait"),
@@ -43,15 +40,16 @@ class ThreadsHandler extends Service[Request, Response] {
     if (expectsHtml(req)) htmlResponse(req) else jsonResponse(req)
 
   private def jsonResponse(req: Request): Future[Response] = {
-    val stacks = Thread.getAllStackTraces.asScala.map { case (thread, stack) =>
-      thread.getId.toString ->
-        Map[String, Any](
-          "thread" -> thread.getName,
-          "daemon" -> thread.isDaemon,
-          "state" -> thread.getState,
-          "priority" -> thread.getPriority,
-          "stack" -> stack.toSeq.map(_.toString)
-        )
+    val stacks = Thread.getAllStackTraces.asScala.map {
+      case (thread, stack) =>
+        thread.getId.toString ->
+          Map[String, Any](
+            "thread" -> thread.getName,
+            "daemon" -> thread.isDaemon,
+            "state" -> thread.getState,
+            "priority" -> thread.getPriority,
+            "stack" -> stack.toSeq.map(_.toString)
+          )
     }
     val msg = Map("threads" -> stacks)
     newOk(JsonConverter.writeToString(msg))
@@ -60,19 +58,20 @@ class ThreadsHandler extends Service[Request, Response] {
   private def htmlResponse(req: Request): Future[Response] = {
     // first, gather the data
     val raw: Seq[ThreadInfo] =
-      Thread.getAllStackTraces.asScala.toMap.map { case (thread, stack) =>
-        ThreadInfo(thread, stack.toSeq, isIdle = false)
+      Thread.getAllStackTraces.asScala.toMap.map {
+        case (thread, stack) =>
+          ThreadInfo(thread, stack.toSeq, isIdle = false)
       }.toSeq
-
 
     val withIdle = markedIdle(raw)
 
-    val sorted = withIdle.sortWith { case (t1, t2) =>
-      (t1.isIdle, t2.isIdle) match {
-        case (true, false) => false
-        case (false, true) => true
-        case _ => t1.thread.getId < t2.thread.getId
-      }
+    val sorted = withIdle.sortWith {
+      case (t1, t2) =>
+        (t1.isIdle, t2.isIdle) match {
+          case (true, false) => false
+          case (false, true) => true
+          case _ => t1.thread.getId < t2.thread.getId
+        }
     }
 
     val view = new ThreadsView(sorted, deadlockedIds)

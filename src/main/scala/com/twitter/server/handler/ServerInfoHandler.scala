@@ -50,8 +50,9 @@ class ServerInfoHandler(obj: AnyRef) extends Service[Request, Response] {
 
   private[this] val registry = GlobalRegistry.get
 
-  combinedInfo.foreach { case (key, value) =>
-    registry.put(Seq("build.properties", key), value)
+  combinedInfo.foreach {
+    case (key, value) =>
+      registry.put(Seq("build.properties", key), value)
   }
 
   {
@@ -67,12 +68,15 @@ class ServerInfoHandler(obj: AnyRef) extends Service[Request, Response] {
     }
   }
 
-  sys.env.foreach { case (key, value) =>
-    registry.put(Seq("system", "env", key), value)
+  sys.env.foreach {
+    case (key, value) =>
+      registry.put(Seq("system", "env", key), value)
   }
 
-  registry.put(Seq("system", "jvm_arguments"),
-    ManagementFactory.getRuntimeMXBean.getInputArguments.toString)
+  registry.put(
+    Seq("system", "jvm_arguments"),
+    ManagementFactory.getRuntimeMXBean.getInputArguments.toString
+  )
 
   // Expose this build revision as a number. Useful to check cluster consistency.
   combinedInfo.get("build.git.revision.number") match {
@@ -91,7 +95,8 @@ class ServerInfoHandler(obj: AnyRef) extends Service[Request, Response] {
   def apply(req: Request): Future[Response] = {
     newResponse(
       contentType = "application/json;charset=UTF-8",
-      content = Buf.Utf8(JsonConverter.writeToString(serverInfo + ("uptime" -> mxRuntime.getUptime)))
+      content =
+        Buf.Utf8(JsonConverter.writeToString(serverInfo + ("uptime" -> mxRuntime.getUptime)))
     )
   }
 }

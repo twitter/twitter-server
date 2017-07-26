@@ -15,38 +15,39 @@ trait Lifecycle { self: App =>
     Route(
       pattern = "/abortabortabort",
       handler = new AbortHandler,
-      index = Some(RouteIndex(
-        alias = "Abort Server",
-        group = group,
-        method = Post))))
+      index = Some(RouteIndex(alias = "Abort Server", group = group, method = Post))
+    )
+  )
   HttpMuxer.addHandler(
     Route(
       pattern = "/quitquitquit",
       handler = new ShutdownHandler(this),
-      index = Some(RouteIndex(
-        alias = "Quit Server",
-        group = group,
-        method = Post))))
+      index = Some(RouteIndex(alias = "Quit Server", group = group, method = Post))
+    )
+  )
   HttpMuxer.addHandler(
     Route(
       pattern = "/health",
       handler = new ReplyHandler("OK\n"),
-      index = Some(RouteIndex(
-        alias = "Health",
-        group = group))))
+      index = Some(RouteIndex(alias = "Health", group = group))
+    )
+  )
 
 }
 
-object promoteBeforeServing extends GlobalFlag[Boolean](true,
-  "Promote objects in young generation to old generation before serving requests. " +
-    "May shorten the following gc pauses by avoiding the copying back and forth between survivor " +
-    "spaces of a service's long lived objects.")
+object promoteBeforeServing
+    extends GlobalFlag[Boolean](
+      true,
+      "Promote objects in young generation to old generation before serving requests. " +
+        "May shorten the following gc pauses by avoiding the copying back and forth between survivor " +
+        "spaces of a service's long lived objects."
+    )
 
 object Lifecycle {
 
   private[server] class PromoteToOldGen(
-      runtimeArgs: Seq[String] = ManagementFactory.getRuntimeMXBean.getInputArguments.asScala)
-  {
+    runtimeArgs: Seq[String] = ManagementFactory.getRuntimeMXBean.getInputArguments.asScala
+  ) {
     private[this] val hasPromoted = new AtomicBoolean(false)
 
     private[server] def promoted: Boolean = hasPromoted.get()

@@ -17,11 +17,15 @@ object MemcacheFailFastRule {
       stackReg.registrants
         .filter(_.protocolLibrary == "memcached")
         .groupBy(_.name)
-        .filter { case (_, entries) =>
-          entries.head.params[FailFastFactory.FailFast].enabled == true
-        }.map { case (label, _) =>
-          Issue(s"$label memcache client should disable FailFast")
-        }.toSeq
+        .filter {
+          case (_, entries) =>
+            entries.head.params[FailFastFactory.FailFast].enabled == true
+        }
+        .map {
+          case (label, _) =>
+            Issue(s"$label memcache client should disable FailFast")
+        }
+        .toSeq
     }
   }
 

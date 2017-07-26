@@ -15,7 +15,9 @@ private[server] object MetricSource {
  * which allows for stale StatEntries up to `refreshInterval`.
  */
 private[server] class MetricSource(
-  registry: () => Seq[StatsRegistry] = { () => MetricSource.registry },
+  registry: () => Seq[StatsRegistry] = { () =>
+    MetricSource.registry
+  },
   refreshInterval: Duration = 1.second
 ) {
   private[this] var lastRefresh = Time.now - refreshInterval
@@ -23,8 +25,8 @@ private[server] class MetricSource(
 
   private[this] def refresh(): Unit = {
     if (Time.now - lastRefresh > refreshInterval) {
-      val newStats = registry().foldLeft(Map[String, StatEntry]()) {
-        (map, r) => map ++ r()
+      val newStats = registry().foldLeft(Map[String, StatEntry]()) { (map, r) =>
+        map ++ r()
       }
       underlying = newStats
       lastRefresh = Time.now
@@ -34,8 +36,7 @@ private[server] class MetricSource(
   /** Returns the entry for `key` if it exists */
   def get(key: String): Option[MetricSource.Entry] = synchronized {
     refresh()
-    for (s <- underlying.get(key)) yield
-      MetricSource.Entry(key, s.delta, s.value)
+    for (s <- underlying.get(key)) yield MetricSource.Entry(key, s.delta, s.value)
   }
 
   /** Returns true if the map contains `key` and false otherwise. */

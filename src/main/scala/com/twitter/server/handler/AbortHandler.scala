@@ -27,7 +27,9 @@ class AbortHandler extends Service[Request, Response] {
       }
       newOk("aborting\n")
     } else {
-      log.info(s"ignoring [${req.uri}] from ${req.remoteAddress.getHostAddress}, because it is a ${req.method}, not a POST")
+      log.info(
+        s"ignoring [${req.uri}] from ${req.remoteAddress.getHostAddress}, because it is a ${req.method}, not a POST"
+      )
       newResponse(
         status = Status.MethodNotAllowed,
         headers = Seq(("Allow", "POST")),

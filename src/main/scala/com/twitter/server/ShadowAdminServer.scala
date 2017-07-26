@@ -26,8 +26,11 @@ import java.util.logging.Logger
 trait ShadowAdminServer { self: App with AdminHttpServer =>
 
   @volatile protected var shadowHttpServer: ListeningServer = NullServer
-  val shadowAdminPort = flag("shadow.admin.port", new InetSocketAddress(defaultHttpPort+1),
-    "Shadow admin http server port")
+  val shadowAdminPort = flag(
+    "shadow.admin.port",
+    new InetSocketAddress(defaultHttpPort + 1),
+    "Shadow admin http server port"
+  )
 
   premain {
     val log = Logger.getLogger(getClass.getName)
@@ -45,8 +48,10 @@ trait ShadowAdminServer { self: App with AdminHttpServer =>
       case (muxer, h) => muxer.withHandler(h.route.pattern, h)
     }
 
-    val shadowEventLoop = new NioEventLoopGroup(1 /*nThreads*/ ,
-      new NamedPoolThreadFactory("twitter-server/netty", makeDaemons = true))
+    val shadowEventLoop = new NioEventLoopGroup(
+      1 /*nThreads*/,
+      new NamedPoolThreadFactory("twitter-server/netty", makeDaemons = true)
+    )
 
     shadowHttpServer = Http.server
       .configured(param.Stats(NullStatsReceiver))

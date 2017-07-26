@@ -6,9 +6,11 @@ import com.twitter.util.Var
 
 // TODO: deprecate in favor of Wily dtabs.
 
-object resolverMap extends GlobalFlag[Map[String, String]](Map.empty,
-  "A list mapping service names to resolvers (gizmoduck=zk!/gizmoduck)")
-
+object resolverMap
+    extends GlobalFlag[Map[String, String]](
+      Map.empty,
+      "A list mapping service names to resolvers (gizmoduck=zk!/gizmoduck)"
+    )
 
 /**
  * Indicates that a [[com.twitter.finagle.Resolver]] was not found for the
@@ -17,8 +19,10 @@ object resolverMap extends GlobalFlag[Map[String, String]](Map.empty,
  * Resolvers are discovered via the com.twitter.server.resolverMap
  */
 class NamedResolverNotFoundException(scheme: String, name: String)
-  extends Exception(s"Resolver not found for scheme '$scheme' with name '$name'. " +
-    s"resolverMap = ${resolverMap().keySet.toSeq.sorted.mkString(",")}")
+    extends Exception(
+      s"Resolver not found for scheme '$scheme' with name '$name'. " +
+        s"resolverMap = ${resolverMap().keySet.toSeq.sorted.mkString(",")}"
+    )
 
 class FlagResolver extends Resolver {
   val scheme = "flag"

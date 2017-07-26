@@ -9,6 +9,7 @@ import scala.collection.JavaConverters._
 import scala.collection.{Map, Seq}
 
 private[server] object HttpUtils {
+
   /**
    * Creates a http [[com.twitter.finagle.Service]] which attempts a
    * request on the given `services`, in order, until a service returns

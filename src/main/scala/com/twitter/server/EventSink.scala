@@ -37,6 +37,7 @@ trait EventSink { app: App =>
 }
 
 object EventSink {
+
   /**
    * A specification of how to set up the [[com.twitter.logging.Handler]] for a
    * [[com.twitter.logging.Logger]].
@@ -83,21 +84,27 @@ object EventSink {
           Throw(new IllegalArgumentException("unknown format"))
       }
 
-      def deserialize(buf: Buf) = for {
-        env <- Buf.Utf8.unapply(buf) match {
-          case None => Throw(new IllegalArgumentException("unknown format"))
-          case Some(str) => Try(Json.deserialize[Json.Envelope[Log]](str))
+      def deserialize(buf: Buf) =
+        for {
+          env <- Buf.Utf8.unapply(buf) match {
+            case None => Throw(new IllegalArgumentException("unknown format"))
+            case Some(str) => Try(Json.deserialize[Json.Envelope[Log]](str))
+          }
+          if env.id == id
+          level <- Try(Level.parse(env.data.level).get)
+        } yield {
+          val when = Time.fromMilliseconds(env.when)
+          // This line fails without the JsonDeserialize annotation in Envelope.
+          val tid = env.traceId.getOrElse(Event.NoTraceId)
+          val sid = env.spanId.getOrElse(Event.NoSpanId)
+          Event(
+            this,
+            when,
+            objectVal = new LogRecord(level, env.data.message),
+            traceIdVal = tid,
+            spanIdVal = sid
+          )
         }
-        if env.id == id
-        level <- Try(Level.parse(env.data.level).get)
-      } yield {
-        val when = Time.fromMilliseconds(env.when)
-        // This line fails without the JsonDeserialize annotation in Envelope.
-        val tid = env.traceId.getOrElse(Event.NoTraceId)
-        val sid = env.spanId.getOrElse(Event.NoSpanId)
-        Event(this, when, objectVal = new LogRecord(level, env.data.message),
-          traceIdVal = tid, spanIdVal = sid)
-      }
     }
   }
 
@@ -140,14 +147,15 @@ private object Json {
 
   @JsonInclude(JsonInclude.Include.NON_ABSENT)
   case class Envelope[A](
-      id: String,
-      when: Long,
-      // We require an annotation here, because for small numbers, this gets
-      // deserialized with a runtime type of int.
-      // See: https://github.com/FasterXML/jackson-module-scala/issues/106.
-      @JsonDeserialize(contentAs = classOf[java.lang.Long]) traceId: Option[Long],
-      @JsonDeserialize(contentAs = classOf[java.lang.Long]) spanId: Option[Long],
-      data: A)
+    id: String,
+    when: Long,
+    // We require an annotation here, because for small numbers, this gets
+    // deserialized with a runtime type of int.
+    // See: https://github.com/FasterXML/jackson-module-scala/issues/106.
+    @JsonDeserialize(contentAs = classOf[java.lang.Long]) traceId: Option[Long],
+    @JsonDeserialize(contentAs = classOf[java.lang.Long]) spanId: Option[Long],
+    data: A
+  )
 
   val mapper = new ObjectMapper()
   mapper.registerModule(DefaultScalaModule)
@@ -165,10 +173,11 @@ private object Json {
   }
 
   private def typeFromManifest(m: Manifest[_]): Type =
-    if (m.typeArguments.isEmpty) m.runtimeClass else new ParameterizedType {
-      def getRawType = m.runtimeClass
-      def getActualTypeArguments = m.typeArguments.map(typeFromManifest).toArray
-      def getOwnerType = null
-    }
+    if (m.typeArguments.isEmpty) m.runtimeClass
+    else
+      new ParameterizedType {
+        def getRawType = m.runtimeClass
+        def getActualTypeArguments = m.typeArguments.map(typeFromManifest).toArray
+        def getOwnerType = null
+      }
 }
-

@@ -41,9 +41,8 @@ import scala.collection.mutable
  * composition of TunableMaps (see [[StandardTunableMap]]), deleting an in-memory Tunable will cause
  * the value from the composition of the other TunableMaps to be used.
  */
-class TunableHandler private[handler] (
-    registeredIdsFn: () => Map[String, TunableMap])
-  extends Service[Request, Response] {
+class TunableHandler private[handler] (registeredIdsFn: () => Map[String, TunableMap])
+    extends Service[Request, Response] {
   import TunableHandler._
 
   def this() = this(() => StandardTunableMap.registeredIds)
@@ -87,16 +86,17 @@ class TunableHandler private[handler] (
     newResponse(
       status = status,
       contentType = "text/plain;charset=UTF-8",
-      content = Buf.Utf8(content))
+      content = Buf.Utf8(content)
+    )
 
   private[this] def findMutable(
     maps: Map[String, TunableMap],
     id: String
   ): Option[TunableMap.Mutable] = maps.get(id).flatMap {
-      TunableMap.components(_).collectFirst {
-        case mut: TunableMap.Mutable => mut
-      }
+    TunableMap.components(_).collectFirst {
+      case mut: TunableMap.Mutable => mut
     }
+  }
 
   private[this] def handleGet(req: Request): Future[Response] = {
     val id = req.path.stripPrefix(PathForId)
@@ -110,18 +110,20 @@ class TunableHandler private[handler] (
   }
 
   private[this] def handleGetAll(): Future[Response] = {
-    val view = registeredIdsFn().toSeq.sortBy {
-      case (id, _) => id
-    }.map {
-      case (id, map) => toTunableMapView(id, map)
-    }
+    val view = registeredIdsFn().toSeq
+      .sortBy {
+        case (id, _) => id
+      }
+      .map {
+        case (id, map) => toTunableMapView(id, map)
+      }
     respond(Status.Ok, JsonConverter.writeToString(view))
   }
 
   private[this] def toTunableMapView(id: String, tunableMap: TunableMap): TunableMapView = {
 
     val currentsMap: Map[String, TunableMap.Entry[_]] = tunableMap.entries.map {
-      case entry@TunableMap.Entry(key, _, _) => key.id -> entry
+      case entry @ TunableMap.Entry(key, _, _) => key.id -> entry
     }.toMap
 
     val componentsMap = mutable.Map.empty[String, mutable.ArrayBuffer[Component]]
@@ -135,9 +137,10 @@ class TunableHandler private[handler] (
       componentsMap.put(entry.key.id, components += Component(entry.source, entry.value.toString))
     }
 
-    val tunables = componentsMap.map { case (id, components) =>
-      val md = currentsMap(id)
-      TunableView(id, md.value.toString, components)
+    val tunables = componentsMap.map {
+      case (id, components) =>
+        val md = currentsMap(id)
+        TunableView(id, md.value.toString, components)
     }.toSeq
 
     TunableMapView(id, tunables)
@@ -188,28 +191,32 @@ class TunableHandler private[handler] (
   }
 
   def apply(req: Request): Future[Response] = req.path match {
-    case Path =>  req.method match {
-      case Method.Get =>
-        handleGetAll()
-      case unsupported =>
-        respond(
-          Status.MethodNotAllowed,
-          s"Unsupported HTTP method: $unsupported",
-          Seq((Fields.Allow, "GET")))
-    }
-    case _ => req.method match {
-      case Method.Get =>
-        handleGet(req)
-      case Method.Put =>
-        handlePut(req)
-      case Method.Delete =>
-        handleDelete(req)
-      case unsupported =>
-        respond(
-          Status.MethodNotAllowed,
-          s"Unsupported HTTP method: $unsupported",
-          Seq((Fields.Allow, "GET, PUT, DELETE")))
-    }
+    case Path =>
+      req.method match {
+        case Method.Get =>
+          handleGetAll()
+        case unsupported =>
+          respond(
+            Status.MethodNotAllowed,
+            s"Unsupported HTTP method: $unsupported",
+            Seq((Fields.Allow, "GET"))
+          )
+      }
+    case _ =>
+      req.method match {
+        case Method.Get =>
+          handleGet(req)
+        case Method.Put =>
+          handlePut(req)
+        case Method.Delete =>
+          handleDelete(req)
+        case unsupported =>
+          respond(
+            Status.MethodNotAllowed,
+            s"Unsupported HTTP method: $unsupported",
+            Seq((Fields.Allow, "GET, PUT, DELETE"))
+          )
+      }
   }
 }
 

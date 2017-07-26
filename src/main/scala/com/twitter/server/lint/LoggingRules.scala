@@ -27,11 +27,15 @@ object LoggingRules {
     Category.Configuration,
     "Multiple Slf4j Implementations",
     "You should only depend on a single concrete implementation of the slf4j api. " +
-      "See http://www.slf4j.org/codes.html#multiple_bindings") {
+      "See http://www.slf4j.org/codes.html#multiple_bindings"
+  ) {
 
     // same logic as org.slf4j.LoggerFactory
-    val paths = ClassLoader.getSystemResources("org/slf4j/impl/StaticLoggerBinder.class").asScala
-      .map(_.getFile).toSeq
+    val paths = ClassLoader
+      .getSystemResources("org/slf4j/impl/StaticLoggerBinder.class")
+      .asScala
+      .map(_.getFile)
+      .toSeq
 
     issues(paths)
   }

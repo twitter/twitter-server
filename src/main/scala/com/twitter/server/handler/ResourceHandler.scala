@@ -17,8 +17,8 @@ import scala.io.Source
  *                          will be 404s.
  */
 class ResourceHandler(
-    baseRequestPath: String,
-    resourceResolver: PartialFunction[String, InputStream]
+  baseRequestPath: String,
+  resourceResolver: PartialFunction[String, InputStream]
 ) extends Service[Request, Response] {
 
   // for java + backwards compatibility
@@ -26,7 +26,6 @@ class ResourceHandler(
     basePath: String,
     servingDir: String = "www"
   ) = this(basePath, ResourceHandler.jarResolver(servingDir))
-
 
   private[this] def meta(path: String): (Charset, String) = {
     val exts = path.split('.')
@@ -46,9 +45,11 @@ class ResourceHandler(
       return newResponse(
         status = Status.BadRequest,
         contentType = "text/plain;charset=UTF-8",
-        content = Buf.Utf8("Invalid path!"))
+        content = Buf.Utf8("Invalid path!")
+      )
 
-    resourceResolver.lift(path)
+    resourceResolver
+      .lift(path)
       .map { is =>
         val (charset, mime) = meta(path)
         val source = Source.fromInputStream(is, charset.toString).withClose(() => is.close())
@@ -57,13 +58,15 @@ class ResourceHandler(
           source.close()
           newResponse(contentType = mime, content = Buf.ByteArray.Owned(bytes))
         }.flatten
-      }.getOrElse {
+      }
+      .getOrElse {
         new404("resource not found")
       }
   }
 }
 
 object ResourceHandler extends JavaSingleton {
+
   /**
    * Constructs a ResourceHandler which tries to read resources from disk on every request,
    * falling back to resources from the jar if needed.

@@ -19,6 +19,7 @@ import java.util.logging.{Level, Logger}
 import scala.language.reflectiveCalls
 
 object AdminHttpServer {
+
   /**
    * Represents an element which can be routed to via the admin http server.
    *
@@ -47,7 +48,8 @@ object AdminHttpServer {
     alias: String,
     group: Option[String],
     includeInIndex: Boolean,
-    method: Method = Get)
+    method: Method = Get
+  )
 
   object Route {
     def from(route: http.Route): Route = route.index match {
@@ -58,14 +60,16 @@ object AdminHttpServer {
           alias = index.alias,
           group = Some(index.group),
           includeInIndex = true,
-          method = index.method)
+          method = index.method
+        )
       case None =>
         mkRoute(
           path = route.pattern,
           handler = route.handler,
           alias = route.pattern,
           group = None,
-          includeInIndex = false)
+          includeInIndex = false
+        )
     }
   }
 
@@ -93,9 +97,9 @@ object AdminHttpServer {
 trait AdminHttpServer { self: App =>
   import AdminHttpServer._
 
-
   def defaultHttpPort: Int = 9990
-  val adminPort = flag("admin.port", new InetSocketAddress(defaultHttpPort), "Admin http server port")
+  val adminPort =
+    flag("admin.port", new InetSocketAddress(defaultHttpPort), "Admin http server port")
 
   private[this] val adminHttpMuxer = new Service[Request, Response] {
     override def apply(request: Request): Future[Response] = underlying(request)
@@ -134,9 +138,9 @@ trait AdminHttpServer { self: App =>
   protected def routes: Seq[Route] = Nil
 
   /**
-    * Name used for registration in the [[com.twitter.util.registry.Library]]
-    * @return library name to register in the Library registry.
-    */
+   * Name used for registration in the [[com.twitter.util.registry.Library]]
+   * @return library name to register in the Library registry.
+   */
   protected def libraryName: String = "twitter-server"
 
   /**
@@ -163,7 +167,9 @@ trait AdminHttpServer { self: App =>
     val localRoutes =
       rts.filter(_.includeInIndex).groupBy(_.group).flatMap {
         case (group, rs) =>
-          val links = rs.map { r => IndexView.Link(r.alias, r.path, r.method) }
+          val links = rs.map { r =>
+            IndexView.Link(r.alias, r.path, r.method)
+          }
           group match {
             case Some(g) => Seq(IndexView.Group(g, links))
             case None => links
@@ -221,8 +227,8 @@ trait AdminHttpServer { self: App =>
         .withLabel(ServerName)
         // disable admission control, since we want the server to report stats
         // especially when it's in a bad state.
-        .configured(ServerAdmissionControl.Param(false)))
-      .serve(adminPort(), new NotFoundView andThen adminHttpMuxer)
+        .configured(ServerAdmissionControl.Param(false))
+    ).serve(adminPort(), new NotFoundView andThen adminHttpMuxer)
 
     closeOnExitLast(adminHttpServer)
     Library.register(libraryName, Map.empty)

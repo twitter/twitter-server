@@ -8,9 +8,8 @@ import com.twitter.server.util.HttpUtils.newResponse
 import com.twitter.util.Future
 import java.net.URI
 
-class AdminRedirectHandler private(
-    pathMatcher: Option[String => Boolean])
-  extends Service[Request, Response] {
+class AdminRedirectHandler private (pathMatcher: Option[String => Boolean])
+    extends Service[Request, Response] {
 
   def this() = this(None)
   def this(pathMatcher: String => Boolean) = this(Some(pathMatcher))

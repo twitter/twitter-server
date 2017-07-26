@@ -56,22 +56,23 @@ private[server] class EventsHandler(sink: Sink) extends Service[Request, Respons
       respond(TraceEvent, TraceEventSink.serialize(sink))
     else if (expectsJson(req))
       respond(LineDelimitedJson, JsonSink.serialize(sink))
-    else
-      if (!req.params.isEmpty) {
-        val eventFilter = eventFilterFromParams(
-          req.params.filterNot { case (k, v) => v.isEmpty } )
-        respond(Html, tableBodyHtml(sink.events.toSeq.filter(eventFilter)))
-      } else {
-        respond(Html, Reader.fromBuf(Buf.Utf8(pageHtml(sink))))
-      }
+    else if (!req.params.isEmpty) {
+      val eventFilter = eventFilterFromParams(req.params.filterNot { case (k, v) => v.isEmpty })
+      respond(Html, tableBodyHtml(sink.events.toSeq.filter(eventFilter)))
+    } else {
+      respond(Html, Reader.fromBuf(Buf.Utf8(pageHtml(sink))))
+    }
 
   private[this] def respond(contentType: String, reader: Reader): Future[Response] = {
     val response = Response()
     response.contentType = contentType
     response.setChunked(true)
-    Reader.copy(reader, response.writer).onFailure { e =>
-      log.info("Encountered an error while writing the event stream: " + e)
-    }.ensure(response.writer.close())
+    Reader
+      .copy(reader, response.writer)
+      .onFailure { e =>
+        log.info("Encountered an error while writing the event stream: " + e)
+      }
+      .ensure(response.writer.close())
     Future.value(response)
   }
 }
@@ -171,18 +172,20 @@ private object EventsHandler {
     case _ => o.toString
   }
 
-  def rowOf(e: Event): Buf = Buf.Utf8(Seq(
-    e.etype.id,
-    s"<nobr>${e.when.toString}</nobr>",
-    if (e.longVal == Event.NoLong) "" else e.longVal.toString,
-    if (e.objectVal == Event.NoObject) "" else showObject(e.objectVal),
-    if (e.doubleVal == Event.NoDouble) "" else e.doubleVal.toString,
-    if (e.traceIdVal == Event.NoTraceId) "" else SpanId.toString(e.traceIdVal),
-    if (e.spanIdVal == Event.NoSpanId) "" else SpanId.toString(e.spanIdVal)
-  ).mkString("<tr><td>", "</td><td>", "</td><td></td></tr>"))
+  def rowOf(e: Event): Buf =
+    Buf.Utf8(
+      Seq(
+        e.etype.id,
+        s"<nobr>${e.when.toString}</nobr>",
+        if (e.longVal == Event.NoLong) "" else e.longVal.toString,
+        if (e.objectVal == Event.NoObject) "" else showObject(e.objectVal),
+        if (e.doubleVal == Event.NoDouble) "" else e.doubleVal.toString,
+        if (e.traceIdVal == Event.NoTraceId) "" else SpanId.toString(e.traceIdVal),
+        if (e.spanIdVal == Event.NoSpanId) "" else SpanId.toString(e.spanIdVal)
+      ).mkString("<tr><td>", "</td><td>", "</td><td></td></tr>")
+    )
 
   def newline(buf: Buf): Buf = buf.concat(Buf.Utf8("\n"))
-
 
   def tableOf(events: Seq[Event]): AsyncStream[Buf] =
     // Note: The events iterator can be potentially large, so to avoid fully
@@ -191,18 +194,19 @@ private object EventsHandler {
     // (see http://tools.ietf.org/html/rfc1942), so user-agents may even be
     // able to take advantage of this and begin rendering the table earlier,
     // and progressively as rows arrive.
-      annotate(fromSeq(events)).map(rowOf _ andThen newline)
+    annotate(fromSeq(events)).map(rowOf _ andThen newline)
 
-  def pageHtml(sink: Sink): String = """
+  def pageHtml(sink: Sink): String =
+    """
   <h2>Events</h2>
   <p>The server publishes interesting events during its operation and this section
   displays a log of the most recent.</p>
   """ + (if (Sink.enabled) {
-    val isRecording: Boolean = sink.recording
-    val onCheck = if (isRecording) "checked" else ""
-    val offCheck = if (isRecording) "" else "checked"
-    val onLoad =
-      """
+           val isRecording: Boolean = sink.recording
+           val onCheck = if (isRecording) "checked" else ""
+           val offCheck = if (isRecording) "" else "checked"
+           val onLoad =
+             """
       <script>
          $(document).ready(function() {
           var displayEvents = function(data) {
@@ -260,8 +264,8 @@ private object EventsHandler {
 
          });
        </script>"""
-    val toggle =
-      s"""
+           val toggle =
+             s"""
       <div>Events are only captured when recording is enabled. Current state:</div>
       <div class="radio">
         <label>
@@ -277,15 +281,15 @@ private object EventsHandler {
       </div>
     """
 
-    val table =
-      s"""<table id="eventTable" class="table table-condensed table-striped">
+           val table =
+             s"""<table id="eventTable" class="table table-condensed table-striped">
       <caption>A log of events originating from this server process.</caption>
       <thead>$header</thead>
       <tbody>
       </tbody>
     </table>"""
 
-    onLoad + toggle + """
+           onLoad + toggle + """
     <div class="fr-more"><a
     href="javascript:$('.fr-more-info').show(); $('.fr-more').hide()"
     >Read more...</a></div>
@@ -300,8 +304,8 @@ private object EventsHandler {
     $ java -Dcom.twitter.util.events.sinkEnabled=false MyApp
     </code></pre></div></div>""" + table
 
-  } else {
-    """
+         } else {
+           """
     <p>Event capture is currently <strong>disabled</strong>.
     To enable event capture, use the following flags.
     <dl class="dl-horizontal">
@@ -316,7 +320,7 @@ private object EventsHandler {
            MyApp
     </code></pre></div>
     """
-  })
+         })
 
   def tableBodyHtml(events: Seq[Event]): Reader =
     Reader.concat(tableOf(events).map(Reader.fromBuf))
@@ -341,7 +345,7 @@ private object Percentile {
     }
 
   def method(cname: String, method: String, args: Class[_]*): Try[Method] =
-    Try.withFatals(Class.forName(cname).getMethod(method, args:_*)) {
+    Try.withFatals(Class.forName(cname).getMethod(method, args: _*)) {
       case e: NoClassDefFoundError => Throw(e)
     }
 
@@ -357,14 +361,15 @@ private object Percentile {
     g <- method(nsMetrics + ".Percentile", "getQuantile")
     h <- method(nsMetrics + ".Percentile", "getValue")
     i <- method(nsMetrics + ".Metrics", "root").map(_.invoke(null))
-  } yield new Ctx {
-    val StatAdd = c
-    def getHistogram(name: String) = d.invoke(i, name)
-    def buildSnapshot(histogram: Object) = e.invoke(histogram)
-    def getPercentiles(snapshot: Object) = f.invoke(snapshot).asInstanceOf[Array[Object]]
-    def getQuantile(percentile: Object) = g.invoke(percentile).asInstanceOf[Double]
-    def getValue(percentile: Object) = h.invoke(percentile).asInstanceOf[Long]
-  }
+  } yield
+    new Ctx {
+      val StatAdd = c
+      def getHistogram(name: String) = d.invoke(i, name)
+      def buildSnapshot(histogram: Object) = e.invoke(histogram)
+      def getPercentiles(snapshot: Object) = f.invoke(snapshot).asInstanceOf[Array[Object]]
+      def getQuantile(percentile: Object) = g.invoke(percentile).asInstanceOf[Double]
+      def getValue(percentile: Object) = h.invoke(percentile).asInstanceOf[Long]
+    }
 
   def percentileFor(ctx: Ctx, snapshot: Object, value: Long): Double = {
     import ctx._

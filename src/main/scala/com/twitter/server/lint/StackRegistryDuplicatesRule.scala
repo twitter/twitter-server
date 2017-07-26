@@ -8,7 +8,7 @@ object StackRegistryDuplicatesRule {
 
   private[this] def isMemcacheClient(stackReg: StackRegistry)(entry: StackRegistry.Entry): Boolean =
     stackReg.registryName == ClientRegistry.registryName &&
-    entry.protocolLibrary == "memcached"
+      entry.protocolLibrary == "memcached"
 
   private[this] def isWhitelisted(whitelist: Set[String])(entry: StackRegistry.Entry): Boolean =
     whitelist.contains(entry.name)
@@ -35,8 +35,7 @@ object StackRegistryDuplicatesRule {
       stackReg.registeredDuplicates
         .filterNot(isMemcacheClient(stackReg))
         .filterNot(isWhitelisted(whitelist))
-        .map(e =>
-          Issue(s"name=${e.name} protocolLib=${e.protocolLibrary} addr=${e.addr}"))
+        .map(e => Issue(s"name=${e.name} protocolLib=${e.protocolLibrary} addr=${e.addr}"))
     }
   }
 

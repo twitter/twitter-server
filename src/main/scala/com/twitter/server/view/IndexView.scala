@@ -33,13 +33,13 @@ object IndexView {
       ls: Seq[Entry],
       sb: StringBuilder = new StringBuilder
     ): String = ls match {
-        case Seq() => sb.toString
+      case Seq() => sb.toString
 
-        case Link(id, href, Post) +: rest =>
-          // Spaces are replaced with '-' since HTML IDs do not permit whitespace
-          val formattedId = id.replace(' ', '-')
-          val selected = if (href == uri) "selected" else ""
-            sb ++= s"""
+      case Link(id, href, Post) +: rest =>
+        // Spaces are replaced with '-' since HTML IDs do not permit whitespace
+        val formattedId = id.replace(' ', '-')
+        val selected = if (href == uri) "selected" else ""
+        sb ++= s"""
               <form method="post" id="${formattedId}-form" action="${href}">
                 <a href="#" onclick="document.getElementById('${formattedId}-form').submit()">
                   <li id="${formattedId}" class="selectable $selected">
@@ -48,32 +48,32 @@ object IndexView {
                 </a>
               </form>
               """
-          renderNav(rest, sb)
+        renderNav(rest, sb)
 
-        case Link(id, href, Get) +: rest =>
-          // Spaces are replaced with '-' since HTML IDs do not permit whitespace
-          val formattedId = id.replace(' ', '-')
-          val selected = if (href == uri) "selected" else ""
-          sb ++= s"""
+      case Link(id, href, Get) +: rest =>
+        // Spaces are replaced with '-' since HTML IDs do not permit whitespace
+        val formattedId = id.replace(' ', '-')
+        val selected = if (href == uri) "selected" else ""
+        sb ++= s"""
             <a href="${href}">
               <li id="${formattedId}" class="selectable $selected">
                 ${escapeHtml(id)}
               </li>
             </a>
             """
-          renderNav(rest, sb)
+        renderNav(rest, sb)
 
-        case Group(id, links) +: rest =>
-          val isChild = links exists {
-            // Instead of strictly checking for href == uri,
-            // we are a bit more liberal to allow for "catch-all"
-            // endpoints (ex. /admin/clients/).
-            case Link(_, href, _) => !href.stripPrefix(uri).contains("/")
-            case _ => false
-          }
-          val active = if (isChild) "active" else ""
-          val collapse = if (isChild) "glyphicon-collapse-up" else ""
-          sb ++= s"""
+      case Group(id, links) +: rest =>
+        val isChild = links exists {
+          // Instead of strictly checking for href == uri,
+          // we are a bit more liberal to allow for "catch-all"
+          // endpoints (ex. /admin/clients/).
+          case Link(_, href, _) => !href.stripPrefix(uri).contains("/")
+          case _ => false
+        }
+        val active = if (isChild) "active" else ""
+        val collapse = if (isChild) "glyphicon-collapse-up" else ""
+        sb ++= s"""
             <li class="subnav $active">
               <div class="subnav-title selectable">
                 <span class="glyphicon glyphicon-expand $collapse"></span>
@@ -81,8 +81,8 @@ object IndexView {
               </div>
               <ul>${renderNav(links)}</ul>
             </li>"""
-          renderNav(rest, sb)
-      }
+        renderNav(rest, sb)
+    }
 
     Reader.concat(
       Reader.fromBuf(
@@ -113,15 +113,13 @@ object IndexView {
                       <div class="col-md-12">"""
         )
       )
-      +:: contents
-      +:: AsyncStream.of(Reader.fromBuf(
-        Buf.Utf8("""</div>
+        +:: contents
+        +:: AsyncStream.of(Reader.fromBuf(Buf.Utf8("""</div>
                     </div>
                   </div>
                 </div>
               </body>
-            </html>"""))
-        )
+            </html>""")))
     )
   }
 }
@@ -133,7 +131,7 @@ object IndexView {
  * the content is an html fragment.
  */
 class IndexView(title: String, uri: String, index: () => Seq[IndexView.Entry])
-  extends SimpleFilter[Request, Response] {
+    extends SimpleFilter[Request, Response] {
   import IndexView._
 
   private[this] def isFragment(contentType: String, content: String): Boolean = {
@@ -142,28 +140,29 @@ class IndexView(title: String, uri: String, index: () => Seq[IndexView.Entry])
 
   def apply(req: Request, svc: Service[Request, Response]) =
     if (!expectsHtml(req)) svc(req)
-    else svc(req) flatMap { res =>
-      val contentType = res.headerMap.get("content-type").getOrElse("")
-      val content = res.contentString
-      res match {
-        case _ if !isFragment(contentType, content) => Future.value(res)
-        case res if res.isChunked =>
-          val response = Response()
-          response.contentType = "text/html;charset=UTF-8"
-          response.setChunked(true)
-          val reader = render(title, uri, index().sorted, res.reader)
-          Reader.copy(reader, response.writer) ensure response.writer.close()
-          Future.value(response)
+    else
+      svc(req) flatMap { res =>
+        val contentType = res.headerMap.get("content-type").getOrElse("")
+        val content = res.contentString
+        res match {
+          case _ if !isFragment(contentType, content) => Future.value(res)
+          case res if res.isChunked =>
+            val response = Response()
+            response.contentType = "text/html;charset=UTF-8"
+            response.setChunked(true)
+            val reader = render(title, uri, index().sorted, res.reader)
+            Reader.copy(reader, response.writer) ensure response.writer.close()
+            Future.value(response)
 
-        case res =>
-          val body = Reader.fromBuf(Buf.Utf8(content))
-          val reader = render(title, uri, index().sorted, body)
-          Reader.readAll(reader).flatMap { html =>
-            newResponse(
-              contentType = "text/html;charset=UTF-8",
-              content = html
-            )
-          }
+          case res =>
+            val body = Reader.fromBuf(Buf.Utf8(content))
+            val reader = render(title, uri, index().sorted, body)
+            Reader.readAll(reader).flatMap { html =>
+              newResponse(
+                contentType = "text/html;charset=UTF-8",
+                content = html
+              )
+            }
+        }
       }
-    }
 }

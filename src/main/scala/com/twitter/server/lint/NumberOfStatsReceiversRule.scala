@@ -1,7 +1,6 @@
 package com.twitter.server.lint
 
-import com.twitter.finagle.stats.{DelegatingStatsReceiver, LoadedStatsReceiver,
-  StatsReceiver}
+import com.twitter.finagle.stats.{DelegatingStatsReceiver, LoadedStatsReceiver, StatsReceiver}
 import com.twitter.util.lint.{Category, Issue, Rule}
 
 object NumberOfStatsReceiversRule {

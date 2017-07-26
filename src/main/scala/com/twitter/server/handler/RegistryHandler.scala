@@ -62,8 +62,9 @@ class RegistryHandler extends Service[Request, Response] {
           val filtered = new SimpleRegistry()
           registry.foreach { entry =>
             if (matchers.length <= entry.key.length) {
-              val allMatch = matchers.zip(entry.key).forall { case (matcher, word) =>
-                matcher.matches(word)
+              val allMatch = matchers.zip(entry.key).forall {
+                case (matcher, word) =>
+                  matcher.matches(word)
               }
               if (allMatch)
                 filtered.put(entry.key, entry.value)

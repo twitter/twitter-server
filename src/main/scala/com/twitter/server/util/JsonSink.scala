@@ -8,10 +8,11 @@ import com.twitter.util.{Try, Throw, Return, Time}
 // Factored out for testing.
 private[util] trait JsonSink extends Deserializer with Serializer {
   protected def typeId(buf: Buf) = buf match {
-    case Buf.Utf8(str) if str.length > 0 => Try {
-      val node = Json.mapper.readTree(str)
-      node.get("id").asText
-    }
+    case Buf.Utf8(str) if str.length > 0 =>
+      Try {
+        val node = Json.mapper.readTree(str)
+        node.get("id").asText
+      }
     case _ =>
       Throw(new IllegalArgumentException("unknown format"))
   }
@@ -46,11 +47,12 @@ object JsonSink extends JsonSink {
 
     type EventTuple = (String, Long, Object)
 
-    def deserialize(buf: Buf) = for {
-      (idd, when, data) <- Buf.Utf8.unapply(buf) match {
-        case None => Throw(new IllegalArgumentException("unknown format"))
-        case Some(str) => Try(Json.mapper.readValue(str, classOf[EventTuple]))
-      }
-    } yield Event(this, Time.fromMilliseconds(when), objectVal = data)
+    def deserialize(buf: Buf) =
+      for {
+        (idd, when, data) <- Buf.Utf8.unapply(buf) match {
+          case None => Throw(new IllegalArgumentException("unknown format"))
+          case Some(str) => Try(Json.mapper.readValue(str, classOf[EventTuple]))
+        }
+      } yield Event(this, Time.fromMilliseconds(when), objectVal = data)
   }
 }

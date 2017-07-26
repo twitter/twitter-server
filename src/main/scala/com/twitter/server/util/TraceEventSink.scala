@@ -30,21 +30,23 @@ object TraceEventSink {
   }
 
   private def asTraceEvent(e: Event): Buf = Buf.Utf8(
-    Json.serialize(Map(
-      "name" -> e.etype.id,
-      "cat" -> "",
-      "ph" -> "i",
-      "ts" -> (e.when.inMillis * 1000).toString,
-      "pid" -> e.getTraceId.getOrElse(0),
-      "tid" -> e.getSpanId.getOrElse(0),
-      "args" -> Map(
-        Seq(
-          "longVal" -> e.getLong,
-          "objectVal" -> e.getObject.map(showObject),
-          "doubleVal" -> e.getDouble
-        ).filterNot(_._2.isEmpty):_*
+    Json.serialize(
+      Map(
+        "name" -> e.etype.id,
+        "cat" -> "",
+        "ph" -> "i",
+        "ts" -> (e.when.inMillis * 1000).toString,
+        "pid" -> e.getTraceId.getOrElse(0),
+        "tid" -> e.getSpanId.getOrElse(0),
+        "args" -> Map(
+          Seq(
+            "longVal" -> e.getLong,
+            "objectVal" -> e.getObject.map(showObject),
+            "doubleVal" -> e.getDouble
+          ).filterNot(_._2.isEmpty): _*
+        )
       )
-    ))
+    )
   )
 
   /**
@@ -56,11 +58,13 @@ object TraceEventSink {
 
     // Note: we leave out the "]" from the JSON array since it's optional. See:
     // http://goo.gl/iN9ozV#heading=h.f2f0yd51wi15.
-    if (events.isEmpty) Reader.fromBuf(leftBracket) else Reader.concat(
-      Reader.fromBuf(leftBracket.concat(events.head)) +::
-        AsyncStream.fromSeq(events.tail.map { buf =>
+    if (events.isEmpty) Reader.fromBuf(leftBracket)
+    else
+      Reader.concat(
+        Reader.fromBuf(leftBracket.concat(events.head)) +::
+          AsyncStream.fromSeq(events.tail.map { buf =>
           Reader.fromBuf(delim.concat(buf))
         })
-    )
+      )
   }
 }

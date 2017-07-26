@@ -25,10 +25,11 @@ private[handler] object ToggleHandler {
    * @param description corresponds to `Toggle.Metadata.description`
    */
   case class Current(
-      id: String,
-      fraction: Double,
-      lastValue: Option[Boolean],
-      description: Option[String])
+    id: String,
+    fraction: Double,
+    lastValue: Option[Boolean],
+    description: Option[String]
+  )
 
   /**
    * The components that compose the "current" `Toggle`.
@@ -46,9 +47,7 @@ private[handler] object ToggleHandler {
 
   private val ParamFraction: String = "fraction"
 
-  private case class GenericResponse(
-      message: String,
-      errors: Seq[String])
+  private case class GenericResponse(message: String, errors: Seq[String])
 
   /**
    * The result of parsing the `Request` path which should be of the form:
@@ -57,9 +56,7 @@ private[handler] object ToggleHandler {
    * @param libraryName `Some` if a library name exists and is valid
    * @param id `Some` if a toggle id exists and is valid
    */
-  case class ParsedPath(
-      libraryName: Option[String],
-      id: Option[String])
+  case class ParsedPath(libraryName: Option[String], id: Option[String])
 }
 
 /**
@@ -114,9 +111,8 @@ private[handler] object ToggleHandler {
  * For create and update, and an additional "fraction" request parameter
  * must be set as well.
  */
-class ToggleHandler private[handler] (
-    registeredLibrariesFn: () => Map[String, ToggleMap])
-  extends Service[Request, Response] {
+class ToggleHandler private[handler] (registeredLibrariesFn: () => Map[String, ToggleMap])
+    extends Service[Request, Response] {
 
   import ToggleHandler._
 
@@ -135,7 +131,8 @@ class ToggleHandler private[handler] (
           Status.MethodNotAllowed,
           "Unsupported method",
           Seq(s"Unsupported HTTP method: $unsupported"),
-          headers = Seq((Fields.Allow, "GET, PUT, DELETE")))
+          headers = Seq((Fields.Allow, "GET, PUT, DELETE"))
+        )
     }
   }
 
@@ -163,7 +160,8 @@ class ToggleHandler private[handler] (
     genericResponse(
       if (errors.isEmpty) Status.Ok else Status.BadRequest,
       if (errors.isEmpty) "Update successful" else "Update failed",
-      errors)
+      errors
+    )
   }
 
   private[this] def applyDelete(req: Request): Future[Response] = {
@@ -180,7 +178,8 @@ class ToggleHandler private[handler] (
     genericResponse(
       if (errors.isEmpty) Status.Ok else Status.BadRequest,
       if (errors.isEmpty) "Delete successful" else "Delete failed",
-      errors)
+      errors
+    )
   }
 
   private[this] def genericResponse(
@@ -195,7 +194,8 @@ class ToggleHandler private[handler] (
       status = status,
       contentType = "text/plain;charset=UTF-8",
       content = Buf.Utf8(body),
-      headers = headers)
+      headers = headers
+    )
   }
 
   /**
@@ -310,22 +310,30 @@ class ToggleHandler private[handler] (
   private[handler] def toLibraries(parsedPath: ParsedPath): Libraries = {
     val libraryFilter: String => Boolean = parsedPath.libraryName match {
       case Some(name) => _ == name
-      case None => _ => true
+      case None =>
+        _ =>
+          true
     }
     val idFilter: String => Boolean = parsedPath.id match {
       case Some(name) => _ == name
-      case None => _ => true
+      case None =>
+        _ =>
+          true
     }
 
     val registered = registeredLibrariesFn()
-    val libs = registered.filter { case (libraryName, _) =>
-      libraryFilter(libraryName)
-    }.map { case (name, toggleMap) =>
-      val libToggles = toLibraryToggles(toggleMap).filter { libToggle =>
-        idFilter(libToggle.current.id)
+    val libs = registered
+      .filter {
+        case (libraryName, _) =>
+          libraryFilter(libraryName)
       }
-      Library(name, libToggles)
-    }
+      .map {
+        case (name, toggleMap) =>
+          val libToggles = toLibraryToggles(toggleMap).filter { libToggle =>
+            idFilter(libToggle.current.id)
+          }
+          Library(name, libToggles)
+      }
     Libraries(libs.toSeq)
   }
 
@@ -345,13 +353,14 @@ class ToggleHandler private[handler] (
       }
     }
 
-    idToComponents.map { case (id, details) =>
-      val md = idToMetadata(id)
-      val lastApply = toggleMap(id) match {
-        case captured: Toggle.Captured => captured.lastApply
-        case _ => None
-      }
-      LibraryToggle(Current(id, md.fraction, lastApply, md.description), details)
+    idToComponents.map {
+      case (id, details) =>
+        val md = idToMetadata(id)
+        val lastApply = toggleMap(id) match {
+          case captured: Toggle.Captured => captured.lastApply
+          case _ => None
+        }
+        LibraryToggle(Current(id, md.fraction, lastApply, md.description), details)
     }.toSeq
   }
 

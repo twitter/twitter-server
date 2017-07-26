@@ -27,7 +27,9 @@ class ProfileResourceHandler(
         params
     }
 
-    log.info(s"[${req.uri}] collecting CPU profile ($which) for ${params.pause} seconds at ${params.frequency}Hz")
+    log.info(
+      s"[${req.uri}] collecting CPU profile ($which) for ${params.pause} seconds at ${params.frequency}Hz"
+    )
 
     CpuProfile.recordInThread(params.pause, params.frequency, which) transform {
       case Return(prof) =>
@@ -49,4 +51,3 @@ class ProfileResourceHandler(
     }
   }
 }
-

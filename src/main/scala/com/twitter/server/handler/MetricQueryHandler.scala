@@ -16,9 +16,9 @@ private object MetricQueryHandler {
         <div id="metrics-grid" class="row" data-refresh-uri="/admin/metrics">
           <div class="col-md-4 snuggle-right">
             <ul id="metrics" class="list-unstyled">
-              ${ (for (key <- keys.toSeq.sorted) yield {
-                    s"""<li id="${key.replace("/", "-")}">${escapeHtml(key)}</li>"""
-                  }).mkString("\n") }
+              ${(for (key <- keys.toSeq.sorted) yield {
+      s"""<li id="${key.replace("/", "-")}">${escapeHtml(key)}</li>"""
+    }).mkString("\n")}
             </ul>
           </div>
           <div class="col-md-8 snuggle-left">
@@ -32,7 +32,7 @@ private object MetricQueryHandler {
  * json encoded metrics.
  */
 class MetricQueryHandler(source: MetricSource = new MetricSource)
-  extends Service[Request, Response] {
+    extends Service[Request, Response] {
   import MetricQueryHandler._
 
   private[this] def query(keys: Seq[String]) =

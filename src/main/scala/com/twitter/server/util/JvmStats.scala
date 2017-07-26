@@ -61,8 +61,9 @@ object JvmStats {
     val classLoadingStats = stats.scope("classes")
     gauges.add(classLoadingStats.addGauge("total_loaded") { classes.getTotalLoadedClassCount() })
     gauges.add(classLoadingStats.addGauge("total_unloaded") { classes.getUnloadedClassCount() })
-    gauges.add(classLoadingStats.addGauge("current_loaded") { classes.getLoadedClassCount().toLong })
-
+    gauges.add(
+      classLoadingStats.addGauge("current_loaded") { classes.getLoadedClassCount().toLong }
+    )
 
     val memPool = ManagementFactory.getMemoryPoolMXBeans.asScala
     val memStats = stats.scope("mem")
@@ -72,7 +73,9 @@ object JvmStats {
     val postGCMem = memStats.scope("postGC")
     val postGCStats = BroadcastStatsReceiver(Seq(stats.scope("postGC"), postGCMem))
     memPool.foreach { pool =>
-      val name = pool.getName.regexSub("""[^\w]""".r) { m => "_" }
+      val name = pool.getName.regexSub("""[^\w]""".r) { m =>
+        "_"
+      }
       if (pool.getCollectionUsage != null) {
         def usage = pool.getCollectionUsage // this is a snapshot, we can't reuse the value
         gauges.add(postGCStats.addGauge(name, "used") { usage.getUsed })
@@ -101,9 +104,9 @@ object JvmStats {
     }
 
     val spStats = stats.scope("safepoint")
-    gauges.add(spStats.addGauge("sync_time_millis"){ jvm.safepoint.syncTimeMillis }) 
-    gauges.add(spStats.addGauge("total_time_millis"){ jvm.safepoint.totalTimeMillis }) 
-    gauges.add(spStats.addGauge("count"){ jvm.safepoint.count })
+    gauges.add(spStats.addGauge("sync_time_millis") { jvm.safepoint.syncTimeMillis })
+    gauges.add(spStats.addGauge("total_time_millis") { jvm.safepoint.totalTimeMillis })
+    gauges.add(spStats.addGauge("count") { jvm.safepoint.count })
 
     ManagementFactory.getPlatformMXBeans(classOf[BufferPoolMXBean]) match {
       case null =>
@@ -120,7 +123,9 @@ object JvmStats {
     val gcPool = ManagementFactory.getGarbageCollectorMXBeans.asScala
     val gcStats = stats.scope("gc")
     gcPool.foreach { gc =>
-      val name = gc.getName.regexSub("""[^\w]""".r) { m => "_" }
+      val name = gc.getName.regexSub("""[^\w]""".r) { m =>
+        "_"
+      }
       gauges.add(gcStats.addGauge(name, "cycles") { gc.getCollectionCount })
       gauges.add(gcStats.addGauge(name, "msec") { gc.getCollectionTime })
     }

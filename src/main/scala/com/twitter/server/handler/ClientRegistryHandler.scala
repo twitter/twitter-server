@@ -18,12 +18,13 @@ private object ClientRegistryHandler {
     addr: String,
     scope: String,
     successRate: Double,
-    unavailable: Int)
+    unavailable: Int
+  )
 
   val profileOrdering: Ordering[ClientProfile] = Ordering.by(_.successRate)
 
   def prettyRate(sr: Double) =
-    if (sr < 0.0) "N/A" else f"${sr*100.0}%2.2f%%"
+    if (sr < 0.0) "N/A" else f"${sr * 100.0}%2.2f%%"
 
   def rateStyle(sr: Double) =
     if (sr < 0.0) "sr-undefined"
@@ -36,21 +37,19 @@ private object ClientRegistryHandler {
     s"""<h4 class="header text-center">${escapeHtml(title)}</h4>
         <hr/>
         <div id="clients" class="row">
-        ${
-          (for (ClientProfile(name, addr, scope, sr, unavailable) <- profiles) yield {
-            s"""<div class="col-md-3">
+        ${(for (ClientProfile(name, addr, scope, sr, unavailable) <- profiles) yield {
+      s"""<div class="col-md-3">
                   <div class="client">
                     <h4 class="name"><a href="/admin/clients/$name">${escapeHtml(name)}</a></h4>
                     <p class="dest text-muted">${escapeHtml(addr)}</p>
-                    ${
-                      if (unavailable == 0) "" else {
-                        s"""<a href="/admin/metrics#$scope/loadbalancer/available"
+                    ${if (unavailable == 0) ""
+      else {
+        s"""<a href="/admin/metrics#$scope/loadbalancer/available"
                             data-toggle="tooltip" data-placement="top"
                             class="conn-trouble btn-xs btn-default">
                             <span class="glyphicon glyphicon-exclamation-sign"
                             aria-hidden="true"></span> ${escapeHtml(unavailable.toString)} unavailable endpoint(s)</a>"""
-                      }
-                    }
+      }}
                     <hr/>
                     <div class="row">
                     <h6 class='sr-header col-xs-6'>success rate</h6>
@@ -58,8 +57,7 @@ private object ClientRegistryHandler {
                     </div>
                   </div>
                 </div>"""
-          }).mkString("\n")
-         }
+    }).mkString("\n")}
         </div>"""
 
 }
@@ -70,10 +68,10 @@ private object ClientRegistryHandler {
  * part of the uri (ex. "/admin/clients/myclient").
  */
 class ClientRegistryHandler(
-    uriPrefix: String,
-    source: MetricSource = new MetricSource,
-    stackRegistry: StackRegistry = ClientRegistry)
-  extends Service[Request, Response] {
+  uriPrefix: String,
+  source: MetricSource = new MetricSource,
+  stackRegistry: StackRegistry = ClientRegistry
+) extends Service[Request, Response] {
   import ClientRegistryHandler._
 
   // Search the metrics source for the stat scope that includes `clientName`.
@@ -118,9 +116,10 @@ class ClientRegistryHandler(
           if req.value > 0.0 || (size.delta - available.delta) > 0.0
         } yield {
           val unavailable = (size.delta - available.delta).toInt
-          val sr = if (req.value == 0.0) -1.0
-            else if (req.delta == 0.0) 1.0-reqFail.value/req.value
-            else 1.0-reqFail.delta/req.delta
+          val sr =
+            if (req.value == 0.0) -1.0
+            else if (req.delta == 0.0) 1.0 - reqFail.value / req.value
+            else 1.0 - reqFail.delta / req.delta
           ClientProfile(e.name, e.addr, scope, sr, unavailable)
         }
 
@@ -129,12 +128,14 @@ class ClientRegistryHandler(
 
   def apply(req: Request): Future[Response] = {
     val (path, _) = parse(req.uri)
-    path.stripPrefix(uriPrefix) match  {
-      case idx@("index.html" | "index.htm" | "index.txt" | "clients") =>
+    path.stripPrefix(uriPrefix) match {
+      case idx @ ("index.html" | "index.htm" | "index.txt" | "clients") =>
         val leastPerformant = clientProfiles.sorted(profileOrdering).take(4)
-        val html = if (leastPerformant.isEmpty) "" else {
-          render("Least Performant Downstream Clients", leastPerformant)
-        }
+        val html =
+          if (leastPerformant.isEmpty) ""
+          else {
+            render("Least Performant Downstream Clients", leastPerformant)
+          }
         // This is useful to avoid the returned fragment being wrapped
         // with an index in the context of an ajax call.
         val typ = if (idx.endsWith(".txt")) "text/plain" else "text/html"
@@ -145,7 +146,8 @@ class ClientRegistryHandler(
 
       case name =>
         val clientEntries = stackRegistry.registrants.filter(_.name == name)
-        if (clientEntries.isEmpty) new404(s"$name could not be found.") else {
+        if (clientEntries.isEmpty) new404(s"$name could not be found.")
+        else {
           val client = clientEntries.head
           val endpointEntry = EndpointRegistry.registry.endpoints(name)
 

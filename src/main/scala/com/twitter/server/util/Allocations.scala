@@ -7,7 +7,11 @@ import java.util.concurrent.atomic.AtomicLong
 import java.util.{List => juList}
 import javax.management.openmbean.{CompositeData, TabularData}
 import javax.management.{
-  ListenerNotFoundException, Notification, NotificationListener, NotificationEmitter}
+  ListenerNotFoundException,
+  Notification,
+  NotificationListener,
+  NotificationEmitter
+}
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
@@ -40,30 +44,33 @@ private[util] class Allocations(statsReceiver: StatsReceiver) {
   private[this] val edenGcPauses = statsReceiver.scope("eden").stat("pause_msec")
 
   private[util] def start() {
-    edenPool.flatMap { bean =>
-      Option(bean.getUsage)
-    }.foreach { _ =>
-      ManagementFactory.getGarbageCollectorMXBeans.asScala.foreach {
-        case bean: NotificationEmitter =>
-          // skip CMS because it does not collect objects from the eden
-          if (bean.getName != "ConcurrentMarkSweep") {
-            val listener = newEdenGcListener()
-            beanAndListeners.add((bean, listener))
-            bean.addNotificationListener(listener, null, null)
-          }
-        case _ =>
+    edenPool
+      .flatMap { bean =>
+        Option(bean.getUsage)
       }
-    }
+      .foreach { _ =>
+        ManagementFactory.getGarbageCollectorMXBeans.asScala.foreach {
+          case bean: NotificationEmitter =>
+            // skip CMS because it does not collect objects from the eden
+            if (bean.getName != "ConcurrentMarkSweep") {
+              val listener = newEdenGcListener()
+              beanAndListeners.add((bean, listener))
+              bean.addNotificationListener(listener, null, null)
+            }
+          case _ =>
+        }
+      }
   }
 
   private[util] def stop() {
     while (!beanAndListeners.isEmpty) {
-      Option(beanAndListeners.poll()).foreach { case (bean, listener) =>
-        try {
-          bean.removeNotificationListener(listener)
-        } catch {
-          case _: ListenerNotFoundException => // ignore
-        }
+      Option(beanAndListeners.poll()).foreach {
+        case (bean, listener) =>
+          try {
+            bean.removeNotificationListener(listener)
+          } catch {
+            case _: ListenerNotFoundException => // ignore
+          }
       }
     }
   }
@@ -115,9 +122,10 @@ private[util] class Allocations(statsReceiver: StatsReceiver) {
       val tabData = any.asInstanceOf[TabularData]
       val edenKeys: mutable.Set[juList[_]] = tabData.keySet.asScala.collect {
         case ks: juList[_] if ks.asScala.headOption.exists {
-          case s: String => s.contains("Eden")
-          case _ => false
-        } => ks
+              case s: String => s.contains("Eden")
+              case _ => false
+            } =>
+          ks
       }
 
       val memoryUsages = edenKeys.flatMap { k =>

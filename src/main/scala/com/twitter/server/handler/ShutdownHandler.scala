@@ -18,7 +18,8 @@ class ShutdownHandler(app: App) extends Service[Request, Response] {
     if (req.method == Method.Post) {
       log.info(s"[${req.uri}] from ${req.remoteAddress.getHostAddress} quitting")
       val grace = getGraceParam(req.uri) map { d =>
-        try Duration.parse(d) catch {
+        try Duration.parse(d)
+        catch {
           case e: NumberFormatException =>
             val msg = "could not parse 'grace' parameter: %s is not a valid duration".format(d)
             return newResponse(
@@ -31,7 +32,9 @@ class ShutdownHandler(app: App) extends Service[Request, Response] {
       app.close(grace getOrElse app.defaultCloseGracePeriod)
       newOk("quitting\n")
     } else {
-      log.info(s"ignoring [${req.uri}] from ${req.remoteAddress.getHostAddress}, because it is a ${req.method}, not a POST")
+      log.info(
+        s"ignoring [${req.uri}] from ${req.remoteAddress.getHostAddress}, because it is a ${req.method}, not a POST"
+      )
       newResponse(
         status = Status.MethodNotAllowed,
         headers = Seq(("Allow", "POST")),
