@@ -8,9 +8,7 @@ import org.scalatest.{Matchers, FunSuite}
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class LoggingHandlerTest extends FunSuite
-  with Matchers
-{
+class LoggingHandlerTest extends FunSuite with Matchers {
   test("query all loggers") {
     val handler = new LoggingHandler
     val loggers = Logger.iterator
@@ -61,9 +59,9 @@ class LoggingHandlerTest extends FunSuite
       val res = Await.result(handler(req))
       assert(res.status == Status.Ok)
       val text = res.contentString
-      text should include ("root OFF")
-      text should include ("l0 ALL")
-      text should include ("l1 DEBUG")
+      text should include("root OFF")
+      text should include("l0 ALL")
+      text should include("l1 DEBUG")
     }
   }
 }

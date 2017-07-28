@@ -9,9 +9,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.mock.MockitoSugar
 
 @RunWith(classOf[JUnitRunner])
-class SchedulerBlockingRuleTest extends FunSuite
-  with Matchers
-  with MockitoSugar {
+class SchedulerBlockingRuleTest extends FunSuite with Matchers with MockitoSugar {
 
   test("low amount of blocking is not an issue") {
     val cutoff = 10.seconds

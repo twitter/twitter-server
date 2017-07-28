@@ -27,7 +27,9 @@ class LoggingRulesTest extends FunSuite {
   }
 
   test("Two issues for two paths") {
-    assert(LoggingRules.issues(Seq(invalidUrl, validUrl)) ==
-      Seq(Issue(invalidUrl), Issue("slf4j-jdk14-1.7.7.jar")))
+    assert(
+      LoggingRules.issues(Seq(invalidUrl, validUrl)) ==
+        Seq(Issue(invalidUrl), Issue("slf4j-jdk14-1.7.7.jar"))
+    )
   }
 }

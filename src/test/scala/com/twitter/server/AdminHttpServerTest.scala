@@ -37,11 +37,7 @@ class MockHostMetricsExporter extends HttpMuxHandler {
     newOk("per host metrics!")
 }
 
-
-class AdminHttpServerTest
-  extends FunSuite
-  with Eventually
-  with IntegrationPatience {
+class AdminHttpServerTest extends FunSuite with Eventually with IntegrationPatience {
 
   def checkServer(server: ListeningServer): Unit = {
     val port = server.boundAddress.asInstanceOf[InetSocketAddress].getPort
@@ -102,7 +98,8 @@ class AdminHttpServerTest
       override def main(): Unit = {
         checkServer(adminHttpServer)
         // Try to close the server with a GET
-        val adminServerBoundPort = adminHttpServer.boundAddress.asInstanceOf[InetSocketAddress].getPort
+        val adminServerBoundPort =
+          adminHttpServer.boundAddress.asInstanceOf[InetSocketAddress].getPort
         assert(adminServerBoundPort == this.adminBoundAddress.getPort)
         val client = Http.client.newService(s"localhost:$adminServerBoundPort")
         val res = Await.result(client(Request(Method.Get, "/quitquitquit")), 1.second)
@@ -123,7 +120,9 @@ class AdminHttpServerTest
         override def main(): Unit = {
           val p = new Promise[Unit]
           var sawClose = false
-          val drainingClosable = Closable.make { _ => sawClose = true; p }
+          val drainingClosable = Closable.make { _ =>
+            sawClose = true; p
+          }
           closeOnExit(drainingClosable)
           val closeF: Future[Unit] = close(Time.now + 10.seconds)
           assert(sawClose)
@@ -152,7 +151,9 @@ class AdminHttpServerTest
         override protected def exitOnError(reason: String): Unit = ()
 
         override def main(): Unit = {
-          val drainingClosable = Closable.make { _ => Future.never }
+          val drainingClosable = Closable.make { _ =>
+            Future.never
+          }
           closeOnExit(drainingClosable)
           val closeF: Future[Unit] = close(Time.now + 10.seconds)
           // `drainingClosable` keeps the admin server from shutting down

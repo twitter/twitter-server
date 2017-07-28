@@ -12,8 +12,8 @@ import org.scalatest.junit.JUnitRunner
 import scala.collection.mutable.MutableList
 
 class TestTwitterServer extends TwitterServer {
-  override val adminPort = flag("admin.port",
-    new InetSocketAddress(InetAddress.getLoopbackAddress, 0), "")
+  override val adminPort =
+    flag("admin.port", new InetSocketAddress(InetAddress.getLoopbackAddress, 0), "")
 
   val bootstrapSeq = MutableList.empty[Symbol]
 
@@ -44,8 +44,6 @@ class MockExceptionHandler extends Service[Request, Response] {
     throw new Exception("test exception")
   }
 }
-
-
 @RunWith(classOf[JUnitRunner])
 class TwitterServerTest extends FunSuite {
 
@@ -57,8 +55,10 @@ class TwitterServerTest extends FunSuite {
   test("TwitterServer.main(args) executes without error") {
     val twitterServer = new TestTwitterServer
     twitterServer.main(args = Array.empty[String])
-    assert(twitterServer.bootstrapSeq ==
-        Seq('Init, 'PreMain, 'Main, 'PostMain, 'Exit))
+    assert(
+      twitterServer.bootstrapSeq ==
+        Seq('Init, 'PreMain, 'Main, 'PostMain, 'Exit)
+    )
   }
 
   test("TwitterServer.main(args) executes without error when closed explicitly") {
@@ -78,9 +78,15 @@ class TwitterServerTest extends FunSuite {
       val mockExceptionHandler = new MockExceptionHandler
 
       override def main() {
-        addAdminRoute( 
+        addAdminRoute(
           AdminHttpServer.mkRoute(
-            "/exception_please.json", mockExceptionHandler, "mockExceptionHandler", None, false))
+            "/exception_please.json",
+            mockExceptionHandler,
+            "mockExceptionHandler",
+            None,
+            false
+          )
+        )
 
         val port = adminHttpServer.boundAddress.asInstanceOf[InetSocketAddress].getPort
 

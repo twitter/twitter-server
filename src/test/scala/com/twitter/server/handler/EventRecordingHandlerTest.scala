@@ -8,9 +8,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.mock.MockitoSugar
 
 @RunWith(classOf[JUnitRunner])
-class EventRecordingHandlerTest extends FunSuite
-  with MockitoSugar
-{
+class EventRecordingHandlerTest extends FunSuite with MockitoSugar {
 
   test("updateRecording") {
     val sink = mock[Sink]

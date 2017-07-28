@@ -13,10 +13,12 @@ import org.scalatest.junit.JUnitRunner
 class NotFoundViewTest extends FunSuite {
   test("wraps content based on http status") {
     val handler = new Service[Request, Response] {
-      def apply(req: Request) = newResponse(
-        contentType = "text/plain;charset=UTF-8",
-        status = Status.NotFound,
-        content = Buf.Utf8("hello"))
+      def apply(req: Request) =
+        newResponse(
+          contentType = "text/plain;charset=UTF-8",
+          status = Status.NotFound,
+          content = Buf.Utf8("hello")
+        )
     }
 
     val svc = new NotFoundView andThen handler

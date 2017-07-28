@@ -9,7 +9,7 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class HistogramQueryHandlerTest extends FunSuite  {
+class HistogramQueryHandlerTest extends FunSuite {
   test("histograms.json works with no stats") {
     val sr = new InMemoryStatsReceiver
     val handler = new HistogramQueryHandler(sr)
@@ -55,6 +55,6 @@ class HistogramQueryHandlerTest extends FunSuite  {
     val result = Await.result(resp).contentString
     assert(result.contains(raw""""lowerLimit" : 0,"""))
     assert(result.contains(raw""""upperLimit" : 1,"""))
-    assert(result.contains(raw""""percentage" : 1.0""")) 
+    assert(result.contains(raw""""percentage" : 1.0"""))
   }
 }

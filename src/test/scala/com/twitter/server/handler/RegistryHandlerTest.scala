@@ -51,10 +51,11 @@ class RegistryHandlerTest extends FunSuite {
 
   test("RegistryHandler.jsonResponse filters with globs") {
     GlobalRegistry.withRegistry(filterRegistry) {
-      assertJsonResponse(Some("*/two"),
-        """{"registry":{"uno":{"two":"tres"},"one":{"two":"three"}}}""")
-      assertJsonResponse(Some("1/*/3"),
-        """{"registry":{"1":{"b":{"3":"5"},"a":{"3":"4"}}}}""")
+      assertJsonResponse(
+        Some("*/two"),
+        """{"registry":{"uno":{"two":"tres"},"one":{"two":"three"}}}"""
+      )
+      assertJsonResponse(Some("1/*/3"), """{"registry":{"1":{"b":{"3":"5"},"a":{"3":"4"}}}}""")
     }
   }
 

@@ -12,7 +12,9 @@ private[server] object MetricSourceTest {
     case class Entry(delta: Double, value: Double) extends StatEntry
     private[twitter] var underlying = Map[String, StatEntry]()
     val sr = new StatsRegistry { def apply() = underlying }
-    val registry = { () => Seq(sr) }
+    val registry = { () =>
+      Seq(sr)
+    }
     val source = new MetricSource(registry, 1.second)
   }
 }
@@ -53,9 +55,8 @@ class MetricSourceTest extends FunSuite {
       val ctx = new Ctx
       import ctx._
 
-      underlying = Map(
-        "clnt/foo/requests" -> Entry(0.0, 0.0),
-        "clnt/foo/success" -> Entry(0.0, 0.0))
+      underlying =
+        Map("clnt/foo/requests" -> Entry(0.0, 0.0), "clnt/foo/success" -> Entry(0.0, 0.0))
       assert(source.keySet == Set.empty[String])
       tc.advance(1.second)
       assert(source.keySet == Set("clnt/foo/requests", "clnt/foo/success"))

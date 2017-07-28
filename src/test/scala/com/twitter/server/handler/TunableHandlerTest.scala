@@ -40,8 +40,7 @@ class TunableHandlerTest extends FunSuite {
       req.contentType = MediaType.Json
       req.contentString = """{"tunables": [] }"""
       val resp = Await.result(handler(req), 1.second)
-      assert(resp.contentString.contains(
-        "TunableMap not found for id: foo"))
+      assert(resp.contentString.contains("TunableMap not found for id: foo"))
       assert(resp.status == Status.NotFound)
     }
   }
@@ -158,8 +157,7 @@ class TunableHandlerTest extends FunSuite {
 
     val req = Request(Method.Put, "/admin/tunables/foo")
     req.contentType = MediaType.Json
-    req.contentString =
-      """{"tunables":
+    req.contentString = """{"tunables":
         |  [
         |     {
         |         "id": "test_id",
@@ -181,8 +179,7 @@ class TunableHandlerTest extends FunSuite {
 
     val req = Request(Method.Put, "/admin/tunables/foo")
     req.contentType = MediaType.Json
-    req.contentString =
-      """{"tunables":
+    req.contentString = """{"tunables":
         |  [
         |     {
         |         "id": "test_id",
@@ -206,8 +203,7 @@ class TunableHandlerTest extends FunSuite {
 
     val req = Request(Method.Put, "/admin/tunables/foo")
     req.contentType = MediaType.Json
-    req.contentString =
-      """{"tunables":
+    req.contentString = """{"tunables":
         |  [
         |     {
         |         "id": "test_id1",
@@ -232,8 +228,7 @@ class TunableHandlerTest extends FunSuite {
 
     val req = Request(Method.Delete, "/admin/tunables/foo")
     req.contentType = MediaType.Json
-    req.contentString =
-      """{"tunables":
+    req.contentString = """{"tunables":
         |  [
         |     {
         |         "id": "test_id",
@@ -256,8 +251,7 @@ class TunableHandlerTest extends FunSuite {
 
     val req = Request(Method.Delete, "/admin/tunables/foo")
     req.contentType = MediaType.Json
-    req.contentString =
-      """{"tunables":
+    req.contentString = """{"tunables":
         |  [
         |     {
         |         "id": "test_id1",

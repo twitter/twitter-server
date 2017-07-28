@@ -20,7 +20,7 @@ private[server] object StackRegistryViewTest {
         val description = "adds incr to every value."
         def make(incr: Incr, next: Int => Int) = { i =>
           val Incr(j) = incr
-          next(i+j)
+          next(i + j)
         }
       }
   }
@@ -30,7 +30,9 @@ private[server] object StackRegistryViewTest {
       new Stack.Module0[Int => Int] {
         val role = Stack.Role("bar")
         val description = "adds 2 to every value."
-        def make(next: Int => Int) = { i => next(i+2) }
+        def make(next: Int => Int) = { i =>
+          next(i + 2)
+        }
       }
   }
 
@@ -47,12 +49,12 @@ private[server] object StackRegistryViewTest {
         val description = "adds 3 to every value."
         def make(classNames: ClassNames, next: Int => Int) = { i =>
           val ClassNames(j) = classNames
-          next(i+3)
+          next(i + 3)
         }
       }
   }
 
-  val sb = new StackBuilder(Stack.Leaf[Int => Int](Stack.Role("identity"), identity[Int]_))
+  val sb = new StackBuilder(Stack.Leaf[Int => Int](Stack.Role("identity"), identity[Int] _))
   sb.push(Baz.module)
   sb.push(Bar.module)
   sb.push(Foo.module)

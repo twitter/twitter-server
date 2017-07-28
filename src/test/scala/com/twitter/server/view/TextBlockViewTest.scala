@@ -13,9 +13,8 @@ import org.scalatest.junit.JUnitRunner
 class TextBlockViewTest extends FunSuite {
   test("wraps content based on user-agent") {
     val handler = new Service[Request, Response] {
-      def apply(req: Request) = newResponse(
-        contentType = "text/plain;charset=UTF-8",
-        content = Buf.Utf8("hello"))
+      def apply(req: Request) =
+        newResponse(contentType = "text/plain;charset=UTF-8", content = Buf.Utf8("hello"))
     }
 
     val svc = new TextBlockView andThen handler

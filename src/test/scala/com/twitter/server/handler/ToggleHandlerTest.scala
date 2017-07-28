@@ -14,10 +14,12 @@ class ToggleHandlerTest extends FunSuite {
 
   test("renders empty registeredLibraries") {
     val handler = new ToggleHandler(() => Map.empty)
-    assert(handler.getResponse(ParsedPath(None, None)) ==
-      """{
+    assert(
+      handler.getResponse(ParsedPath(None, None)) ==
+        """{
         |  "libraries" : [ ]
-        |}""".stripMargin)
+        |}""".stripMargin
+    )
   }
 
   test("toLibraryToggles for empty ToggleMaps") {
@@ -41,12 +43,9 @@ class ToggleHandlerTest extends FunSuite {
   }
 
   test("toLibraryToggles") {
-    val t0 = Toggle.Metadata(
-      "com.twitter.server.handler.Id0", 0.0, None, "source=tm0")
-    val t1 = Toggle.Metadata(
-      "com.twitter.server.handler.Id1", 1.0, Some("t1 desc"), "source=tm0")
-    val t2 = Toggle.Metadata(
-      "com.twitter.server.handler.Id2", 1.0, Some("t2 desc"), "source=tm1")
+    val t0 = Toggle.Metadata("com.twitter.server.handler.Id0", 0.0, None, "source=tm0")
+    val t1 = Toggle.Metadata("com.twitter.server.handler.Id1", 1.0, Some("t1 desc"), "source=tm0")
+    val t2 = Toggle.Metadata("com.twitter.server.handler.Id2", 1.0, Some("t2 desc"), "source=tm1")
     val t0b = t0.copy(description = Some("t0 desc"), source = "source=tm1")
 
     val tm0 = new ToggleMap.Immutable(immutable.Seq(t0, t1))
@@ -71,17 +70,20 @@ class ToggleHandlerTest extends FunSuite {
     }
     val expected0 = LibraryToggle(
       Current(t0.id, t0.fraction, None, t0b.description),
-      Seq(Component(t0.source, t0.fraction), Component(t0b.source, t0b.fraction)))
+      Seq(Component(t0.source, t0.fraction), Component(t0b.source, t0b.fraction))
+    )
     assert(expected0 == libToggle(t0.id))
 
     val expected1 = LibraryToggle(
       Current(t1.id, t1.fraction, None, t1.description),
-      Seq(Component(t1.source, t1.fraction)))
+      Seq(Component(t1.source, t1.fraction))
+    )
     assert(expected1 == libToggle(t1.id))
 
     val expected2 = LibraryToggle(
       Current(t2.id, t2.fraction, None, t2.description),
-      Seq(Component(t2.source,t2.fraction)))
+      Seq(Component(t2.source, t2.fraction))
+    )
     assert(expected2 == libToggle(t2.id))
   }
 
@@ -110,8 +112,8 @@ class ToggleHandlerTest extends FunSuite {
     val mappings = Map("com.twitter.map0" -> mut0, "com.twitter.map1" -> mut1)
     val handler = new ToggleHandler(() => mappings)
 
-    val libs = handler.toLibraries(
-      ParsedPath(Some("com.twitter.map0"), Some("com.twitter.map0toggle1")))
+    val libs =
+      handler.toLibraries(ParsedPath(Some("com.twitter.map0"), Some("com.twitter.map0toggle1")))
     assert(1 == libs.libraries.size)
     val lib = libs.libraries.head
     assert("com.twitter.map0" == lib.libraryName)
@@ -249,8 +251,11 @@ class ToggleHandlerTest extends FunSuite {
     assertParsePathOk("/admin/toggles", None, None)
     assertParsePathOk("/admin/toggles/", None, None)
     assertParsePathOk("/admin/toggles/com.twitter.lib", Some("com.twitter.lib"), None)
-    assertParsePathOk("/admin/toggles/com.twitter.lib/com.twitter.lib.Toggle",
-      Some("com.twitter.lib"), Some("com.twitter.lib.Toggle"))
+    assertParsePathOk(
+      "/admin/toggles/com.twitter.lib/com.twitter.lib.Toggle",
+      Some("com.twitter.lib"),
+      Some("com.twitter.lib.Toggle")
+    )
   }
 
   test("parsePath invalid path format") {

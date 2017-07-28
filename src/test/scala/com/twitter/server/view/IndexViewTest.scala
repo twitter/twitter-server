@@ -13,9 +13,8 @@ import org.scalatest.junit.JUnitRunner
 class IndexViewTest extends FunSuite {
   test("wraps content based on http fragments") {
     val fragment = new Service[Request, Response] {
-      def apply(req: Request) = newResponse(
-        contentType = "text/html;charset=UTF-8",
-        content = Buf.Utf8("<h1>hello</h1>"))
+      def apply(req: Request) =
+        newResponse(contentType = "text/html;charset=UTF-8", content = Buf.Utf8("<h1>hello</h1>"))
     }
 
     val nofragment = new Service[Request, Response] {

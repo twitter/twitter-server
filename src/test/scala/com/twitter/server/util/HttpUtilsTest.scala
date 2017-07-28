@@ -117,12 +117,11 @@ class HttpUtilsTest extends FunSuite {
 
   test("expects") {
     val req1 = Request("/")
-    req1.headerMap.set("Accept",
-      "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+    req1.headerMap
+      .set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 
     val req2 = Request("/admin/threads.json?k=v")
-    req2.headerMap.set("Accept",
-      "text/html,application/json;q=0.9,*/*;q=0.8")
+    req2.headerMap.set("Accept", "text/html,application/json;q=0.9,*/*;q=0.8")
 
     val req3 = Request("/admin/threads.json")
     req3.headerMap.set("Accept", "*/*")
@@ -138,13 +137,15 @@ class HttpUtilsTest extends FunSuite {
   }
 
   test("newResponse") {
-    val res = await(newResponse(
-      version = Version.Http11,
-      status = Status.Ok,
-      headers = Seq(("host", "localhost")),
-      contentType = "application/json;charset=UTF-8",
-      content = Buf.Utf8("[]")
-    ))
+    val res = await(
+      newResponse(
+        version = Version.Http11,
+        status = Status.Ok,
+        headers = Seq(("host", "localhost")),
+        contentType = "application/json;charset=UTF-8",
+        content = Buf.Utf8("[]")
+      )
+    )
     assert(res.version == Version.Http11)
     assert(res.status == Status.Ok)
     assert(res.headerMap.get("content-type") == Some("application/json;charset=UTF-8"))

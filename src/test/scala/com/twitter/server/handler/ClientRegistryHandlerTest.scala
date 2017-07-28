@@ -19,8 +19,16 @@ class ClientRegistryHandlerTest extends FunSuite {
     import metricsCtx._
 
     val registry = new StackRegistry { def registryName: String = "client" }
-    registry.register("localhost:8080", StackClient.newStack, Stack.Params.empty + param.Label("client0"))
-    registry.register("localhost:8081", StackClient.newStack, Stack.Params.empty + param.Label("s/foo/bar"))
+    registry.register(
+      "localhost:8080",
+      StackClient.newStack,
+      Stack.Params.empty + param.Label("client0")
+    )
+    registry.register(
+      "localhost:8081",
+      StackClient.newStack,
+      Stack.Params.empty + param.Label("s/foo/bar")
+    )
     val handler = new ClientRegistryHandler("/admin/clients/", source, registry)
 
     val res = Await.result(handler(Request("/admin/clients/client0")))
@@ -44,8 +52,12 @@ class ClientRegistryHandlerTest extends FunSuite {
       val metricsCtx = new MetricSourceTest.Ctx
       import metricsCtx._
 
-      val registry = new StackRegistry { def registryName: String = "client"}
-      registry.register("localhost:8080", StackClient.newStack, Stack.Params.empty + param.Label("client0"))
+      val registry = new StackRegistry { def registryName: String = "client" }
+      registry.register(
+        "localhost:8080",
+        StackClient.newStack,
+        Stack.Params.empty + param.Label("client0")
+      )
 
       val handler = new ClientRegistryHandler("/admin/clients/", source, registry)
 
@@ -58,7 +70,8 @@ class ClientRegistryHandlerTest extends FunSuite {
         "clnt/client0/loadbalancer/size" -> Entry(10.0, 10.0),
         "clnt/client0/loadbalancer/available" -> Entry(5.0, 5.0),
         "clnt/client0/requests" -> Entry(50, 50),
-        "clnt/client0/failures" -> Entry(1, 1))
+        "clnt/client0/failures" -> Entry(1, 1)
+      )
 
       tc.advance(2.seconds)
       val res = Await.result(handler(req))

@@ -7,8 +7,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
 @RunWith(classOf[JUnitRunner])
-class HtmlUtilsTest extends FunSuite
-  with GeneratorDrivenPropertyChecks {
+class HtmlUtilsTest extends FunSuite with GeneratorDrivenPropertyChecks {
 
   private val escapedChars = Seq('>', '<', '&', '"', '\'')
 
@@ -31,12 +30,14 @@ class HtmlUtilsTest extends FunSuite
       whenever(s.exists(c => escapedChars.contains(c))) {
         val escaped = HtmlUtils.escapeHtml(s)
         assert(s != escaped)
-        assert(escaped ==
-          s.replace("&", "&amp;")
-           .replace("'", "&#39;")
-           .replace("<", "&lt;")
-           .replace(">", "&gt;")
-           .replace("\"", "&quot;"))
+        assert(
+          escaped ==
+            s.replace("&", "&amp;")
+              .replace("'", "&#39;")
+              .replace("<", "&lt;")
+              .replace(">", "&gt;")
+              .replace("\"", "&quot;")
+        )
       }
     }
   }

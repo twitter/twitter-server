@@ -5,17 +5,17 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner]) 
+@RunWith(classOf[JUnitRunner])
 class ExportingHistogramsTest extends FunSuite {
   import handler.HistogramQueryHandler.{pdf, cdf, BucketAndPercentage}
-	
+
   val empty = Seq.empty
   val single = Seq(BucketAndCount(0, 1, 5))
   val corner = Seq(BucketAndCount(0, 1, 1), BucketAndCount(2137204091, Int.MaxValue, 1))
   val larger = Seq(
     BucketAndCount(0, 1, 3),
     BucketAndCount(1, 2, 1),
-    BucketAndCount(100, 102, 6), 
+    BucketAndCount(100, 102, 6),
     BucketAndCount(2137204091, Int.MaxValue, 3)
   )
 
@@ -28,17 +28,23 @@ class ExportingHistogramsTest extends FunSuite {
   }
 
   test("pdf works on corner buckets") {
-    assert(pdf(corner) == Seq(BucketAndPercentage(0, 1, 0.5f), 
-      BucketAndPercentage(2137204091, Int.MaxValue, 0.5f))) 
+    assert(
+      pdf(corner) == Seq(
+        BucketAndPercentage(0, 1, 0.5f),
+        BucketAndPercentage(2137204091, Int.MaxValue, 0.5f)
+      )
+    )
   }
 
   test("pdf works on larger sequence") {
-    assert(pdf(larger) == Seq(
-      BucketAndPercentage(0, 1, 3.0f/13),
-      BucketAndPercentage(1, 2, 1.0f/13),
-      BucketAndPercentage(100, 102, 6.0f/13),
-      BucketAndPercentage(2137204091, Int.MaxValue, 3.0f/13)
-    ))
+    assert(
+      pdf(larger) == Seq(
+        BucketAndPercentage(0, 1, 3.0f / 13),
+        BucketAndPercentage(1, 2, 1.0f / 13),
+        BucketAndPercentage(100, 102, 6.0f / 13),
+        BucketAndPercentage(2137204091, Int.MaxValue, 3.0f / 13)
+      )
+    )
   }
 
   test("cdf works on empty") {
@@ -50,18 +56,23 @@ class ExportingHistogramsTest extends FunSuite {
   }
 
   test("cdf works on corner buckets") {
-    assert(cdf(corner) == Seq(BucketAndPercentage(0, 1, 0.5f), 
-      BucketAndPercentage(2137204091, Int.MaxValue, 1.0f)))
+    assert(
+      cdf(corner) == Seq(
+        BucketAndPercentage(0, 1, 0.5f),
+        BucketAndPercentage(2137204091, Int.MaxValue, 1.0f)
+      )
+    )
   }
 
   test("cdf works on larger sequence") {
-    assert(cdf(larger) == Seq(
-      BucketAndPercentage(0, 1, 3.0f/13),
-      BucketAndPercentage(1, 2, 4.0f/13),
-      BucketAndPercentage(100, 102, 10.0f/13),
-      BucketAndPercentage(2137204091, Int.MaxValue, 1.0f)
-    ))
+    assert(
+      cdf(larger) == Seq(
+        BucketAndPercentage(0, 1, 3.0f / 13),
+        BucketAndPercentage(1, 2, 4.0f / 13),
+        BucketAndPercentage(100, 102, 10.0f / 13),
+        BucketAndPercentage(2137204091, Int.MaxValue, 1.0f)
+      )
+    )
   }
 
 }
-

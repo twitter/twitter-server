@@ -27,8 +27,10 @@ class JsonSinkTest extends FunSuite with GeneratorDrivenPropertyChecks {
     val identity = JsonSink.serialize _ andThen JsonSink.deserialize
     val events = identity(sink)
 
-    assert(Await.result(events.map(normalizeLog).toSeq) ==
-      sink.events.map(normalizeLog).toSeq)
+    assert(
+      Await.result(events.map(normalizeLog).toSeq) ==
+        sink.events.map(normalizeLog).toSeq
+    )
   }
 
   test("JsonSink.serialize: Record") {
@@ -37,11 +39,13 @@ class JsonSinkTest extends FunSuite with GeneratorDrivenPropertyChecks {
     val reader = JsonSink.serialize(sink)
     val f = Reader.readAll(reader).map(buf => Buf.Utf8.unapply(buf).get)
 
-    assert(Await.result(f) == Seq(
-      s""""id":"${Record.id}"""",
-      s""""when":${sink.events.next.when.inMilliseconds}""",
-      s""""data":{"level":"INFO","message":"hello"}"""
-    ).mkString("{", ",", "}\r\n"))
+    assert(
+      Await.result(f) == Seq(
+        s""""id":"${Record.id}"""",
+        s""""when":${sink.events.next.when.inMilliseconds}""",
+        s""""data":{"level":"INFO","message":"hello"}"""
+      ).mkString("{", ",", "}\r\n")
+    )
   }
 
   test("blind deserializer") {
@@ -122,28 +126,31 @@ private object JsonSinkTest {
       case _ => Throw(new IllegalArgumentException("unknown format"))
     }
 
-    def deserialize(buf: Buf) = for {
-      (idd, when, l, o, d) <- Buf.Utf8.unapply(buf) match {
-        case None => Throw(new IllegalArgumentException("unknown format"))
-        case Some(str) => Try {
-          val env = Json.mapper.readValue(str, classOf[Envelope[A]])
+    def deserialize(buf: Buf) =
+      for {
+        (idd, when, l, o, d) <- Buf.Utf8.unapply(buf) match {
+          case None => Throw(new IllegalArgumentException("unknown format"))
+          case Some(str) =>
+            Try {
+              val env = Json.mapper.readValue(str, classOf[Envelope[A]])
 
-          // 2.11 won't apply an implicit conversion targeting Object, but we
-          // can manually invoke the converter provided by the view bound.
-          val obj = implicitly[A => Object].apply(env.o)
+              // 2.11 won't apply an implicit conversion targeting Object, but we
+              // can manually invoke the converter provided by the view bound.
+              val obj = implicitly[A => Object].apply(env.o)
 
-          (env.id, Time.fromMilliseconds(env.when), env.l, obj, env.d)
+              (env.id, Time.fromMilliseconds(env.when), env.l, obj, env.d)
+            }
         }
-      }
-      if idd == id
-    } yield Event(this, when, l, o, d)
+        if idd == id
+      } yield Event(this, when, l, o, d)
   }
 
-  def genEntry[A: Arbitrary](etype: Etype[A]): Gen[Entry[A]] = for {
-    l <- arbitrary[Long]
-    o <- arbitrary[A]
-    d <- arbitrary[Double]
-  } yield Entry(etype, l, o, d)
+  def genEntry[A: Arbitrary](etype: Etype[A]): Gen[Entry[A]] =
+    for {
+      l <- arbitrary[Long]
+      o <- arbitrary[A]
+      d <- arbitrary[Double]
+    } yield Entry(etype, l, o, d)
 
   def genEntries[A: Arbitrary](etype: Etype[A]): Gen[List[Entry[A]]] =
     Gen.listOfN(5, genEntry[A](etype))
@@ -161,7 +168,7 @@ private object JsonSinkTest {
   }
 
   // Setup sink and Event construction for an arbitrary type.
-  class TestType[A <% Object : Arbitrary] {
+  class TestType[A <% Object: Arbitrary] {
     val sink = Sink.of(mutable.ListBuffer.empty)
     val Event = mkEtype[A]("Event")
     val util = mkJsonSink(Seq(Event))

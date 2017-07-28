@@ -121,7 +121,8 @@ class ResourceHandlerTest extends FunSuite {
 
   test("fromDirectoryOrJar - resource doesn't exist") {
     assert(
-      !ResourceHandler.directoryOrJarResolver(jarPath, "nonexistent_dir")
+      !ResourceHandler
+        .directoryOrJarResolver(jarPath, "nonexistent_dir")
         .isDefinedAt("nonexistent_file.js")
     )
   }
