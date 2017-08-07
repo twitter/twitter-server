@@ -1,10 +1,10 @@
 # TwitterServer
 
 [![Build status](https://travis-ci.org/twitter/twitter-server.svg?branch=develop)](https://travis-ci.org/twitter/twitter-server)
-[![Codecov branch](https://img.shields.io/codecov/c/github/twitter/twitter-server/develop.svg)](http://codecov.io/github/twitter/twitter-server?branch=develop)
+[![Codecov](https://codecov.io/gh/twitter/twitter-server/branch/develop/graph/badge.svg)](https://codecov.io/gh/twitter/twitter-server)
 [![Project status](https://img.shields.io/badge/status-active-brightgreen.svg)](#status)
-[![Gitter](https://img.shields.io/badge/gitter-join%20chat-green.svg)](https://gitter.im/twitter/finagle?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Maven Central](https://img.shields.io/maven-central/v/com.twitter/twitter-server_2.12.svg)](https://maven-badges.herokuapp.com/maven-central/com.twitter/twitter-server_2.12)
+[![Gitter](https://badges.gitter.im/twitter/finagle.svg)](https://gitter.im/twitter/finagle?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.twitter/twitter-server_2.12/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.twitter/twitter-server_2.12)
 
 TwitterServer defines a template from which servers at Twitter are
 built. It provides common application components such as an
