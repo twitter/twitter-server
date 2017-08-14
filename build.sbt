@@ -1,4 +1,3 @@
-import com.typesafe.sbt.site.SphinxSupport.Sphinx
 import scoverage.ScoverageKeys
 
 val branch = Process("git" :: "rev-parse" :: "--abbrev-ref" :: "HEAD" :: Nil).!!.trim
@@ -116,10 +115,10 @@ lazy val twitterServer = Project(
 lazy val twitterServerDoc = Project(
   id = "twitter-server-doc",
   base = file("doc")
+).enablePlugins(
+  SphinxPlugin
 ).settings(
   sharedSettings,
-  site.settings,
-  site.sphinxSupport(),
   Seq(
     scalacOptions in doc ++= Seq("-doc-title", "TwitterServer", "-doc-version", version.value),
     includeFilter in Sphinx := ("*.html" | "*.png" | "*.js" | "*.css" | "*.gif" | "*.txt")
