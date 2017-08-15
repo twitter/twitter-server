@@ -8,7 +8,6 @@ trait Stats { app: App =>
   val statsReceiver: StatsReceiver = LoadedStatsReceiver
 
   premain {
-    JvmStats.register(statsReceiver)
     TwitterStats.register(statsReceiver)
   }
 }
