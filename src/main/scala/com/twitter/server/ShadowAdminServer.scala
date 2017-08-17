@@ -2,12 +2,13 @@ package com.twitter.server
 
 import com.twitter.app.App
 import com.twitter.concurrent.NamedPoolThreadFactory
-import com.twitter.finagle.http.{HttpMuxer, HttpMuxHandler}
+import com.twitter.finagle.http.{HttpMuxHandler, HttpMuxer}
 import com.twitter.finagle.netty4
 import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.tracing.NullTracer
 import com.twitter.finagle.util.LoadService
 import com.twitter.finagle.{Http, ListeningServer, NullServer, param}
+import io.netty.channel.epoll.EpollEventLoopGroup
 import io.netty.channel.nio.NioEventLoopGroup
 import java.net.InetSocketAddress
 import java.util.logging.Logger
@@ -48,10 +49,14 @@ trait ShadowAdminServer { self: App with AdminHttpServer =>
       case (muxer, h) => muxer.withHandler(h.route.pattern, h)
     }
 
-    val shadowEventLoop = new NioEventLoopGroup(
-      1 /*nThreads*/,
-      new NamedPoolThreadFactory("twitter-server/netty", makeDaemons = true)
-    )
+    val threadFactory = new NamedPoolThreadFactory("twitter-server/netty", makeDaemons = true)
+
+    val shadowEventLoop =
+      if (com.twitter.finagle.netty4.nativeEpoll.enabled)
+        new EpollEventLoopGroup(1 /*nThreads*/, threadFactory)
+      else {
+        new NioEventLoopGroup(1 /*nThreads*/, threadFactory)
+      }
 
     shadowHttpServer = Http.server
       .configured(param.Stats(NullStatsReceiver))
