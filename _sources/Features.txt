@@ -181,26 +181,11 @@ parameter pretty=true or pretty=1, eg /admin/metrics.json?pretty=true
     ...
   }
 
-JVM Metrics
-+++++++++++
+Exported Metrics
+----------------
 
-A wide variety of metrics are exported by TwitterServer which give
-you insight into the JVM's garbage collection. These are computed
-in `com.twitter.server.util.JvmStats` and exported as metrics.
-These include metrics related to generation size, threads, and garbage collection
-and are exported as metrics at `jvm/mem`, `jvm/thread`, and `jvm/gc`
-respectively.
-
-If you are using a Hotspot VM, you get a few additional metrics that
-may be useful. This includes safe point time (`jvm/safepoint`),
-metaspace usage (`jvm/mem/metaspace`), allocation rates (`jvm/mem/allocations`),
-time running application code since start (`jvm/application_time_millis`),
-and tenuring threshold (`jvm/tenuring_threshold`).
-The eden allocation gauge (`jvm/mem/allocations/eden/bytes`) is a particularly
-relevant metric for service developers. The vast majority of allocations are
-done into the eden space, so this metric can be used to calculate the allocations
-per request which in turn can be used to validate code changes
-don't increase garbage collection pressure on the hot path.
+See the `Finagle user guide <https://twitter.github.io/finagle/guide/Metrics.html>`_
+for a comprehensive catalog of the metrics that are exported by Finagle.
 
 Histograms
 ----------

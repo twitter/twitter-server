@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Features &#8212; TwitterServer 1.30.0 documentation</title>
+    <title>Features &#8212; TwitterServer 1.31.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.30.0',
+        VERSION:     '1.31.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="TwitterServer 1.30.0 documentation" href="index.html" />
+    <link rel="top" title="TwitterServer 1.31.0 documentation" href="index.html" />
     <link rel="next" title="HTTP Admin interface" href="Admin.html" />
     <link rel="prev" title="TwitterServer" href="index.html" />
    
@@ -249,26 +249,12 @@ parameter pretty=true or pretty=1, eg /admin/metrics.json?pretty=true</p>
 }
 </pre></div>
 </div>
-<div class="section" id="jvm-metrics">
-<h4>JVM Metrics<a class="headerlink" href="#jvm-metrics" title="Permalink to this headline">¶</a></h4>
-<p>A wide variety of metrics are exported by TwitterServer which give
-you insight into the JVM&#8217;s garbage collection. These are computed
-in <cite>com.twitter.server.util.JvmStats</cite> and exported as metrics.
-These include metrics related to generation size, threads, and garbage collection
-and are exported as metrics at <cite>jvm/mem</cite>, <cite>jvm/thread</cite>, and <cite>jvm/gc</cite>
-respectively.</p>
-<p>If you are using a Hotspot VM, you get a few additional metrics that
-may be useful. This includes safe point time (<cite>jvm/safepoint</cite>),
-metaspace usage (<cite>jvm/mem/metaspace</cite>), allocation rates (<cite>jvm/mem/allocations</cite>),
-time running application code since start (<cite>jvm/application_time_millis</cite>),
-and tenuring threshold (<cite>jvm/tenuring_threshold</cite>).
-The eden allocation gauge (<cite>jvm/mem/allocations/eden/bytes</cite>) is a particularly
-relevant metric for service developers. The vast majority of allocations are
-done into the eden space, so this metric can be used to calculate the allocations
-per request which in turn can be used to validate code changes
-don&#8217;t increase garbage collection pressure on the hot path.</p>
 </div>
 </div>
+<div class="section" id="exported-metrics">
+<h2>Exported Metrics<a class="headerlink" href="#exported-metrics" title="Permalink to this headline">¶</a></h2>
+<p>See the <a class="reference external" href="https://twitter.github.io/finagle/guide/Metrics.html">Finagle user guide</a>
+for a comprehensive catalog of the metrics that are exported by Finagle.</p>
 </div>
 <div class="section" id="histograms">
 <h2>Histograms<a class="headerlink" href="#histograms" title="Permalink to this headline">¶</a></h2>
@@ -436,12 +422,10 @@ trait is built.</p>
 <li><a class="reference internal" href="#logging">Logging</a></li>
 <li><a class="reference internal" href="#metrics">Metrics</a><ul>
 <li><a class="reference internal" href="#filtering-stats-out">Filtering stats out</a></li>
-<li><a class="reference internal" href="#pretty-output">Pretty output</a><ul>
-<li><a class="reference internal" href="#jvm-metrics">JVM Metrics</a></li>
+<li><a class="reference internal" href="#pretty-output">Pretty output</a></li>
 </ul>
 </li>
-</ul>
-</li>
+<li><a class="reference internal" href="#exported-metrics">Exported Metrics</a></li>
 <li><a class="reference internal" href="#histograms">Histograms</a><ul>
 <li><a class="reference internal" href="#api-parameters">API Parameters</a></li>
 <li><a class="reference internal" href="#custom-implementations">Custom Implementations</a></li>
