@@ -102,7 +102,6 @@ lazy val twitterServer = Project(
     finagle("zipkin-core"),
     util("app"),
     util("core"),
-    util("events"),
     util("jvm"),
     util("lint"),
     util("logging"),
