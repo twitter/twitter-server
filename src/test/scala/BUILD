@@ -13,7 +13,6 @@ junit_tests(
     'twitter-server/src/test:base',
     'util/util-app/src/main/scala:scala',
     'util/util-core/src/main/scala:scala',
-    'util/util-events/src/main/scala:scala',
     'util/util-lint/src/main/scala:scala',
     'util/util-logging/src/main/scala:scala',
     'util/util-registry/src/main/scala:scala',

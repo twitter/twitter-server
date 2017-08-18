@@ -2,10 +2,17 @@
   (http://docutils.sourceforge.net/docs/user/rst/quickstart.html)
   as it is included in TwitterServer's user's guide.
 
-Note that ``RB_ID=#`` correspond to associated messages in commits.
+Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in commits.
 
 1.x
 -----
+
+Breaking API Changes
+~~~~~~~~~~~~~~~~~~~~
+
+  * Removed code related to `util-events` including `EventSink`, `JsonSink`,
+    `TraceEventSink`. The corresponding "/admin/events" and "/admin/events/record/"
+    admin HTTP endpoints are also removed. ``PHAB_ID=D82346``
 
 1.31.0
 ------
