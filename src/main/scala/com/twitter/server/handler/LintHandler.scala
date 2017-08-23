@@ -16,7 +16,7 @@ import com.twitter.util.lint.{Issue, Rule, GlobalRules}
 class LintHandler extends Service[Request, Response] {
 
   def apply(req: Request): Future[Response] =
-    if (expectsHtml(req)) htmlResponse(req) else jsonResponse(req)
+    if (expectsHtml(req) && !expectsJson(req)) htmlResponse(req) else jsonResponse(req)
 
   private[this] def htmlResponse(req: Request): Future[Response] = {
     // first, run the rules.
@@ -49,7 +49,7 @@ class LintHandler extends Service[Request, Response] {
   private[this] def jsonResponse(req: Request): Future[Response] = {
     val rules = GlobalRules.get.iterable.toSeq
     val jsonMap = jsonMapFromRules(rules)
-    newOk(JsonConverter.writeToString(jsonMap))
+    newOk(JsonConverter.writeToString(jsonMap), "application/json;charset=UTF-8")
   }
 
   /** exposed for testing */

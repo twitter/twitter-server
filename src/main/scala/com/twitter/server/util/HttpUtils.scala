@@ -76,17 +76,17 @@ private[server] object HttpUtils {
   }
 
   /** Returns a new 200 OK with contents set to `msg` */
-  def newOk(msg: String): Future[Response] =
+  def newOk(msg: String, contentType: String = "text/plain;charset=UTF-8"): Future[Response] =
     newResponse(
-      contentType = "text/plain;charset=UTF-8",
+      contentType = contentType,
       content = Buf.Utf8(msg)
     )
 
   /** Returns a new 404 with contents set to `msg` */
-  def new404(msg: String): Future[Response] =
+  def new404(msg: String, contentType: String = "text/plain;charset=UTF-8"): Future[Response] =
     newResponse(
       status = Status.NotFound,
-      contentType = "text/plain;charset=UTF-8",
+      contentType = contentType,
       content = Buf.Utf8(msg)
     )
 
