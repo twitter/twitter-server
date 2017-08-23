@@ -36,4 +36,13 @@ scala_library(
   # Exposes a service-loaded class.
   scope='forced',
   strict_deps=True,
+  exports=[
+    '3rdparty/jvm/com/fasterxml/jackson/core:jackson-annotations',
+    '3rdparty/jvm/com/fasterxml/jackson/core:jackson-databind',
+    'finagle/finagle-base-http/src/main/scala:scala',
+    'util/util-app:util-app',
+    'util/util-core/src/main/scala:scala',
+    'util/util-lint:util-lint',
+    'util/util-logging',
+  ]
 )

@@ -4,6 +4,7 @@ junit_tests(
   dependencies=[
     '3rdparty/jvm/com/fasterxml/jackson/core:jackson-databind',
     '3rdparty/jvm/com/fasterxml/jackson/module:jackson-module-scala',
+    '3rdparty/jvm/org/scalatest:scalatest',
     'finagle/finagle-core/src/main/scala:scala',
     'finagle/finagle-http/src/main/scala:scala',
     'finagle/finagle-toggle',
@@ -17,7 +18,10 @@ junit_tests(
     'util/util-logging/src/main/scala:scala',
     'util/util-registry/src/main/scala:scala',
     'util/util-stats/src/main/scala:scala',
+    'util/util-tunable/src/main/scala:scala',
   ],
   fatal_warnings=True,
   sources=rglobs('*.scala'),
+  strict_deps=True,
+
 )
