@@ -53,6 +53,9 @@ val sharedSettings = Seq(
   // This is bad news for things like com.twitter.util.Time
   parallelExecution in Test := false,
 
+  // -a: print stack traces for failing asserts
+  testOptions += Tests.Argument(TestFrameworks.JUnit, "-a"),
+
   // Sonatype publishing
   publishArtifact in Test := false,
   pomIncludeRepository := { _ => false },
