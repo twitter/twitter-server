@@ -3,9 +3,9 @@ import scoverage.ScoverageKeys
 val branch = Process("git" :: "rev-parse" :: "--abbrev-ref" :: "HEAD" :: Nil).!!.trim
 val suffix = if (branch == "master") "" else "-SNAPSHOT"
 
-val libVersion = "1.31.0" + suffix
-val utilVersion = "7.0.0" + suffix
-val finagleVersion = "7.0.0" + suffix
+val libVersion = "1.32.0" + suffix
+val utilVersion = "7.1.0" + suffix
+val finagleVersion = "7.1.0" + suffix
 
 val jacksonVersion = "2.8.4"
 val jacksonLibs = Seq(
