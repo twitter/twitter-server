@@ -153,6 +153,32 @@ To query the reduced list:
 Note that this only works with `finagle-stats` and doesn't work with
 `finagle-ostrich4`.
 
+Changing metrics verbosity
+**************************
+
+By default, TwitterServer doesn't export `debug metrics`_ (assuming finagle-stats
+is used as a metrics library). Override the `com.twitter.finagle.stats.verbose`
+`tunable`_ (a comma-separated list of glob expressions under toggle map `finagle`)
+to whitelist debug metrics, potentially without application restart.
+
+For example, the following JSON file placed in the resource folder (restart
+required) as `com/twitter/tunables/finagle/instances.json` will whitelist
+Netty 4 metrics for a given JVM process.
+
+::
+
+  {
+    "tunables":
+    [
+       {
+          "id" : "com.twitter.finagle.stats.verbose",
+          "value" : "finagle/netty4*",
+          "type" : "java.lang.String"
+       }
+    ]
+  }
+
+
 Pretty output
 *************
 
@@ -353,3 +379,6 @@ If you want finer grained control over your server, you can remix
 traits however you like in the same way that the `TwitterServer
 <https://github.com/twitter/twitter-server/blob/master/src/main/scala/com/twitter/server/TwitterServer.scala>`_
 trait is built.
+
+.. _debug metrics: https://twitter.github.io/util/guide/util-stats/basics.html#verbosity-levels
+.. _tunable: https://twitter.github.io/finagle/guide/Configuration.html#tunables

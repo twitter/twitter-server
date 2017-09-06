@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>HTTP Admin interface &#8212; TwitterServer 1.31.0 documentation</title>
+    <title>HTTP Admin interface &#8212; TwitterServer 1.32.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.31.0',
+        VERSION:     '1.32.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="TwitterServer 1.31.0 documentation" href="index.html" />
+    <link rel="top" title="TwitterServer 1.32.0 documentation" href="index.html" />
     <link rel="next" title="Using TwitterServer from Java" href="Java.html" />
     <link rel="prev" title="Features" href="Features.html" />
    
@@ -142,15 +142,6 @@ announced.</p>
 <div class="section" id="utilities">
 <h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h2>
 <p id="admin-utilities">Endpoints that cover various utilities that developers can manipulate at runtime.</p>
-<div class="section" id="admin-events">
-<h3>/admin/events<a class="headerlink" href="#admin-events" title="Permalink to this headline">¶</a></h3>
-<p>A user interface for collecting and viewing runtime events to make it easier to
-diagnose production issues. This includes logging by default, while metrics are included
-if you are using <code class="docutils literal"><span class="pre">finagle-stats</span></code> and tracing events are included if you are
-using <code class="docutils literal"><span class="pre">finagle-zipkin</span></code>. JSON output is also available
-through tools like curl via the inspection of the HTTP Accept header.</p>
-<img alt="_images/events.png" src="_images/events.png" />
-</div>
 <div class="section" id="admin-tracing">
 <h3>/admin/tracing<a class="headerlink" href="#admin-tracing" title="Permalink to this headline">¶</a></h3>
 <p>Enable (<cite>/admin/tracing?enable=true</cite>) or disable tracing (<cite>/admin/tracing?disable=true</cite>)</p>
@@ -426,7 +417,6 @@ values for each module are available at <cite>/admin/clients/&lt;client name&gt;
 </ul>
 </li>
 <li><a class="reference internal" href="#utilities">Utilities</a><ul>
-<li><a class="reference internal" href="#admin-events">/admin/events</a></li>
 <li><a class="reference internal" href="#admin-tracing">/admin/tracing</a></li>
 <li><a class="reference internal" href="#admin-logging">/admin/logging</a></li>
 <li><a class="reference internal" href="#admin-toggles">/admin/toggles</a></li>

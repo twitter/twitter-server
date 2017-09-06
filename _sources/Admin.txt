@@ -105,17 +105,6 @@ Utilities
 
 Endpoints that cover various utilities that developers can manipulate at runtime.
 
-/admin/events
-~~~~~~~~~~~~~
-
-A user interface for collecting and viewing runtime events to make it easier to
-diagnose production issues. This includes logging by default, while metrics are included
-if you are using ``finagle-stats`` and tracing events are included if you are
-using ``finagle-zipkin``. JSON output is also available
-through tools like curl via the inspection of the HTTP Accept header.
-
-.. image:: ../../img/events.png
-
 /admin/tracing
 ~~~~~~~~~~~~~~
 
