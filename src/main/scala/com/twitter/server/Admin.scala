@@ -6,6 +6,7 @@ import com.twitter.finagle.stats.{
   DelegatingStatsReceiver,
   AggregateWithHistogramDetails
 }
+import com.twitter.finagle.http.Method
 import com.twitter.server.handler._
 import com.twitter.server.view._
 
@@ -162,7 +163,8 @@ trait Admin { self: App with AdminHttpServer with Stats =>
         handler = new ShutdownHandler(this),
         alias = "Shutdown",
         group = Some(Grouping.Utilities),
-        includeInIndex = true
+        includeInIndex = true,
+        method = Method.Post
       ),
       Route(
         path = "/admin/tracing",
