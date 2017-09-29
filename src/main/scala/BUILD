@@ -40,6 +40,7 @@ scala_library(
     '3rdparty/jvm/com/fasterxml/jackson/core:jackson-annotations',
     '3rdparty/jvm/com/fasterxml/jackson/core:jackson-databind',
     'finagle/finagle-base-http/src/main/scala:scala',
+    'finagle/finagle-http/src/main/scala:scala',
     'util/util-app:util-app',
     'util/util-core/src/main/scala:scala',
     'util/util-lint:util-lint',
