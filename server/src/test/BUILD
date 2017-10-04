@@ -6,6 +6,6 @@ target(name='base',
     '3rdparty/jvm/org/mockito:mockito-all',
     '3rdparty/jvm/org/scalacheck',
     '3rdparty/jvm/org/scalatest',
-    'twitter-server/src/main/scala'
+    'twitter-server/server/src/main/scala'
   ],
 )

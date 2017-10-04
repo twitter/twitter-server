@@ -6,7 +6,7 @@ junit_tests(
     '3rdparty/jvm/org/scalacheck:scalacheck',
     'finagle/finagle-core/src/main/scala:scala',
     'finagle/finagle-http/src/main/scala',
-    'twitter-server/src/main/scala',
+    'twitter-server/server/src/main/scala',
     'util/util-app/src/main/scala:scala',
     'util/util-core/src/main/scala:scala',
     'util/util-lint/src/main/scala:scala',

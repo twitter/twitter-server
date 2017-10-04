@@ -1,13 +1,6 @@
 target(
   dependencies=[
+    # FOR BACKWARDS COMPATIBILITY ONLY -- WILL BE REMOVED AND DEPENDENT BUILD FILES UPDATED
     'twitter-server/src/main/scala'
   ]
 )
-
-target(name='tests',
-  dependencies=[
-    'twitter-server/src/test/scala',
-    'twitter-server/src/test/java'
-  ]
-)
-
