@@ -1,20 +1,21 @@
 package com.twitter.server
 
 import com.twitter.app.App
+import com.twitter.concurrent.NamedPoolThreadFactory
 import com.twitter.finagle.client.ClientRegistry
 import com.twitter.finagle.filter.ServerAdmissionControl
-import com.twitter.finagle.http
+import com.twitter.finagle.{Http, ListeningServer, NullServer, Service, SimpleFilter, http}
 import com.twitter.finagle.http.Method.Get
 import com.twitter.finagle.http.{HttpMuxer, Method, Request, Response}
 import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.tracing.NullTracer
-import com.twitter.finagle.{Http, ListeningServer, NullServer, Service}
 import com.twitter.server.util.HttpUtils
 import com.twitter.server.view.{IndexView, NotFoundView}
 import com.twitter.util.registry.Library
-import com.twitter.util.{Future, Monitor}
+import com.twitter.util.{ExecutorServiceFuturePool, Future, FuturePool, Monitor}
 import java.net.InetSocketAddress
+import java.util.concurrent.Executors
 import java.util.logging.{Level, Logger}
 import scala.language.reflectiveCalls
 
@@ -52,6 +53,31 @@ object AdminHttpServer {
   )
 
   object Route {
+
+    /**
+     * A filter which forces an [[Http]] [[Service]] to be handled outside the
+     * global default worker pool.
+     */
+    private[this] val IsolateFilter: SimpleFilter[Request, Response] =
+      new SimpleFilter[Request, Response] {
+        def apply(
+          request: Request,
+          service: Service[Request, Response]
+        ): Future[Response] = Pool(service(request)).flatten
+      }
+
+    private[this] lazy val Pool: FuturePool =
+      new ExecutorServiceFuturePool(
+        Executors
+          .newCachedThreadPool(new NamedPoolThreadFactory("AdminFuturePool", makeDaemons = true))
+      ) { override def toString: String = "Route.Pool" }
+
+    /**
+     * Force the [[Route]] `r` to be handled outside the global default worker pool.
+     */
+    def isolate(r: Route): Route =
+      r.copy(handler = IsolateFilter.andThen(r.handler))
+
     def from(route: http.Route): Route = route.index match {
       case Some(index) =>
         mkRoute(

@@ -43,6 +43,19 @@ trait Admin { self: App with AdminHttpServer with Stats =>
   import Admin.Grouping
 
   override protected def routes: Seq[Route] = {
+
+    // we handle ping in-band with the global default worker pool
+    val colocatedRoutes = Seq(
+      Route(
+        path = "/admin/ping",
+        handler = new ReplyHandler("pong"),
+        alias = "Ping",
+        group = Some(Grouping.Utilities),
+        includeInIndex = true
+      )
+    )
+
+    // everything else is isolated
     val standardRoutes = Seq(
       Route(
         path = Path.Root,
@@ -152,13 +165,6 @@ trait Admin { self: App with AdminHttpServer with Stats =>
         includeInIndex = true
       ),
       Route(
-        path = "/admin/ping",
-        handler = new ReplyHandler("pong"),
-        alias = "Ping",
-        group = Some(Grouping.Utilities),
-        includeInIndex = true
-      ),
-      Route(
         path = "/admin/shutdown",
         handler = new ShutdownHandler(this),
         alias = "Shutdown",
@@ -251,13 +257,13 @@ trait Admin { self: App with AdminHttpServer with Stats =>
         group = None,
         includeInIndex = false
       )
-    )
+    ).map(Route.isolate)
 
     // If histograms are available, add an additional endpoint
     val histos = DelegatingStatsReceiver
       .all(statsReceiver)
       .collect { case histo: WithHistogramDetails => histo }
-    standardRoutes ++ {
+    colocatedRoutes ++ standardRoutes ++ {
       if (histos.nonEmpty) {
         val aggregate = AggregateWithHistogramDetails(histos)
 

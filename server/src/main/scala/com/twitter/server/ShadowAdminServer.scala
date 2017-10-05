@@ -23,6 +23,11 @@ import java.util.logging.Logger
  * In particular, /health and /ping should be served in-band so that they
  * are an accurate proxy of server health.
  */
+@deprecated(
+  "deprecated since TwitterServer now serves everything but ping" +
+    " + healthcheck outside of the global default worker pool",
+  since = "2017-10-04"
+)
 trait ShadowAdminServer { self: App with AdminHttpServer =>
 
   @volatile protected var shadowHttpServer: ListeningServer = NullServer
@@ -55,8 +60,11 @@ trait ShadowAdminServer { self: App with AdminHttpServer =>
       .configured(
         new netty4.param.WorkerPool(
           executor = Executors.newCachedThreadPool(
-            new NamedPoolThreadFactory("twitter-server/netty", makeDaemons = true)),
-          numWorkers = 1))
+            new NamedPoolThreadFactory("twitter-server/netty", makeDaemons = true)
+          ),
+          numWorkers = 1
+        )
+      )
       .serve(shadowAdminPort(), muxer)
     closeOnExit(shadowHttpServer)
   }
