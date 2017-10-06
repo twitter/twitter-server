@@ -35,7 +35,6 @@ scala_library(
   sources=rglobs('*.scala'),
   # Exposes a service-loaded class.
   scope='forced',
-  strict_deps=True,
   exports=[
     '3rdparty/jvm/com/fasterxml/jackson/core:jackson-annotations',
     '3rdparty/jvm/com/fasterxml/jackson/core:jackson-databind',
