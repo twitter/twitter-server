@@ -7,12 +7,11 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
-// TODO: REMOVE WITH SLF4J-API INTEGRATION
 @RunWith(classOf[JUnitRunner])
 class LogFormatTest extends FunSuite {
   def testStringHandler(f: (Logger, StringHandler) => Unit) {
     val handler = new StringHandler
-    handler.setFormatter(new LogFormatter)
+    handler.setFormatter(new com.twitter.server.logging.LogFormatter)
 
     val logger = Logger.getLogger(this.getClass.getSimpleName)
     logger.setUseParentHandlers(false)

@@ -1,41 +1,43 @@
-package com.twitter.server.handler
+package com.twitter.server.handler.slf4j.jdk14
 
-import com.twitter.finagle.Service
-import com.twitter.finagle.http.{Request, Response}
+import com.twitter.finagle.http._
 import com.twitter.io.Buf
 import com.twitter.logging.{Level, Logger}
-import com.twitter.server.util.HtmlUtils.escapeHtml
-import com.twitter.server.util.HttpUtils.{expectsHtml, newResponse, parse}
+import com.twitter.server.Admin.Grouping
+import com.twitter.server.handler.AdminHttpMuxHandler
+import com.twitter.server.util.HtmlUtils._
+import com.twitter.server.util.HttpUtils._
 import com.twitter.util.Future
 import java.net.URLEncoder
 import java.util.{logging => javalog}
 import scala.annotation.tailrec
+import scala.collection.JavaConverters._
 
 private object LoggingHandler {
-  implicit val loggerOrder: Ordering[Logger] = Ordering.by(_.name)
-  implicit val levelOrder: Ordering[Level] = Ordering.by(_.value)
+  implicit val loggerOrder: Ordering[javalog.Logger] = Ordering.by(_.getName)
+  implicit val levelOrder: Ordering[javalog.Level] = Ordering.by(_.intValue)
 
-  def getLevel(logger: Logger): javalog.Level = {
+  def getLevel(logger: javalog.Logger): javalog.Level = {
     @tailrec
     def go(l: javalog.Logger): javalog.Level = {
       if (l.getLevel != null) l.getLevel
       else if (l.getParent != null) go(l.getParent)
       else Level.OFF // root has no level set
     }
-    go(javalog.Logger.getLogger(logger.name))
+    go(javalog.Logger.getLogger(logger.getName))
   }
 
-  def renderText(loggers: Seq[Logger], updateMsg: String): String = {
-    val out = loggers.toSeq
+  def renderText(loggers: Seq[javalog.Logger], updateMsg: String): String = {
+    val out = loggers
       .map { logger =>
-        val loggerName = if (logger.name == "") "root" else logger.name
+        val loggerName = if (logger.getName == "") "root" else logger.getName
         escapeHtml(s"$loggerName ${getLevel(logger)}")
       }
       .mkString("\n")
     if (updateMsg.isEmpty) s"$out" else s"${escapeHtml(updateMsg)}\n$out"
   }
 
-  def renderHtml(loggers: Seq[Logger], levels: Seq[Level], updateMsg: String): String =
+  def renderHtml(loggers: Seq[javalog.Logger], levels: Seq[Level], updateMsg: String): String =
     s"""<table class="table table-striped table-condensed">
         <caption>${escapeHtml(updateMsg)}</caption>
         <thead>
@@ -45,7 +47,7 @@ private object LoggingHandler {
           </tr>
         </thead>
         ${(for (logger <- loggers) yield {
-      val loggerName = if (logger.name == "") "root" else logger.name
+      val loggerName = if (logger.getName == "") "root" else logger.getName
       s"""<tr>
                 <td><h5>${escapeHtml(loggerName)}</h5></td>
                 <td><div class="btn-group" role="group">
@@ -75,10 +77,21 @@ private object LoggingHandler {
  * [[com.twitter.logging.Logger]] configuration state and allows for runtime changes
  * via HTTP query strings (?logger=<logger>&level=<level>).
  */
-@deprecated("To be replaced with in slf4j-api integration.", "2017-10-04")
-class LoggingHandler extends Service[Request, Response] {
+private class LoggingHandler extends AdminHttpMuxHandler {
 
   private[this] val levels = Logger.levels.values.toSeq.sorted(LoggingHandler.levelOrder)
+  private[this] val logManager = java.util.logging.LogManager.getLogManager
+  private[this] val log = Logger(this.getClass)
+
+  val pattern = "/admin/logging"
+  override def route: Route =
+    Route(
+      pattern = this.pattern,
+      handler = this,
+      index = Some(
+        RouteIndex(alias = "Logging", group = Grouping.Utilities, path = Some(this.pattern))
+      )
+    )
 
   def apply(request: Request): Future[Response] = {
     val (_, params) = parse(request.uri)
@@ -94,21 +107,21 @@ class LoggingHandler extends Service[Request, Response] {
       case (Some(level), Some(name)) =>
         val updated = for {
           level <- Logger.levelNames.get(level.toUpperCase)
-          logger <- Logger.iterator.find(_.name == name)
         } yield {
+          val logger = logManager.getLogger(name)
           logger.setLevel(level)
-          escapeHtml(
-            s"""Changed ${if (logger.name == "") "root" else logger.name} to Level.$level"""
-          )
+          s"""Changed ${if (logger.getName == "") "root" else logger.getName} to Level.$level"""
         }
 
-        escapeHtml(updated.getOrElse(s"Unable to change $name to Level.$level!"))
+        updated.getOrElse(s"Unable to change $name to Level.$level!")
 
       case _ => ""
     }
+    log.info(updateMsg)
 
-    val loggers = Logger.iterator.toSeq.sorted(LoggingHandler.loggerOrder)
-
+    val loggers = logManager.getLoggerNames.asScala.toSeq
+      .map(logManager.getLogger)
+      .sorted(LoggingHandler.loggerOrder)
     if (!expectsHtml(request)) {
       newResponse(
         contentType = "text/plain;charset=UTF-8",
@@ -117,7 +130,7 @@ class LoggingHandler extends Service[Request, Response] {
     } else {
       newResponse(
         contentType = "text/html;charset=UTF-8",
-        content = Buf.Utf8(LoggingHandler.renderHtml(loggers, levels, updateMsg))
+        content = Buf.Utf8(LoggingHandler.renderHtml(loggers, levels, escapeHtml(updateMsg)))
       )
     }
   }

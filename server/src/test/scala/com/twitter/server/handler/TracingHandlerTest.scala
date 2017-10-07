@@ -7,11 +7,11 @@ import org.junit.runner.RunWith
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class TracingHandlerSpec extends FunSuite with MockitoSugar with BeforeAndAfter {
+class TracingHandlerTest extends FunSuite with MockitoSugar with BeforeAndAfter {
   val service = new TracingHandler
 
   test("enable tracing") {

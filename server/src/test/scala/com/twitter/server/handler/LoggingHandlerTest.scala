@@ -7,6 +7,7 @@ import org.junit.runner.RunWith
 import org.scalatest.{Matchers, FunSuite}
 import org.scalatest.junit.JUnitRunner
 
+// TODO: REMOVE WITH SLF4J-API INTEGRATION
 @RunWith(classOf[JUnitRunner])
 class LoggingHandlerTest extends FunSuite with Matchers {
   test("query all loggers") {

@@ -2,22 +2,23 @@ package com.twitter.server
 
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.{Http, Service}
-import com.twitter.util._
+import com.twitter.util.{Await, Future}
 import java.io.ByteArrayOutputStream
 import java.net.{InetAddress, InetSocketAddress}
-import java.util.logging.{Logger, StreamHandler, SimpleFormatter}
+import java.util.logging.{Logger, SimpleFormatter, StreamHandler}
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import scala.collection.mutable
 
+/** Test TwitterServer which overrides the admin.port to localhost ephemeral port */
 class TestTwitterServer extends TwitterServer {
   override val adminPort =
     flag("admin.port", new InetSocketAddress(InetAddress.getLoopbackAddress, 0), "")
 
   val bootstrapSeq = mutable.MutableList.empty[Symbol]
 
-  def main() {
+  def main(): Unit = {
     bootstrapSeq += 'Main
   }
 
@@ -38,43 +39,17 @@ class TestTwitterServer extends TwitterServer {
   }
 }
 
+
 class MockExceptionHandler extends Service[Request, Response] {
   val pattern = "/exception_please.json"
   def apply(req: Request): Future[Response] = {
     throw new Exception("test exception")
   }
 }
+
 @RunWith(classOf[JUnitRunner])
-class TwitterServerTest extends FunSuite {
+class HandlersTest extends FunSuite {
 
-  test("TwitterServer does not prematurely execute lifecycle hooks") {
-    val twitterServer = new TestTwitterServer
-    assert(twitterServer.bootstrapSeq.isEmpty)
-  }
-
-  test("TwitterServer.main(args) executes without error") {
-    val twitterServer = new TestTwitterServer
-    twitterServer.main(args = Array.empty[String])
-    assert(
-      twitterServer.bootstrapSeq ==
-        Seq('Init, 'PreMain, 'Main, 'PostMain, 'Exit)
-    )
-  }
-
-  test("TwitterServer.main(args) executes without error when closed explicitly") {
-    val twitterServer = new TestTwitterServer {
-      override def main() {
-        super.main()
-        Await.result(close())
-      }
-    }
-
-    twitterServer.main(args = Array.empty[String])
-    assert(twitterServer.bootstrapSeq == Seq('Init, 'PreMain, 'Main, 'Exit, 'PostMain))
-  }
-
-
-  // TODO: REMOVE WITH SLF4J-API INTEGRATION
   test("Exceptions thrown in handlers include stack traces") {
     val twitterServer = new TestTwitterServer {
       val mockExceptionHandler = new MockExceptionHandler
@@ -82,11 +57,11 @@ class TwitterServerTest extends FunSuite {
       override def main() {
         addAdminRoute(
           AdminHttpServer.mkRoute(
-            "/exception_please.json",
-            mockExceptionHandler,
-            "mockExceptionHandler",
-            None,
-            false
+            path = "/exception_please.json",
+            handler = mockExceptionHandler,
+            alias = "mockExceptionHandler",
+            group = None,
+            includeInIndex = false
           )
         )
 
@@ -97,9 +72,11 @@ class TwitterServerTest extends FunSuite {
         val handler = new StreamHandler(stream, new SimpleFormatter)
         logger.addHandler(handler)
 
-        val client = Http.client.newService(s"localhost:${port}")
+        val client = Http.client.newService(s"localhost:$port")
         stream.reset()
-        Await.ready(client(Request("/exception_please.json")))
+        Await.ready {
+          client(Request("/exception_please.json"))
+        }
         assert(stream.toString.contains("at com.twitter.server.MockExceptionHandler.apply"))
       }
     }

@@ -1,0 +1,27 @@
+scala_library(
+  provides=scala_artifact(
+    org='com.twitter',
+    name='twitter-server-slf4j-log4j12',
+    repo=artifactory,
+  ),
+  dependencies=[
+    '3rdparty/jvm/log4j',
+    '3rdparty/jvm/org/slf4j:slf4j-api',
+    '3rdparty/jvm/org/slf4j:jcl-over-slf4j',
+    '3rdparty/jvm/org/slf4j:jul-to-slf4j',
+    '3rdparty/jvm/org/slf4j:slf4j-log4j12',
+    'finagle/finagle-base-http/src/main/scala',
+    'finagle/finagle-http/src/main/scala',
+    'twitter-server/server/src/main/scala',
+    'twitter-server/slf4j-log4j12/src/main/resources',
+    'util/util-slf4j-api/src/main/scala',
+  ],
+  fatal_warnings=True,
+  sources=rglobs('*.scala'),
+  scope='forced', # Exposes a service-loaded class.
+  exports=[
+    '3rdparty/jvm/log4j',
+    '3rdparty/jvm/org/slf4j:slf4j-api',
+    '3rdparty/jvm/org/slf4j:slf4j-log4j12',
+  ]
+)
