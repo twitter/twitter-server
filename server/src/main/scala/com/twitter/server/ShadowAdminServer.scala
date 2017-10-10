@@ -25,7 +25,7 @@ import java.util.logging.Logger
  */
 @deprecated(
   "deprecated since TwitterServer now serves everything but ping" +
-    " + healthcheck outside of the global default worker pool",
+    " + health check outside of the global default worker pool",
   since = "2017-10-04"
 )
 trait ShadowAdminServer { self: App with AdminHttpServer =>
@@ -33,7 +33,7 @@ trait ShadowAdminServer { self: App with AdminHttpServer =>
   @volatile protected var shadowHttpServer: ListeningServer = NullServer
   val shadowAdminPort = flag(
     "shadow.admin.port",
-    new InetSocketAddress(defaultHttpPort + 1),
+    new InetSocketAddress(defaultAdminPort + 1),
     "Shadow admin http server port"
   )
 

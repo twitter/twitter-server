@@ -123,9 +123,9 @@ object AdminHttpServer {
 trait AdminHttpServer { self: App =>
   import AdminHttpServer._
 
-  def defaultHttpPort: Int = 9990
+  def defaultAdminPort: Int = 9990
   val adminPort =
-    flag("admin.port", new InetSocketAddress(defaultHttpPort), "Admin http server port")
+    flag("admin.port", new InetSocketAddress(defaultAdminPort), "Admin http server port")
 
   private[this] val adminHttpMuxer = new Service[Request, Response] {
     override def apply(request: Request): Future[Response] = underlying(request)

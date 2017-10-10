@@ -9,8 +9,15 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
+  
   * All admin endpoints except ping + healthcheck are now by-default served outside
     the global worker pool. ``PHAB_ID=D96633``
+
+Breaking API Changes
+~~~~~~~~~~~~~~~~~~~~
+
+  * Rename AdminHttpServer#defaultHttpPort to AdminHttpServer#defaultAdminPort.
+    ``PHAB_ID=D97394``
 
 1.32.0
 ------

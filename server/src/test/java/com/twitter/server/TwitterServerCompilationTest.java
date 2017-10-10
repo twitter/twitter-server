@@ -23,7 +23,7 @@ public class TwitterServerCompilationTest extends AbstractTwitterServer  {
 
     // Make sure that public fields/methods from AbstractTwitterServer are available here
     statsReceiver();
-    defaultHttpPort();
+    defaultAdminPort();
   }
 
   @Override
