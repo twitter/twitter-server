@@ -12,8 +12,9 @@ val jacksonLibs = Seq(
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
   "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion exclude("com.google.guava", "guava"),
-  "com.google.guava" % "guava" % "23.0"
+  "com.google.guava" % "guava" % "19.0"
 )
+val slf4jVersion = "1.7.21"
 
 def util(which: String) = "com.twitter" %% ("util-"+which) % utilVersion
 def finagle(which: String) = "com.twitter" %% ("finagle-"+which) % finagleVersion
@@ -95,7 +96,10 @@ lazy val root = (project in file("."))
     sharedSettings,
     unidocSettings)
   .aggregate(
-    twitterServer)
+    twitterServer,
+    twitterServerSlf4jJdk14,
+    twitterServerSlf4jLog4j12,
+    twitterServerSlf4jLogbackClassic)
 
 lazy val twitterServer = (project in file("server"))
   .settings(
@@ -105,6 +109,7 @@ lazy val twitterServer = (project in file("server"))
     unidocSettings)
   .settings(
     libraryDependencies ++= Seq(
+      "org.slf4j" % "slf4j-api" % slf4jVersion,
       finagle("core"),
       finagle("http"),
       finagle("toggle"),
@@ -114,11 +119,60 @@ lazy val twitterServer = (project in file("server"))
       util("core"),
       util("jvm"),
       util("lint"),
-      util("logging"),
       util("registry"),
+      util("slf4j-api"),
+      util("slf4j-jul-bridge"),
       util("tunable")
     ),
     libraryDependencies ++= jacksonLibs)
+
+lazy val twitterServerSlf4jJdk14 = (project in file("slf4j-jdk14"))
+  .settings(
+    name :=  "twitter-server-slf4j-jdk14",
+    moduleName :=  "twitter-server-slf4j-jdk14",
+    sharedSettings,
+    unidocSettings)
+  .settings(
+    libraryDependencies ++= Seq(
+      "org.slf4j" % "slf4j-api" % slf4jVersion,
+      "org.slf4j" % "slf4j-jdk14" % slf4jVersion,
+      "org.slf4j" % "jcl-over-slf4j" % slf4jVersion,
+      "org.slf4j" % "log4j-over-slf4j" % slf4jVersion))
+  .dependsOn(
+    twitterServer)
+
+lazy val twitterServerSlf4jLog4j12 = (project in file("slf4j-log4j12"))
+  .settings(
+    name :=  "twitter-server-slf4j-log4j12",
+    moduleName :=  "twitter-server-slf4j-log4j12",
+    sharedSettings,
+    unidocSettings)
+  .settings(
+    libraryDependencies ++= Seq(
+      "log4j" % "log4j" % "1.2.17" % "provided",
+      "org.slf4j" % "slf4j-api" % slf4jVersion,
+      "org.slf4j" % "slf4j-log4j12" % slf4jVersion,
+      "org.slf4j" % "jcl-over-slf4j" % slf4jVersion,
+      "org.slf4j" % "jul-to-slf4j" % slf4jVersion))
+  .dependsOn(
+    twitterServer)
+
+lazy val twitterServerSlf4jLogbackClassic = (project in file("logback-classic"))
+  .settings(
+    name :=  "twitter-server-logback-classic",
+    moduleName :=  "twitter-server-logback-classic",
+    sharedSettings,
+    unidocSettings)
+  .settings(
+    libraryDependencies ++= Seq(
+      "ch.qos.logback" % "logback-classic" % "1.1.7" % "provided",
+      "ch.qos.logback" % "logback-core" % "1.1.7" % "provided",
+      "org.slf4j" % "slf4j-api" % slf4jVersion,
+      "org.slf4j" % "jcl-over-slf4j" % slf4jVersion,
+      "org.slf4j" % "jul-to-slf4j" % slf4jVersion,
+      "org.slf4j" % "log4j-over-slf4j" % slf4jVersion))
+  .dependsOn(
+    twitterServer)
 
 lazy val twitterServerDoc = (project in file("doc"))
   .enablePlugins(

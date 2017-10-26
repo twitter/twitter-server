@@ -1,7 +1,7 @@
 package com.twitter.server
 
 import com.twitter.app.App
-import com.twitter.logging.Logging
+import com.twitter.util.logging.Logging
 
 /**
  * Twitter Server defines a template from which servers at Twitter are built.
@@ -25,17 +25,20 @@ import com.twitter.logging.Logging
  *     // app logic
  *   }
  * }}}
+ *
+ * Note: the Slf4jBridge trait MUST be defined first to properly bridge legacy
+ * logging APIs.
  */
 trait TwitterServer
-    extends App
-    with Linters
-    with Logging
-    with LogFormat
-    with Hooks
-    with AdminHttpServer
-    with Admin
-    with Lifecycle
-    with Stats
+  extends App
+  with Slf4jBridge
+  with Logging
+  with Linters
+  with Hooks
+  with AdminHttpServer
+  with Admin
+  with Lifecycle
+  with Stats
 
 /**
  * A Java-friendly version of the [[TwitterServer]].

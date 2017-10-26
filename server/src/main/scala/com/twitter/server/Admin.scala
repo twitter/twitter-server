@@ -180,13 +180,6 @@ trait Admin { self: App with AdminHttpServer with Stats =>
         includeInIndex = true
       ),
       Route(
-        path = "/admin/logging",
-        handler = new LoggingHandler,
-        alias = "Logging",
-        group = Some(Grouping.Utilities),
-        includeInIndex = true
-      ),
-      Route(
         path = "/admin/metrics",
         handler = new MetricQueryHandler,
         alias = "Watch",

@@ -11,5 +11,5 @@ trait Logging extends ctl.Logging { self: App =>
       h.setFormatter(defaultFormatter)
   }
 
-  override val defaultFormatter: ctl.Formatter = new LogFormatter
+  override def defaultFormatter: ctl.Formatter = new LogFormatter
 }

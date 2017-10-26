@@ -67,10 +67,10 @@ class HandlersTest extends FunSuite {
 
         val port = adminHttpServer.boundAddress.asInstanceOf[InetSocketAddress].getPort
 
-        val logger = Logger.getLogger(getClass.getName)
+        val log = Logger.getLogger(getClass.getName)
         val stream = new ByteArrayOutputStream
         val handler = new StreamHandler(stream, new SimpleFormatter)
-        logger.addHandler(handler)
+        log.addHandler(handler)
 
         val client = Http.client.newService(s"localhost:$port")
         stream.reset()

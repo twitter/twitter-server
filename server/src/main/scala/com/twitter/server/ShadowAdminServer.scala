@@ -8,9 +8,9 @@ import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.tracing.NullTracer
 import com.twitter.finagle.util.LoadService
 import com.twitter.finagle.{Http, ListeningServer, NullServer, param}
+import com.twitter.util.logging.Logger
 import java.net.InetSocketAddress
 import java.util.concurrent.Executors
-import java.util.logging.Logger
 
 /**
  * An admin http server which serves requests outside the default
@@ -38,7 +38,7 @@ trait ShadowAdminServer { self: App with AdminHttpServer =>
   )
 
   premain {
-    val log = Logger.getLogger(getClass.getName)
+    val log = Logger[ShadowAdminServer]
     log.info(s"Serving BlackBox http server on port ${shadowAdminPort().getPort}")
 
     // Ostrich, commons stats, and metrics export a `HttpMuxHandler`

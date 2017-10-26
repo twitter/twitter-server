@@ -5,11 +5,11 @@ import com.twitter.finagle.http.{Request, Response, Status}
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.{newResponse, parse}
 import com.twitter.util.Future
-import java.util.logging.Logger
+import com.twitter.util.logging.Logger
 import scala.collection.{Map, Seq}
 
 trait TwitterHandler extends Service[Request, Response] {
-  private[this] val log = Logger.getLogger(getClass.getName)
+  private[this] val log = Logger[TwitterHandler]
 
   def respond(msg: String, status: Status = Status.Ok): Future[Response] =
     newResponse(

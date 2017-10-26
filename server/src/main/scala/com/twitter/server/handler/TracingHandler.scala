@@ -5,7 +5,7 @@ import com.twitter.finagle.http.{Request, Response, Status}
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.{newResponse, parse}
 import com.twitter.util.Future
-import java.util.logging.Logger
+import com.twitter.util.logging.Logger
 
 private class FinagleTracing(klass: Class[_]) {
   private val enableM = klass.getDeclaredMethod("enable")
@@ -29,13 +29,13 @@ private object FinagleTracing {
 }
 
 class TracingHandler extends Service[Request, Response] {
-  private[this] val log = Logger.getLogger(getClass.getName)
+  private[this] val log = Logger[TracingHandler]
 
   def apply(request: Request): Future[Response] = {
     val (_, params) = parse(request.uri)
 
     try {
-      if (!FinagleTracing.instance.isDefined)
+      if (FinagleTracing.instance.isEmpty)
         return newResponse(
           status = Status.InternalServerError,
           contentType = "text/html;charset=UTF-8",

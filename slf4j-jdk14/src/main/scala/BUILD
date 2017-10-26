@@ -7,6 +7,7 @@ scala_library(
   dependencies=[
     '3rdparty/jvm/org/slf4j:slf4j-api',
     '3rdparty/jvm/org/slf4j:jcl-over-slf4j',
+    '3rdparty/jvm/org/slf4j:log4j-over-slf4j',
     '3rdparty/jvm/org/slf4j:slf4j-jdk14',
     'finagle/finagle-base-http/src/main/scala',
     'finagle/finagle-http/src/main/scala',

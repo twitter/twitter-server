@@ -1,16 +1,20 @@
 package com.twitter.server;
 
+import java.util.Arrays;
+
 import com.twitter.app.Flag;
 import com.twitter.app.Flaggable;
+import com.twitter.util.logging.Logger;
 
 public class TwitterServerCompilationTest extends AbstractTwitterServer  {
+  private static final Logger LOG = Logger.apply("TwitterServerCompilationTest");
 
   private Flag<String> foo =
     flag().create("foo", "default-foo", "help-foo", Flaggable.ofString());
 
   @Override
   public void preMain() {
-    log().info("pre-exit");
+    LOG.info("pre-exit");
   }
 
   /**
@@ -18,8 +22,8 @@ public class TwitterServerCompilationTest extends AbstractTwitterServer  {
    */
   @Override
   public void main() throws Throwable {
-    log().info("on-main for " + name());
-    log().info("args:" + args());
+    LOG.info("on-main for " + name());
+    LOG.info("args:" + Arrays.toString(args()));
 
     // Make sure that public fields/methods from AbstractTwitterServer are available here
     statsReceiver();
@@ -28,16 +32,16 @@ public class TwitterServerCompilationTest extends AbstractTwitterServer  {
 
   @Override
   public void postMain() {
-    log().info("post-main");
+    LOG.info("post-main");
   }
 
   @Override
   public void onInit() {
-    log().info("on-init");
+    LOG.info("on-init");
   }
 
   @Override
   public void onExit() {
-    log().info("on-exit");
+    LOG.info("on-exit");
   }
 }

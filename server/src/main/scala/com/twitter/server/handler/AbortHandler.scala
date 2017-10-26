@@ -5,18 +5,18 @@ import com.twitter.finagle.http.{Method, Request, Response, Status}
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils._
 import com.twitter.util.Future
-import java.util.logging.Logger
+import com.twitter.util.logging.Logger
 
 class AbortHandler extends Service[Request, Response] {
-  private[this] val log = Logger.getLogger(getClass.getName)
+  private[this] val log = Logger[AbortHandler]
 
   private[this] def background(f: => Unit): Unit = {
-    (new Thread("lifecycle") {
+    new Thread("lifecycle") {
       override def run() {
         Thread.sleep(10)
         f
       }
-    }).start()
+    }.start()
   }
 
   def apply(req: Request): Future[Response] = {

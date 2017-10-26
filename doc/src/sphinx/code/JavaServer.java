@@ -1,9 +1,12 @@
 //#imports
-import com.twitter.server.AbstractTwitterServer
+import com.twitter.server.AbstractTwitterServer;
+import com.twitter.util.logging.Logger;
 //#imports
 
 //#server
 public class JavaServer extends AbstractTwitterServer {
+
+  private static final Logger LOG = Logger.apply("JavaServer");
 
   //#main
   public static class Main {
@@ -16,7 +19,7 @@ public class JavaServer extends AbstractTwitterServer {
   //#oninit
   @Override
   public void onInit() {
-    log().info("Java Server initialization...");
+    LOG.info("Java Server initialization...");
   }
   //#oninit
 }

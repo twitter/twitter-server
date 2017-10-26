@@ -4,19 +4,25 @@ import com.twitter.app.App
 import com.twitter.concurrent.NamedPoolThreadFactory
 import com.twitter.finagle.client.ClientRegistry
 import com.twitter.finagle.filter.ServerAdmissionControl
-import com.twitter.finagle.{Http, ListeningServer, NullServer, Service, SimpleFilter, http}
 import com.twitter.finagle.http.Method.Get
 import com.twitter.finagle.http.{HttpMuxer, Method, Request, Response}
 import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.tracing.NullTracer
+import com.twitter.finagle.util.LoadService
+import com.twitter.finagle.{Http, ListeningServer, NullServer, Service, SimpleFilter, http}
+import com.twitter.server.Admin.Grouping
+import com.twitter.server.handler.{AdminHttpMuxHandler, NoLoggingHandler}
+import com.twitter.server.lint.LoggingRules
 import com.twitter.server.util.HttpUtils
 import com.twitter.server.view.{IndexView, NotFoundView}
+import com.twitter.util.lint.GlobalRules
 import com.twitter.util.registry.Library
 import com.twitter.util.{ExecutorServiceFuturePool, Future, FuturePool, Monitor}
 import java.net.InetSocketAddress
 import java.util.concurrent.Executors
-import java.util.logging.{Level, Logger}
+import org.slf4j.LoggerFactory
+import scala.collection.mutable
 import scala.language.reflectiveCalls
 
 object AdminHttpServer {
@@ -123,6 +129,9 @@ object AdminHttpServer {
 trait AdminHttpServer { self: App =>
   import AdminHttpServer._
 
+  // We use slf4-api directly b/c we're in a trait and want the trait class to be the Logger name
+  private[this] val log = LoggerFactory.getLogger(getClass)
+
   def defaultAdminPort: Int = 9990
   val adminPort =
     flag("admin.port", new InetSocketAddress(defaultAdminPort), "Admin http server port")
@@ -139,7 +148,13 @@ trait AdminHttpServer { self: App =>
 
   @volatile protected var adminHttpServer: ListeningServer = NullServer
 
-  private var allRoutes: Seq[Route] = Seq()
+  // We start with routes added via load service, note that these will be overridden
+  // by any routes added in any call to updateMuxer().
+  private[this] val loadServiceRoutes: Seq[Route] =
+    LoadService[AdminHttpMuxHandler]()
+      .map(handler => Route.from(handler.route))
+      .map(Route.isolate)
+  private var allRoutes: Seq[Route] = loadServiceRoutes
 
   /**
    * The address to which the Admin HTTP server is bound.
@@ -183,11 +198,30 @@ trait AdminHttpServer { self: App =>
    */
   protected def configureAdminHttpServer(server: Http.Server): Http.Server = server
 
+  /** Provide a "catch-all" LoggingHandler that displays a message about configuring a logging implementation */
+  private[this] def addLoggingHandler(): Unit = {
+    if (!allRoutes.exists(_.path == "/admin/logging")) {
+      // add linting issue for un-configured logging handler
+      GlobalRules.get.add(LoggingRules.NoLoggingHandler)
+
+      allRoutes = allRoutes ++
+        Seq(
+          mkRoute(
+            path = "/admin/logging",
+            handler = new NoLoggingHandler,
+            alias = "Logging",
+            group = Some(Grouping.Utilities),
+            includeInIndex = true
+          )
+        ).map(Route.isolate)
+    }
+  }
+
   private[this] def updateMuxer() = {
-    // a logger used to log all sync and async exceptions
-    // that occur in the admin server.
-    val log = Logger.getLogger(getClass.getName)
-    val rts = allRoutes ++ HttpMuxer.routes.map(Route.from(_))
+    addLoggingHandler() // ensure there is an /admin/logging handler
+
+    val rts = allRoutes ++
+      HttpMuxer.routes.map(Route.from)
 
     // convert local routes into the IndexView data model
     val localRoutes =
@@ -225,20 +259,21 @@ trait AdminHttpServer { self: App =>
     }
 
     // create a service which multiplexes across all endpoints.
+    val endpoints = new mutable.ArrayBuffer[String]()
     val localMuxer = allRoutes.foldLeft(new HttpMuxer) {
       case (muxer, route) =>
-        log.info(s"${route.path} => ${route.handler.getClass.getName}")
+        endpoints += s"\t${route.path} => ${route.handler.getClass.getName}"
         val service = new IndexView(route.alias, route.path, index) andThen route.handler
         muxer.withHandler(route.path, service)
     }
+    log.debug(s"AdminHttpServer Muxer endpoints:\n" + endpoints.mkString("\n"))
     adminHttpMuxer.underlying = HttpUtils.combine(Seq(localMuxer, HttpMuxer))
   }
 
   private[this] def startServer(): Unit = {
-    val log = Logger.getLogger(getClass.getName)
     val loggingMonitor = new Monitor {
       def handle(exc: Throwable): Boolean = {
-        log.log(Level.SEVERE, s"Caught exception in AdminHttpHandler: $exc", exc)
+        log.error(s"Caught exception in AdminHttpServer: $exc", exc)
         false
       }
     }
@@ -262,6 +297,6 @@ trait AdminHttpServer { self: App =>
 
   premain {
     addAdminRoutes(routes)
-    startServer
+    startServer()
   }
 }

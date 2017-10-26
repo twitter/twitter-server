@@ -4,10 +4,10 @@ import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Fields, MediaType, Status, Method, Response, Request}
 import com.twitter.finagle.tunable.StandardTunableMap
 import com.twitter.io.Buf
-import com.twitter.logging.Logger
 import com.twitter.server.util.HttpUtils._
 import com.twitter.server.util.JsonConverter
 import com.twitter.util.{Throw, Return, Future}
+import com.twitter.util.logging.Logger
 import com.twitter.util.tunable.{JsonTunableMapper, TunableMap}
 import scala.collection.mutable
 
@@ -226,5 +226,5 @@ object TunableHandler {
 
   val PathForId = Path + "/"
 
-  private val log: Logger = Logger.get()
+  private val log: Logger = Logger[TunableHandler]
 }

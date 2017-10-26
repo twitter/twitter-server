@@ -1,11 +1,9 @@
 package com.twitter.server
 
+import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
-import com.twitter.finagle.{Http, Service}
 import com.twitter.util._
-import java.io.ByteArrayOutputStream
 import java.net.{InetAddress, InetSocketAddress}
-import java.util.logging.{Logger, StreamHandler, SimpleFormatter}
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -71,38 +69,5 @@ class TwitterServerTest extends FunSuite {
 
     twitterServer.main(args = Array.empty[String])
     assert(twitterServer.bootstrapSeq == Seq('Init, 'PreMain, 'Main, 'Exit, 'PostMain))
-  }
-
-
-  // TODO: REMOVE WITH SLF4J-API INTEGRATION
-  test("Exceptions thrown in handlers include stack traces") {
-    val twitterServer = new TestTwitterServer {
-      val mockExceptionHandler = new MockExceptionHandler
-
-      override def main() {
-        addAdminRoute(
-          AdminHttpServer.mkRoute(
-            "/exception_please.json",
-            mockExceptionHandler,
-            "mockExceptionHandler",
-            None,
-            false
-          )
-        )
-
-        val port = adminHttpServer.boundAddress.asInstanceOf[InetSocketAddress].getPort
-
-        val logger = Logger.getLogger(getClass.getName)
-        val stream = new ByteArrayOutputStream
-        val handler = new StreamHandler(stream, new SimpleFormatter)
-        logger.addHandler(handler)
-
-        val client = Http.client.newService(s"localhost:${port}")
-        stream.reset()
-        Await.ready(client(Request("/exception_please.json")))
-        assert(stream.toString.contains("at com.twitter.server.MockExceptionHandler.apply"))
-      }
-    }
-    twitterServer.main(args = Array.empty[String])
   }
 }

@@ -18,12 +18,6 @@ object AdvancedServer extends TwitterServer {
   //#stats
   val counter = statsReceiver.counter("requests_counter")
   //#stats
-  //#formatter
-  override def defaultFormatter = new Formatter(
-    timezone = Some("UTC"),
-    prefix = "<yyyy-MM-dd HH:mm:ss.SSS> [%.3s] %s: "
-  )
-  //#formatter
   //#fail_fast
   override def failfastOnFlagsNotParsed: Boolean = true
   //#fail_fast
@@ -31,7 +25,7 @@ object AdvancedServer extends TwitterServer {
   val service = new Service[Request, Response] {
     def apply(request: Request) = {
       //#log_usage
-      log.debug("Received a request at " + Time.now)
+      debug("Received a request at " + Time.now)
       //#log_usage
       //#stats_usage
       counter.incr()

@@ -1,1 +1,1 @@
-com.twitter.server.handler.slf4j.logback.classic.LoggingHandler
+com.twitter.server.handler.logback.classic.LoggingHandler

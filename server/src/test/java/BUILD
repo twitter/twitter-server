@@ -10,7 +10,7 @@ junit_tests(
     'util/util-app/src/main/scala:scala',
     'util/util-core/src/main/scala:scala',
     'util/util-lint/src/main/scala:scala',
-    'util/util-logging/src/main/scala:scala',
+    'util/util-slf4j-api/src/main/scala:scala',
     'util/util-stats/src/main/scala:scala',
   ],
   fatal_warnings=False,

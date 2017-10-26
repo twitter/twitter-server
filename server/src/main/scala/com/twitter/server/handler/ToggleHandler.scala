@@ -4,17 +4,17 @@ import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Fields, Method, Request, Response, Status}
 import com.twitter.finagle.toggle.{StandardToggleMap, Toggle, ToggleMap}
 import com.twitter.io.Buf
-import com.twitter.logging.Logger
 import com.twitter.server.util.HttpUtils.{newOk, newResponse}
 import com.twitter.server.util.JsonConverter
 import com.twitter.util.Future
+import com.twitter.util.logging.Logger
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 /** package private for testing purposes */
 private[handler] object ToggleHandler {
 
-  private val log: Logger = Logger.get()
+  private val log: Logger = Logger[ToggleHandler]
 
   /**
    * How a `Toggle` is currently configured and in use.

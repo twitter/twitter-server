@@ -11,6 +11,7 @@ scala_library(
     '3rdparty/jvm/com/fasterxml/jackson/module:jackson-module-scala',
     '3rdparty/jvm/io/netty:netty',
     '3rdparty/jvm/io/netty:netty4',
+    '3rdparty/jvm/org/slf4j:slf4j-api',
     'finagle/finagle-base-http/src/main/scala',
     'finagle/finagle-core/src/main/scala',
     'finagle/finagle-http/src/main/scala',
@@ -24,9 +25,10 @@ scala_library(
     'util/util-core/src/main/scala',
     'util/util-jvm/src/main/scala',
     'util/util-lint/src/main/scala',
-    'util/util-logging/src/main/scala',
     'util/util-registry/src/main/scala',
     'util/util-stats/src/main/scala',
+    'util/util-slf4j-api/src/main/scala',
+    'util/util-slf4j-jul-bridge/src/main/scala',
     'util/util-tunable/src/main/scala',
   ],
   fatal_warnings=True,
@@ -35,11 +37,12 @@ scala_library(
   exports=[
     '3rdparty/jvm/com/fasterxml/jackson/core:jackson-annotations',
     '3rdparty/jvm/com/fasterxml/jackson/core:jackson-databind',
+    '3rdparty/jvm/org/slf4j:slf4j-api',
     'finagle/finagle-base-http/src/main/scala',
     'finagle/finagle-http/src/main/scala',
     'util/util-app/src/main/scala',
     'util/util-core/src/main/scala',
     'util/util-lint/src/main/scala',
-    'util/util-logging/src/main/scala',
+    'util/util-slf4j-api/src/main/scala',
   ]
 )

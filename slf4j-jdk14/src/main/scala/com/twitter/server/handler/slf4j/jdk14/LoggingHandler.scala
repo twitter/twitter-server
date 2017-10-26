@@ -5,6 +5,7 @@ import com.twitter.io.Buf
 import com.twitter.logging.{Level, Logger}
 import com.twitter.server.Admin.Grouping
 import com.twitter.server.handler.AdminHttpMuxHandler
+import com.twitter.server.handler.slf4j.jdk14.LoggingHandler._
 import com.twitter.server.util.HtmlUtils._
 import com.twitter.server.util.HttpUtils._
 import com.twitter.util.Future
@@ -30,7 +31,7 @@ private object LoggingHandler {
   def renderText(loggers: Seq[javalog.Logger], updateMsg: String): String = {
     val out = loggers
       .map { logger =>
-        val loggerName = if (logger.getName == "") "root" else logger.getName
+        val loggerName = getLoggerDisplayName(logger)
         escapeHtml(s"$loggerName ${getLevel(logger)}")
       }
       .mkString("\n")
@@ -47,7 +48,7 @@ private object LoggingHandler {
           </tr>
         </thead>
         ${(for (logger <- loggers) yield {
-      val loggerName = if (logger.getName == "") "root" else logger.getName
+      val loggerName = getLoggerDisplayName(logger)
       s"""<tr>
                 <td><h5>${escapeHtml(loggerName)}</h5></td>
                 <td><div class="btn-group" role="group">
@@ -70,6 +71,11 @@ private object LoggingHandler {
                 </tr>"""
     }).mkString("\n")}
          </table>"""
+
+  private def getLoggerDisplayName(logger: javalog.Logger): String = logger.getName match {
+    case "" => "root"
+    case name => name
+  }
 }
 
 /**
@@ -96,11 +102,7 @@ private class LoggingHandler extends AdminHttpMuxHandler {
   def apply(request: Request): Future[Response] = {
     val (_, params) = parse(request.uri)
 
-    val loggerName: Option[String] = params.getOrElse("logger", Seq.empty).headOption map {
-      case "root" => ""
-      case n => n
-    }
-
+    val loggerName: Option[String] = parseLoggerName(params)
     val loggerLevel: Option[String] = params.getOrElse("level", Seq.empty).headOption
 
     val updateMsg = (loggerLevel, loggerName) match {
@@ -110,7 +112,7 @@ private class LoggingHandler extends AdminHttpMuxHandler {
         } yield {
           val logger = logManager.getLogger(name)
           logger.setLevel(level)
-          s"""Changed ${if (logger.getName == "") "root" else logger.getName} to Level.$level"""
+          s"""Changed ${getLoggerDisplayName(logger)} to Level.$level"""
         }
 
         updated.getOrElse(s"Unable to change $name to Level.$level!")
@@ -132,6 +134,13 @@ private class LoggingHandler extends AdminHttpMuxHandler {
         contentType = "text/html;charset=UTF-8",
         content = Buf.Utf8(LoggingHandler.renderHtml(loggers, levels, escapeHtml(updateMsg)))
       )
+    }
+  }
+
+  private[this] def parseLoggerName(params: scala.collection.Map[String, scala.collection.Seq[String]]): Option[String] = {
+    params.getOrElse("logger", Seq.empty).headOption.map {
+      case "root" => ""
+      case name => name
     }
   }
 }

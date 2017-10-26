@@ -39,4 +39,14 @@ object LoggingRules {
 
     issues(paths)
   }
+
+  /** Run only after it has been computed that the server does not have a configured logging handler implementation. */
+  val NoLoggingHandler = Rule(
+    Category.Configuration,
+    "Admin logging handler implementation to dynamically change log levels is not configured",
+    "To configure, please add a dependency on one of the supported TwitterServer logging " +
+      "implementations which will provide the ability to dynamically change the logging levels " +
+      "for that implementation: logback-classic, slf4j-log4j12, or slf4j-jdk14.") {
+    Seq(Issue("No logging handler implementation configured."))
+  }
 }

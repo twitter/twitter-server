@@ -6,10 +6,10 @@ import com.twitter.finagle.Service
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.{parse, newOk, newResponse}
 import com.twitter.util.{Duration, Future}
-import java.util.logging.Logger
+import com.twitter.util.logging.Logger
 
 class ShutdownHandler(app: App) extends Service[Request, Response] {
-  private[this] val log = Logger.getLogger(getClass.getName)
+  private[this] val log = Logger[ShutdownHandler]
 
   protected def getGraceParam(uri: String): Option[String] =
     parse(uri)._2.get("grace").flatMap(_.headOption)
