@@ -4,12 +4,18 @@
 
 Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in commits.
 
-1.x
------
+Unreleased
+----------
+
+Release Version Format
+~~~~~~~~~~~~~~~~~~~~~~
+
+  * From now on, release versions will be based on release date in the format of
+    YY.MM.x where x is a patch number. ``PHAB_ID=D101244``
 
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
-  
+
   * All admin endpoints except ping + healthcheck are now by-default served outside
     the global worker pool. ``PHAB_ID=D96633``
 

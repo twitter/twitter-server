@@ -1,11 +1,7 @@
 import scoverage.ScoverageKeys
 
-val branch = Process("git" :: "rev-parse" :: "--abbrev-ref" :: "HEAD" :: Nil).!!.trim
-val suffix = if (branch == "master") "" else "-SNAPSHOT"
-
-val libVersion = "1.32.0" + suffix
-val utilVersion = "7.1.0" + suffix
-val finagleVersion = "7.1.0" + suffix
+// All Twitter library releases are date versioned as YY.MM.patch
+val releaseVersion = "0.0.0-SNAPSHOT"
 
 val jacksonVersion = "2.8.4"
 val jacksonLibs = Seq(
@@ -16,11 +12,11 @@ val jacksonLibs = Seq(
 )
 val slf4jVersion = "1.7.21"
 
-def util(which: String) = "com.twitter" %% ("util-"+which) % utilVersion
-def finagle(which: String) = "com.twitter" %% ("finagle-"+which) % finagleVersion
+def util(which: String) = "com.twitter" %% ("util-"+which) % releaseVersion
+def finagle(which: String) = "com.twitter" %% ("finagle-"+which) % releaseVersion
 
 val sharedSettings = Seq(
-  version := libVersion,
+  version := releaseVersion,
   organization := "com.twitter",
   scalaVersion := "2.12.1",
   crossScalaVersions := Seq("2.11.11", "2.12.1"),
