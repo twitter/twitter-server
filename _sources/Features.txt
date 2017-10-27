@@ -38,8 +38,6 @@ all the flags defined.
     -help='false': Show this help
     -admin.port=':9990': Admin http server port
     -bind=':0': Network interface to use
-    -log.level='INFO': Log level
-    -log.output='/dev/stderr': Output file
     -what='hello': String to return
 
 Note that you cannot read flags until after the arguments have been
@@ -58,26 +56,91 @@ then an `IllegalStateException` will be thrown.
 Logging
 -------
 
-The `TwitterServer` trait provides a logger named `log`. It is
-configured via default command line flags: `-log.level` and
-`-log.output`. As you can see from the above `-help` output, it logs
-to `stderr` by default with a log level of `INFO`.
+TwitterServer uses the `Simple Logging Facade for Java (SLF4J) <https://www.slf4j.org/>`__
+for framework logging.
 
-.. includecode:: code/AdvancedServer.scala#log_usage
+.. admonition:: From the SLF4J documentation
+
+    "The Simple Logging Facade for Java serves as a simple facade or
+    abstraction for various logging frameworks, such as
+    java.util.logging, Logback and log4j. SLF4J allows the end-user to
+    plug in the desired logging framework at deployment time."
+
+As such, in order to log with `TwitterServer` you must
+`depend on an actual logging implementation <https://www.slf4j.org/manual.html#swapping>`__.
+
+.. tip::
+
+  `Logback <https://logback.qos.ch/>`__ is a native `slf4j-api <https://www.slf4j.org/>`__
+  implementation and is the recommended logging implementation for `TwitterServer`.
+
+Since `TwitterServer` uses the `slf4j-api <https://www.slf4j.org/>`__  for logging it no
+longer provides the |util-logging Logging|_ logging implementation directly. As such, logging
+configuration is handled on the choosen imlpementation and by default not through flags -- except
+in the case of choosing the `slf4j-jdk14` logging implementation.
+
+See the `Backwards Compatibility <#backwards-compatibility-via-slf4j-jdk14>`__ section.
+
+Backwards Compatibility (via `slf4j-jdk14`)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. includecode:: code/BackwardsCompatServer.scala
    :language: scala
+
+To continue using `TwitterServer` with no changes to your logging, simply depend on the
+|slf4j-jdk14|_ library which will use `slf4j-jdk14` as the |slf4j|_ logging
+implementation, then mix in the |com.twitter.server.logging.Logging|_ to your `TwitterServer`.
+
+Example:
+
+.. includecode:: code/BackwardsCompatServer.scala#server_obj
+   :language: scala
+
+In the above example, the |com.twitter.server.logging.Logging|_ has been renamed to ``JDK14Logging``
+for clarity.
+
+The |com.twitter.server.logging.Logging|_ provides a logger named `log` which can be configured via 
+the command line flags: `-log.level` and `-log.output`.
+
+.. includecode:: code/BackwardsCompatServer.scala#log_usage
+   :language: scala
+
+See: |c.t.logging.Logging|_ for more details on what flags can be used for configuring JUL loggers.
+
+Log Format
+++++++++++
 
 To change the format of the log output, a custom `Formatter` is needed.
 This is best done by overriding the `defaultFormatter` provided by the
-`Logging` trait.
+|com.twitter.server.logging.Logging|_.
 
-.. includecode:: code/AdvancedServer.scala#formatter
+.. includecode:: code/BackwardsCompatServer.scala#formatter
    :language: scala
 
-For more complicated logging schemes, you can extend the Logging trait
-and mix it back into a `TwitterServer`.
+.. note::
 
-Per-logger log levels can be changed on-the-fly via the logging
-handler on the admin interface.
+  For more complicated logging schemes, you can extend the |com.twitter.server.logging.Logging|_
+  and mix it back into a `TwitterServer`.
+
+Dynamically Change Log Levels
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Per-logger log levels can be changed on-the-fly via a logging handler on the
+admin interface for supported |slf4j|_ logging implementations. Instead of depending on an
+|slf4j|_ logging implementation directly, depend on the `TwitterServer` wrapper for the logging 
+implementation which will provide the appropriate logging handler.
+
+Supported implementations:
+
++-------------------------+-----------------------------------+
+| Implementation          | TwitterServer dependency          |
++=========================+===================================+
+| java.util.logging (JUL) | |slf4j-jdk14|_     |
++-------------------------+-----------------------------------+
+| Log4j                   | |slf4j-log4j12|_   |
++-------------------------+-----------------------------------+
+| Logback (recommended)   | |logback-classic|_ |
++-------------------------+-----------------------------------+
 
 .. _metrics_label:
 
@@ -382,3 +445,24 @@ trait is built.
 
 .. _debug metrics: https://twitter.github.io/util/guide/util-stats/basics.html#verbosity-levels
 .. _tunable: https://twitter.github.io/finagle/guide/Configuration.html#tunables
+
+.. |slf4j| replace:: `slf4j`
+.. _slf4j: https://www.slf4j.org/
+
+.. |util-logging Logging| replace:: ``util-logging Logging``
+.. _util-logging Logging: https://github.com/twitter/util/tree/develop/util-logging
+
+.. |c.t.logging.Logging| replace:: ``c.t.logging.Logging``
+.. _c.t.logging.Logging: https://github.com/twitter/util/blob/70e19566e3f0a194a5364d95e04ce7fc6cf4827c/util-logging/src/main/scala/com/twitter/logging/Logging.scala#L20
+
+.. |slf4j-jdk14| replace:: ``slf4j-jdk14``
+.. _slf4j-jdk14: https://github.com/twitter/tree/develop/slf4j-jdk14
+
+.. |slf4j-log4j12| replace:: ``slf4j-log4j12``
+.. _slf4j-log4j12 : https://github.com/twitter/tree/develop/slf4j-log4j12
+
+.. |logback-classic| replace:: ``logback-classic``
+.. _logback-classic : https://github.com/twitter/tree/develop/logback-classic
+
+.. |com.twitter.server.logging.Logging| replace:: ``com.twitter.server.logging.Logging`` trait
+.. _com.twitter.server.logging.Logging: https://github.com/twitter/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala

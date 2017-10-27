@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Features &#8212; TwitterServer 1.32.0 documentation</title>
+    <title>Features &#8212; TwitterServer 17.10.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.32.0',
+        VERSION:     '17.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="TwitterServer 1.32.0 documentation" href="index.html" />
+    <link rel="top" title="TwitterServer 17.10.0 documentation" href="index.html" />
     <link rel="next" title="HTTP Admin interface" href="Admin.html" />
     <link rel="prev" title="TwitterServer" href="index.html" />
    
@@ -78,15 +78,11 @@ introduction.</p>
   <span class="k">val</span> <span class="n">addr</span> <span class="k">=</span> <span class="n">flag</span><span class="o">(</span><span class="s">&quot;bind&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="s">&quot;Bind address&quot;</span><span class="o">)</span>
   <span class="k">val</span> <span class="n">durations</span> <span class="k">=</span> <span class="n">flag</span><span class="o">(</span><span class="s">&quot;alarms&quot;</span><span class="o">,</span> <span class="o">(</span><span class="mf">1.</span><span class="n">second</span><span class="o">,</span> <span class="mf">5.</span><span class="n">second</span><span class="o">),</span> <span class="s">&quot;2 alarm durations&quot;</span><span class="o">)</span>
   <span class="k">val</span> <span class="n">counter</span> <span class="k">=</span> <span class="n">statsReceiver</span><span class="o">.</span><span class="n">counter</span><span class="o">(</span><span class="s">&quot;requests_counter&quot;</span><span class="o">)</span>
-  <span class="k">override</span> <span class="k">def</span> <span class="n">defaultFormatter</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Formatter</span><span class="o">(</span>
-    <span class="n">timezone</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="s">&quot;UTC&quot;</span><span class="o">),</span>
-    <span class="n">prefix</span> <span class="k">=</span> <span class="s">&quot;&lt;yyyy-MM-dd HH:mm:ss.SSS&gt; [%.3s] %s: &quot;</span>
-  <span class="o">)</span>
   <span class="k">override</span> <span class="k">def</span> <span class="n">failfastOnFlagsNotParsed</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">true</span>
 
   <span class="k">val</span> <span class="n">service</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Service</span><span class="o">[</span><span class="kt">Request</span>, <span class="kt">Response</span><span class="o">]</span> <span class="o">{</span>
     <span class="k">def</span> <span class="n">apply</span><span class="o">(</span><span class="n">request</span><span class="k">:</span> <span class="kt">Request</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
-      <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="o">(</span><span class="s">&quot;Received a request at &quot;</span> <span class="o">+</span> <span class="nc">Time</span><span class="o">.</span><span class="n">now</span><span class="o">)</span>
+      <span class="n">debug</span><span class="o">(</span><span class="s">&quot;Received a request at &quot;</span> <span class="o">+</span> <span class="nc">Time</span><span class="o">.</span><span class="n">now</span><span class="o">)</span>
       <span class="n">counter</span><span class="o">.</span><span class="n">incr</span><span class="o">()</span>
       <span class="k">val</span> <span class="n">response</span> <span class="k">=</span> <span class="nc">Response</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="n">version</span><span class="o">,</span> <span class="nc">Status</span><span class="o">.</span><span class="nc">Ok</span><span class="o">)</span>
       <span class="n">response</span><span class="o">.</span><span class="n">contentString</span> <span class="k">=</span> <span class="n">what</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;\n&quot;</span>
@@ -128,8 +124,6 @@ AdvancedServer
   -help=&#39;false&#39;: Show this help
   -admin.port=&#39;:9990&#39;: Admin http server port
   -bind=&#39;:0&#39;: Network interface to use
-  -log.level=&#39;INFO&#39;: Log level
-  -log.output=&#39;/dev/stderr&#39;: Output file
   -what=&#39;hello&#39;: String to return
 </pre></div>
 </div>
@@ -147,26 +141,100 @@ then an <cite>IllegalStateException</cite> will be thrown.</p>
 </div>
 <div class="section" id="logging">
 <h2>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h2>
-<p>The <cite>TwitterServer</cite> trait provides a logger named <cite>log</cite>. It is
-configured via default command line flags: <cite>-log.level</cite> and
-<cite>-log.output</cite>. As you can see from the above <cite>-help</cite> output, it logs
-to <cite>stderr</cite> by default with a log level of <cite>INFO</cite>.</p>
+<p>TwitterServer uses the <a class="reference external" href="https://www.slf4j.org/">Simple Logging Facade for Java (SLF4J)</a>
+for framework logging.</p>
+<div class="admonition-from-the-slf4j-documentation admonition">
+<p class="first admonition-title">From the SLF4J documentation</p>
+<p class="last">&#8220;The Simple Logging Facade for Java serves as a simple facade or
+abstraction for various logging frameworks, such as
+java.util.logging, Logback and log4j. SLF4J allows the end-user to
+plug in the desired logging framework at deployment time.&#8221;</p>
+</div>
+<p>As such, in order to log with <cite>TwitterServer</cite> you must
+<a class="reference external" href="https://www.slf4j.org/manual.html#swapping">depend on an actual logging implementation</a>.</p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last"><a class="reference external" href="https://logback.qos.ch/">Logback</a> is a native <a class="reference external" href="https://www.slf4j.org/">slf4j-api</a>
+implementation and is the recommended logging implementation for <cite>TwitterServer</cite>.</p>
+</div>
+<p>Since <cite>TwitterServer</cite> uses the <a class="reference external" href="https://www.slf4j.org/">slf4j-api</a>  for logging it no
+longer provides the <a class="reference external" href="https://github.com/twitter/util/tree/develop/util-logging"><code class="docutils literal"><span class="pre">util-logging</span> <span class="pre">Logging</span></code></a> logging implementation directly. As such, logging
+configuration is handled on the choosen imlpementation and by default not through flags &#8211; except
+in the case of choosing the <cite>slf4j-jdk14</cite> logging implementation.</p>
+<p>See the <a class="reference external" href="#backwards-compatibility-via-slf4j-jdk14">Backwards Compatibility</a> section.</p>
+<div class="section" id="backwards-compatibility-via-slf4j-jdk14">
+<h3>Backwards Compatibility (via <cite>slf4j-jdk14</cite>)<a class="headerlink" href="#backwards-compatibility-via-slf4j-jdk14" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">com.twitter.conversions.time._</span>
+<span class="k">import</span> <span class="nn">com.twitter.finagle.http.</span><span class="o">{</span><span class="nc">Request</span><span class="o">,</span> <span class="nc">Response</span><span class="o">,</span> <span class="nc">Status</span><span class="o">}</span>
+<span class="k">import</span> <span class="nn">com.twitter.finagle.Service</span>
+<span class="k">import</span> <span class="nn">com.twitter.server.TwitterServer</span>
+<span class="k">import</span> <span class="nn">com.twitter.server.logging.</span><span class="o">{</span><span class="nc">Logging</span> <span class="k">=&gt;</span> <span class="nc">JDK14Logging</span><span class="o">}</span>
+<span class="k">import</span> <span class="nn">com.twitter.util.</span><span class="o">{</span><span class="nc">Await</span><span class="o">,</span> <span class="nc">Future</span><span class="o">,</span> <span class="nc">Time</span><span class="o">}</span>
+<span class="k">import</span> <span class="nn">java.net.InetSocketAddress</span>
+
+<span class="k">object</span> <span class="nc">BackwardsCompatServer</span> <span class="k">extends</span> <span class="nc">TwitterServer</span> <span class="k">with</span> <span class="nc">JDK14Logging</span> <span class="o">{</span>
+
+  <span class="k">override</span> <span class="k">def</span> <span class="n">defaultFormatter</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Formatter</span><span class="o">(</span>
+    <span class="n">timezone</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="s">&quot;UTC&quot;</span><span class="o">),</span>
+    <span class="n">prefix</span> <span class="k">=</span> <span class="s">&quot;&lt;yyyy-MM-dd HH:mm:ss.SSS&gt; [%.3s] %s: &quot;</span>
+  <span class="o">)</span>
+
+  <span class="k">val</span> <span class="n">service</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Service</span><span class="o">[</span><span class="kt">Request</span>, <span class="kt">Response</span><span class="o">]</span> <span class="o">{</span>
+    <span class="k">def</span> <span class="n">apply</span><span class="o">(</span><span class="n">request</span><span class="k">:</span> <span class="kt">Request</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+      <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="o">(</span><span class="s">&quot;Received a request at &quot;</span> <span class="o">+</span> <span class="nc">Time</span><span class="o">.</span><span class="n">now</span><span class="o">)</span>
+      <span class="k">val</span> <span class="n">response</span> <span class="k">=</span> <span class="nc">Response</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="n">version</span><span class="o">,</span> <span class="nc">Status</span><span class="o">.</span><span class="nc">Ok</span><span class="o">)</span>
+      <span class="n">response</span><span class="o">.</span><span class="n">contentString</span> <span class="k">=</span> <span class="n">what</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;\n&quot;</span>
+      <span class="nc">Future</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="n">response</span><span class="o">)</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="k">def</span> <span class="n">main</span><span class="o">()</span> <span class="o">{</span>
+    <span class="o">...</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>To continue using <cite>TwitterServer</cite> with no changes to your logging, simply depend on the
+<a class="reference external" href="https://github.com/twitter/tree/develop/slf4j-jdk14"><code class="docutils literal"><span class="pre">slf4j-jdk14</span></code></a> library which will use <cite>slf4j-jdk14</cite> as the <a class="reference external" href="https://www.slf4j.org/"><cite>slf4j</cite></a> logging
+implementation, then mix in the <a class="reference external" href="https://github.com/twitter/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a> to your <cite>TwitterServer</cite>.</p>
+<p>Example:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">object</span> <span class="nc">BackwardsCompatServer</span> <span class="k">extends</span> <span class="nc">TwitterServer</span> <span class="k">with</span> <span class="nc">JDK14Logging</span> <span class="o">{</span>
+</pre></div>
+</div>
+<p>In the above example, the <a class="reference external" href="https://github.com/twitter/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a> has been renamed to <code class="docutils literal"><span class="pre">JDK14Logging</span></code>
+for clarity.</p>
+<p>The <a class="reference external" href="https://github.com/twitter/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a> provides a logger named <cite>log</cite> which can be configured via
+the command line flags: <cite>-log.level</cite> and <cite>-log.output</cite>.</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="o">(</span><span class="s">&quot;Received a request at &quot;</span> <span class="o">+</span> <span class="nc">Time</span><span class="o">.</span><span class="n">now</span><span class="o">)</span>
 </pre></div>
 </div>
+<p>See: <a class="reference external" href="https://github.com/twitter/util/blob/70e19566e3f0a194a5364d95e04ce7fc6cf4827c/util-logging/src/main/scala/com/twitter/logging/Logging.scala#L20"><code class="docutils literal"><span class="pre">c.t.logging.Logging</span></code></a> for more details on what flags can be used for configuring JUL loggers.</p>
+<div class="section" id="log-format">
+<h4>Log Format<a class="headerlink" href="#log-format" title="Permalink to this headline">¶</a></h4>
 <p>To change the format of the log output, a custom <cite>Formatter</cite> is needed.
 This is best done by overriding the <cite>defaultFormatter</cite> provided by the
-<cite>Logging</cite> trait.</p>
+<a class="reference external" href="https://github.com/twitter/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a>.</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">override</span> <span class="k">def</span> <span class="n">defaultFormatter</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Formatter</span><span class="o">(</span>
   <span class="n">timezone</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="s">&quot;UTC&quot;</span><span class="o">),</span>
   <span class="n">prefix</span> <span class="k">=</span> <span class="s">&quot;&lt;yyyy-MM-dd HH:mm:ss.SSS&gt; [%.3s] %s: &quot;</span>
 <span class="o">)</span>
 </pre></div>
 </div>
-<p>For more complicated logging schemes, you can extend the Logging trait
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For more complicated logging schemes, you can extend the <a class="reference external" href="https://github.com/twitter/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a>
 and mix it back into a <cite>TwitterServer</cite>.</p>
-<p>Per-logger log levels can be changed on-the-fly via the logging
-handler on the admin interface.</p>
+</div>
+</div>
+</div>
+<div class="section" id="dynamically-change-log-levels">
+<h3>Dynamically Change Log Levels<a class="headerlink" href="#dynamically-change-log-levels" title="Permalink to this headline">¶</a></h3>
+<p>Per-logger log levels can be changed on-the-fly via a logging handler on the
+admin interface for supported <a class="reference external" href="https://www.slf4j.org/"><cite>slf4j</cite></a> logging implementations. Instead of depending on an
+<a class="reference external" href="https://www.slf4j.org/"><cite>slf4j</cite></a> logging implementation directly, depend on the <cite>TwitterServer</cite> wrapper for the logging
+implementation which will provide the appropriate logging handler.</p>
+<p>Supported implementations:</p>
+</div>
 </div>
 <div class="section" id="metrics">
 <span id="metrics-label"></span><h2>Metrics<a class="headerlink" href="#metrics" title="Permalink to this headline">¶</a></h2>
@@ -204,8 +272,6 @@ statistics.</p>
 <p>If we didn&#8217;t window histograms, the early requests would have a big influence on
 the computed statistics, and as the application continued to run, each request
 would have progressively less and less of an impact.</p>
-<div class="section" id="filtering-stats-out">
-<h3>Filtering stats out<a class="headerlink" href="#filtering-stats-out" title="Permalink to this headline">¶</a></h3>
 <p>Metrics can be too expensive to store. By passing a comma-separated
 list of regexes to exclude from stats using
 <cite>-com.twitter.finagle.stats.statsFilter</cite> flag, one can single out the
@@ -223,9 +289,6 @@ p90 stats, one can pass the following to TwitterServer:</p>
 </div>
 <p>Note that this only works with <cite>finagle-stats</cite> and doesn&#8217;t work with
 <cite>finagle-ostrich4</cite>.</p>
-</div>
-<div class="section" id="changing-metrics-verbosity">
-<h3>Changing metrics verbosity<a class="headerlink" href="#changing-metrics-verbosity" title="Permalink to this headline">¶</a></h3>
 <p>By default, TwitterServer doesn&#8217;t export <a class="reference external" href="https://twitter.github.io/util/guide/util-stats/basics.html#verbosity-levels">debug metrics</a> (assuming finagle-stats
 is used as a metrics library). Override the <cite>com.twitter.finagle.stats.verbose</cite>
 <a class="reference external" href="https://twitter.github.io/finagle/guide/Configuration.html#tunables">tunable</a> (a comma-separated list of glob expressions under toggle map <cite>finagle</cite>)
@@ -245,9 +308,6 @@ Netty 4 metrics for a given JVM process.</p>
 }
 </pre></div>
 </div>
-</div>
-<div class="section" id="pretty-output">
-<h3>Pretty output<a class="headerlink" href="#pretty-output" title="Permalink to this headline">¶</a></h3>
 <p>If you would like a pretty version of the json output, add the
 parameter pretty=true or pretty=1, eg /admin/metrics.json?pretty=true</p>
 <div class="highlight-text"><div class="highlight"><pre><span></span>{
@@ -272,7 +332,6 @@ parameter pretty=true or pretty=1, eg /admin/metrics.json?pretty=true</p>
 </pre></div>
 </div>
 </div>
-</div>
 <div class="section" id="exported-metrics">
 <h2>Exported Metrics<a class="headerlink" href="#exported-metrics" title="Permalink to this headline">¶</a></h2>
 <p>See the <a class="reference external" href="https://twitter.github.io/finagle/guide/Metrics.html">Finagle user guide</a>
@@ -293,8 +352,6 @@ p90, etc), but with the full PDF, you can see the bad mode flatten out.</p>
 <p>As with Metrics, in order to work with histograms you must have the
 finagle-stats jar on your classpath.</p>
 <img alt="_images/HistogramHomepage.png" src="_images/HistogramHomepage.png" />
-<div class="section" id="api-parameters">
-<h3>API Parameters<a class="headerlink" href="#api-parameters" title="Permalink to this headline">¶</a></h3>
 <p>The following parameters control how a histogram is displayed.</p>
 <ol class="arabic simple">
 <li>&#8220;h&#8221;: the name of the histogram you want to see.</li>
@@ -374,14 +431,10 @@ equal to the bucket&#8217;s upper limit.</p>
 <img alt="_images/HistogramCDF.png" src="_images/HistogramCDF.png" />
 <p>While plotting graphs of your metrics, you can switch between formats using the
 buttons.  Log scale is typically good for looking at high percentiles.</p>
-</div>
-<div class="section" id="custom-implementations">
-<h3>Custom Implementations<a class="headerlink" href="#custom-implementations" title="Permalink to this headline">¶</a></h3>
 <p>Histograms are normally only available for services that use a
 <cite>MetricsStatsReceiver</cite> (default), but it is also possible to provide a custom
 one. A custom <cite>StatsReceiver</cite> must implement the <cite>WithHistogramDetails</cite> trait,
 and it should be service-loaded.</p>
-</div>
 </div>
 <div class="section" id="admin-http-interface">
 <h2>Admin HTTP interface<a class="headerlink" href="#admin-http-interface" title="Permalink to this headline">¶</a></h2>
@@ -441,19 +494,17 @@ trait is built.</p>
   <ul>
 <li><a class="reference internal" href="#">Features</a><ul>
 <li><a class="reference internal" href="#flags">Flags</a></li>
-<li><a class="reference internal" href="#logging">Logging</a></li>
-<li><a class="reference internal" href="#metrics">Metrics</a><ul>
-<li><a class="reference internal" href="#filtering-stats-out">Filtering stats out</a></li>
-<li><a class="reference internal" href="#changing-metrics-verbosity">Changing metrics verbosity</a></li>
-<li><a class="reference internal" href="#pretty-output">Pretty output</a></li>
+<li><a class="reference internal" href="#logging">Logging</a><ul>
+<li><a class="reference internal" href="#backwards-compatibility-via-slf4j-jdk14">Backwards Compatibility (via <cite>slf4j-jdk14</cite>)</a><ul>
+<li><a class="reference internal" href="#log-format">Log Format</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#dynamically-change-log-levels">Dynamically Change Log Levels</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#metrics">Metrics</a></li>
 <li><a class="reference internal" href="#exported-metrics">Exported Metrics</a></li>
-<li><a class="reference internal" href="#histograms">Histograms</a><ul>
-<li><a class="reference internal" href="#api-parameters">API Parameters</a></li>
-<li><a class="reference internal" href="#custom-implementations">Custom Implementations</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#histograms">Histograms</a></li>
 <li><a class="reference internal" href="#admin-http-interface">Admin HTTP interface</a></li>
 <li><a class="reference internal" href="#lifecycle-management">Lifecycle Management</a></li>
 <li><a class="reference internal" href="#extension">Extension</a></li>

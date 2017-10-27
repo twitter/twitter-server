@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>TwitterServer &#8212; TwitterServer 1.32.0 documentation</title>
+    <title>TwitterServer &#8212; TwitterServer 17.10.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.32.0',
+        VERSION:     '17.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="TwitterServer 1.32.0 documentation" href="#" />
+    <link rel="top" title="TwitterServer 17.10.0 documentation" href="#" />
     <link rel="next" title="Features" href="Features.html" />
    
   
@@ -70,12 +70,12 @@ wired in correctly for use in production at Twitter.</p>
 &lt;dependency&gt;
   &lt;groupId&gt;com.twitter&lt;/groupId&gt;
   &lt;artifactId&gt;twitter-server_2.12&lt;/artifactId&gt;
-  &lt;version&gt;1.32.0&lt;/version&gt;
+  &lt;version&gt;17.10.0&lt;/version&gt;
 &lt;/dependency&gt;
 </pre>
 <p>or, with sbt:</p>
 <pre class="literal-block">
-libraryDependencies += &quot;com.twitter&quot; %% &quot;twitter-server&quot; % &quot;1.32.0&quot;
+libraryDependencies += &quot;com.twitter&quot; %% &quot;twitter-server&quot; % &quot;17.10.0&quot;
 </pre>
 <p>First we’ll need to import a few things into our namespace.</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">com.twitter.finagle.</span><span class="o">{</span><span class="nc">Http</span><span class="o">,</span> <span class="nc">Service</span><span class="o">}</span>
@@ -134,19 +134,17 @@ environment. See <a class="reference internal" href="Features.html"><span class=
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Features.html">Features</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Features.html#flags">Flags</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Features.html#logging">Logging</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Features.html#metrics">Metrics</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Features.html#filtering-stats-out">Filtering stats out</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Features.html#changing-metrics-verbosity">Changing metrics verbosity</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Features.html#pretty-output">Pretty output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Features.html#logging">Logging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Features.html#backwards-compatibility-via-slf4j-jdk14">Backwards Compatibility (via <cite>slf4j-jdk14</cite>)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Features.html#log-format">Log Format</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="Features.html#dynamically-change-log-levels">Dynamically Change Log Levels</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Features.html#metrics">Metrics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Features.html#exported-metrics">Exported Metrics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Features.html#histograms">Histograms</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Features.html#api-parameters">API Parameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Features.html#custom-implementations">Custom Implementations</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="Features.html#histograms">Histograms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Features.html#admin-http-interface">Admin HTTP interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Features.html#lifecycle-management">Lifecycle Management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Features.html#extension">Extension</a></li>
