@@ -88,9 +88,11 @@ val sharedSettings = Seq(
 )
 
 lazy val root = (project in file("."))
+  .enablePlugins(
+    ScalaUnidocPlugin
+  )
   .settings(
-    sharedSettings,
-    unidocSettings)
+    sharedSettings)
   .aggregate(
     twitterServer,
     twitterServerSlf4jJdk14,
@@ -98,11 +100,13 @@ lazy val root = (project in file("."))
     twitterServerSlf4jLogbackClassic)
 
 lazy val twitterServer = (project in file("server"))
+  .enablePlugins(
+    ScalaUnidocPlugin
+  )
   .settings(
     name :=  "twitter-server",
     moduleName :=  "twitter-server",
-    sharedSettings,
-    unidocSettings)
+    sharedSettings)
   .settings(
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % slf4jVersion,
@@ -126,8 +130,7 @@ lazy val twitterServerSlf4jJdk14 = (project in file("slf4j-jdk14"))
   .settings(
     name :=  "twitter-server-slf4j-jdk14",
     moduleName :=  "twitter-server-slf4j-jdk14",
-    sharedSettings,
-    unidocSettings)
+    sharedSettings)
   .settings(
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % slf4jVersion,
@@ -141,8 +144,7 @@ lazy val twitterServerSlf4jLog4j12 = (project in file("slf4j-log4j12"))
   .settings(
     name :=  "twitter-server-slf4j-log4j12",
     moduleName :=  "twitter-server-slf4j-log4j12",
-    sharedSettings,
-    unidocSettings)
+    sharedSettings)
   .settings(
     libraryDependencies ++= Seq(
       "log4j" % "log4j" % "1.2.17" % "provided",
@@ -157,8 +159,7 @@ lazy val twitterServerSlf4jLogbackClassic = (project in file("logback-classic"))
   .settings(
     name :=  "twitter-server-logback-classic",
     moduleName :=  "twitter-server-logback-classic",
-    sharedSettings,
-    unidocSettings)
+    sharedSettings)
   .settings(
     libraryDependencies ++= Seq(
       "ch.qos.logback" % "logback-classic" % "1.1.7" % "provided",
@@ -172,7 +173,9 @@ lazy val twitterServerSlf4jLogbackClassic = (project in file("logback-classic"))
 
 lazy val twitterServerDoc = (project in file("doc"))
   .enablePlugins(
-    SphinxPlugin)
+    ScalaUnidocPlugin,
+    SphinxPlugin
+  )
   .settings(
     name := "twitter-server-doc",
     sharedSettings,
