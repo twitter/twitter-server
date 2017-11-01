@@ -7,6 +7,16 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+Breaking API Changes
+~~~~~~~~~~~~~~~~~~~~
+
+  * Change to apply JUL log format in the `c.t.server.logging.Logging` trait
+    constructor instead of in `premain` to apply format as early in the logging
+    stack as possible. However, this means that users overriding the
+    `def defaultFormatter` will not be able to use any flags to configure their
+    formatting, note: the default `LogFormatter` does not use flags.
+    ``PHAB_ID=D106534``
+
 17.10.0
 -------
 
