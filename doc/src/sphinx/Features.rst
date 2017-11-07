@@ -132,15 +132,11 @@ implementation which will provide the appropriate logging handler.
 
 Supported implementations:
 
-+-------------------------+-----------------------------------+
-| Implementation          | TwitterServer dependency          |
-+=========================+===================================+
-| java.util.logging (JUL) | |slf4j-jdk14|_     |
-+-------------------------+-----------------------------------+
-| Log4j                   | |slf4j-log4j12|_   |
-+-------------------------+-----------------------------------+
-| Logback (recommended)   | |logback-classic|_ |
-+-------------------------+-----------------------------------+
+java.util.logging (JUL) -> |twitter-server/slf4j-jdk14|_  
+
+Log4j                   -> |twitter-server/slf4j-log4j12|_  
+
+Logback (recommended)   -> |twitter-server/logback-classic|_  
 
 .. _metrics_label:
 
