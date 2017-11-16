@@ -22,13 +22,12 @@ private class LoggingHandler extends AdminHttpMuxHandler with Logging {
     Seq(Level.OFF, Level.ERROR, Level.WARN, Level.INFO, Level.DEBUG, Level.TRACE, Level.ALL)
       .sorted(levelOrder)
 
-  /* filter by loggers that have defined log levels (not inherited) */
-  private[this] val loggers =
+  /** Exposed for testing */
+  private[classic] def loggers =
     LoggerFactory.getILoggerFactory
       .asInstanceOf[LoggerContext]
       .getLoggerList
       .asScala
-      .filter(_.getLevel != null)
       .sorted(loggerOrder)
 
   val pattern = "/admin/logging"
@@ -67,6 +66,12 @@ private class LoggingHandler extends AdminHttpMuxHandler with Logging {
               throw new IllegalArgumentException(
                 s"Unable to set log level for $loggerString -- undefined logging level!"
               )
+            } else if (toSetLevel == "null") {
+              val logger = LoggerFactory.getLogger(loggerString).asInstanceOf[Logger]
+              logger.setLevel(null)
+              val message = s"Removed level override for ${logger.getName}"
+              info(message)
+              escapeHtml(message)
             } else {
               val logger = LoggerFactory.getLogger(loggerString).asInstanceOf[Logger]
               logger.setLevel(Level.valueOf(toSetLevel))
@@ -104,24 +109,35 @@ private class LoggingHandler extends AdminHttpMuxHandler with Logging {
         ${(for (logger <- loggers) yield {
       val loggerName =
         if (logger.getName == "") org.slf4j.Logger.ROOT_LOGGER_NAME else logger.getName
-      s"""<tr>
-                <td><h5>${escapeHtml(loggerName)}</h5></td>
-                <td><div class="btn-group" role="group">
-                  ${(for (level <- levels) yield {
+      val inheritsLevel = logger.getLevel == null
+
+      val buttons = for (level <- levels) yield {
         val isActive = logger.getEffectiveLevel == level
-        val activeCss =
-          if (!isActive) "btn-default"
-          else {
-            "btn-primary active disabled"
-          }
+
+        val activeCss = if (!isActive) "btn-default"
+          else if (!inheritsLevel) "btn-primary active disabled"
+          else "btn-primary active"
+
         val href =
-          if (isActive) ""
+          if (isActive && logger.getLevel == logger.getEffectiveLevel) ""
           else {
             s"""?logger=${URLEncoder.encode(loggerName, "UTF-8")}&level=${level.toString}"""
           }
+
         s"""<a class="btn btn-sm $activeCss"
                               href="$href">${level.toString}</a>"""
-      }).mkString("\n")}
+      }
+
+      val resetButton = if (!inheritsLevel && loggerName != org.slf4j.Logger.ROOT_LOGGER_NAME) {
+          val href = s"""?logger=${URLEncoder.encode(loggerName, "UTF-8")}&level=null"""
+          s"""<a class="btn btn-sm btn-warning" href="$href">RESET</a>"""
+        } else ""
+
+      s"""<tr>
+                <td><h5>${escapeHtml(loggerName)}</h5></td>
+                <td><div class="btn-group" role="group">
+                  ${buttons.mkString("\n")}
+                  $resetButton
                 </div></td>
                 </tr>"""
     }).mkString("\n")}
