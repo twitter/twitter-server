@@ -15,7 +15,15 @@ val slf4jVersion = "1.7.21"
 def util(which: String) = "com.twitter" %% ("util-"+which) % releaseVersion
 def finagle(which: String) = "com.twitter" %% ("finagle-"+which) % releaseVersion
 
-val sharedSettings = Seq(
+lazy val noPublishSettings = Seq(
+  publish := {},
+  publishLocal := {},
+  publishArtifact := false,
+  // sbt-pgp's publishSigned task needs this defined even though it is not publishing.
+  publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo")))
+)
+
+lazy val sharedSettings = Seq(
   version := releaseVersion,
   organization := "com.twitter",
   scalaVersion := "2.12.4",
@@ -91,8 +99,8 @@ lazy val root = (project in file("."))
   .enablePlugins(
     ScalaUnidocPlugin
   )
-  .settings(
-    sharedSettings)
+  .settings(sharedSettings)
+  .settings(noPublishSettings)
   .aggregate(
     twitterServer,
     twitterServerSlf4jJdk14,
