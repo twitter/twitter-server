@@ -17,6 +17,7 @@ private[server] object ThreadsHandler {
   case class ThreadInfo(thread: Thread, stack: StackTrace, isIdle: Boolean)
 
   private val IdleClassAndMethod: Set[(String, String)] = Set(
+    ("io.netty.channel.epoll.Native", "epollWait0"),
     ("sun.nio.ch.EPollArrayWrapper", "epollWait"),
     ("sun.nio.ch.KQueueArrayWrapper", "kevent0")
   )

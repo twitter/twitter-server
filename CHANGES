@@ -7,6 +7,13 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+Bug Fixes
+~~~~~~~~~
+
+  * Treat `io.netty.channel.epoll.Native.epollWait0` as an idle thread on
+    "/admin/threads". This method is observed when using Netty 4's native
+    transport. ``PHAB_ID=D115058``
+
 17.11.0
 -------
 
