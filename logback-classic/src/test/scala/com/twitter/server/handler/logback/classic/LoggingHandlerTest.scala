@@ -56,9 +56,19 @@ class LoggingHandlerTest extends FunSuite {
     assert(handler.loggers.filter(_.getName == loggerName).head.getLevel() == Level.DEBUG)
   }
 
-  test("override can be reset") {
-    val req = Request(("logger", "foo"), ("level", "null"))
+  test("logger can be reset") {
     val logger = LoggerFactory.getLogger("foo").asInstanceOf[Logger]
+    assert(logger.getLevel == null)
+    logger.setLevel(Level.DEBUG)
+
+    logger.setLevel(null)
+    assert(logger.getLevel == null)
+  }
+
+  test("reset button works") {
+    // mimics the request when reset button is pressed
+    val req = Request(("logger", "bar"), ("level", "null"))
+    val logger = LoggerFactory.getLogger("bar").asInstanceOf[Logger]
 
     assert(logger.getLevel == null)
 
@@ -68,4 +78,30 @@ class LoggingHandlerTest extends FunSuite {
     assert(logger.getLevel == null)
   }
 
+  test("loggers with overridden levels will display as overridden") {
+    val log = LoggerFactory.getLogger("baz").asInstanceOf[Logger]
+
+    val req = Request(("overridden", "true"))
+    val overriddenHtml1 = Await.result(handler(req), 5.seconds).contentString
+
+    assert(!overriddenHtml1.contains("baz"))
+
+    log.setLevel(Level.DEBUG) // log level is now overridden to DEBUG
+    val overriddenHtml2 = Await.result(handler(req), 5.seconds).contentString
+
+    assert(overriddenHtml2.contains("baz"))
+
+    log.setLevel(null)  // log level is now inherited, no longer overridden
+    val overriddenHtml3 = Await.result(handler(req), 5.seconds).contentString
+
+    assert(!overriddenHtml3.contains("baz"))
+  }
+
+  test("displays all loggers when in display all mode") {
+    val req = Request(("overridden", "false"))
+    val html = Await.result(handler(req), 5.seconds).contentString
+    val loggerNames: Seq[String] = handler.loggers.map(_.getName)
+
+    for (name <- loggerNames) assert(html.contains(name))
+  }
 }
