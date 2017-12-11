@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Features &#8212; TwitterServer 17.11.0 documentation</title>
+    <title>Features &#8212; TwitterServer 17.12.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '17.11.0',
+        VERSION:     '17.12.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="TwitterServer 17.11.0 documentation" href="index.html" />
+    <link rel="top" title="TwitterServer 17.12.0 documentation" href="index.html" />
     <link rel="next" title="HTTP Admin interface" href="Admin.html" />
     <link rel="prev" title="TwitterServer" href="index.html" />
    
@@ -234,9 +234,28 @@ admin interface for supported <a class="reference external" href="https://www.sl
 <a class="reference external" href="https://www.slf4j.org/"><cite>slf4j</cite></a> logging implementation directly, depend on the <cite>TwitterServer</cite> wrapper for the logging
 implementation which will provide the appropriate logging handler.</p>
 <p>Supported implementations:</p>
-<p>java.util.logging (JUL) -&gt; <a href="#id9"><span class="problematic" id="id10">|twitter-server/slf4j-jdk14|_</span></a></p>
-<p>Log4j                   -&gt; <a href="#id11"><span class="problematic" id="id12">|twitter-server/slf4j-log4j12|_</span></a></p>
-<p>Logback (recommended)   -&gt; <a href="#id13"><span class="problematic" id="id14">|twitter-server/logback-classic|_</span></a></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="41%" />
+<col width="59%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Implementation</th>
+<th class="head">Dependency</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>java.util.logging (JUL)</td>
+<td><a href="#id9"><span class="problematic" id="id10">|twitter-server/slf4j-jdk14|_</span></a></td>
+</tr>
+<tr class="row-odd"><td>Log4j</td>
+<td><a href="#id11"><span class="problematic" id="id12">|twitter-server/slf4j-log4j12|_</span></a></td>
+</tr>
+<tr class="row-even"><td>Logback (recommended)</td>
+<td><a href="#id13"><span class="problematic" id="id14">|twitter-server/logback-classic|_</span></a></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="section" id="metrics">
