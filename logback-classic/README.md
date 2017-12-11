@@ -8,7 +8,7 @@ for other logging implementations.
 NOTE:
 -----
 
-Users MUST provide a compatible version of the [Logabck](https://logback.qos.ch/) logging implementation.
+Users MUST provide a compatible version of the [Logback](https://logback.qos.ch/) logging implementation.
 
 Admin HTTP Interface Logging Handler
 ------------------------------------
