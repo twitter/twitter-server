@@ -7,8 +7,7 @@ val jacksonVersion = "2.8.4"
 val jacksonLibs = Seq(
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
   "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
-  "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion exclude("com.google.guava", "guava"),
-  "com.google.guava" % "guava" % "19.0"
+  "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion
 )
 val slf4jVersion = "1.7.21"
 
