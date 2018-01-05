@@ -10,7 +10,9 @@ import com.twitter.server.util.HtmlUtils.escapeHtml
 import com.twitter.util.Future
 import com.twitter.util.logging.Logging
 import java.net.URLEncoder
+import java.util.{logging => javalog}
 import org.slf4j.LoggerFactory
+import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 
 private class LoggingHandler extends AdminHttpMuxHandler with Logging {
@@ -22,9 +24,28 @@ private class LoggingHandler extends AdminHttpMuxHandler with Logging {
     Seq(Level.OFF, Level.ERROR, Level.WARN, Level.INFO, Level.DEBUG, Level.TRACE, Level.ALL)
       .sorted(levelOrder)
 
+  private[this] implicit val julLevelOrder: Ordering[javalog.Level] = Ordering.by(_.intValue)
+  private[this] val julLogManager = javalog.LogManager.getLogManager
+  private[this] val julLoggers = julLogManager.getLoggerNames.asScala.toSeq
+    .map(julLogManager.getLogger)
+
+  private[this] val julLevels =
+    Seq(
+      javalog.Level.OFF,
+      javalog.Level.SEVERE,
+      javalog.Level.WARNING,
+      javalog.Level.INFO,
+      javalog.Level.CONFIG,
+      javalog.Level.FINE,
+      javalog.Level.FINER,
+      javalog.Level.FINEST,
+      javalog.Level.ALL)
+      .sorted(julLevelOrder)
+
   /** Exposed for testing */
   private[classic] def loggers =
-    LoggerFactory.getILoggerFactory
+    LoggerFactory
+      .getILoggerFactory
       .asInstanceOf[LoggerContext]
       .getLoggerList
       .asScala
@@ -62,6 +83,7 @@ private class LoggingHandler extends AdminHttpMuxHandler with Logging {
         case Some(loggerString) =>
           try {
             val toSetLevel = request.getParam("level")
+            val isJul = request.getBooleanParam("isJul", false)
             if (toSetLevel == null || toSetLevel.isEmpty) {
               throw new IllegalArgumentException(
                 s"Unable to set log level for $loggerString -- undefined logging level!"
@@ -73,9 +95,16 @@ private class LoggingHandler extends AdminHttpMuxHandler with Logging {
               info(message)
               escapeHtml(message)
             } else {
-              val logger = LoggerFactory.getLogger(loggerString).asInstanceOf[Logger]
-              logger.setLevel(Level.valueOf(toSetLevel))
-              val message = s"""Changed ${logger.getName} to Level.$toSetLevel"""
+              val message = if (!isJul) {
+                val logger = LoggerFactory.getLogger(loggerString).asInstanceOf[Logger]
+                logger.setLevel(Level.valueOf(toSetLevel))
+                s"""Changed ${logger.getName} to Level.$toSetLevel"""
+              } else {
+                val julLogger = julLogManager.getLogger(loggerString)
+                julLogger.setLevel(javalog.Level.parse(toSetLevel))
+                s"""Changed ${julLogger.getName} to Level.$toSetLevel"""
+              }
+
               info(message)
               escapeHtml(message)
             }
@@ -93,7 +122,7 @@ private class LoggingHandler extends AdminHttpMuxHandler with Logging {
           .filter(_.getLevel != null)
           .filter(_.getName != org.slf4j.Logger.ROOT_LOGGER_NAME)
       } else loggers
-      val html = renderHtml(filteredLoggers, message, showOverriddenOnly)
+      val html = renderHtml(filteredLoggers, julLoggers, message, showOverriddenOnly)
 
       newResponse(
         contentType = "text/html;charset=UTF-8",
@@ -107,10 +136,12 @@ private class LoggingHandler extends AdminHttpMuxHandler with Logging {
 
   private def renderHtml(
     renderLoggers: Seq[Logger],
+    julLoggers: Seq[javalog.Logger],
     updateMsg: String,
     showOverriddenOnly: Boolean
   ): String = {
-    s"""${renderFilterButtons(showOverriddenOnly)}
+    s"""<h3>Logback Loggers</h3>
+        ${renderFilterButtons(showOverriddenOnly)}
     <table class="table table-striped table-condensed">
         <caption>${escapeHtml(updateMsg)}</caption>
         <thead>
@@ -123,7 +154,7 @@ private class LoggingHandler extends AdminHttpMuxHandler with Logging {
         val loggerName =
           if (logger.getName == "") org.slf4j.Logger.ROOT_LOGGER_NAME else logger.getName
         val inheritsLevel = logger.getLevel == null
-        val filterHref = if (showOverriddenOnly) {
+        val filterQueryParams = if (showOverriddenOnly) {
             "?overridden=true&"
           } else "?"
 
@@ -134,19 +165,19 @@ private class LoggingHandler extends AdminHttpMuxHandler with Logging {
             else if (!inheritsLevel) "btn-primary active disabled"
             else "btn-primary active"
 
-          val href =
+          val queryParams =
             if (isActive && logger.getLevel == logger.getEffectiveLevel) ""
             else {
               s"""logger=${URLEncoder.encode(loggerName, "UTF-8")}&level=${level.toString}"""
             }
 
           s"""<a class="btn btn-sm $activeCss"
-                              href="$filterHref$href">${level.toString}</a>"""
+                              href="$filterQueryParams$queryParams">${level.toString}</a>"""
         }
 
         val resetButton = if (!inheritsLevel && loggerName != org.slf4j.Logger.ROOT_LOGGER_NAME) {
-          val href = s"""logger=${URLEncoder.encode(loggerName, "UTF-8")}&level=null"""
-          s"""<a class="btn btn-sm btn-warning" href="$filterHref$href">RESET</a>"""
+          val queryParams = s"""logger=${URLEncoder.encode(loggerName, "UTF-8")}&level=null"""
+          s"""<a class="btn btn-sm btn-warning" href="$filterQueryParams$queryParams">RESET</a>"""
         } else ""
 
         s"""<tr>
@@ -158,7 +189,61 @@ private class LoggingHandler extends AdminHttpMuxHandler with Logging {
                 </tr>"""
       }).mkString("\n")
     }
+         </table>
+    <h3>java.util.Logging Loggers</h3>
+    <table class="table table-striped table-condensed">
+            <thead>
+              <tr>
+                <th>java.util.logging.Logger</th>
+                <th>java.util.logging.Level</th>
+              </tr>
+            </thead>
+    ${val filterQueryParams = if (showOverriddenOnly) {
+      "?overridden=true&"
+    } else "?"
+
+    (for (logger <- julLoggers) yield {
+    val loggerName = getLoggerDisplayName(logger)
+    val buttons = (for (level <- julLevels) yield {
+      val isActive = getLevel(logger) == level
+      val activeCss =
+        if (!isActive) "btn-default"
+        else {
+          "btn-primary active disabled"
+        }
+      val queryParams =
+        if (isActive) ""
+        else {
+          s"""logger=${URLEncoder.encode(loggerName, "UTF-8")}&level=${level.toString}&isJul=true"""
+        }
+      s"""<a class="btn btn-sm $activeCss"
+                            href="$filterQueryParams$queryParams">${level.toString}</a>"""
+    }).mkString("\n")
+
+    s"""<tr>
+          <td><h5>${escapeHtml(loggerName)}</h5></td>
+          <td><div class="btn-group" role="group">
+            $buttons
+          </div></td>
+          </tr>"""
+  }).mkString("\n")}
          </table>"""
+
+  }
+
+  private def getLoggerDisplayName(logger: javalog.Logger): String = logger.getName match {
+    case "" => "root"
+    case name => name
+  }
+
+  def getLevel(logger: javalog.Logger): javalog.Level = {
+    @tailrec
+    def go(l: javalog.Logger): javalog.Level = {
+      if (l.getLevel != null) l.getLevel
+      else if (l.getParent != null) go(l.getParent)
+      else javalog.Level.OFF // root has no level set
+    }
+    go(javalog.Logger.getLogger(logger.getName))
   }
 
   private def renderFilterButtons(showOverriddenOnly: Boolean): String = {

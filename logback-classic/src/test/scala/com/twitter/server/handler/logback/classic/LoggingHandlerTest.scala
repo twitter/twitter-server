@@ -78,6 +78,18 @@ class LoggingHandlerTest extends FunSuite {
     assert(logger.getLevel == null)
   }
 
+  test("can set jul level") {
+    val logger = java.util.logging.Logger.getLogger("snap")
+    logger.setLevel(null)
+    val req = Request(("logger", "snap"), ("level", "FINER"), ("isJul", "true"))
+
+    assert(logger.getLevel == null)
+
+    Await.result(handler(req), 5.seconds)
+
+    assert(logger.getLevel == java.util.logging.Level.FINER)
+  }
+
   test("loggers with overridden levels will display as overridden") {
     val log = LoggerFactory.getLogger("baz").asInstanceOf[Logger]
 
