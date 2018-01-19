@@ -7,6 +7,12 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+Dependencies
+~~~~~~~~~~~~
+
+  * Removed 'finagle-zipkin-core' as a depdendency since there was no
+    code in twitter-server which used it. ``PHAB_ID=D129515``
+
 18.1.0
 -------
 

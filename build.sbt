@@ -121,7 +121,6 @@ lazy val twitterServer = (project in file("server"))
       finagle("http"),
       finagle("toggle"),
       finagle("tunable"),
-      finagle("zipkin-core"),
       util("app"),
       util("core"),
       util("jvm"),

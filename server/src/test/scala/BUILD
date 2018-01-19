@@ -9,7 +9,6 @@ junit_tests(
     'finagle/finagle-core/src/main/scala:scala',
     'finagle/finagle-http/src/main/scala:scala',
     'finagle/finagle-toggle',
-    'finagle/finagle-zipkin-core/src/main/scala:scala',
     'twitter-server/server/src/main/scala',
     'twitter-server/server/src/test/resources',
     'util/util-app/src/main/scala:scala',
