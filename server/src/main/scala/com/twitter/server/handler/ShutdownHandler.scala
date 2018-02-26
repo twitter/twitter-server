@@ -16,12 +16,13 @@ class ShutdownHandler(app: App) extends Service[Request, Response] {
 
   def apply(req: Request): Future[Response] = {
     if (req.method == Method.Post) {
-      log.info(s"[${req.uri}] from ${req.remoteAddress.getHostAddress} quitting")
-      val grace = getGraceParam(req.uri) map { d =>
+      val specifiedGracePeriod = getGraceParam(req.uri).map { d =>
         try Duration.parse(d)
         catch {
           case e: NumberFormatException =>
-            val msg = "could not parse 'grace' parameter: %s is not a valid duration".format(d)
+            val msg = s"could not parse 'grace' parameter: $d is not a valid duration"
+            log.info(s"[${req.uri}] from ${req.remoteAddress.getHostAddress} " +
+              s"failed to quit due to invalid grace period format", e)
             return newResponse(
               status = Status.BadRequest,
               contentType = "text/plain;charset=UTF-8",
@@ -29,7 +30,10 @@ class ShutdownHandler(app: App) extends Service[Request, Response] {
             )
         }
       }
-      app.close(grace getOrElse app.defaultCloseGracePeriod)
+      val grace = specifiedGracePeriod.getOrElse(app.defaultCloseGracePeriod)
+      log.info(s"[${req.uri}] from ${req.remoteAddress.getHostAddress} " +
+        s"quitting with grace period $grace")
+      app.close(grace)
       newOk("quitting\n")
     } else {
       log.info(
