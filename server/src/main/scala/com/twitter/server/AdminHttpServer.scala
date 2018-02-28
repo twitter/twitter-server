@@ -22,7 +22,6 @@ import com.twitter.util.{ExecutorServiceFuturePool, Future, FuturePool, Monitor}
 import java.net.InetSocketAddress
 import java.util.concurrent.Executors
 import org.slf4j.LoggerFactory
-import scala.collection.mutable
 import scala.language.reflectiveCalls
 
 object AdminHttpServer {
@@ -217,58 +216,67 @@ trait AdminHttpServer { self: App =>
     }
   }
 
-  private[this] def updateMuxer() = {
+  private[this] def updateMuxer(): Unit = {
     addLoggingHandler() // ensure there is an /admin/logging handler
 
-    val rts = allRoutes ++
-      HttpMuxer.routes.map(Route.from)
-
-    // convert local routes into the IndexView data model
-    val localRoutes =
-      rts.filter(_.includeInIndex).groupBy(_.group).flatMap {
-        case (group, rs) =>
-          val links = rs.map { r =>
-            IndexView.Link(r.alias, r.path, r.method)
-          }
-          group match {
-            case Some(g) => Seq(IndexView.Group(g, links))
-            case None => links
-          }
-      }
-
-    // create index with both the local and global muxer namespaces
-    // and server/client registries.
-    val index = { () =>
-      val serverGroup = {
-        val serverLinks: Seq[IndexView.Entry] = (ServerRegistry.registrants collect {
-          case server if server.name.nonEmpty =>
-            IndexView.Link(server.name, "/admin/servers/" + server.name)
-        }).toSeq
-        IndexView.Group("Listening Servers", serverLinks.sorted(IndexView.EntryOrdering))
-      }
-
-      val clientGroup = {
-        val clientLinks: Seq[IndexView.Entry] = (ClientRegistry.registrants collect {
-          case client if client.name.nonEmpty =>
-            IndexView.Link(client.name, "/admin/clients/" + client.name)
-        }).toSeq
-        IndexView.Group("Downstream Clients", clientLinks.sorted(IndexView.EntryOrdering))
-      }
-
-      clientGroup +: serverGroup +: localRoutes.toSeq
-    }
-
     // create a service which multiplexes across all endpoints.
-    val endpoints = new mutable.ArrayBuffer[String]()
-    val localMuxer = allRoutes.foldLeft(new HttpMuxer) {
-      case (muxer, route) =>
-        endpoints += s"\t${route.path} => ${route.handler.getClass.getName}"
-        val service = new IndexView(route.alias, route.path, index) andThen route.handler
-        muxer.withHandler(route.path, service)
+    val localMuxer = allRoutes.foldLeft(new HttpMuxer) { case (muxer, route) =>
+      val service = new IndexView(route.alias, route.path, () => indexEntries).andThen(route.handler)
+      muxer.withHandler(route.path, service)
     }
+
+    val endpoints = allRoutes.map { route =>
+      s"\t${route.path} => ${route.handler.getClass.getName}"
+    }
+
     log.debug(s"AdminHttpServer Muxer endpoints:\n" + endpoints.mkString("\n"))
     adminHttpMuxer.underlying = HttpUtils.combine(Seq(localMuxer, HttpMuxer))
   }
+
+  /** create index with both the local and global muxer namespace and server/client registries. */
+  private[this] def indexEntries: Seq[IndexView.Entry] =
+    downstreamClients +: listeningServers +: localRoutes
+
+  /** group listening servers for display */
+  private[this] def listeningServers: IndexView.Group = {
+    val serverLinks: Seq[IndexView.Entry] = ServerRegistry.registrants.collect {
+      case server if server.name.nonEmpty =>
+        IndexView.Link(server.name, "/admin/servers/" + server.name)
+    }.toSeq
+
+    IndexView.Group("Listening Servers", serverLinks.sorted(IndexView.EntryOrdering))
+  }
+
+  /** group downstream clients for display */
+  private[this] def downstreamClients: IndexView.Group = {
+    val clientLinks: Seq[IndexView.Entry] = ClientRegistry.registrants.collect {
+      case client if client.name.nonEmpty =>
+        IndexView.Link(client.name, "/admin/clients/" + client.name)
+    }.toSeq
+
+    IndexView.Group("Downstream Clients", clientLinks.sorted(IndexView.EntryOrdering))
+  }
+
+  /** convert local routes into the IndexView data model */
+  private[this] def localRoutes: Seq[IndexView.Entry] = {
+    val routes = allRoutes ++
+      HttpMuxer.routes.map(Route.from)
+
+    routes
+      .filter(_.includeInIndex)
+      .groupBy(_.group)
+      .flatMap { case (groupOpt, rts) =>
+        val links = rts.map(routeToIndexLink)
+        groupOpt match {
+          case Some(group) => Seq(IndexView.Group(group, links))
+          case None => links
+        }
+      }
+      .toSeq
+  }
+
+  private[this] def routeToIndexLink(route: AdminHttpServer.Route): IndexView.Link =
+    IndexView.Link(route.alias, route.path, route.method)
 
   private[this] def startServer(): Unit = {
     val loggingMonitor = new Monitor {
