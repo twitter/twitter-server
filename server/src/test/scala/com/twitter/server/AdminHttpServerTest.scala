@@ -149,6 +149,7 @@ class AdminHttpServerTest extends FunSuite with Eventually with IntegrationPatie
         override protected lazy val shutdownTimer = new MockTimer
 
         override protected def exitOnError(reason: String): Unit = ()
+        override protected def exitOnError(throwable: Throwable): Unit = ()
 
         override def main(): Unit = {
           val drainingClosable = Closable.make { _ =>
