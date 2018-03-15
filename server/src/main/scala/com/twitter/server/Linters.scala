@@ -21,6 +21,7 @@ trait Linters { app: App =>
     TooManyCumulativeGaugesRules() ++
       Seq(
         SchedulerBlockingRule(),
+        DuplicateLoadServiceBindings(),
         NumberOfStatsReceiversRule(),
         StackRegistryDuplicatesRule(ClientRegistry, Set.empty),
         StackRegistryDuplicatesRule(ServerRegistry, Set.empty),
