@@ -83,6 +83,12 @@ object AdminHttpServer {
     def isolate(r: Route): Route =
       r.copy(handler = IsolateFilter.andThen(r.handler))
 
+    /**
+     * Force the [[Service[Request, Response]] `s` to be handled outside the global default worker pool.
+     */
+    def isolate(s: Service[Request, Response]): Service[Request, Response] =
+      IsolateFilter.andThen(s)
+
     def from(route: http.Route): Route = route.index match {
       case Some(index) =>
         mkRoute(

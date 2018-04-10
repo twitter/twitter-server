@@ -7,6 +7,12 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+Runtime Behavior Changes
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+  * Overloaded `c.t.server.AdminHttpServer#isolate` to accept a
+  `Service[Request, Response]`. ``PHAB_ID=`D157891`
+
 18.4.0
 -------
 
