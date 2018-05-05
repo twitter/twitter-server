@@ -1,15 +1,12 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.stats.NullStatsReceiver
-import com.twitter.finagle.toggle.{NullToggleMap, Toggle, ToggleMap}
+import com.twitter.finagle.toggle.{Toggle, ToggleMap}
 import com.twitter.server.handler.ToggleHandler._
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 import scala.collection.immutable
 import scala.collection.mutable.ArrayBuffer
 
-@RunWith(classOf[JUnitRunner])
 class ToggleHandlerTest extends FunSuite {
 
   test("renders empty registeredLibraries") {
@@ -24,8 +21,8 @@ class ToggleHandlerTest extends FunSuite {
 
   test("toLibraryToggles for empty ToggleMaps") {
     val mappings = Map(
-      "com.twitter.Empty1" -> new ToggleMap.Immutable(immutable.Seq.empty),
-      "com.twitter.Empty2" -> new ToggleMap.Immutable(immutable.Seq.empty)
+      "com.twitter.Empty1" -> ToggleMap.newMutable(),
+      "com.twitter.Empty2" -> ToggleMap.newMutable()
     )
     val libs = new ToggleHandler(() => mappings)
       .toLibraries(ParsedPath(None, None))
@@ -50,7 +47,12 @@ class ToggleHandlerTest extends FunSuite {
 
     val tm0 = new ToggleMap.Immutable(immutable.Seq(t0, t1))
     val tm1 = new ToggleMap.Immutable(immutable.Seq(t0b, t2))
-    val mappings = Map("com.twitter.With" -> tm0.orElse(tm1))
+    val immutableMap = tm0.orElse(tm1)
+    val mappings = Map("com.twitter.With" -> new ToggleMap.Mutable with ToggleMap.Proxy {
+      def underlying: ToggleMap = immutableMap
+      def put(id: String, fraction: Double): Unit = ???
+      def remove(id: String): Unit = ???
+    })
     val libs = new ToggleHandler(() => mappings)
       .toLibraries(ParsedPath(None, None))
 
@@ -133,7 +135,11 @@ class ToggleHandlerTest extends FunSuite {
     tm("com.twitter.map0toggle0")(5)
     tm("com.twitter.map0toggle1")(5)
 
-    val mappings = Map("com.twitter.map0" -> tm)
+    val mappings = Map("com.twitter.map0" -> new ToggleMap.Mutable with ToggleMap.Proxy {
+      def underlying: ToggleMap = tm
+      def put(id: String, fraction: Double): Unit = ???
+      def remove(id: String): Unit = ???
+    })
     val handler = new ToggleHandler(() => mappings)
 
     def currentForId(id: String): ToggleHandler.Current = {
@@ -170,15 +176,6 @@ class ToggleHandlerTest extends FunSuite {
     assert(errors2.isEmpty, errors.mkString(", "))
     assert(tog.isDefinedAt(30))
     assert(!tog(30))
-  }
-
-  test("setToggle missing Mutable ToggleMap") {
-    val libName = "some.other.lib"
-    val handler = new ToggleHandler(() => Map(libName -> NullToggleMap))
-
-    val errors = handler.setToggle(libName, "com.handler.T0", Some("0.0"))
-    assert(errors.nonEmpty)
-    assert(errors.contains("Mutable ToggleMap not found for 'some.other.lib'"))
   }
 
   test("setToggle missing fraction") {
@@ -225,22 +222,13 @@ class ToggleHandlerTest extends FunSuite {
     assert(!tog.isDefinedAt(30))
   }
 
-  test("deleteToggle missing Mutable ToggleMap") {
-    val libName = "some.other.lib"
-    val handler = new ToggleHandler(() => Map(libName -> NullToggleMap))
-
-    val errors = handler.deleteToggle(libName, "com.handler.T0")
-    assert(errors.nonEmpty)
-    assert(errors.contains("Mutable ToggleMap not found for 'some.other.lib'"))
-  }
-
   test("parsePath") {
     def assertParsePathOk(
       path: String,
       expectedLibraryName: Option[String],
       expectedId: Option[String]
     ): Unit = {
-      val handler = new ToggleHandler(() => Map("com.twitter.lib" -> NullToggleMap))
+      val handler = new ToggleHandler(() => Map("com.twitter.lib" -> ToggleMap.newMutable()))
       val errors = new ArrayBuffer[String]()
       val parsed = handler.parsePath(path, errors)
       assert(errors.isEmpty, errors.mkString(", "))
@@ -259,7 +247,7 @@ class ToggleHandlerTest extends FunSuite {
   }
 
   test("parsePath invalid path format") {
-    val handler = new ToggleHandler(() => Map("com.twitter.lib" -> NullToggleMap))
+    val handler = new ToggleHandler(() => Map("com.twitter.lib" -> ToggleMap.newMutable()))
     def assertPathFormat(path: String): Unit = {
       val errors = new ArrayBuffer[String]()
       handler.parsePath(path, errors)
@@ -272,14 +260,14 @@ class ToggleHandlerTest extends FunSuite {
   }
 
   test("parsePath unknown libraryName") {
-    val handler = new ToggleHandler(() => Map("com.twitter.lib" -> NullToggleMap))
+    val handler = new ToggleHandler(() => Map("com.twitter.lib" -> ToggleMap.newMutable()))
     val errors = new ArrayBuffer[String]()
     handler.parsePath("/admin/toggles/com.twitter.erm", errors)
     assert(errors.contains("Unknown library name: 'com.twitter.erm'"))
   }
 
   test("parsePath invalid id") {
-    val handler = new ToggleHandler(() => Map("com.twitter.lib" -> NullToggleMap))
+    val handler = new ToggleHandler(() => Map("com.twitter.lib" -> ToggleMap.newMutable()))
     val errors = new ArrayBuffer[String]()
     handler.parsePath("/admin/toggles/com.twitter.lib/FLEEK", errors)
     assert(errors.contains("Invalid id: 'FLEEK'"))

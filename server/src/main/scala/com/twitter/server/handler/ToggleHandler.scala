@@ -111,7 +111,7 @@ private[handler] object ToggleHandler {
  * For create and update, and an additional "fraction" request parameter
  * must be set as well.
  */
-class ToggleHandler private[handler] (registeredLibrariesFn: () => Map[String, ToggleMap])
+class ToggleHandler private[handler] (registeredLibrariesFn: () => Map[String, ToggleMap.Mutable])
     extends Service[Request, Response] {
 
   import ToggleHandler._
@@ -232,11 +232,6 @@ class ToggleHandler private[handler] (registeredLibrariesFn: () => Map[String, T
     }
   }
 
-  private[this] def findMutable(toggleMap: ToggleMap): Option[ToggleMap.Mutable] =
-    ToggleMap.components(toggleMap).collectFirst {
-      case mut: ToggleMap.Mutable => mut
-    }
-
   /**
    * Returns any error messages, or an empty `Seq` if successful.
    *
@@ -259,13 +254,8 @@ class ToggleHandler private[handler] (registeredLibrariesFn: () => Map[String, T
           val fraction = f.toDouble
           if (Toggle.isValidFraction(fraction)) {
             val toggleMap = registeredLibrariesFn()(libraryName)
-            findMutable(toggleMap) match {
-              case None =>
-                errors += s"Mutable ToggleMap not found for '$libraryName'"
-              case Some(mut) =>
-                log.info(s"Set $libraryName's toggle $id to $fraction")
-                mut.put(id, fraction)
-            }
+            log.info(s"Set $libraryName's toggle $id to $fraction")
+            toggleMap.put(id, fraction)
           } else {
             errors += s"Fraction must be [0.0-1.0], was: '$fractionStr'"
           }
@@ -291,13 +281,8 @@ class ToggleHandler private[handler] (registeredLibrariesFn: () => Map[String, T
   ): Seq[String] = {
     val errors = new ArrayBuffer[String]()
     val toggleMap = registeredLibrariesFn()(libraryName)
-    findMutable(toggleMap) match {
-      case None =>
-        errors += s"Mutable ToggleMap not found for '$libraryName'"
-      case Some(mut) =>
-        log.info(s"Deleted $libraryName's toggle $id")
-        mut.remove(id)
-    }
+    log.info(s"Deleted $libraryName's toggle $id")
+    toggleMap.remove(id)
     errors
   }
 
