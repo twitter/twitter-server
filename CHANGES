@@ -7,6 +7,12 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+New Features
+~~~~~~~~~~~~
+
+  * Added an admin page at "/admin/balancers.json" with details about client load balancers,
+    including both configuration and current status. ``PHAB_ID=D171589``
+
 18.5.0
 -------
 

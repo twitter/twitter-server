@@ -13,6 +13,8 @@ import com.twitter.util.Future
 
 private object ClientRegistryHandler {
 
+  private lazy val emptyEntry = Some(MetricSource.Entry("", 0.0, 0.0))
+
   case class ClientProfile(
     name: String,
     addr: String,
@@ -23,10 +25,10 @@ private object ClientRegistryHandler {
 
   val profileOrdering: Ordering[ClientProfile] = Ordering.by(_.successRate)
 
-  def prettyRate(sr: Double) =
+  def prettyRate(sr: Double): String =
     if (sr < 0.0) "N/A" else f"${sr * 100.0}%2.2f%%"
 
-  def rateStyle(sr: Double) =
+  def rateStyle(sr: Double): String =
     if (sr < 0.0) "sr-undefined"
     else if (sr < 0.9) "sr-bad"
     else if (sr < 0.99) "sr-poor"
@@ -77,7 +79,7 @@ class ClientRegistryHandler(
   // Search the metrics source for the stat scope that includes `clientName`.
   // The search namespace includes both "$clientName/" and "clnt/$clientName"
   // to take into account finagle's ClientStatsReceiver. Note, unnamed clients are
-  // ignored as we can't dissambiguate their stats.
+  // ignored as we can't disambiguate their stats.
   private[this] def findClientScope(clientName: String): Option[String] = {
     val k0 = s"$clientName"
     val k1 = s"clnt/$clientName"
@@ -96,8 +98,6 @@ class ClientRegistryHandler(
     else if (source.contains(s"$k1/requests")) Some(k1)
     else None
   }
-
-  private[this] lazy val emptyEntry = Some(MetricSource.Entry("", 0.0, 0.0))
 
   // Compute a profile for each client that includes the success rate and
   // the availability of endpoints the client connects to. The success rate
@@ -149,15 +149,18 @@ class ClientRegistryHandler(
         if (clientEntries.isEmpty) new404(s"$name could not be found.")
         else {
           val client = clientEntries.head
-          val endpointEntry = EndpointRegistry.registry.endpoints(name)
 
           val scope = findClientScope(client.name)
           val stackHtml = StackRegistryView.render(client, scope)
+
+          val loadBalancerHtml = LoadBalancersHandler.renderHtml(name)
+
+          val endpointEntry = EndpointRegistry.registry.endpoints(name)
           val endpointHtml = EndpointRegistryView.render(endpointEntry)
 
           newResponse(
             contentType = "text/html;charset=UTF-8",
-            content = Buf.Utf8(stackHtml + endpointHtml)
+            content = Buf.Utf8(stackHtml + loadBalancerHtml + endpointHtml)
           )
         }
     }

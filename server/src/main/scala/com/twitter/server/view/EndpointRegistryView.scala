@@ -15,7 +15,7 @@ private[server] object EndpointRegistryView {
 
   /**
    * Render current weights and socket addresses for paths in each dtab
-   * @param observations Map of Dtabs to map of paths to Addrs
+   * @param dtabEntries Map of Dtabs to map of paths to Addrs
    */
   def render(
     dtabEntries: Map[Dtab, Map[String, Addr]]
@@ -23,7 +23,8 @@ private[server] object EndpointRegistryView {
     s"""
     <div class="row">
       <div class="col-md-12">
-        <h2>Endpoints</h2>
+        <a name="endpoints"></a>
+        <h3>Endpoints</h3>
         <ul>
         ${(for ((dtab, observations) <- dtabEntries) yield {
       s"""

@@ -45,10 +45,12 @@ private[server] object StackRegistryView {
         <br/><br/>
         <div class="row stack-registry">
           <div class="col-md-12">
+            <a name="stack"></a>
             <div class="row">
               <!-- tab nav -->
               <div class="tabbable tabs-left">
                 <ul class="nav nav-tabs">
+                  <li>Stack Modules</li>
                   ${(for (StackRegistry.Module(role, _, _) <- modules) yield {
       s"""<li><a href="#${toUri(role)}-module" data-toggle="tab">${escapeHtml(role)}</a></li>"""
     }).mkString("\n")}

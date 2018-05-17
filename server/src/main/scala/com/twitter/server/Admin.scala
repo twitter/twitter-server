@@ -16,21 +16,21 @@ object Admin {
    * Common constants for [[AdminHttpServer.Route]]'s `group`.
    */
   object Grouping {
-    val ProcessInfo = "Process Info"
-    val PerfProfile = "Performance Profile"
-    val Utilities = "Utilities"
-    val Metrics = "Metrics"
+    val ProcessInfo: String = "Process Info"
+    val PerfProfile: String = "Performance Profile"
+    val Utilities: String = "Utilities"
+    val Metrics: String = "Metrics"
   }
 
   /**
    * Constants for Admin endpoints.
    */
   object Path {
-    val Root = ""
-    val Admin = "/admin"
-    val Clients = Admin + "/clients/"
-    val Servers = Admin + "/servers/"
-    val Files = Admin + "/files/"
+    val Root: String = ""
+    val Admin: String = "/admin"
+    val Clients: String = Admin + "/clients/"
+    val Servers: String = Admin + "/servers/"
+    val Files: String = Admin + "/files/"
   }
 }
 
@@ -75,21 +75,21 @@ trait Admin { self: App with AdminHttpServer with Stats =>
         path = Path.Admin + "/",
         // this redirects to admin if the path is exactly Path.Admin + "/"
         // and shows a 404 otherwise.
-        handler = new NotFoundView andThen new AdminRedirectHandler(_ == Path.Admin + "/"),
+        handler = new NotFoundView().andThen(new AdminRedirectHandler(_ == Path.Admin + "/")),
         alias = "Admin Redirect",
         group = None,
         includeInIndex = false
       ),
       Route(
         path = "/admin/server_info",
-        handler = new TextBlockView andThen new ServerInfoHandler(self),
+        handler = new TextBlockView().andThen(new ServerInfoHandler(self)),
         alias = "Build Properties",
         group = Some(Grouping.ProcessInfo),
         includeInIndex = true
       ),
       Route(
         path = "/admin/contention",
-        handler = new TextBlockView andThen new ContentionHandler,
+        handler = new TextBlockView().andThen(new ContentionHandler),
         alias = "Contention",
         group = Some(Grouping.PerfProfile),
         includeInIndex = true
@@ -131,14 +131,14 @@ trait Admin { self: App with AdminHttpServer with Stats =>
       ),
       Route(
         path = "/admin/announcer",
-        handler = new TextBlockView andThen new AnnouncerHandler,
+        handler = new TextBlockView().andThen(new AnnouncerHandler),
         alias = "Announcer",
         group = Some(Grouping.ProcessInfo),
         includeInIndex = true
       ),
       Route(
         path = "/admin/dtab",
-        handler = new TextBlockView andThen new DtabHandler,
+        handler = new TextBlockView().andThen(new DtabHandler),
         alias = "Dtab",
         group = Some(Grouping.ProcessInfo),
         includeInIndex = true
@@ -192,6 +192,13 @@ trait Admin { self: App with AdminHttpServer with Stats =>
         alias = "Clients",
         group = None,
         includeInIndex = false
+      ),
+      Route(
+        path = LoadBalancersHandler.RoutePath,
+        handler = new LoadBalancersHandler(),
+        alias = "Load Balancers",
+        group = Some(Grouping.ProcessInfo),
+        includeInIndex = true
       ),
       Route(
         path = Path.Servers,
