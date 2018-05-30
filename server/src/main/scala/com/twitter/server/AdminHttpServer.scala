@@ -69,6 +69,7 @@ object AdminHttpServer {
           request: Request,
           service: Service[Request, Response]
         ): Future[Response] = Pool(service(request)).flatten
+        override def toString: String = s"${Route.getClass.getName}IsolateFilter"
       }
 
     private[this] lazy val Pool: FuturePool =
@@ -232,7 +233,7 @@ trait AdminHttpServer { self: App =>
     }
 
     val endpoints = allRoutes.map { route =>
-      s"\t${route.path} => ${route.handler.getClass.getName}"
+      s"\t${route.path} => ${route.handler.toString}"
     }
 
     log.debug(s"AdminHttpServer Muxer endpoints:\n" + endpoints.mkString("\n"))
