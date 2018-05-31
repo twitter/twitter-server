@@ -38,7 +38,11 @@ trait TwitterServer
   with AdminHttpServer
   with Admin
   with Lifecycle
-  with Stats
+  with Stats {
+
+  // don't let applications opt-out
+  final override def suppressGracefulShutdownErrors: Boolean = false
+}
 
 /**
  * A Java-friendly version of the [[TwitterServer]].
