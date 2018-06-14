@@ -12,7 +12,7 @@ class AbortHandler extends Service[Request, Response] {
 
   private[this] def background(f: => Unit): Unit = {
     new Thread("lifecycle") {
-      override def run() {
+      override def run(): Unit = {
         Thread.sleep(10)
         f
       }

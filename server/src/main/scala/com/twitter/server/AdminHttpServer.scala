@@ -176,7 +176,7 @@ trait AdminHttpServer { self: App =>
     updateMuxer()
   }
 
-  def addAdminRoute(route: Route) {
+  def addAdminRoute(route: Route): Unit = {
     addAdminRoutes(Seq(route))
   }
 

@@ -11,8 +11,8 @@ private class FinagleTracing(klass: Class[_]) {
   private val enableM = klass.getDeclaredMethod("enable")
   private val disableM = klass.getDeclaredMethod("disable")
 
-  def enable() { enableM.invoke(null) }
-  def disable() { disableM.invoke(null) }
+  def enable(): Unit = { enableM.invoke(null) }
+  def disable(): Unit = { disableM.invoke(null) }
 }
 
 private object FinagleTracing {
