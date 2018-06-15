@@ -69,6 +69,38 @@ components with the exact value of `*`. For these use cases, there is the
 more powerful `jq <https://stedolan.github.io/jq/>`_ command-line JSON processing
 tool.
 
+/admin/balancers.json
+~~~~~~~~~~~~~~~~~~~~~
+
+Shows details about client load balancers, including both configuration
+and current status.
+
+The HTTP request parameter `label` allows for filtering down to a client
+whose label matches that.
+
+Example JSON output:
+
+::
+
+  {
+    "clients" : [
+      {
+        "label" : "cool_service",
+        "info" : {
+          "balancer_class" : "P2CLeastLoaded",
+          "size" : 1,
+          "total_pending" : 0,
+          "number_available" : 1,
+          "number_busy" : 0,
+          "additional_info" : { },
+          "status" : "Open",
+          "number_closed" : 0,
+          "total_load" : 0.0
+        }
+      }
+    ]
+  }
+
 /admin/server_info
 ~~~~~~~~~~~~~~~~~~
 

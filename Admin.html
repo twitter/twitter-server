@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>HTTP Admin interface &#8212; TwitterServer 18.5.0 documentation</title>
+    <title>HTTP Admin interface &#8212; TwitterServer 18.6.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '18.5.0',
+        VERSION:     '18.6.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="TwitterServer 18.5.0 documentation" href="index.html" />
+    <link rel="top" title="TwitterServer 18.6.0 documentation" href="index.html" />
     <link rel="next" title="Using TwitterServer from Java" href="Java.html" />
     <link rel="prev" title="Features" href="Features.html" />
    
@@ -111,6 +111,34 @@ containing a <cite>/</cite>. The choice of <cite>*</cite> as a glob also means y
 components with the exact value of <cite>*</cite>. For these use cases, there is the
 more powerful <a class="reference external" href="https://stedolan.github.io/jq/">jq</a> command-line JSON processing
 tool.</p>
+</div>
+<div class="section" id="admin-balancers-json">
+<h3>/admin/balancers.json<a class="headerlink" href="#admin-balancers-json" title="Permalink to this headline">¶</a></h3>
+<p>Shows details about client load balancers, including both configuration
+and current status.</p>
+<p>The HTTP request parameter <cite>label</cite> allows for filtering down to a client
+whose label matches that.</p>
+<p>Example JSON output:</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>{
+  &quot;clients&quot; : [
+    {
+      &quot;label&quot; : &quot;cool_service&quot;,
+      &quot;info&quot; : {
+        &quot;balancer_class&quot; : &quot;P2CLeastLoaded&quot;,
+        &quot;size&quot; : 1,
+        &quot;total_pending&quot; : 0,
+        &quot;number_available&quot; : 1,
+        &quot;number_busy&quot; : 0,
+        &quot;additional_info&quot; : { },
+        &quot;status&quot; : &quot;Open&quot;,
+        &quot;number_closed&quot; : 0,
+        &quot;total_load&quot; : 0.0
+      }
+    }
+  ]
+}
+</pre></div>
+</div>
 </div>
 <div class="section" id="admin-server-info">
 <h3>/admin/server_info<a class="headerlink" href="#admin-server-info" title="Permalink to this headline">¶</a></h3>
@@ -412,6 +440,7 @@ values for each module are available at <cite>/admin/clients/&lt;client name&gt;
 <li><a class="reference internal" href="#admin-lint">/admin/lint</a></li>
 <li><a class="reference internal" href="#admin-threads">/admin/threads</a></li>
 <li><a class="reference internal" href="#admin-registry-json">/admin/registry.json</a></li>
+<li><a class="reference internal" href="#admin-balancers-json">/admin/balancers.json</a></li>
 <li><a class="reference internal" href="#admin-server-info">/admin/server_info</a></li>
 <li><a class="reference internal" href="#admin-announcer">/admin/announcer</a></li>
 </ul>
