@@ -19,6 +19,7 @@ trait Linters { app: App =>
   /** Exposed for testing */
   def linterRules: Seq[Rule] = {
     TooManyCumulativeGaugesRules() ++
+      MetricsCollisionsRules() ++
       Seq(
         SchedulerBlockingRule(),
         DuplicateLoadServiceBindings(),
