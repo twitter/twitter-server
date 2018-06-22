@@ -54,7 +54,7 @@ class HandlersTest extends FunSuite {
     val twitterServer = new TestTwitterServer {
       val mockExceptionHandler = new MockExceptionHandler
 
-      override def main() {
+      override def main(): Unit = {
         addAdminRoute(
           AdminHttpServer.mkRoute(
             path = "/exception_please.json",

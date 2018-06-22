@@ -9,7 +9,7 @@ import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class LogFormatTest extends FunSuite {
-  def testStringHandler(f: (Logger, StringHandler) => Unit) {
+  def testStringHandler(f: (Logger, StringHandler) => Unit): Unit = {
     val handler = new StringHandler
     handler.setFormatter(new com.twitter.server.logging.LogFormatter)
 

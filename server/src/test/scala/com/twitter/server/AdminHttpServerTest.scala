@@ -69,7 +69,7 @@ class AdminHttpServerTest extends FunSuite with Eventually with IntegrationPatie
 
   test("server serves and is closed properly") {
     val server = new TestTwitterServer {
-      override def main() {
+      override def main(): Unit = {
         checkServer(adminHttpServer)
         closeServer(this, adminHttpServer)
         Await.result(close(5.seconds))
@@ -80,7 +80,7 @@ class AdminHttpServerTest extends FunSuite with Eventually with IntegrationPatie
 
   test("shadow server serves and is closed properly") {
     val server = new TestTwitterServer with ShadowAdminServer {
-      override def main() {
+      override def main(): Unit = {
         checkServer(shadowHttpServer)
         // ShadowAdminServer does not listen for /quitquitquit
         // so send it to the admin server

@@ -15,7 +15,7 @@ class TestTwitterServer extends TwitterServer {
 
   val bootstrapSeq = mutable.MutableList.empty[Symbol]
 
-  def main() {
+  def main(): Unit = {
     bootstrapSeq += 'Main
   }
 
@@ -61,7 +61,7 @@ class TwitterServerTest extends FunSuite {
 
   test("TwitterServer.main(args) executes without error when closed explicitly") {
     val twitterServer = new TestTwitterServer {
-      override def main() {
+      override def main(): Unit = {
         super.main()
         Await.result(close())
       }
