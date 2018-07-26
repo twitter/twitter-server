@@ -54,7 +54,7 @@ private[server] object StackRegistryViewTest {
       }
   }
 
-  val sb = new StackBuilder(Stack.Leaf[Int => Int](Stack.Role("identity"), identity[Int] _))
+  val sb = new StackBuilder(Stack.leaf[Int => Int](Stack.Role("identity"), identity[Int] _))
   sb.push(Baz.module)
   sb.push(Bar.module)
   sb.push(Foo.module)
