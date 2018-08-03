@@ -7,6 +7,14 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+New Features
+~~~~~~~~~~~~
+
+  * Add `onExit` lifecycle callback to `c.t.server.Hook` (which is now an abstract class) to allow
+    implemented hooks to execute functions in the `App#onExit` lifecycle phase. Note:
+    `c.t.server.Hook#premain` now has a default implementation and requires the `override` modifier.
+    ``PHAB_ID=D198379``
+
 18.7.0
 -------
 

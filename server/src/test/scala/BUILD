@@ -8,6 +8,8 @@ junit_tests(
         "3rdparty/jvm/org/mockito:mockito-all",
         "3rdparty/jvm/org/scalacheck",
         "3rdparty/jvm/org/scalatest",
+        "3rdparty/jvm/org/slf4j:slf4j-api",
+        "3rdparty/jvm/org/slf4j:slf4j-nop",
         "finagle/finagle-core/src/main/scala",
         "finagle/finagle-http/src/main/scala",
         "finagle/finagle-toggle",
