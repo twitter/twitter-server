@@ -27,7 +27,7 @@ object IndexView {
   }
 
   /** Render nav and contents into an html template. */
-  def render(title: String, uri: String, nav: Seq[Entry], contents: Reader): Reader = {
+  def render(title: String, uri: String, nav: Seq[Entry], contents: Reader[Buf]): Reader[Buf] = {
 
     def renderNav(
       ls: Seq[Entry],
