@@ -7,6 +7,15 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+Runtime Behavior Changes
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+  * Move logic to parse the server `build.properties` file out the `c.t.server.handler.ServerInfoHandler`
+    and into a utility object, `c.t.server.BuildProperties` to allow for accessing by other server
+    logic such that the properties do not need to be re-parsed anytime access is desired. Failure to
+    load the properties can result in the server not starting in the case of a Fatal exception
+    being thrown. ``PHAB_ID=D201207``
+
 18.8.0
 -------
 

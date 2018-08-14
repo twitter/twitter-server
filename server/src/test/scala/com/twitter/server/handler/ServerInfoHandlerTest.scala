@@ -20,21 +20,21 @@ class ServerInfoHandlerTest extends FunSuite {
 
     assert(res.status == Status.Ok)
     val info = res.contentString
-    assert(info contains ("\"build\" : \"unknown\""))
-    assert(info contains ("\"build_revision\" : \"unknown\""))
-    assert(info contains ("\"name\" : \"twitter-server\""))
-    assert(info contains ("\"version\" : \"0.0.0\""))
-    assert(info contains ("\"start_time\" :"))
-    assert(info contains ("\"uptime\" :"))
+    assert(info.contains("\"build\" : \"unknown\""))
+    assert(info.contains("\"build_revision\" : \"unknown\""))
+    assert(info.contains("\"name\" : \"twitter-server\""))
+    assert(info.contains("\"version\" : \"0.0.0\""))
+    assert(info.contains("\"start_time\" :"))
+    assert(info.contains("\"uptime\" :"))
     // user-defined properties
-    assert(info contains ("\"foo\" : \"bar\""))
+    assert(info.contains("\"foo\" : \"bar\""))
   }
 
   test("ServerInfo handler returns the right content-type") {
     val handler = new ServerInfoHandler(this)
     val req = Request("/")
     val res = Await.result(handler(req))
-    assert(res.contentType == Some("application/json;charset=UTF-8"))
+    assert(res.contentType.contains("application/json;charset=UTF-8"))
   }
 
   for (key <- Seq(Seq("build.properties"), Seq("system", "properties"), Seq("system", "env")))
