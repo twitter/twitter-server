@@ -24,7 +24,7 @@ Browse the [user guide](https://twitter.github.io/twitter-server/).
 
 [Releases](https://maven-badges.herokuapp.com/maven-central/com.twitter/twitter-server_2.12)
 are done on an approximately monthly schedule. While [semver](http://semver.org/)
-is not followed, the [changelogs](CHANGES) are detailed and include sections on
+is not followed, the [changelogs](CHANGELOG.rst) are detailed and include sections on
 public API breaks and changes in runtime behavior.
 
 ## Getting involved
