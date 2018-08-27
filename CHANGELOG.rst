@@ -10,11 +10,11 @@ Unreleased
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-  * Move logic to parse the server `build.properties` file out the `c.t.server.handler.ServerInfoHandler`
-    and into a utility object, `c.t.server.BuildProperties` to allow for accessing by other server
-    logic such that the properties do not need to be re-parsed anytime access is desired. Failure to
-    load the properties can result in the server not starting in the case of a Fatal exception
-    being thrown. ``PHAB_ID=D201207``
+* Move logic to parse the server `build.properties` file out the `c.t.server.handler.ServerInfoHandler`
+  and into a utility object, `c.t.server.BuildProperties` to allow for accessing by other server
+  logic such that the properties do not need to be re-parsed anytime access is desired. Failure to
+  load the properties can result in the server not starting in the case of a Fatal exception
+  being thrown. ``PHAB_ID=D201207``
 
 18.8.0
 -------
@@ -22,10 +22,10 @@ Runtime Behavior Changes
 New Features
 ~~~~~~~~~~~~
 
-  * Add `onExit` lifecycle callback to `c.t.server.Hook` (which is now an abstract class) to allow
-    implemented hooks to execute functions in the `App#onExit` lifecycle phase. Note:
-    `c.t.server.Hook#premain` now has a default implementation and requires the `override` modifier.
-    ``PHAB_ID=D198379``
+* Add `onExit` lifecycle callback to `c.t.server.Hook` (which is now an abstract class) to allow
+  implemented hooks to execute functions in the `App#onExit` lifecycle phase. Note:
+  `c.t.server.Hook#premain` now has a default implementation and requires the `override` modifier.
+  ``PHAB_ID=D198379``
 
 18.7.0
 -------
@@ -38,8 +38,8 @@ No Changes
 New Features
 ~~~~~~~~~~~~
 
-  * Added an admin page at "/admin/balancers.json" with details about client load balancers,
-    including both configuration and current status. ``PHAB_ID=D171589``
+* Added an admin page at "/admin/balancers.json" with details about client load balancers,
+  including both configuration and current status. ``PHAB_ID=D171589``
 
 18.5.0
 -------
@@ -47,8 +47,8 @@ New Features
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-  * Overloaded `c.t.server.AdminHttpServer#isolate` to accept a
-    `Service[Request, Response]`. ``PHAB_ID=D157891``
+* Overloaded `c.t.server.AdminHttpServer#isolate` to accept a
+  `Service[Request, Response]`. ``PHAB_ID=D157891``
 
 18.4.0
 -------
@@ -66,8 +66,8 @@ No Changes
 Dependencies
 ~~~~~~~~~~~~
 
-  * Removed 'finagle-zipkin-core' as a depdendency since there was no
-    code in twitter-server which used it. ``PHAB_ID=D129515``
+* Removed 'finagle-zipkin-core' as a depdendency since there was no
+  code in twitter-server which used it. ``PHAB_ID=D129515``
 
 18.1.0
 -------
@@ -80,9 +80,9 @@ No Changes
 Bug Fixes
 ~~~~~~~~~
 
-  * Treat `io.netty.channel.epoll.Native.epollWait0` as an idle thread on
-    "/admin/threads". This method is observed when using Netty 4's native
-    transport. ``PHAB_ID=D115058``
+* Treat `io.netty.channel.epoll.Native.epollWait0` as an idle thread on
+  "/admin/threads". This method is observed when using Netty 4's native
+  transport. ``PHAB_ID=D115058``
 
 17.11.0
 -------
@@ -90,12 +90,12 @@ Bug Fixes
 Breaking API Changes
 ~~~~~~~~~~~~~~~~~~~~
 
-  * Change to apply JUL log format in the `c.t.server.logging.Logging` trait
-    constructor instead of in `premain` to apply format as early in the logging
-    stack as possible. However, this means that users overriding the
-    `def defaultFormatter` will not be able to use any flags to configure their
-    formatting, note: the default `LogFormatter` does not use flags.
-    ``PHAB_ID=D106534``
+* Change to apply JUL log format in the `c.t.server.logging.Logging` trait
+  constructor instead of in `premain` to apply format as early in the logging
+  stack as possible. However, this means that users overriding the
+  `def defaultFormatter` will not be able to use any flags to configure their
+  formatting, note: the default `LogFormatter` does not use flags.
+  ``PHAB_ID=D106534``
 
 17.10.0
 -------
@@ -103,20 +103,20 @@ Breaking API Changes
 Release Version Format
 ~~~~~~~~~~~~~~~~~~~~~~
 
-  * From now on, release versions will be based on release date in the format of
-    YY.MM.x where x is a patch number. ``PHAB_ID=D101244``
+* From now on, release versions will be based on release date in the format of
+  YY.MM.x where x is a patch number. ``PHAB_ID=D101244``
 
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-  * All admin endpoints except ping + healthcheck are now by-default served outside
-    the global worker pool. ``PHAB_ID=D96633``
+* All admin endpoints except ping + healthcheck are now by-default served outside
+  the global worker pool. ``PHAB_ID=D96633``
 
 Breaking API Changes
 ~~~~~~~~~~~~~~~~~~~~
 
-  * Rename AdminHttpServer#defaultHttpPort to AdminHttpServer#defaultAdminPort.
-    ``PHAB_ID=D97394``
+* Rename AdminHttpServer#defaultHttpPort to AdminHttpServer#defaultAdminPort.
+  ``PHAB_ID=D97394``
 
 1.32.0
 ------
@@ -124,9 +124,9 @@ Breaking API Changes
 Breaking API Changes
 ~~~~~~~~~~~~~~~~~~~~
 
-  * Removed code related to `util-events` including `EventSink`, `JsonSink`,
-    `TraceEventSink`. The corresponding "/admin/events" and "/admin/events/record/"
-    admin HTTP endpoints are also removed. ``PHAB_ID=D82346``
+* Removed code related to `util-events` including `EventSink`, `JsonSink`,
+  `TraceEventSink`. The corresponding "/admin/events" and "/admin/events/record/"
+  admin HTTP endpoints are also removed. ``PHAB_ID=D82346``
 
 1.31.0
 ------
@@ -138,14 +138,14 @@ No Changes
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-  * The admin server now waits for other registered closables to shut down
-    before commencing its own shutdown. ``RB_ID=916421``
+* The admin server now waits for other registered closables to shut down
+  before commencing its own shutdown. ``RB_ID=916421``
 
 Breaking API Changes
 ~~~~~~~~~~~~~~~~~~~~
 
-  * Removed `c.t.server.Closer` trait. Behavior has been moved to
-   `c.t.app.App`. ``RB_ID=915485``
+* Removed `c.t.server.Closer` trait. Behavior has been moved to
+  `c.t.app.App`. ``RB_ID=915485``
 
 1.29.0
 ------
@@ -158,7 +158,7 @@ No Changes
 Dependencies
 ~~~~~~~~~~~~
 
-  * Bump guava to 19.0. ``RB_ID=907807``
+* Bump guava to 19.0. ``RB_ID=907807``
 
 1.27.0
 ------
@@ -166,7 +166,7 @@ Dependencies
 New Features
 ~~~~~~~~~~~~
 
-  * Add lint error warning on admin summary page. ``RB_ID=898202``
+* Add lint error warning on admin summary page. ``RB_ID=898202``
 
 1.26.0
 ------
@@ -174,8 +174,8 @@ New Features
 Bug Fixes
 ~~~~~~~~~
 
-   * Server graphs are now displaying again on the Twitter Server Summary page.
-     ``RB_ID=898422``
+* Server graphs are now displaying again on the Twitter Server Summary page.
+  ``RB_ID=898422``
 
 1.25.0
 ------
@@ -183,13 +183,13 @@ Bug Fixes
 New Features
 ~~~~~~~~~~~~
 
-  * Add ability to specify admin interface UI grouping, alias, and path for admin
-    handlers using the newly added Route and RouteUi. ``RB_ID=886829``
+* Add ability to specify admin interface UI grouping, alias, and path for admin
+  handlers using the newly added Route and RouteUi. ``RB_ID=886829``
 
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-  * Removed `scala-xml` dependency. ``RB_ID=890315``
+* Removed `scala-xml` dependency. ``RB_ID=890315``
 
 1.24.0
 ------
@@ -207,14 +207,14 @@ No Changes
 New Features
 ~~~~~~~~~~~~
 
-  * No longer need to add an additional resolver that points to maven.twttr.com.
-    ``RB_ID=878967``
+* No longer need to add an additional resolver that points to maven.twttr.com.
+  ``RB_ID=878967``
 
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-   * ShutdownHandler and AbortHandler accept only POST requests and ignore
-     non-POST requests. ``RB_ID=848212``
+* ShutdownHandler and AbortHandler accept only POST requests and ignore
+  non-POST requests. ``RB_ID=848212``
 
 1.21.0
 ------
@@ -222,29 +222,29 @@ Runtime Behavior Changes
 Bug Fixes
 ~~~~~~~~~
 
-   * Escape user input that is rendered in HTML, and make bin/travisci publish
-     finagle-toggle. ``RB_ID=848579``
+* Escape user input that is rendered in HTML, and make bin/travisci publish
+  finagle-toggle. ``RB_ID=848579``
 
 New Features
 ~~~~~~~~~~~~
 
-   * Add optional HTTP request parameter `filter` to `/admin/registry.json`
-     allowing for simple filtering of the returned JSON. ``RB_ID=842784``
+* Add optional HTTP request parameter `filter` to `/admin/registry.json`
+  allowing for simple filtering of the returned JSON. ``RB_ID=842784``
 
-   * Add admin endpoint, `/admin/toggles`, for
-     `c.t.finagle.toggle.StandardToggleMap` registered `Toggles`.
-     ``RB_ID=847434``
+* Add admin endpoint, `/admin/toggles`, for
+  `c.t.finagle.toggle.StandardToggleMap` registered `Toggles`.
+  ``RB_ID=847434``
 
 Breaking API Changes
 ~~~~~~~~~~~~~~~~~~~~
 
-   * Removed AdminHttpServer#mkRoutex method. This method was created during the
-     migration away from direct usage of netty http types and is now
-     redundant. ``RB_ID=835083``
+* Removed AdminHttpServer#mkRoutex method. This method was created during the
+  migration away from direct usage of netty http types and is now
+  redundant. ``RB_ID=835083``
 
-   * Builds are now only for Java 8 and Scala 2.11. See the
-     `blog post <https://finagle.github.io/blog/2016/04/20/scala-210-and-java7/>`_
-     for details. ``RB_ID=828898``
+* Builds are now only for Java 8 and Scala 2.11. See the
+  `blog post <https://finagle.github.io/blog/2016/04/20/scala-210-and-java7/>`_
+  for details. ``RB_ID=828898``
 
 1.20.0
 ------
@@ -252,15 +252,15 @@ Breaking API Changes
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-  * Introduce a new lifecycle event `prebindWarmup` for warmup code
-    which needs to run before the service handles traffic. GC has
-    moved from `warmupComplete` to `prebindWarmup`. ``RB_ID=819411``
+* Introduce a new lifecycle event `prebindWarmup` for warmup code
+  which needs to run before the service handles traffic. GC has
+  moved from `warmupComplete` to `prebindWarmup`. ``RB_ID=819411``
 
 New Features
 ~~~~~~~~~~~~
 
-  * Update to register TwitterServer as library in /admin/registry.json. ``RB_ID=825129``
-  * Add a FailFast lint rule for Memcached client. ``RB_ID=808727``
+* Update to register TwitterServer as library in /admin/registry.json. ``RB_ID=825129``
+* Add a FailFast lint rule for Memcached client. ``RB_ID=808727``
 
 1.19.0
 ------
@@ -268,8 +268,8 @@ New Features
 New Features
 ~~~~~~~~~~~~
 
-  * Add AdminHttpServer#boundAddress to expose the bound address of
-    the AdminHttpServer. ``RB_ID=798322``
+* Add AdminHttpServer#boundAddress to expose the bound address of
+  the AdminHttpServer. ``RB_ID=798322``
 
 1.18.0
 ------
@@ -277,7 +277,7 @@ New Features
 New Features
 ~~~~~~~~~~~~
 
-  * Add new admin endpoint "/" which redirects requests to "/admin". ``RB_ID=777247``
+* Add new admin endpoint "/" which redirects requests to "/admin". ``RB_ID=777247``
 
 1.17.0
 ------
@@ -293,14 +293,14 @@ NOT RELEASED
 New Features
 ~~~~~~~~~~~~
 
-  * Add new admin endpoint "/admin/lint" which checks for possible issues with
-    performance or configuration. ``RB_ID=754348``
+* Add new admin endpoint "/admin/lint" which checks for possible issues with
+  performance or configuration. ``RB_ID=754348``
 
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-  * We no longer export a "scheduler/productivity" stat because various implementation
-    details made it difficult to report reliably.
+* We no longer export a "scheduler/productivity" stat because various implementation
+  details made it difficult to report reliably.
 
 1.14.0
 ------
@@ -308,9 +308,9 @@ Runtime Behavior Changes
 Dependencies
 ~~~~~~~~~~~~
 
- * Converted to finagle-httpx. Projects that depend transitively on
-   finagle-http through twitter-server will need to switch to finagle-httpx.
-   RB_ID=741454 RB_ID=740731
+* Converted to finagle-httpx. Projects that depend transitively on
+  finagle-http through twitter-server will need to switch to finagle-httpx.
+  ``RB_ID=741454`` ``RB_ID=740731``
 
 1.13.0
 ------
@@ -318,7 +318,7 @@ Dependencies
 1.12.0
 ------
 
- * Enable syntax highlighting in the docs
+* Enable syntax highlighting in the docs
 
 1.11.0
 ------
@@ -326,7 +326,7 @@ Dependencies
 New Features
 ~~~~~~~~~~~~
 
-  * Introduce AbstractTwitterServer, a Java-friendly version of TwitterServer. RB_ID=661878
+* Introduce AbstractTwitterServer, a Java-friendly version of TwitterServer. RB_ID=661878
 
 1.10.0
 ------
@@ -334,17 +334,17 @@ New Features
 New Features
 ~~~~~~~~~~~~
 
-  * TwitterServer collects a statically allocated ring of runtime events, which be viewed
-    at /admin/events, and downloaded as JSON with a HTTP client like curl (or by simply
-    omitting the User-Agent header in the request).
+* TwitterServer collects a statically allocated ring of runtime events, which be viewed
+  at /admin/events, and downloaded as JSON with a HTTP client like curl (or by simply
+  omitting the User-Agent header in the request).
 
-  * TwitterServer exports runtime configuration data about your service, which can be
-    downloaded as json at /admin/registry.json.
+* TwitterServer exports runtime configuration data about your service, which can be
+  downloaded as json at /admin/registry.json.
 
 Dependencies
 ~~~~~~~~~~~~
 
-  * Bumped many dependency versions.
+* Bumped many dependency versions.
 
 1.9.0
 -----
@@ -352,32 +352,32 @@ Dependencies
 New Features
 ~~~~~~~~~~~~
 
-  * Most noticeably, the admin server received a complete UI redesign. All http endpoints are
-    now available via a navigation pane. We provide a simple API for service owners to include
-    ad-hoc admin pages which will be part of the navigation pane. Note, it is still possible to
-    join the admin server’s namespace via the global com.twitter.finagle.http.HttpMuxer.
+* Most noticeably, the admin server received a complete UI redesign. All http endpoints are
+  now available via a navigation pane. We provide a simple API for service owners to include
+  ad-hoc admin pages which will be part of the navigation pane. Note, it is still possible to
+  join the admin server’s namespace via the global com.twitter.finagle.http.HttpMuxer.
 
-  * When using the twitter Metrics library, the admin server now scrapes your stats to
-    extract a quick summary of how your server is performing. This includes secondly
-    success rates for your server and least performant downstreams. We provide a /admin/metrics
-    endpoint which can watch stats (at secondly granularity) and extract them via http queries.
+* When using the twitter Metrics library, the admin server now scrapes your stats to
+  extract a quick summary of how your server is performing. This includes secondly
+  success rates for your server and least performant downstreams. We provide a /admin/metrics
+  endpoint which can watch stats (at secondly granularity) and extract them via http queries.
 
-  * More recently, Finagle clients and servers began to retain information about their composition.
-    This is useful in examining the modules and parameters that comprise a specific implementation.
-    We now surface this information in the admin server via /admin/clients/<client_name> and
-    /admin/servers/<server_name>
+* More recently, Finagle clients and servers began to retain information about their composition.
+  This is useful in examining the modules and parameters that comprise a specific implementation.
+  We now surface this information in the admin server via /admin/clients/<client_name> and
+  /admin/servers/<server_name>
 
-  * TwitterServer now exposes a /admin/registry.json endpoint, which speaks json and exposes the
-    values from util-registry as labels. Most labels are long-lived, and tend to represent something
-    about a process that is true for the entire lifetime, like the version of a library, or what a
-    flag was set to.
+* TwitterServer now exposes a /admin/registry.json endpoint, which speaks json and exposes the
+  values from util-registry as labels. Most labels are long-lived, and tend to represent something
+  about a process that is true for the entire lifetime, like the version of a library, or what a
+  flag was set to.
 
 Dependencies
 ~~~~~~~~~~~~
 
-  * Remove dependency on mustache for admin server in favor of templating
-    via string interpolation. This is more hygienic for web applications
-    and frameworks built atop twitter-server.
+* Remove dependency on mustache for admin server in favor of templating
+  via string interpolation. This is more hygienic for web applications
+  and frameworks built atop twitter-server.
 
 1.8.0
 -----
@@ -385,33 +385,33 @@ Dependencies
 New Features
 ~~~~~~~~~~~~
 
-  * Add the ability to promote objects to old gen before serving
-  * Export everything from build.properties at /admin/server_info
+* Add the ability to promote objects to old gen before serving
+* Export everything from build.properties at /admin/server_info
 
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-  * Add merge_base merge_base_commit_date and scm_repository to server_info
-  * AdminHttpServer now disables tracing
-  * Export gauge on eden allocations
-  * Improve heuristic for returning html or not in WebHandler
-  * Initial redesign of admin pages
+* Add merge_base merge_base_commit_date and scm_repository to server_info
+* AdminHttpServer now disables tracing
+* Export gauge on eden allocations
+* Improve heuristic for returning html or not in WebHandler
+* Initial redesign of admin pages
 
 Breaking API Changes
 ~~~~~~~~~~~~~~~~~~~~
 
-  * Remove ServerInfo class: export /admin/server_info directly from build.properties file
+* Remove ServerInfo class: export /admin/server_info directly from build.properties file
 
 1.7.6
 -----
 
-twitter-server: Add gauge on eden allocations
-twitter-server: Do not trace the admin http server
-twitter-server: JvmStats needs to call Allocations.start()
-twitter-server: Log severely if a flag is read at the wrong time
-twitter-server: Parameterize IndexHandler on a `patterns: Seq[String]`
-twitter-server: Proper resource loading in admin pages
-twitter-server: Redesign of twitter-server admin page
+* twitter-server: Add gauge on eden allocations
+* twitter-server: Do not trace the admin http server
+* twitter-server: JvmStats needs to call Allocations.start()
+* twitter-server: Log severely if a flag is read at the wrong time
+* twitter-server: Parameterize IndexHandler on a `patterns: Seq[String]`
+* twitter-server: Proper resource loading in admin pages
+* twitter-server: Redesign of twitter-server admin page
 
 1.7.3
 -----
