@@ -1,5 +1,6 @@
 package com.twitter.server
 
+import com.twitter.conversions.time._
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util._
@@ -10,6 +11,8 @@ import scala.collection.mutable
 
 class TestTwitterServer extends TwitterServer {
   override val defaultAdminPort = 0
+  /* ensure enough time to close resources */
+  override val defaultCloseGracePeriod: Duration = 30.seconds
 
   val bootstrapSeq: mutable.MutableList[Symbol] = mutable.MutableList.empty[Symbol]
 
@@ -42,7 +45,6 @@ class MockExceptionHandler extends Service[Request, Response] {
 }
 @RunWith(classOf[JUnitRunner])
 class TwitterServerTest extends FunSuite {
-
   test("TwitterServer does not prematurely execute lifecycle hooks") {
     val twitterServer = new TestTwitterServer
     assert(twitterServer.bootstrapSeq.isEmpty)

@@ -1,5 +1,7 @@
 package com.twitter.server
 
+import com.twitter.conversions.time._
+import com.twitter.util.Duration
 import org.scalatest.FunSuite
 import scala.collection.mutable
 
@@ -17,6 +19,8 @@ class OnExitHook2 extends Hook {
 
 class HookTestTwitterServer(hooks: Seq[Hook]) extends TwitterServer {
   override val defaultAdminPort = 0
+  /* ensure enough time to close resources */
+  override val defaultCloseGracePeriod: Duration = 30.seconds
 
   val bootstrapSeq: mutable.MutableList[Symbol] = mutable.MutableList.empty[Symbol]
 

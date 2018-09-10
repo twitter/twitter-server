@@ -16,6 +16,11 @@ Runtime Behavior Changes
   load the properties can result in the server not starting in the case of a Fatal exception
   being thrown. ``PHAB_ID=D201207``
 
+* Update `TwitterServer` trait to override the inherited `ShutdownTimer` to be the Finagle
+  `DefaultTimer` instead of the `c.t.util.JavaTimer` defined by default in `c.t.app.App`. Also
+  update the overridden `suppressGracefulShutdownErrors` in `TwitterServer` to be a val since
+  it is constant (instead of a def). ``PHAB_ID=D212896``
+
 18.8.0
 -------
 

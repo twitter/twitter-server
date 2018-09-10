@@ -1,6 +1,8 @@
 package com.twitter.server
 
 import com.twitter.app.App
+import com.twitter.finagle.util.DefaultTimer
+import com.twitter.util.Timer
 import com.twitter.util.logging.Logging
 
 /**
@@ -40,8 +42,10 @@ trait TwitterServer
   with Lifecycle
   with Stats {
 
-  // don't let applications opt-out
-  final override def suppressGracefulShutdownErrors: Boolean = false
+  /** Don't let applications opt-out */
+  final override val suppressGracefulShutdownErrors: Boolean = false
+  /** Use the Finagle DefaultTimer */
+  override protected lazy val shutdownTimer: Timer = DefaultTimer
 }
 
 /**

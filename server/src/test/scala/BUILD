@@ -1,7 +1,6 @@
 junit_tests(
     sources = rglobs("*.scala"),
     fatal_warnings = True,
-    known_to_fail = "CSL-6954",
     dependencies = [
         "3rdparty/jvm/com/fasterxml/jackson/core:jackson-databind",
         "3rdparty/jvm/com/fasterxml/jackson/module:jackson-module-scala",
