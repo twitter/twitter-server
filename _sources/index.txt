@@ -75,3 +75,4 @@ User’s guide
    Java
    Migration
    FAQ
+   Changelog
