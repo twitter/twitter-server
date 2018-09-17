@@ -3,11 +3,16 @@ sudo: false
 
 language: scala
 
+git:
+  quiet: true # (default = false)
+  depth: 5 # (default = 50)
+
 env:
   - JAVA_OPTS="-DSKIP_FLAKY=true -Dsbt.log.noformat=true"
 
 # These directories are cached to S3 at the end of the build
 cache:
+  timeout: 300 # seconds = 5 mins (default = 3 mins)
   directories:
    - $HOME/.ivy2
    - $HOME/.sbt/boot/scala-$TRAVIS_SCALA_VERSION
@@ -19,7 +24,7 @@ before_cache:
   - find $HOME/.sbt -name "*.lock" -delete
 
 scala:
-  - 2.11.11
+  - 2.11.12
   - 2.12.4
 
 jdk:
@@ -27,17 +32,25 @@ jdk:
 
 notifications:
   slack:
-    secure: HFhFrzUWBycBX5NO+wqBSvqBrFsK+Tj2qJMj0baqiIZEFSDpnNf+Lif4uXxdJG9Y03/66pKdDMMCE3dM4OOyKWh6vXq8lEWk7g9yVBxAud0UZ84DL1Y1iRToK0+I3SRcL6tjwsVAvTiuYyPXwnYQ8f/AqTs0wqEvNI/T9DZRX4E=
+    secure: FfzYHh8IvtBaYswh9mIQU9yQGr9YpkRaFR77RaYdK5wVhw3UlCBtRTBdFpUn0djgg3Pl3FxEj5OyEKYQ803xxF7UQRxx298g4r5OhOzjQ4UH1lhnAg1WpIRPBL4DuWrreZFtnqvsygrdtvATZ1aLzaYtkaCV49x/t2Kr7weNfpQ=
 
 before_script:
-  # default $SBT_OPTS is irrelevant to sbt lancher
-  - unset SBT_OPTS
-  - curl -s https://raw.githubusercontent.com/twitter/dodo/develop/bin/build | bash -s -- --no-test twitter-server
+  - unset SBT_OPTS # default $SBT_OPTS is irrelevant to sbt launcher
   - travis_retry ./sbt --error ++$TRAVIS_SCALA_VERSION update
 
 script:
   - travis_retry ./sbt ++$TRAVIS_SCALA_VERSION clean coverage test coverageReport
   - ./sbt ++$TRAVIS_SCALA_VERSION coverageAggregate
 
-after_success:
+after_success:  # note this is run per job in the matrix but only the last run is kept by codecov.io.
   - bash <(curl -s https://codecov.io/bash)
+
+stages:
+  - dodo
+  - test
+
+jobs:
+  include:
+    - stage: dodo
+      jdk: oraclejdk8
+      script: curl -s https://raw.githubusercontent.com/twitter/dodo/develop/bin/build | bash -s -- --no-test twitter-server
