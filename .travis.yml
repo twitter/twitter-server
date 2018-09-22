@@ -30,14 +30,20 @@ notifications:
     secure: FfzYHh8IvtBaYswh9mIQU9yQGr9YpkRaFR77RaYdK5wVhw3UlCBtRTBdFpUn0djgg3Pl3FxEj5OyEKYQ803xxF7UQRxx298g4r5OhOzjQ4UH1lhnAg1WpIRPBL4DuWrreZFtnqvsygrdtvATZ1aLzaYtkaCV49x/t2Kr7weNfpQ=
 
 before_script:
-  # default $SBT_OPTS is irrelevant to sbt lancher
-  - unset SBT_OPTS
-  - curl -s https://raw.githubusercontent.com/twitter/dodo/develop/bin/build | bash -s -- --no-test twitter-server
-  - travis_retry ./sbt --error ++$TRAVIS_SCALA_VERSION update
+  - unset SBT_OPTS # default $SBT_OPTS is irrelevant to sbt launcher
 
 script:
   - travis_retry ./sbt ++$TRAVIS_SCALA_VERSION clean coverage test coverageReport
-  - ./sbt ++$TRAVIS_SCALA_VERSION coverageAggregate
 
 after_success:
+  - ./sbt ++$TRAVIS_SCALA_VERSION coverageAggregate
   - bash <(curl -s https://codecov.io/bash)
+
+stages:
+  - dodo
+  - test
+
+jobs:
+  include:
+    - stage: dodo
+      script: curl -s https://raw.githubusercontent.com/twitter/dodo/develop/bin/build | bash -s -- --no-test twitter-server
