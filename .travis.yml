@@ -28,6 +28,8 @@ jdk:
 notifications:
   slack:
     secure: FfzYHh8IvtBaYswh9mIQU9yQGr9YpkRaFR77RaYdK5wVhw3UlCBtRTBdFpUn0djgg3Pl3FxEj5OyEKYQ803xxF7UQRxx298g4r5OhOzjQ4UH1lhnAg1WpIRPBL4DuWrreZFtnqvsygrdtvATZ1aLzaYtkaCV49x/t2Kr7weNfpQ=
+    on_failure: change
+    on_success: change
 
 before_script:
   - unset SBT_OPTS # default $SBT_OPTS is irrelevant to sbt launcher
