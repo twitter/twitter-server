@@ -3,20 +3,25 @@ sudo: required
 
 language: scala
 
+git:
+  depth: 3
+  quiet: true
+
 env:
   - JAVA_OPTS="-DSKIP_FLAKY=true -Dsbt.log.noformat=true"
 
 # These directories are cached to S3 at the end of the build
 cache:
   directories:
-   - $HOME/.ivy2
-   - $HOME/.sbt/boot/scala-$TRAVIS_SCALA_VERSION
+   - $HOME/.ivy2/cache
+   - $HOME/.ivy2/local/com.twitter
+   - $HOME/.sbt
    - $HOME/.dodo
 
 before_cache:
-  # Tricks to avoid unnecessary cache updates
-  - find $HOME/.ivy2 -name "ivydata-*.properties" -delete
-  - find $HOME/.sbt -name "*.lock" -delete
+  # Cleanup the cached directories to avoid unnecessary cache updates
+  - find $HOME/.ivy2/cache  -name "ivydata-*.properties" -delete
+  - find $HOME/.sbt         -name "*.lock"               -delete
 
 scala:
   - 2.11.12
@@ -33,6 +38,7 @@ notifications:
 
 before_script:
   - unset SBT_OPTS # default $SBT_OPTS is irrelevant to sbt launcher
+  - curl -s https://raw.githubusercontent.com/twitter/dodo/develop/bin/build | bash -s -- --no-test --scala-version $TRAVIS_SCALA_VERSION twitter-server
 
 script:
   - travis_retry ./sbt ++$TRAVIS_SCALA_VERSION clean coverage test coverageReport
@@ -40,12 +46,3 @@ script:
 after_success:
   - ./sbt ++$TRAVIS_SCALA_VERSION coverageAggregate
   - bash <(curl -s https://codecov.io/bash)
-
-stages:
-  - dodo
-  - test
-
-jobs:
-  include:
-    - stage: dodo
-      script: curl -s https://raw.githubusercontent.com/twitter/dodo/develop/bin/build | bash -s -- --no-test twitter-server
