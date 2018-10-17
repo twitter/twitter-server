@@ -7,13 +7,19 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+Runtime Behavior Changes
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Update `BuildProperties` to not emit a warning when no `build.properties` file can be
+  located. ``PHAB_ID=D229586``
+
 18.9.1
--------
+------
 
 No Changes
 
 18.9.0
--------
+------
 
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -30,7 +36,7 @@ Runtime Behavior Changes
   it is constant (instead of a def). ``PHAB_ID=D212896``
 
 18.8.0
--------
+------
 
 New Features
 ~~~~~~~~~~~~
@@ -41,12 +47,12 @@ New Features
   ``PHAB_ID=D198379``
 
 18.7.0
--------
+------
 
 No Changes
 
 18.6.0
--------
+------
 
 New Features
 ~~~~~~~~~~~~
@@ -55,7 +61,7 @@ New Features
   including both configuration and current status. ``PHAB_ID=D171589``
 
 18.5.0
--------
+------
 
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -64,17 +70,17 @@ Runtime Behavior Changes
   `Service[Request, Response]`. ``PHAB_ID=D157891``
 
 18.4.0
--------
+------
 
 No Changes
 
 18.3.0
--------
+------
 
 No Changes
 
 18.2.0
--------
+------
 
 Dependencies
 ~~~~~~~~~~~~
@@ -83,7 +89,7 @@ Dependencies
   code in twitter-server which used it. ``PHAB_ID=D129515``
 
 18.1.0
--------
+------
 
 No Changes
 

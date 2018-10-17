@@ -1,6 +1,7 @@
 package com.twitter.server
 
 import com.twitter.util.logging.Logger
+import java.net.URL
 import java.util.Properties
 import scala.collection.JavaConverters._
 import scala.util.control.NonFatal
@@ -32,7 +33,11 @@ private[server] object BuildProperties {
   } catch {
     case NonFatal(_) =>
       try {
-        buildProperties.load(BuildProperties.getClass.getResource("/build.properties").openStream)
+        BuildProperties.getClass.getResource("/build.properties") match {
+          case resource: URL =>
+            buildProperties.load(resource.openStream)
+          case _ => // do nothing
+        }
       } catch {
         case NonFatal(e) =>
           log.warn("Unable to load build.properties file from classpath. " + e.getMessage)
