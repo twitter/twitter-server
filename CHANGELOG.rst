@@ -7,6 +7,12 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+Changes
+~~~~~~~
+
+* Deprecate `c.t.server.AdminHttpServer#routes`. Routes should be added to the `AdminHttpServer`
+  via `c.t.server.AdminHttpServer#addAdminRoutes`. ``PHAB_ID=D230247``
+
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -180,8 +180,7 @@ trait AdminHttpServer { self: App =>
     addAdminRoutes(Seq(route))
   }
 
-  // TODO: remove routes, have all routes be added via addAdminRoutes
-  // For now these routes will be added to allRoutes in premain
+  @deprecated("Routes should be added via `AdminHttpServer#addAdminRoutes`", "2018-10-17")
   protected def routes: Seq[Route] = Nil
 
   /**
