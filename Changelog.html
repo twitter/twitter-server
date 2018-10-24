@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Changelog &#8212; TwitterServer 18.9.1 documentation</title>
+    <title>Changelog &#8212; TwitterServer 18.10.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '18.9.1',
+        VERSION:     '18.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="TwitterServer 18.9.1 documentation" href="index.html" />
+    <link rel="top" title="TwitterServer 18.10.0 documentation" href="index.html" />
     <link rel="prev" title="FAQ" href="FAQ.html" />
    
   
@@ -63,13 +63,30 @@
 <h2>Unreleased<a class="headerlink" href="#unreleased" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="id1">
-<h2>18.9.1<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p>No Changes</p>
+<h2>18.10.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="changes">
+<h3>Changes<a class="headerlink" href="#changes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Deprecate <cite>c.t.server.AdminHttpServer#routes</cite>. Routes should be added to the <cite>AdminHttpServer</cite>
+via <cite>c.t.server.AdminHttpServer#addAdminRoutes</cite>. <code class="docutils literal"><span class="pre">PHAB_ID=D230247</span></code></li>
+</ul>
 </div>
-<div class="section" id="id2">
-<h2>18.9.0<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="runtime-behavior-changes">
 <h3>Runtime Behavior Changes<a class="headerlink" href="#runtime-behavior-changes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Update <cite>BuildProperties</cite> to not emit a warning when no <cite>build.properties</cite> file can be
+located. <code class="docutils literal"><span class="pre">PHAB_ID=D229586</span></code></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>18.9.1<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>No Changes</p>
+</div>
+<div class="section" id="id3">
+<h2>18.9.0<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h3>Runtime Behavior Changes<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Move logic to parse the server <cite>build.properties</cite> file out the <cite>c.t.server.handler.ServerInfoHandler</cite>
 and into a utility object, <cite>c.t.server.BuildProperties</cite> to allow for accessing by other server
@@ -83,8 +100,8 @@ it is constant (instead of a def). <code class="docutils literal"><span class="p
 </ul>
 </div>
 </div>
-<div class="section" id="id3">
-<h2>18.8.0<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h2>18.8.0<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="new-features">
 <h3>New Features<a class="headerlink" href="#new-features" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
@@ -95,40 +112,40 @@ implemented hooks to execute functions in the <cite>App#onExit</cite> lifecycle 
 </ul>
 </div>
 </div>
-<div class="section" id="id4">
-<h2>18.7.0<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id6">
+<h2>18.7.0<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <p>No Changes</p>
 </div>
-<div class="section" id="id5">
-<h2>18.6.0<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id6">
-<h3>New Features<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id7">
+<h2>18.6.0<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id8">
+<h3>New Features<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Added an admin page at &#8220;/admin/balancers.json&#8221; with details about client load balancers,
 including both configuration and current status. <code class="docutils literal"><span class="pre">PHAB_ID=D171589</span></code></li>
 </ul>
 </div>
 </div>
-<div class="section" id="id7">
-<h2>18.5.0<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id8">
-<h3>Runtime Behavior Changes<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id9">
+<h2>18.5.0<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id10">
+<h3>Runtime Behavior Changes<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Overloaded <cite>c.t.server.AdminHttpServer#isolate</cite> to accept a
 <cite>Service[Request, Response]</cite>. <code class="docutils literal"><span class="pre">PHAB_ID=D157891</span></code></li>
 </ul>
 </div>
 </div>
-<div class="section" id="id9">
-<h2>18.4.0<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
-<p>No Changes</p>
-</div>
-<div class="section" id="id10">
-<h2>18.3.0<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
-<p>No Changes</p>
-</div>
 <div class="section" id="id11">
-<h2>18.2.0<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<h2>18.4.0<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<p>No Changes</p>
+</div>
+<div class="section" id="id12">
+<h2>18.3.0<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<p>No Changes</p>
+</div>
+<div class="section" id="id13">
+<h2>18.2.0<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="dependencies">
 <h3>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
@@ -137,12 +154,12 @@ code in twitter-server which used it. <code class="docutils literal"><span class
 </ul>
 </div>
 </div>
-<div class="section" id="id12">
-<h2>18.1.0<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id14">
+<h2>18.1.0<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h2>
 <p>No Changes</p>
 </div>
-<div class="section" id="id13">
-<h2>17.12.0<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id15">
+<h2>17.12.0<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="bug-fixes">
 <h3>Bug Fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
@@ -152,8 +169,8 @@ transport. <code class="docutils literal"><span class="pre">PHAB_ID=D115058</spa
 </ul>
 </div>
 </div>
-<div class="section" id="id14">
-<h2>17.11.0<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id16">
+<h2>17.11.0<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="breaking-api-changes">
 <h3>Breaking API Changes<a class="headerlink" href="#breaking-api-changes" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
@@ -166,8 +183,8 @@ formatting, note: the default <cite>LogFormatter</cite> does not use flags.
 </ul>
 </div>
 </div>
-<div class="section" id="id15">
-<h2>17.10.0<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id17">
+<h2>17.10.0<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="release-version-format">
 <h3>Release Version Format<a class="headerlink" href="#release-version-format" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
@@ -175,25 +192,25 @@ formatting, note: the default <cite>LogFormatter</cite> does not use flags.
 YY.MM.x where x is a patch number. <code class="docutils literal"><span class="pre">PHAB_ID=D101244</span></code></li>
 </ul>
 </div>
-<div class="section" id="id16">
-<h3>Runtime Behavior Changes<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id18">
+<h3>Runtime Behavior Changes<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>All admin endpoints except ping + healthcheck are now by-default served outside
 the global worker pool. <code class="docutils literal"><span class="pre">PHAB_ID=D96633</span></code></li>
 </ul>
 </div>
-<div class="section" id="id17">
-<h3>Breaking API Changes<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id19">
+<h3>Breaking API Changes<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Rename AdminHttpServer#defaultHttpPort to AdminHttpServer#defaultAdminPort.
 <code class="docutils literal"><span class="pre">PHAB_ID=D97394</span></code></li>
 </ul>
 </div>
 </div>
-<div class="section" id="id18">
-<h2>1.32.0<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id19">
-<h3>Breaking API Changes<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id20">
+<h2>1.32.0<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id21">
+<h3>Breaking API Changes<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Removed code related to <cite>util-events</cite> including <cite>EventSink</cite>, <cite>JsonSink</cite>,
 <cite>TraceEventSink</cite>. The corresponding &#8220;/admin/events&#8221; and &#8220;/admin/events/record/&#8221;
@@ -201,111 +218,111 @@ admin HTTP endpoints are also removed. <code class="docutils literal"><span clas
 </ul>
 </div>
 </div>
-<div class="section" id="id20">
-<h2>1.31.0<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id22">
+<h2>1.31.0<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h2>
 <p>No Changes</p>
 </div>
-<div class="section" id="id21">
-<h2>1.30.0<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id22">
-<h3>Runtime Behavior Changes<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id23">
+<h2>1.30.0<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id24">
+<h3>Runtime Behavior Changes<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>The admin server now waits for other registered closables to shut down
 before commencing its own shutdown. <code class="docutils literal"><span class="pre">RB_ID=916421</span></code></li>
 </ul>
 </div>
-<div class="section" id="id23">
-<h3>Breaking API Changes<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id25">
+<h3>Breaking API Changes<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Removed <cite>c.t.server.Closer</cite> trait. Behavior has been moved to
 <cite>c.t.app.App</cite>. <code class="docutils literal"><span class="pre">RB_ID=915485</span></code></li>
 </ul>
 </div>
 </div>
-<div class="section" id="id24">
-<h2>1.29.0<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id26">
+<h2>1.29.0<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h2>
 <p>No Changes</p>
 </div>
-<div class="section" id="id25">
-<h2>1.28.0<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id26">
-<h3>Dependencies<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id27">
+<h2>1.28.0<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id28">
+<h3>Dependencies<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Bump guava to 19.0. <code class="docutils literal"><span class="pre">RB_ID=907807</span></code></li>
 </ul>
 </div>
 </div>
-<div class="section" id="id27">
-<h2>1.27.0<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id28">
-<h3>New Features<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id29">
+<h2>1.27.0<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id30">
+<h3>New Features<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Add lint error warning on admin summary page. <code class="docutils literal"><span class="pre">RB_ID=898202</span></code></li>
 </ul>
 </div>
 </div>
-<div class="section" id="id29">
-<h2>1.26.0<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id30">
-<h3>Bug Fixes<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id31">
+<h2>1.26.0<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id32">
+<h3>Bug Fixes<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Server graphs are now displaying again on the Twitter Server Summary page.
 <code class="docutils literal"><span class="pre">RB_ID=898422</span></code></li>
 </ul>
 </div>
 </div>
-<div class="section" id="id31">
-<h2>1.25.0<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id32">
-<h3>New Features<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id33">
+<h2>1.25.0<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id34">
+<h3>New Features<a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Add ability to specify admin interface UI grouping, alias, and path for admin
 handlers using the newly added Route and RouteUi. <code class="docutils literal"><span class="pre">RB_ID=886829</span></code></li>
 </ul>
 </div>
-<div class="section" id="id33">
-<h3>Runtime Behavior Changes<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id35">
+<h3>Runtime Behavior Changes<a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Removed <cite>scala-xml</cite> dependency. <code class="docutils literal"><span class="pre">RB_ID=890315</span></code></li>
 </ul>
 </div>
 </div>
-<div class="section" id="id34">
-<h2>1.24.0<a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h2>
-<p>No Changes</p>
-</div>
-<div class="section" id="id35">
-<h2>1.23.0<a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h2>
-<p>No Changes</p>
-</div>
 <div class="section" id="id36">
-<h2>1.22.0<a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h2>
+<h2>1.24.0<a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h2>
+<p>No Changes</p>
+</div>
 <div class="section" id="id37">
-<h3>New Features<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h3>
+<h2>1.23.0<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h2>
+<p>No Changes</p>
+</div>
+<div class="section" id="id38">
+<h2>1.22.0<a class="headerlink" href="#id38" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id39">
+<h3>New Features<a class="headerlink" href="#id39" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>No longer need to add an additional resolver that points to maven.twttr.com.
 <code class="docutils literal"><span class="pre">RB_ID=878967</span></code></li>
 </ul>
 </div>
-<div class="section" id="id38">
-<h3>Runtime Behavior Changes<a class="headerlink" href="#id38" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id40">
+<h3>Runtime Behavior Changes<a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>ShutdownHandler and AbortHandler accept only POST requests and ignore
 non-POST requests. <code class="docutils literal"><span class="pre">RB_ID=848212</span></code></li>
 </ul>
 </div>
 </div>
-<div class="section" id="id39">
-<h2>1.21.0<a class="headerlink" href="#id39" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id40">
-<h3>Bug Fixes<a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id41">
+<h2>1.21.0<a class="headerlink" href="#id41" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id42">
+<h3>Bug Fixes<a class="headerlink" href="#id42" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Escape user input that is rendered in HTML, and make bin/travisci publish
 finagle-toggle. <code class="docutils literal"><span class="pre">RB_ID=848579</span></code></li>
 </ul>
 </div>
-<div class="section" id="id41">
-<h3>New Features<a class="headerlink" href="#id41" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id43">
+<h3>New Features<a class="headerlink" href="#id43" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Add optional HTTP request parameter <cite>filter</cite> to <cite>/admin/registry.json</cite>
 allowing for simple filtering of the returned JSON. <code class="docutils literal"><span class="pre">RB_ID=842784</span></code></li>
@@ -314,8 +331,8 @@ allowing for simple filtering of the returned JSON. <code class="docutils litera
 <code class="docutils literal"><span class="pre">RB_ID=847434</span></code></li>
 </ul>
 </div>
-<div class="section" id="id42">
-<h3>Breaking API Changes<a class="headerlink" href="#id42" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id44">
+<h3>Breaking API Changes<a class="headerlink" href="#id44" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Removed AdminHttpServer#mkRoutex method. This method was created during the
 migration away from direct usage of netty http types and is now
@@ -326,71 +343,71 @@ for details. <code class="docutils literal"><span class="pre">RB_ID=828898</span
 </ul>
 </div>
 </div>
-<div class="section" id="id43">
-<h2>1.20.0<a class="headerlink" href="#id43" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id44">
-<h3>Runtime Behavior Changes<a class="headerlink" href="#id44" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id45">
+<h2>1.20.0<a class="headerlink" href="#id45" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id46">
+<h3>Runtime Behavior Changes<a class="headerlink" href="#id46" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Introduce a new lifecycle event <cite>prebindWarmup</cite> for warmup code
 which needs to run before the service handles traffic. GC has
 moved from <cite>warmupComplete</cite> to <cite>prebindWarmup</cite>. <code class="docutils literal"><span class="pre">RB_ID=819411</span></code></li>
 </ul>
 </div>
-<div class="section" id="id45">
-<h3>New Features<a class="headerlink" href="#id45" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id47">
+<h3>New Features<a class="headerlink" href="#id47" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Update to register TwitterServer as library in /admin/registry.json. <code class="docutils literal"><span class="pre">RB_ID=825129</span></code></li>
 <li>Add a FailFast lint rule for Memcached client. <code class="docutils literal"><span class="pre">RB_ID=808727</span></code></li>
 </ul>
 </div>
 </div>
-<div class="section" id="id46">
-<h2>1.19.0<a class="headerlink" href="#id46" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id47">
-<h3>New Features<a class="headerlink" href="#id47" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id48">
+<h2>1.19.0<a class="headerlink" href="#id48" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id49">
+<h3>New Features<a class="headerlink" href="#id49" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Add AdminHttpServer#boundAddress to expose the bound address of
 the AdminHttpServer. <code class="docutils literal"><span class="pre">RB_ID=798322</span></code></li>
 </ul>
 </div>
 </div>
-<div class="section" id="id48">
-<h2>1.18.0<a class="headerlink" href="#id48" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id49">
-<h3>New Features<a class="headerlink" href="#id49" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id50">
+<h2>1.18.0<a class="headerlink" href="#id50" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id51">
+<h3>New Features<a class="headerlink" href="#id51" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Add new admin endpoint &#8220;/&#8221; which redirects requests to &#8220;/admin&#8221;. <code class="docutils literal"><span class="pre">RB_ID=777247</span></code></li>
 </ul>
 </div>
 </div>
-<div class="section" id="id50">
-<h2>1.17.0<a class="headerlink" href="#id50" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id52">
+<h2>1.17.0<a class="headerlink" href="#id52" title="Permalink to this headline">¶</a></h2>
 <p>NOT RELEASED</p>
 </div>
-<div class="section" id="id51">
-<h2>1.16.0<a class="headerlink" href="#id51" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="id52">
-<h2>1.15.0<a class="headerlink" href="#id52" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id53">
-<h3>New Features<a class="headerlink" href="#id53" title="Permalink to this headline">¶</a></h3>
+<h2>1.16.0<a class="headerlink" href="#id53" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id54">
+<h2>1.15.0<a class="headerlink" href="#id54" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id55">
+<h3>New Features<a class="headerlink" href="#id55" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Add new admin endpoint &#8220;/admin/lint&#8221; which checks for possible issues with
 performance or configuration. <code class="docutils literal"><span class="pre">RB_ID=754348</span></code></li>
 </ul>
 </div>
-<div class="section" id="id54">
-<h3>Runtime Behavior Changes<a class="headerlink" href="#id54" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id56">
+<h3>Runtime Behavior Changes<a class="headerlink" href="#id56" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>We no longer export a &#8220;scheduler/productivity&#8221; stat because various implementation
 details made it difficult to report reliably.</li>
 </ul>
 </div>
 </div>
-<div class="section" id="id55">
-<h2>1.14.0<a class="headerlink" href="#id55" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id56">
-<h3>Dependencies<a class="headerlink" href="#id56" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id57">
+<h2>1.14.0<a class="headerlink" href="#id57" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id58">
+<h3>Dependencies<a class="headerlink" href="#id58" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Converted to finagle-httpx. Projects that depend transitively on
 finagle-http through twitter-server will need to switch to finagle-httpx.
@@ -398,28 +415,28 @@ finagle-http through twitter-server will need to switch to finagle-httpx.
 </ul>
 </div>
 </div>
-<div class="section" id="id57">
-<h2>1.13.0<a class="headerlink" href="#id57" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id59">
+<h2>1.13.0<a class="headerlink" href="#id59" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="id58">
-<h2>1.12.0<a class="headerlink" href="#id58" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id60">
+<h2>1.12.0<a class="headerlink" href="#id60" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Enable syntax highlighting in the docs</li>
 </ul>
 </div>
-<div class="section" id="id59">
-<h2>1.11.0<a class="headerlink" href="#id59" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id60">
-<h3>New Features<a class="headerlink" href="#id60" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id61">
+<h2>1.11.0<a class="headerlink" href="#id61" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id62">
+<h3>New Features<a class="headerlink" href="#id62" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Introduce AbstractTwitterServer, a Java-friendly version of TwitterServer. RB_ID=661878</li>
 </ul>
 </div>
 </div>
-<div class="section" id="id61">
-<h2>1.10.0<a class="headerlink" href="#id61" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id62">
-<h3>New Features<a class="headerlink" href="#id62" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id63">
+<h2>1.10.0<a class="headerlink" href="#id63" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id64">
+<h3>New Features<a class="headerlink" href="#id64" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>TwitterServer collects a statically allocated ring of runtime events, which be viewed
 at /admin/events, and downloaded as JSON with a HTTP client like curl (or by simply
@@ -428,17 +445,17 @@ omitting the User-Agent header in the request).</li>
 downloaded as json at /admin/registry.json.</li>
 </ul>
 </div>
-<div class="section" id="id63">
-<h3>Dependencies<a class="headerlink" href="#id63" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id65">
+<h3>Dependencies<a class="headerlink" href="#id65" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Bumped many dependency versions.</li>
 </ul>
 </div>
 </div>
-<div class="section" id="id64">
-<h2>1.9.0<a class="headerlink" href="#id64" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id65">
-<h3>New Features<a class="headerlink" href="#id65" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id66">
+<h2>1.9.0<a class="headerlink" href="#id66" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id67">
+<h3>New Features<a class="headerlink" href="#id67" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Most noticeably, the admin server received a complete UI redesign. All http endpoints are
 now available via a navigation pane. We provide a simple API for service owners to include
@@ -458,8 +475,8 @@ about a process that is true for the entire lifetime, like the version of a libr
 flag was set to.</li>
 </ul>
 </div>
-<div class="section" id="id66">
-<h3>Dependencies<a class="headerlink" href="#id66" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id68">
+<h3>Dependencies<a class="headerlink" href="#id68" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Remove dependency on mustache for admin server in favor of templating
 via string interpolation. This is more hygienic for web applications
@@ -467,17 +484,17 @@ and frameworks built atop twitter-server.</li>
 </ul>
 </div>
 </div>
-<div class="section" id="id67">
-<h2>1.8.0<a class="headerlink" href="#id67" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id68">
-<h3>New Features<a class="headerlink" href="#id68" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id69">
+<h2>1.8.0<a class="headerlink" href="#id69" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id70">
+<h3>New Features<a class="headerlink" href="#id70" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Add the ability to promote objects to old gen before serving</li>
 <li>Export everything from build.properties at /admin/server_info</li>
 </ul>
 </div>
-<div class="section" id="id69">
-<h3>Runtime Behavior Changes<a class="headerlink" href="#id69" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id71">
+<h3>Runtime Behavior Changes<a class="headerlink" href="#id71" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Add merge_base merge_base_commit_date and scm_repository to server_info</li>
 <li>AdminHttpServer now disables tracing</li>
@@ -486,15 +503,15 @@ and frameworks built atop twitter-server.</li>
 <li>Initial redesign of admin pages</li>
 </ul>
 </div>
-<div class="section" id="id70">
-<h3>Breaking API Changes<a class="headerlink" href="#id70" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id72">
+<h3>Breaking API Changes<a class="headerlink" href="#id72" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Remove ServerInfo class: export /admin/server_info directly from build.properties file</li>
 </ul>
 </div>
 </div>
-<div class="section" id="id71">
-<h2>1.7.6<a class="headerlink" href="#id71" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id73">
+<h2>1.7.6<a class="headerlink" href="#id73" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>twitter-server: Add gauge on eden allocations</li>
 <li>twitter-server: Do not trace the admin http server</li>
@@ -505,40 +522,40 @@ and frameworks built atop twitter-server.</li>
 <li>twitter-server: Redesign of twitter-server admin page</li>
 </ul>
 </div>
-<div class="section" id="id72">
-<h2>1.7.3<a class="headerlink" href="#id72" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id74">
+<h2>1.7.3<a class="headerlink" href="#id74" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Add admin endpoint for per-client configuration</li>
 <li>Add trace ID to twitter-server logging</li>
 <li>Create a logging handler for on-the-fly logging updates</li>
 </ul>
 </div>
-<div class="section" id="id73">
-<h2>1.7.2<a class="headerlink" href="#id73" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id75">
+<h2>1.7.2<a class="headerlink" href="#id75" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>release finagle v6.18.0</li>
 <li>release util v6.18.0</li>
 <li>user guide: Add blurb about filtering out stats</li>
 </ul>
 </div>
-<div class="section" id="id74">
-<h2>1.7.1<a class="headerlink" href="#id74" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id76">
+<h2>1.7.1<a class="headerlink" href="#id76" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Upgrade versions of all dependencies</li>
 <li>Admin dtab handler: display base dtab</li>
 <li>Change productivity stat to cpuTime/wallTime</li>
 </ul>
 </div>
-<div class="section" id="id75">
-<h2>1.7.0<a class="headerlink" href="#id75" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id77">
+<h2>1.7.0<a class="headerlink" href="#id77" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Bump finagle to 6.16.1-SNAPSHOT</li>
 <li>Bump util to 6.16.1-SNAPSHOT</li>
 <li>Disable admin server stats</li>
 </ul>
 </div>
-<div class="section" id="id76">
-<h2>1.6.3<a class="headerlink" href="#id76" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id78">
+<h2>1.6.3<a class="headerlink" href="#id78" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Define type for statsReceiver explicitly so that it can be overloaded</li>
 <li>Store gauge references (otherwise only weakly referenced)</li>
@@ -546,22 +563,22 @@ and frameworks built atop twitter-server.</li>
 <li>upgrade finagle/util to 6.15.0</li>
 </ul>
 </div>
-<div class="section" id="id77">
-<h2>1.6.2<a class="headerlink" href="#id77" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id79">
+<h2>1.6.2<a class="headerlink" href="#id79" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Add com.twitter.io.Charsets and replace the use of org.jboss.netty.util.CharsetUtil</li>
 <li>Fix twitter-server execution test</li>
 </ul>
 </div>
-<div class="section" id="id78">
-<h2>1.6.1<a class="headerlink" href="#id78" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id80">
+<h2>1.6.1<a class="headerlink" href="#id80" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>upgrade finagle to 6.13.1</li>
 <li>upgrade util to 6.13.2</li>
 </ul>
 </div>
-<div class="section" id="id79">
-<h2>1.6.0<a class="headerlink" href="#id79" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id81">
+<h2>1.6.0<a class="headerlink" href="#id81" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>upgrade finagle version to 6.13.0</li>
 <li>Implement application-level shutdown handling in App.</li>
@@ -569,15 +586,15 @@ and frameworks built atop twitter-server.</li>
 <li>Bug-fix: set content-length when responding from TwitterHandler</li>
 </ul>
 </div>
-<div class="section" id="id80">
-<h2>1.5.1<a class="headerlink" href="#id80" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id82">
+<h2>1.5.1<a class="headerlink" href="#id82" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>update finable to 6.12.1</li>
 <li>update util to 6.12.1</li>
 </ul>
 </div>
-<div class="section" id="id81">
-<h2>1.5.0<a class="headerlink" href="#id81" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id83">
+<h2>1.5.0<a class="headerlink" href="#id83" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Add logging to TwitterHandlers</li>
 <li>Report on deadlock conditions in admin/contentions</li>
@@ -587,15 +604,15 @@ and frameworks built atop twitter-server.</li>
 <li>update util version to 6.12.0</li>
 </ul>
 </div>
-<div class="section" id="id82">
-<h2>1.4.1<a class="headerlink" href="#id82" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id84">
+<h2>1.4.1<a class="headerlink" href="#id84" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Upgrade finagle to 6.11.1</li>
 <li>Upgrade util to 6.11.1</li>
 </ul>
 </div>
-<div class="section" id="id83">
-<h2>1.4.0<a class="headerlink" href="#id83" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id85">
+<h2>1.4.0<a class="headerlink" href="#id85" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Remove finagle-stats dependency so that alternate stats packages can be used such as ostrich</li>
 <li>Add a hooking mechanism and expose an API to install the Dtab using the hooking mechanism</li>
@@ -603,15 +620,15 @@ and frameworks built atop twitter-server.</li>
 <li>Upgrade util to 6.10.0</li>
 </ul>
 </div>
-<div class="section" id="id84">
-<h2>1.3.1<a class="headerlink" href="#id84" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id86">
+<h2>1.3.1<a class="headerlink" href="#id86" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Upgrade finagle to 6.8.1</li>
 <li>Upgrade util to 6.8.1</li>
 </ul>
 </div>
-<div class="section" id="id85">
-<h2>1.3.0<a class="headerlink" href="#id85" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id87">
+<h2>1.3.0<a class="headerlink" href="#id87" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Upgrade finagle to 6.8.0</li>
 <li>Upgrade util to 6.8.0</li>
@@ -622,8 +639,8 @@ and frameworks built atop twitter-server.</li>
 <li>Mix in Closer by default... again.</li>
 </ul>
 </div>
-<div class="section" id="id86">
-<h2>1.2.0<a class="headerlink" href="#id86" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id88">
+<h2>1.2.0<a class="headerlink" href="#id88" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Support staged names introduced in Finagle</li>
 <li>Add glog-style log formatting</li>
@@ -631,8 +648,8 @@ and frameworks built atop twitter-server.</li>
 <li>Don&#8217;t stat admin endpoints</li>
 </ul>
 </div>
-<div class="section" id="id87">
-<h2>1.1.0<a class="headerlink" href="#id87" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id89">
+<h2>1.1.0<a class="headerlink" href="#id89" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Add ability to defer /health endpoint registration</li>
 <li>Add new stats for current memory usage.</li>
@@ -642,22 +659,22 @@ and frameworks built atop twitter-server.</li>
 <li>New scheduler &#8220;productivity&#8221; stats, dispatches.</li>
 </ul>
 </div>
-<div class="section" id="id88">
-<h2>1.0.3<a class="headerlink" href="#id88" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id90">
+<h2>1.0.3<a class="headerlink" href="#id90" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>bump finagle to 6.5.2</li>
 <li>bump util to 6.3.8</li>
 </ul>
 </div>
-<div class="section" id="id89">
-<h2>1.0.2<a class="headerlink" href="#id89" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id91">
+<h2>1.0.2<a class="headerlink" href="#id91" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>bump finagle to 6.5.1</li>
 <li>bump util to 6.3.7</li>
 </ul>
 </div>
-<div class="section" id="id90">
-<h2>1.0.1<a class="headerlink" href="#id90" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id92">
+<h2>1.0.1<a class="headerlink" href="#id92" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Initial Release</li>
 </ul>
@@ -683,152 +700,157 @@ and frameworks built atop twitter-server.</li>
   <ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
 <li><a class="reference internal" href="#unreleased">Unreleased</a></li>
-<li><a class="reference internal" href="#id1">18.9.1</a></li>
-<li><a class="reference internal" href="#id2">18.9.0</a><ul>
+<li><a class="reference internal" href="#id1">18.10.0</a><ul>
+<li><a class="reference internal" href="#changes">Changes</a></li>
 <li><a class="reference internal" href="#runtime-behavior-changes">Runtime Behavior Changes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id3">18.8.0</a><ul>
+<li><a class="reference internal" href="#id2">18.9.1</a></li>
+<li><a class="reference internal" href="#id3">18.9.0</a><ul>
+<li><a class="reference internal" href="#id4">Runtime Behavior Changes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id5">18.8.0</a><ul>
 <li><a class="reference internal" href="#new-features">New Features</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id4">18.7.0</a></li>
-<li><a class="reference internal" href="#id5">18.6.0</a><ul>
-<li><a class="reference internal" href="#id6">New Features</a></li>
+<li><a class="reference internal" href="#id6">18.7.0</a></li>
+<li><a class="reference internal" href="#id7">18.6.0</a><ul>
+<li><a class="reference internal" href="#id8">New Features</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id7">18.5.0</a><ul>
-<li><a class="reference internal" href="#id8">Runtime Behavior Changes</a></li>
+<li><a class="reference internal" href="#id9">18.5.0</a><ul>
+<li><a class="reference internal" href="#id10">Runtime Behavior Changes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id9">18.4.0</a></li>
-<li><a class="reference internal" href="#id10">18.3.0</a></li>
-<li><a class="reference internal" href="#id11">18.2.0</a><ul>
+<li><a class="reference internal" href="#id11">18.4.0</a></li>
+<li><a class="reference internal" href="#id12">18.3.0</a></li>
+<li><a class="reference internal" href="#id13">18.2.0</a><ul>
 <li><a class="reference internal" href="#dependencies">Dependencies</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id12">18.1.0</a></li>
-<li><a class="reference internal" href="#id13">17.12.0</a><ul>
+<li><a class="reference internal" href="#id14">18.1.0</a></li>
+<li><a class="reference internal" href="#id15">17.12.0</a><ul>
 <li><a class="reference internal" href="#bug-fixes">Bug Fixes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id14">17.11.0</a><ul>
+<li><a class="reference internal" href="#id16">17.11.0</a><ul>
 <li><a class="reference internal" href="#breaking-api-changes">Breaking API Changes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id15">17.10.0</a><ul>
+<li><a class="reference internal" href="#id17">17.10.0</a><ul>
 <li><a class="reference internal" href="#release-version-format">Release Version Format</a></li>
-<li><a class="reference internal" href="#id16">Runtime Behavior Changes</a></li>
-<li><a class="reference internal" href="#id17">Breaking API Changes</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id18">1.32.0</a><ul>
+<li><a class="reference internal" href="#id18">Runtime Behavior Changes</a></li>
 <li><a class="reference internal" href="#id19">Breaking API Changes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id20">1.31.0</a></li>
-<li><a class="reference internal" href="#id21">1.30.0</a><ul>
-<li><a class="reference internal" href="#id22">Runtime Behavior Changes</a></li>
-<li><a class="reference internal" href="#id23">Breaking API Changes</a></li>
+<li><a class="reference internal" href="#id20">1.32.0</a><ul>
+<li><a class="reference internal" href="#id21">Breaking API Changes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id24">1.29.0</a></li>
-<li><a class="reference internal" href="#id25">1.28.0</a><ul>
-<li><a class="reference internal" href="#id26">Dependencies</a></li>
+<li><a class="reference internal" href="#id22">1.31.0</a></li>
+<li><a class="reference internal" href="#id23">1.30.0</a><ul>
+<li><a class="reference internal" href="#id24">Runtime Behavior Changes</a></li>
+<li><a class="reference internal" href="#id25">Breaking API Changes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id27">1.27.0</a><ul>
-<li><a class="reference internal" href="#id28">New Features</a></li>
+<li><a class="reference internal" href="#id26">1.29.0</a></li>
+<li><a class="reference internal" href="#id27">1.28.0</a><ul>
+<li><a class="reference internal" href="#id28">Dependencies</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id29">1.26.0</a><ul>
-<li><a class="reference internal" href="#id30">Bug Fixes</a></li>
+<li><a class="reference internal" href="#id29">1.27.0</a><ul>
+<li><a class="reference internal" href="#id30">New Features</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id31">1.25.0</a><ul>
-<li><a class="reference internal" href="#id32">New Features</a></li>
-<li><a class="reference internal" href="#id33">Runtime Behavior Changes</a></li>
+<li><a class="reference internal" href="#id31">1.26.0</a><ul>
+<li><a class="reference internal" href="#id32">Bug Fixes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id34">1.24.0</a></li>
-<li><a class="reference internal" href="#id35">1.23.0</a></li>
-<li><a class="reference internal" href="#id36">1.22.0</a><ul>
-<li><a class="reference internal" href="#id37">New Features</a></li>
-<li><a class="reference internal" href="#id38">Runtime Behavior Changes</a></li>
+<li><a class="reference internal" href="#id33">1.25.0</a><ul>
+<li><a class="reference internal" href="#id34">New Features</a></li>
+<li><a class="reference internal" href="#id35">Runtime Behavior Changes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id39">1.21.0</a><ul>
-<li><a class="reference internal" href="#id40">Bug Fixes</a></li>
-<li><a class="reference internal" href="#id41">New Features</a></li>
-<li><a class="reference internal" href="#id42">Breaking API Changes</a></li>
+<li><a class="reference internal" href="#id36">1.24.0</a></li>
+<li><a class="reference internal" href="#id37">1.23.0</a></li>
+<li><a class="reference internal" href="#id38">1.22.0</a><ul>
+<li><a class="reference internal" href="#id39">New Features</a></li>
+<li><a class="reference internal" href="#id40">Runtime Behavior Changes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id43">1.20.0</a><ul>
-<li><a class="reference internal" href="#id44">Runtime Behavior Changes</a></li>
-<li><a class="reference internal" href="#id45">New Features</a></li>
+<li><a class="reference internal" href="#id41">1.21.0</a><ul>
+<li><a class="reference internal" href="#id42">Bug Fixes</a></li>
+<li><a class="reference internal" href="#id43">New Features</a></li>
+<li><a class="reference internal" href="#id44">Breaking API Changes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id46">1.19.0</a><ul>
+<li><a class="reference internal" href="#id45">1.20.0</a><ul>
+<li><a class="reference internal" href="#id46">Runtime Behavior Changes</a></li>
 <li><a class="reference internal" href="#id47">New Features</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id48">1.18.0</a><ul>
+<li><a class="reference internal" href="#id48">1.19.0</a><ul>
 <li><a class="reference internal" href="#id49">New Features</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id50">1.17.0</a></li>
-<li><a class="reference internal" href="#id51">1.16.0</a></li>
-<li><a class="reference internal" href="#id52">1.15.0</a><ul>
-<li><a class="reference internal" href="#id53">New Features</a></li>
-<li><a class="reference internal" href="#id54">Runtime Behavior Changes</a></li>
+<li><a class="reference internal" href="#id50">1.18.0</a><ul>
+<li><a class="reference internal" href="#id51">New Features</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id55">1.14.0</a><ul>
-<li><a class="reference internal" href="#id56">Dependencies</a></li>
+<li><a class="reference internal" href="#id52">1.17.0</a></li>
+<li><a class="reference internal" href="#id53">1.16.0</a></li>
+<li><a class="reference internal" href="#id54">1.15.0</a><ul>
+<li><a class="reference internal" href="#id55">New Features</a></li>
+<li><a class="reference internal" href="#id56">Runtime Behavior Changes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id57">1.13.0</a></li>
-<li><a class="reference internal" href="#id58">1.12.0</a></li>
-<li><a class="reference internal" href="#id59">1.11.0</a><ul>
-<li><a class="reference internal" href="#id60">New Features</a></li>
+<li><a class="reference internal" href="#id57">1.14.0</a><ul>
+<li><a class="reference internal" href="#id58">Dependencies</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id61">1.10.0</a><ul>
+<li><a class="reference internal" href="#id59">1.13.0</a></li>
+<li><a class="reference internal" href="#id60">1.12.0</a></li>
+<li><a class="reference internal" href="#id61">1.11.0</a><ul>
 <li><a class="reference internal" href="#id62">New Features</a></li>
-<li><a class="reference internal" href="#id63">Dependencies</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id64">1.9.0</a><ul>
-<li><a class="reference internal" href="#id65">New Features</a></li>
-<li><a class="reference internal" href="#id66">Dependencies</a></li>
+<li><a class="reference internal" href="#id63">1.10.0</a><ul>
+<li><a class="reference internal" href="#id64">New Features</a></li>
+<li><a class="reference internal" href="#id65">Dependencies</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id67">1.8.0</a><ul>
-<li><a class="reference internal" href="#id68">New Features</a></li>
-<li><a class="reference internal" href="#id69">Runtime Behavior Changes</a></li>
-<li><a class="reference internal" href="#id70">Breaking API Changes</a></li>
+<li><a class="reference internal" href="#id66">1.9.0</a><ul>
+<li><a class="reference internal" href="#id67">New Features</a></li>
+<li><a class="reference internal" href="#id68">Dependencies</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id71">1.7.6</a></li>
-<li><a class="reference internal" href="#id72">1.7.3</a></li>
-<li><a class="reference internal" href="#id73">1.7.2</a></li>
-<li><a class="reference internal" href="#id74">1.7.1</a></li>
-<li><a class="reference internal" href="#id75">1.7.0</a></li>
-<li><a class="reference internal" href="#id76">1.6.3</a></li>
-<li><a class="reference internal" href="#id77">1.6.2</a></li>
-<li><a class="reference internal" href="#id78">1.6.1</a></li>
-<li><a class="reference internal" href="#id79">1.6.0</a></li>
-<li><a class="reference internal" href="#id80">1.5.1</a></li>
-<li><a class="reference internal" href="#id81">1.5.0</a></li>
-<li><a class="reference internal" href="#id82">1.4.1</a></li>
-<li><a class="reference internal" href="#id83">1.4.0</a></li>
-<li><a class="reference internal" href="#id84">1.3.1</a></li>
-<li><a class="reference internal" href="#id85">1.3.0</a></li>
-<li><a class="reference internal" href="#id86">1.2.0</a></li>
-<li><a class="reference internal" href="#id87">1.1.0</a></li>
-<li><a class="reference internal" href="#id88">1.0.3</a></li>
-<li><a class="reference internal" href="#id89">1.0.2</a></li>
-<li><a class="reference internal" href="#id90">1.0.1</a></li>
+<li><a class="reference internal" href="#id69">1.8.0</a><ul>
+<li><a class="reference internal" href="#id70">New Features</a></li>
+<li><a class="reference internal" href="#id71">Runtime Behavior Changes</a></li>
+<li><a class="reference internal" href="#id72">Breaking API Changes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id73">1.7.6</a></li>
+<li><a class="reference internal" href="#id74">1.7.3</a></li>
+<li><a class="reference internal" href="#id75">1.7.2</a></li>
+<li><a class="reference internal" href="#id76">1.7.1</a></li>
+<li><a class="reference internal" href="#id77">1.7.0</a></li>
+<li><a class="reference internal" href="#id78">1.6.3</a></li>
+<li><a class="reference internal" href="#id79">1.6.2</a></li>
+<li><a class="reference internal" href="#id80">1.6.1</a></li>
+<li><a class="reference internal" href="#id81">1.6.0</a></li>
+<li><a class="reference internal" href="#id82">1.5.1</a></li>
+<li><a class="reference internal" href="#id83">1.5.0</a></li>
+<li><a class="reference internal" href="#id84">1.4.1</a></li>
+<li><a class="reference internal" href="#id85">1.4.0</a></li>
+<li><a class="reference internal" href="#id86">1.3.1</a></li>
+<li><a class="reference internal" href="#id87">1.3.0</a></li>
+<li><a class="reference internal" href="#id88">1.2.0</a></li>
+<li><a class="reference internal" href="#id89">1.1.0</a></li>
+<li><a class="reference internal" href="#id90">1.0.3</a></li>
+<li><a class="reference internal" href="#id91">1.0.2</a></li>
+<li><a class="reference internal" href="#id92">1.0.1</a></li>
 </ul>
 </li>
 </ul>
