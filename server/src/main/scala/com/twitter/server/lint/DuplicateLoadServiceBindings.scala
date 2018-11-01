@@ -8,18 +8,19 @@ import com.twitter.util.lint.{Category, Issue, Rule}
  */
 object DuplicateLoadServiceBindings {
 
-  def apply(): Rule = Rule(
-    Category.Configuration,
-    "Duplicate calls to `LoadService.bind`",
-    """
+  def apply(): Rule =
+    Rule(
+      Category.Configuration,
+      "Duplicate calls to `LoadService.bind`",
+      """
       |`LoadService.bind` allows users to specify a specific
       |implementation. If this is getting called multiple
       |times for the same interface, it indicates a setup/configuration
       |issue that may cause surprises.
     """.stripMargin
-  ) {
-    issues(LoadService.duplicateBindings)
-  }
+    ) {
+      issues(LoadService.duplicateBindings)
+    }
 
   /** exposed for testing */
   private[lint] def issues(dupes: Set[Class[_]]): Seq[Issue] =

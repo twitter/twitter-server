@@ -39,7 +39,6 @@ class TestTwitterServer extends TwitterServer {
   }
 }
 
-
 class MockExceptionHandler extends Service[Request, Response] {
   val pattern = "/exception_please.json"
   def apply(req: Request): Future[Response] = {

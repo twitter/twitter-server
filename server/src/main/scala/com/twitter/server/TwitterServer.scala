@@ -32,18 +32,19 @@ import com.twitter.util.logging.Logging
  * logging APIs.
  */
 trait TwitterServer
-  extends App
-  with Slf4jBridge
-  with Logging
-  with Linters
-  with Hooks
-  with AdminHttpServer
-  with Admin
-  with Lifecycle
-  with Stats {
+    extends App
+    with Slf4jBridge
+    with Logging
+    with Linters
+    with Hooks
+    with AdminHttpServer
+    with Admin
+    with Lifecycle
+    with Stats {
 
   /** Don't let applications opt-out */
   final override val suppressGracefulShutdownErrors: Boolean = false
+
   /** Use the Finagle DefaultTimer */
   override protected lazy val shutdownTimer: Timer = DefaultTimer
 }

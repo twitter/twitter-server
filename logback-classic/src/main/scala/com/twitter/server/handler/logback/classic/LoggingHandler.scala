@@ -39,13 +39,12 @@ private class LoggingHandler extends AdminHttpMuxHandler with Logging {
       javalog.Level.FINE,
       javalog.Level.FINER,
       javalog.Level.FINEST,
-      javalog.Level.ALL)
-      .sorted(julLevelOrder)
+      javalog.Level.ALL
+    ).sorted(julLevelOrder)
 
   /** Exposed for testing */
   private[classic] def loggers =
-    LoggerFactory
-      .getILoggerFactory
+    LoggerFactory.getILoggerFactory
       .asInstanceOf[LoggerContext]
       .getLoggerList
       .asScala
@@ -151,44 +150,44 @@ private class LoggingHandler extends AdminHttpMuxHandler with Logging {
           </tr>
         </thead>
           ${(for (logger <- renderLoggers) yield {
-        val loggerName =
-          if (logger.getName == "") org.slf4j.Logger.ROOT_LOGGER_NAME else logger.getName
-        val inheritsLevel = logger.getLevel == null
-        val filterQueryParams = if (showOverriddenOnly) {
-            "?overridden=true&"
-          } else "?"
+      val loggerName =
+        if (logger.getName == "") org.slf4j.Logger.ROOT_LOGGER_NAME else logger.getName
+      val inheritsLevel = logger.getLevel == null
+      val filterQueryParams = if (showOverriddenOnly) {
+        "?overridden=true&"
+      } else "?"
 
-        val buttons = for (level <- levels) yield {
-          val isActive = logger.getEffectiveLevel == level
+      val buttons = for (level <- levels) yield {
+        val isActive = logger.getEffectiveLevel == level
 
-          val activeCss = if (!isActive) "btn-default"
-            else if (!inheritsLevel) "btn-primary active disabled"
-            else "btn-primary active"
+        val activeCss =
+          if (!isActive) "btn-default"
+          else if (!inheritsLevel) "btn-primary active disabled"
+          else "btn-primary active"
 
-          val queryParams =
-            if (isActive && logger.getLevel == logger.getEffectiveLevel) ""
-            else {
-              s"""logger=${URLEncoder.encode(loggerName, "UTF-8")}&level=${level.toString}"""
-            }
+        val queryParams =
+          if (isActive && logger.getLevel == logger.getEffectiveLevel) ""
+          else {
+            s"""logger=${URLEncoder.encode(loggerName, "UTF-8")}&level=${level.toString}"""
+          }
 
-          s"""<a class="btn btn-sm $activeCss"
+        s"""<a class="btn btn-sm $activeCss"
                               href="$filterQueryParams$queryParams">${level.toString}</a>"""
-        }
+      }
 
-        val resetButton = if (!inheritsLevel && loggerName != org.slf4j.Logger.ROOT_LOGGER_NAME) {
-          val queryParams = s"""logger=${URLEncoder.encode(loggerName, "UTF-8")}&level=null"""
-          s"""<a class="btn btn-sm btn-warning" href="$filterQueryParams$queryParams">RESET</a>"""
-        } else ""
+      val resetButton = if (!inheritsLevel && loggerName != org.slf4j.Logger.ROOT_LOGGER_NAME) {
+        val queryParams = s"""logger=${URLEncoder.encode(loggerName, "UTF-8")}&level=null"""
+        s"""<a class="btn btn-sm btn-warning" href="$filterQueryParams$queryParams">RESET</a>"""
+      } else ""
 
-        s"""<tr>
+      s"""<tr>
                 <td><h5>${escapeHtml(loggerName)}</h5></td>
                 <td><div class="btn-group" role="group">
                   ${buttons.mkString("\n")}
                   $resetButton
                 </div></td>
                 </tr>"""
-      }).mkString("\n")
-    }
+    }).mkString("\n")}
          </table>
     <h3>java.util.Logging Loggers</h3>
     <table class="table table-striped table-condensed">
@@ -198,35 +197,38 @@ private class LoggingHandler extends AdminHttpMuxHandler with Logging {
                 <th>java.util.logging.Level</th>
               </tr>
             </thead>
-    ${val filterQueryParams = if (showOverriddenOnly) {
-      "?overridden=true&"
-    } else "?"
+    ${
+      val filterQueryParams = if (showOverriddenOnly) {
+        "?overridden=true&"
+      } else "?"
 
-    (for (logger <- julLoggers) yield {
-    val loggerName = getLoggerDisplayName(logger)
-    val buttons = (for (level <- julLevels) yield {
-      val isActive = getLevel(logger) == level
-      val activeCss =
-        if (!isActive) "btn-default"
-        else {
-          "btn-primary active disabled"
-        }
-      val queryParams =
-        if (isActive) ""
-        else {
-          s"""logger=${URLEncoder.encode(loggerName, "UTF-8")}&level=${level.toString}&isJul=true"""
-        }
-      s"""<a class="btn btn-sm $activeCss"
+      (for (logger <- julLoggers) yield {
+        val loggerName = getLoggerDisplayName(logger)
+        val buttons = (for (level <- julLevels) yield {
+          val isActive = getLevel(logger) == level
+          val activeCss =
+            if (!isActive) "btn-default"
+            else {
+              "btn-primary active disabled"
+            }
+          val queryParams =
+            if (isActive) ""
+            else {
+              s"""logger=${URLEncoder
+                .encode(loggerName, "UTF-8")}&level=${level.toString}&isJul=true"""
+            }
+          s"""<a class="btn btn-sm $activeCss"
                             href="$filterQueryParams$queryParams">${level.toString}</a>"""
-    }).mkString("\n")
+        }).mkString("\n")
 
-    s"""<tr>
+        s"""<tr>
           <td><h5>${escapeHtml(loggerName)}</h5></td>
           <td><div class="btn-group" role="group">
             $buttons
           </div></td>
           </tr>"""
-  }).mkString("\n")}
+      }).mkString("\n")
+    }
          </table>"""
 
   }

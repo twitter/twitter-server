@@ -103,7 +103,7 @@ class LoggingHandlerTest extends FunSuite {
 
     assert(overriddenHtml2.contains("baz"))
 
-    log.setLevel(null)  // log level is now inherited, no longer overridden
+    log.setLevel(null) // log level is now inherited, no longer overridden
     val overriddenHtml3 = Await.result(handler(req), 5.seconds).contentString
 
     assert(!overriddenHtml3.contains("baz"))

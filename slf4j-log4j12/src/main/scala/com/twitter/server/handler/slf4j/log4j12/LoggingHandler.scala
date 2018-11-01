@@ -110,8 +110,9 @@ private class LoggingHandler extends AdminHttpMuxHandler with Logging {
 
   private def renderHtml(
     loggerList: Seq[Logger],
-    levels: Seq[Level], updateMsg:
-    String, showOverriddenOnly: Boolean
+    levels: Seq[Level],
+    updateMsg: String,
+    showOverriddenOnly: Boolean
   ): String =
     s"""<table class="table table-striped table-condensed">
         <caption>${escapeHtml(updateMsg)}</caption>
@@ -128,7 +129,8 @@ private class LoggingHandler extends AdminHttpMuxHandler with Logging {
       val inheritsLevel = logger.getLevel == null
       val buttons = for (level <- levels) yield {
         val isActive = logger.getEffectiveLevel == level
-        val activeCss = if (!isActive) "btn-default"
+        val activeCss =
+          if (!isActive) "btn-default"
           else if (!inheritsLevel) "btn-primary active disabled"
           else "btn-primary active"
         val href =

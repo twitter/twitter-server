@@ -137,7 +137,9 @@ private class LoggingHandler extends AdminHttpMuxHandler {
     }
   }
 
-  private[this] def parseLoggerName(params: scala.collection.Map[String, scala.collection.Seq[String]]): Option[String] = {
+  private[this] def parseLoggerName(
+    params: scala.collection.Map[String, scala.collection.Seq[String]]
+  ): Option[String] = {
     params.getOrElse("logger", Seq.empty).headOption.map {
       case "root" => ""
       case name => name

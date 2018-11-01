@@ -226,9 +226,11 @@ trait AdminHttpServer { self: App =>
     addLoggingHandler() // ensure there is an /admin/logging handler
 
     // create a service which multiplexes across all endpoints.
-    val localMuxer = allRoutes.foldLeft(new HttpMuxer) { case (muxer, route) =>
-      val service = new IndexView(route.alias, route.path, () => indexEntries).andThen(route.handler)
-      muxer.withHandler(route.path, service)
+    val localMuxer = allRoutes.foldLeft(new HttpMuxer) {
+      case (muxer, route) =>
+        val service =
+          new IndexView(route.alias, route.path, () => indexEntries).andThen(route.handler)
+        muxer.withHandler(route.path, service)
     }
 
     val endpoints = allRoutes.map { route =>
@@ -271,12 +273,13 @@ trait AdminHttpServer { self: App =>
     routes
       .filter(_.includeInIndex)
       .groupBy(_.group)
-      .flatMap { case (groupOpt, rts) =>
-        val links = rts.map(routeToIndexLink)
-        groupOpt match {
-          case Some(group) => Seq(IndexView.Group(group, links))
-          case None => links
-        }
+      .flatMap {
+        case (groupOpt, rts) =>
+          val links = rts.map(routeToIndexLink)
+          groupOpt match {
+            case Some(group) => Seq(IndexView.Group(group, links))
+            case None => links
+          }
       }
       .toSeq
   }
