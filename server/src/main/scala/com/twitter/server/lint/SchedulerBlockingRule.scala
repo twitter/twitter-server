@@ -19,10 +19,7 @@ object SchedulerBlockingRule {
     apply(Scheduler, 5.seconds)
 
   /** exposed for testing */
-  private[lint] def apply(
-    scheduler: Scheduler,
-    minimumBlocking: Duration
-  ): Rule = {
+  private[lint] def apply(scheduler: Scheduler, minimumBlocking: Duration): Rule = {
     Rule(
       Category.Performance,
       "Blocking the Scheduler",

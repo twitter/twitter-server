@@ -10,9 +10,7 @@ import com.twitter.util.{Duration, Future, Return, Throw}
 import java.io.ByteArrayOutputStream
 import com.twitter.util.logging.Logger
 
-class ProfileResourceHandler(
-  which: Thread.State
-) extends Service[Request, Response] {
+class ProfileResourceHandler(which: Thread.State) extends Service[Request, Response] {
   private[this] val log = Logger[ProfileResourceHandler]
 
   case class Params(pause: Duration, frequency: Int)

@@ -20,8 +20,7 @@ private object ClientRegistryHandler {
     addr: String,
     scope: String,
     successRate: Double,
-    unavailable: Int
-  )
+    unavailable: Int)
 
   val profileOrdering: Ordering[ClientProfile] = Ordering.by(_.successRate)
 
@@ -72,8 +71,8 @@ private object ClientRegistryHandler {
 class ClientRegistryHandler(
   uriPrefix: String,
   source: MetricSource = new MetricSource,
-  stackRegistry: StackRegistry = ClientRegistry
-) extends Service[Request, Response] {
+  stackRegistry: StackRegistry = ClientRegistry)
+    extends Service[Request, Response] {
   import ClientRegistryHandler._
 
   // Search the metrics source for the stat scope that includes `clientName`.

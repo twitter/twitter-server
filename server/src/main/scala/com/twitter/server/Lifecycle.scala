@@ -46,8 +46,7 @@ object promoteBeforeServing
 object Lifecycle {
 
   private[server] class PromoteToOldGen(
-    runtimeArgs: Seq[String] = ManagementFactory.getRuntimeMXBean.getInputArguments.asScala
-  ) {
+    runtimeArgs: Seq[String] = ManagementFactory.getRuntimeMXBean.getInputArguments.asScala) {
     private[this] val hasPromoted = new AtomicBoolean(false)
 
     private[server] def promoted: Boolean = hasPromoted.get()

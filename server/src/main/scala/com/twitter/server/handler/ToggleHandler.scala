@@ -28,8 +28,7 @@ private[handler] object ToggleHandler {
     id: String,
     fraction: Double,
     lastValue: Option[Boolean],
-    description: Option[String]
-  )
+    description: Option[String])
 
   /**
    * The components that compose the "current" `Toggle`.
@@ -205,10 +204,7 @@ class ToggleHandler private[handler] (registeredLibrariesFn: () => Map[String, T
    *
    * @note package protected for testing
    */
-  private[handler] def parsePath(
-    path: String,
-    errors: ArrayBuffer[String]
-  ): ParsedPath = {
+  private[handler] def parsePath(path: String, errors: ArrayBuffer[String]): ParsedPath = {
     path.split("/") match {
       case Array("", "admin", "toggles") =>
         ParsedPath(None, None)
@@ -275,10 +271,7 @@ class ToggleHandler private[handler] (registeredLibrariesFn: () => Map[String, T
    *
    * @note package protected for testing
    */
-  private[handler] def deleteToggle(
-    libraryName: String,
-    id: String
-  ): Seq[String] = {
+  private[handler] def deleteToggle(libraryName: String, id: String): Seq[String] = {
     val errors = new ArrayBuffer[String]()
     val toggleMap = registeredLibrariesFn()(libraryName)
     log.info(s"Deleted $libraryName's toggle $id")

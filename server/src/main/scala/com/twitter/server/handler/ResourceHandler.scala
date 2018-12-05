@@ -18,14 +18,12 @@ import scala.io.Source
  */
 class ResourceHandler(
   baseRequestPath: String,
-  resourceResolver: PartialFunction[String, InputStream]
-) extends Service[Request, Response] {
+  resourceResolver: PartialFunction[String, InputStream])
+    extends Service[Request, Response] {
 
   // for java + backwards compatibility
-  def this(
-    basePath: String,
-    servingDir: String = "www"
-  ) = this(basePath, ResourceHandler.jarResolver(servingDir))
+  def this(basePath: String, servingDir: String = "www") =
+    this(basePath, ResourceHandler.jarResolver(servingDir))
 
   private[this] def meta(path: String): (Charset, String) = {
     val exts = path.split('.')
@@ -93,10 +91,8 @@ object ResourceHandler extends JavaSingleton {
    * @param baseResourcePath  The resource path from which this handler will serve resources.
    * (parameter names differ from the other constructors' for backwards compatibility)
    */
-  def fromJar(
-    baseRequestPath: String,
-    baseResourcePath: String = "www"
-  ): ResourceHandler = new ResourceHandler(baseRequestPath, jarResolver(baseResourcePath))
+  def fromJar(baseRequestPath: String, baseResourcePath: String = "www"): ResourceHandler =
+    new ResourceHandler(baseRequestPath, jarResolver(baseResourcePath))
 
   /**
    * Loads resources relative to the given baseResourcePath (via java's `Class#getResourceAsStream`

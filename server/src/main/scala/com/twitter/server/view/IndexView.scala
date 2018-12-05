@@ -29,10 +29,7 @@ object IndexView {
   /** Render nav and contents into an html template. */
   def render(title: String, uri: String, nav: Seq[Entry], contents: Reader[Buf]): Reader[Buf] = {
 
-    def renderNav(
-      ls: Seq[Entry],
-      sb: StringBuilder = new StringBuilder
-    ): String = ls match {
+    def renderNav(ls: Seq[Entry], sb: StringBuilder = new StringBuilder): String = ls match {
       case Seq() => sb.toString
 
       case Link(id, href, Post) +: rest =>

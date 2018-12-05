@@ -17,9 +17,7 @@ private[server] object EndpointRegistryView {
    * Render current weights and socket addresses for paths in each dtab
    * @param dtabEntries Map of Dtabs to map of paths to Addrs
    */
-  def render(
-    dtabEntries: Map[Dtab, Map[String, Addr]]
-  ): String =
+  def render(dtabEntries: Map[Dtab, Map[String, Addr]]): String =
     s"""
     <div class="row">
       <div class="col-md-12">

@@ -62,8 +62,8 @@ private object ServerRegistryHandler {
 class ServerRegistryHandler(
   uriPrefix: String,
   source: MetricSource = new MetricSource,
-  registry: StackRegistry = ServerRegistry
-) extends Service[Request, Response] {
+  registry: StackRegistry = ServerRegistry)
+    extends Service[Request, Response] {
   // Search the metrics source for the stat scope that includes `serverName`.
   // The search namespace includes both "$serverName/" and "srv/$serverName"
   // to take into account finagle's ServerStatsReceiver. Note, unnamed servers are

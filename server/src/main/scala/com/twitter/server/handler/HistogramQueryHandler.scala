@@ -21,8 +21,7 @@ object HistogramQueryHandler {
     average: Option[Long],
     min: Option[Long],
     max: Option[Long],
-    percentiles: Map[String, Long]
-  )
+    percentiles: Map[String, Long])
 
   /** the name and percentile thresholds used for summaries */
   private val SummaryThresholds = Seq(

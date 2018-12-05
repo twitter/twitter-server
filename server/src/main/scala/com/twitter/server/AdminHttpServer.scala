@@ -54,8 +54,7 @@ object AdminHttpServer {
     alias: String,
     group: Option[String],
     includeInIndex: Boolean,
-    method: Method = Get
-  )
+    method: Method = Get)
 
   object Route {
 
@@ -65,10 +64,8 @@ object AdminHttpServer {
      */
     private[this] val IsolateFilter: SimpleFilter[Request, Response] =
       new SimpleFilter[Request, Response] {
-        def apply(
-          request: Request,
-          service: Service[Request, Response]
-        ): Future[Response] = Pool(service(request)).flatten
+        def apply(request: Request, service: Service[Request, Response]): Future[Response] =
+          Pool(service(request)).flatten
         override def toString: String = s"${Route.getClass.getName}IsolateFilter"
       }
 

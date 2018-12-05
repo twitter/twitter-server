@@ -42,9 +42,7 @@ class RegistryHandler extends Service[Request, Response] {
     newOk(jsonResponse(filterParam))
   }
 
-  private[this] def filterRegistry(
-    filter: Option[String]
-  ): Registry = {
+  private[this] def filterRegistry(filter: Option[String]): Registry = {
     val registry = GlobalRegistry.get
     filter match {
       case None => registry

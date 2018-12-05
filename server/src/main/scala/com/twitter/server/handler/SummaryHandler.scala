@@ -9,10 +9,7 @@ import com.twitter.util.Future
 private object SummaryHandler {
   val TextResponse = "Visit twitter-server's admin pages via browser for a richer experience."
 
-  def render(
-    finagleVersion: String,
-    procInfo: Seq[String]
-  ): String =
+  def render(finagleVersion: String, procInfo: Seq[String]): String =
     s"""<script type="application/javascript" src="/admin/files/js/summary.js"></script>
       <link type="text/css" href="/admin/files/css/summary.css" rel="stylesheet">
       <div id="lint-warnings" data-refresh-uri="/admin/failedlint"></div>

@@ -12,10 +12,7 @@ private[server] object StackRegistryView {
    * entries stats are exported. If present, the html page will link
    * to the metrics graphs for this entry.
    */
-  def render(
-    entry: StackRegistry.Entry,
-    statScope: Option[String]
-  ): String = {
+  def render(entry: StackRegistry.Entry, statScope: Option[String]): String = {
 
     def renderParams(params: Seq[(String, String)]): String =
       (for ((field, value) <- params) yield {

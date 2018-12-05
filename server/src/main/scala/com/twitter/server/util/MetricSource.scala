@@ -18,8 +18,7 @@ private[server] class MetricSource(
   registry: () => Seq[StatsRegistry] = { () =>
     MetricSource.registry
   },
-  refreshInterval: Duration = 1.second
-) {
+  refreshInterval: Duration = 1.second) {
   private[this] var lastRefresh = Time.now - refreshInterval
   private[this] var underlying: Map[String, StatEntry] = Map.empty
 
