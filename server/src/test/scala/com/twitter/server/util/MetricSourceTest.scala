@@ -1,6 +1,6 @@
 package com.twitter.server.util
 
-import com.twitter.conversions.time._
+import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.stats.{StatsRegistry, StatEntry}
 import com.twitter.util.Time
 import org.junit.runner.RunWith

@@ -1,6 +1,6 @@
 package com.twitter.server.util
 
-import com.twitter.conversions.time._
+import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.stats.{StatEntry, StatsRegistry}
 import com.twitter.finagle.util.LoadService
 import com.twitter.util.{Duration, Time}

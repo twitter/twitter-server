@@ -1,7 +1,7 @@
 package com.twitter.server.lint
 
 import com.twitter.concurrent.Scheduler
-import com.twitter.conversions.time._
+import com.twitter.conversions.DurationOps._
 import com.twitter.util.Duration
 import com.twitter.util.lint.{Category, Issue, Rule}
 

@@ -1,7 +1,7 @@
 package com.twitter.server.lint
 
 import com.twitter.concurrent.Scheduler
-import com.twitter.conversions.time._
+import com.twitter.conversions.DurationOps._
 import org.junit.runner.RunWith
 import org.mockito.Mockito._
 import org.scalatest.{FunSuite, Matchers}

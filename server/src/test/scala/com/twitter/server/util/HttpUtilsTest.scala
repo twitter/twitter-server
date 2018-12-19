@@ -1,6 +1,6 @@
 package com.twitter.server.util
 
-import com.twitter.conversions.time._
+import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{HttpMuxer, Request, Response, Status, Version}
 import com.twitter.io.Buf

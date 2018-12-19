@@ -1,6 +1,6 @@
 package com.twitter.server
 
-import com.twitter.conversions.time._
+import com.twitter.conversions.DurationOps._
 import com.twitter.util.Duration
 import org.scalatest.FunSuite
 import scala.collection.mutable

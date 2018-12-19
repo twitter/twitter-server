@@ -1,6 +1,6 @@
 package com.twitter.server.handler
 
-import com.twitter.conversions.time._
+import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.{MediaType, Method, Request, Status}
 import com.twitter.util.Await
 import com.twitter.util.tunable.TunableMap

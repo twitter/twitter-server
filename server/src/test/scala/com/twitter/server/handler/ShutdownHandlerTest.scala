@@ -1,6 +1,6 @@
 package com.twitter.server.handler
 
-import com.twitter.conversions.time._
+import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.{Status, Request, Method}
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Closable, Time, Await, Future}

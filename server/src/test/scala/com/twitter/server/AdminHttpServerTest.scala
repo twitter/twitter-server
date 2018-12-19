@@ -1,6 +1,6 @@
 package com.twitter.server
 
-import com.twitter.conversions.time._
+import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.{Http, ListeningServer}
 import com.twitter.finagle.http._
 import com.twitter.server.util.HttpUtils._

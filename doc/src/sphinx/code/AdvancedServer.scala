@@ -1,4 +1,4 @@
-import com.twitter.conversions.time._
+import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.{HttpMuxer, Request, Response, Status}
 import com.twitter.finagle.Service
 import com.twitter.logging.Formatter

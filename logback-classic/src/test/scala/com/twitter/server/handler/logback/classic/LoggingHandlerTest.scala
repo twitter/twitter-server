@@ -1,7 +1,7 @@
 package com.twitter.server.handler.logback.classic
 
 import ch.qos.logback.classic.{Level, Logger}
-import com.twitter.conversions.time._
+import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.Request
 import com.twitter.util.Await
 import com.twitter.util.logging.{Logger => UtilLogger}

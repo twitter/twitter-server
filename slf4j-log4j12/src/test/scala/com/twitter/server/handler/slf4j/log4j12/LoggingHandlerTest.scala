@@ -1,6 +1,6 @@
 package com.twitter.server.handler.slf4j.log4j12
 
-import com.twitter.conversions.time._
+import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.Request
 import com.twitter.util.Await
 import com.twitter.util.logging.{Logger => UtilLogger}

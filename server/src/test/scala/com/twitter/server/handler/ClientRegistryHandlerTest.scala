@@ -1,6 +1,6 @@
 package com.twitter.server.handler
 
-import com.twitter.conversions.time._
+import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.client.StackClient
 import com.twitter.finagle.util.StackRegistry
 import com.twitter.finagle.{Stack, param}
