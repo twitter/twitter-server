@@ -37,9 +37,27 @@ class MockHostMetricsExporter extends HttpMuxHandler {
     newOk("per host metrics!")
 }
 
+object MockClosableHandler {
+  @volatile var closed = false
+}
+
+class MockClosableHandler extends HttpMuxHandler {
+  MockClosableHandler.closed = false
+
+  val pattern = "/admin/closable.json"
+  def route: Route = Route(pattern, this)
+  def apply(req: Request): Future[Response] =
+    newOk("closable!")
+
+  override def close(deadline: Time): Future[Unit] = {
+    MockClosableHandler.closed = true
+    Future.Done
+  }
+}
+
 class AdminHttpServerTest extends FunSuite with Eventually with IntegrationPatience {
 
-  def checkServer(server: ListeningServer): Unit = {
+  def checkServer(server: ListeningServer, shadow: Boolean = false): Unit = {
     val port = server.boundAddress.asInstanceOf[InetSocketAddress].getPort
     val client = Http.client.newService(s"localhost:$port")
 
@@ -54,6 +72,11 @@ class AdminHttpServerTest extends FunSuite with Eventually with IntegrationPatie
 
     val resp1 = Await.result(client(Request("/admin/per_host_metrics.json")), 1.second)
     assert(resp1.contentString.contains("per host metrics!"))
+
+    if (!shadow) {
+      val resp2 = Await.result(client(Request("/admin/closable.json")), 1.second)
+      assert(resp2.contentString.contains("closable!"))
+    }
   }
 
   def closeServer(twitterServer: TwitterServer, adminServer: ListeningServer): Unit = {
@@ -71,17 +94,19 @@ class AdminHttpServerTest extends FunSuite with Eventually with IntegrationPatie
     val server = new TestTwitterServer {
       override def main(): Unit = {
         checkServer(adminHttpServer)
+
         closeServer(this, adminHttpServer)
         Await.result(close(5.seconds))
       }
     }
     server.main(args = Array.empty[String])
+    assert(MockClosableHandler.closed)
   }
 
   test("shadow server serves and is closed properly") {
     val server = new TestTwitterServer with ShadowAdminServer {
       override def main(): Unit = {
-        checkServer(shadowHttpServer)
+        checkServer(shadowHttpServer, shadow = true)
         // ShadowAdminServer does not listen for /quitquitquit
         // so send it to the admin server
         closeServer(this, adminHttpServer)

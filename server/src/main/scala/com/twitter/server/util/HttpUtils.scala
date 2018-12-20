@@ -3,7 +3,7 @@ package com.twitter.server.util
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{MediaType, Request, Response, Status, Version, HttpMuxer}
 import com.twitter.io.Buf
-import com.twitter.util.Future
+import com.twitter.util.{Future, Time, Closable}
 import org.jboss.netty.handler.codec.http.QueryStringDecoder
 import scala.collection.JavaConverters._
 import scala.collection.{Map, Seq}
@@ -18,10 +18,14 @@ private[server] object HttpUtils {
    * is empty the resulting services will be always answering with 404.
    */
   def combine(services: Seq[HttpMuxer]): Service[Request, Response] =
-    Service.mk[Request, Response] { req =>
-      val routes = services.flatMap(_.route(req))
-      if (routes.nonEmpty) routes.maxBy(_.pattern.length).handler(req)
-      else Future.value(Response(req.version, Status.NotFound))
+    new Service[Request, Response] {
+      def apply(req: Request): Future[Response] = {
+        val routes = services.flatMap(_.route(req))
+        if (routes.nonEmpty) routes.maxBy(_.pattern.length).handler(req)
+        else Future.value(Response(req.version, Status.NotFound))
+      }
+
+      override def close(deadline: Time): Future[Unit] = Closable.all(services: _*).close(deadline)
     }
 
   /**

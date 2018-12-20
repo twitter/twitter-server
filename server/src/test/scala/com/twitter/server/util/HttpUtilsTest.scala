@@ -5,12 +5,9 @@ import com.twitter.finagle.Service
 import com.twitter.finagle.http.{HttpMuxer, Request, Response, Status, Version}
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils._
-import com.twitter.util.{Await, Future}
-import org.junit.runner.RunWith
+import com.twitter.util.{Await, Future, Time}
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class HttpUtilsTest extends FunSuite {
   private[this] def await[A](a: Future[A]): A = Await.result(a, 5.seconds)
 
@@ -113,6 +110,35 @@ class HttpUtilsTest extends FunSuite {
 
     val res = await(svc(Request("/an404")))
     assert(res.status == Status.NotFound)
+  }
+
+  test("combine can close the underlying services") {
+    var closed1 = false
+    var closed2 = false
+
+    val hello = new Service[Request, Response] {
+      def apply(req: Request) = newOk("hello")
+      override def close(deadline: Time): Future[Unit] = {
+        closed1 = true
+        Future.Done
+      }
+    }
+
+    val world = new Service[Request, Response] {
+      def apply(req: Request) = newOk("world")
+      override def close(deadline: Time): Future[Unit] = {
+        closed2 = true
+        Future.Done
+      }
+    }
+    val muxer0 = new HttpMuxer().withHandler("/hello", hello)
+    val muxer1 = new HttpMuxer().withHandler("/world", world)
+
+    val svc = combine(Seq(muxer0, muxer1))
+    await(svc.close())
+
+    assert(closed1)
+    assert(closed2)
   }
 
   test("expects") {

@@ -7,6 +7,9 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+* Propagate the admin server's shutdown to the handlers that are registered with the admin server.
+  ``PHAB_ID=D254656``
+
 18.12.0
 -------
 

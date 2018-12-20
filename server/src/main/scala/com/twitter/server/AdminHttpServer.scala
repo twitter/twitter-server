@@ -18,7 +18,7 @@ import com.twitter.server.util.HttpUtils
 import com.twitter.server.view.{IndexView, NotFoundView}
 import com.twitter.util.lint.GlobalRules
 import com.twitter.util.registry.Library
-import com.twitter.util.{ExecutorServiceFuturePool, Future, FuturePool, Monitor}
+import com.twitter.util.{ExecutorServiceFuturePool, Future, FuturePool, Monitor, Time}
 import java.net.InetSocketAddress
 import java.util.concurrent.Executors
 import org.slf4j.LoggerFactory
@@ -147,6 +147,8 @@ trait AdminHttpServer { self: App =>
         def apply(request: Request): Future[Response] =
           HttpUtils.new404("no admin server initialized")
       }
+
+    override def close(deadline: Time): Future[Unit] = underlying.close(deadline)
   }
 
   @volatile protected var adminHttpServer: ListeningServer = NullServer
