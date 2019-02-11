@@ -10,8 +10,8 @@ object StackRegistryDuplicatesRule {
     stackReg.registryName == ClientRegistry.registryName &&
       entry.protocolLibrary == "memcached"
 
-  private[this] def isWhitelisted(whitelist: Set[String])(entry: StackRegistry.Entry): Boolean =
-    whitelist.contains(entry.name)
+  private[this] def isAllowlisted(allowlist: Set[String])(entry: StackRegistry.Entry): Boolean =
+    allowlist.contains(entry.name)
 
   /**
    * Rule that looks for registered
@@ -22,10 +22,10 @@ object StackRegistryDuplicatesRule {
    * sharding of Memcache servers, and so are excluded.
    *
    * @param stackReg Registry used to search for duplicates.
-   * @param whitelist Set of entry [[com.twitter.finagle.param.Label names]]
+   * @param allowlist Set of entry [[com.twitter.finagle.param.Label names]]
    * to exclude from duplicate checking.
    */
-  def apply(stackReg: StackRegistry, whitelist: Set[String]): Rule = {
+  def apply(stackReg: StackRegistry, allowlist: Set[String]): Rule = {
     Rule(
       Category.Configuration,
       s"Duplicate ${stackReg.registryName} StackRegistry names",
@@ -34,7 +34,7 @@ object StackRegistryDuplicatesRule {
     ) {
       stackReg.registeredDuplicates
         .filterNot(isMemcacheClient(stackReg))
-        .filterNot(isWhitelisted(whitelist))
+        .filterNot(isAllowlisted(allowlist))
         .map(e => Issue(s"name=${e.name} protocolLib=${e.protocolLibrary} addr=${e.addr}"))
     }
   }

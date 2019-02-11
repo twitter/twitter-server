@@ -39,7 +39,7 @@ class StackRegistryDuplicatesRuleTest extends FunSuite {
     assert(rule().size == 1)
   }
 
-  test("Multiple same name non-whitelisted clients does create issues") {
+  test("Multiple same name non-allowlisted clients does create issues") {
     val registry = newRegistry()
     val params = Stack.Params.empty + Label("thrift-test-client")
     registry.register("localhost:1234", StackClient.newStack, params)
@@ -49,7 +49,7 @@ class StackRegistryDuplicatesRuleTest extends FunSuite {
     assert(rule().size == 1)
   }
 
-  test("Multiple same name whitelisted clients does not create issues") {
+  test("Multiple same name allowlisted clients does not create issues") {
     val registry = newRegistry()
     val params = Stack.Params.empty + Label("thrift-test-client")
     registry.register("localhost:1234", StackClient.newStack, params)
