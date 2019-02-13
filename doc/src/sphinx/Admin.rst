@@ -433,4 +433,4 @@ that your service is running.
 ~~~~~~~~~~~~~~
 
 Surface server information exposed by Finagle. Per-server configuration parameters and
-values for each module are available at `/admin/clients/<client name>`.
+values for each module are available at `/admin/servers/<server name>`.
