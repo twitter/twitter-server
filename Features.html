@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Features &#8212; TwitterServer 19.1.0 documentation</title>
+    <title>Features &#8212; TwitterServer 19.2.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '19.1.0',
+        VERSION:     '19.2.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="TwitterServer 19.1.0 documentation" href="index.html" />
+    <link rel="top" title="TwitterServer 19.2.0 documentation" href="index.html" />
     <link rel="next" title="HTTP Admin interface" href="Admin.html" />
     <link rel="prev" title="TwitterServer" href="index.html" />
    
@@ -314,9 +314,9 @@ p90 stats, one can pass the following to TwitterServer:</p>
 <p>By default, TwitterServer doesn&#8217;t export <a class="reference external" href="https://twitter.github.io/util/guide/util-stats/basics.html#verbosity-levels">debug metrics</a> (assuming finagle-stats
 is used as a metrics library). Override the <cite>com.twitter.finagle.stats.verbose</cite>
 <a class="reference external" href="https://twitter.github.io/finagle/guide/Configuration.html#tunables">tunable</a> (a comma-separated list of glob expressions under toggle map <cite>finagle</cite>)
-to whitelist debug metrics, potentially without application restart.</p>
+to allowlist debug metrics, potentially without application restart.</p>
 <p>For example, the following JSON file placed in the resource folder (restart
-required) as <cite>com/twitter/tunables/finagle/instances.json</cite> will whitelist
+required) as <cite>com/twitter/tunables/finagle/instances.json</cite> will allowlist
 Netty 4 metrics for a given JVM process.</p>
 <div class="highlight-text"><div class="highlight"><pre><span></span>{
   &quot;tunables&quot;:

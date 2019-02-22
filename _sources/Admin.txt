@@ -280,9 +280,44 @@ many of them represent.
 /admin/metrics
 ~~~~~~~~~~~~~~
 
-Watch specific metrics in real-time.
+This metrics endpoint provides the ability to both watch specific metrics in
+real-time, as well as download data for a specific metric. It is available in
+TwitterServer regardless of the particular stats library implementation you are
+using.
+
+Selecting the `Watch` menu item or navigating to the page directly in your web
+browser displays all of the reported metrics for this TwitterServer instance.
+Choosing an individual metric from the list will allow you to watch how its
+value changes over time.
 
 .. image:: ../../img/metric_watch.png
+
+If you know the exact name of the metric that you would like to watch, you can
+use a fragment (named anchor) within the url to navigate directly to viewing
+that specific metric.
+
+::
+
+  /admin/metrics#mediainfo/mux/failuredetector/ping
+
+If you would like to download data for an individual metric instead, you may use
+the `m` request parameter with the full metric name. The response returned will be
+JSON and include the name, delta (change since the metric was last sampled), and
+value (instantaneous value) for the specific metric.
+
+::
+
+  /admin/metrics?m=mediainfo/mux/failuredetector/ping
+
+::
+
+  [
+    {
+      "name" : "mediainfo/mux/failuredetector/ping",
+      "delta" : 3560.0,
+      "value" : 41939.0
+    }
+  ]
 
 /admin/metrics.json
 ~~~~~~~~~~~~~~~~~~~
@@ -433,4 +468,4 @@ that your service is running.
 ~~~~~~~~~~~~~~
 
 Surface server information exposed by Finagle. Per-server configuration parameters and
-values for each module are available at `/admin/clients/<client name>`.
+values for each module are available at `/admin/servers/<server name>`.

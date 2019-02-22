@@ -220,10 +220,10 @@ Changing metrics verbosity
 By default, TwitterServer doesn't export `debug metrics`_ (assuming finagle-stats
 is used as a metrics library). Override the `com.twitter.finagle.stats.verbose`
 `tunable`_ (a comma-separated list of glob expressions under toggle map `finagle`)
-to whitelist debug metrics, potentially without application restart.
+to allowlist debug metrics, potentially without application restart.
 
 For example, the following JSON file placed in the resource folder (restart
-required) as `com/twitter/tunables/finagle/instances.json` will whitelist
+required) as `com/twitter/tunables/finagle/instances.json` will allowlist
 Netty 4 metrics for a given JVM process.
 
 ::
