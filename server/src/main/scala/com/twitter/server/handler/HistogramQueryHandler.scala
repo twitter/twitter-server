@@ -62,10 +62,10 @@ object HistogramQueryHandler {
   }
 
   private[HistogramQueryHandler] def deliverData(
-    counts: Seq[BucketAndCount],
+    counts: Map[String, Seq[BucketAndCount]],
     transform: Seq[BucketAndCount] => Any
   ): String =
-    JsonConverter.writeToString(transform(counts))
+    JsonConverter.writeToString(counts.mapValues(transform))
 
   // Generates html for visualizing histograms
   private[HistogramQueryHandler] val render: String = {
@@ -357,17 +357,17 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails)
 
               case Some(Seq("raw")) =>
                 jsonResponse(query, { counts: Seq[BucketAndCount] =>
-                  deliverData(counts, x => x)
+                  deliverData(Map(query -> counts), identity)
                 })
 
               case Some(Seq("pdf")) =>
                 jsonResponse(query, { counts: Seq[BucketAndCount] =>
-                  deliverData(counts, x => pdf(x))
+                  deliverData(Map(query -> counts), x => pdf(x))
                 })
 
               case Some(Seq("cdf")) =>
                 jsonResponse(query, { counts: Seq[BucketAndCount] =>
-                  deliverData(counts, x => cdf(x))
+                  deliverData(Map(query -> counts), x => cdf(x))
                 })
 
               case _ =>

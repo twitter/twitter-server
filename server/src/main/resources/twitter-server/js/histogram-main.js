@@ -18,7 +18,8 @@ function histogramRefreshRequest(callback) {
   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   xhttp.onreadystatechange = function() {
     if (xhttp.readyState === 4 && xhttp.status == 200) {
-      refreshHistogram(JSON.parse(xhttp.responseText));
+      var histoMap = JSON.parse(xhttp.responseText);
+      refreshHistogram(histoMap[params.h]);
       callback();
     } else {
       console.log("Histogram refresh request failed with status code: " + xhttp.status +

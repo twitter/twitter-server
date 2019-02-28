@@ -7,6 +7,10 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+* Change the /admin/histograms?h=...-style endpoints to return data in the same style as
+  /admin/histograms.json. This should make it easier to use tools to parse data from either
+  endpoint. ``PHAB_ID=D279779``
+
 19.2.0
 -------
 

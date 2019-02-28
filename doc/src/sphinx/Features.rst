@@ -296,6 +296,52 @@ finagle-stats jar on your classpath.
 API Parameters
 **************
 
+There are two endpoints for histograms, `/admin/histograms.json` and `/admin/histograms`.
+
+`/admin/histograms.json` will always return the full list of histograms.
+
+::
+
+  $ curl http://a.twitter.server/admin/histograms.json
+
+  {
+    "clnt/p2cslowservertest-server/request_latency_ms" : [
+      {
+        "lowerLimit" : 5,
+        "upperLimit" : 6,
+        "count" : 28
+      },
+      {
+        "lowerLimit" : 6,
+        "upperLimit" : 7,
+        "count" : 9188
+      },
+      {
+        "lowerLimit" : 7,
+        "upperLimit" : 8,
+        "count" : 25164
+      }
+    ],
+    "jvm/gc/eden/pause_msec" : [
+      {
+        "lowerLimit" : 8,
+        "upperLimit" : 9,
+        "count" : 1
+      },
+      {
+        "lowerLimit" : 9,
+        "upperLimit" : 10,
+        "count" : 1
+      },
+      {
+        "lowerLimit" : 53,
+        "upperLimit" : 54,
+        "count" : 1
+      }
+    ]
+  }
+
+`/admin/histograms` is more flexible, and can display a single histogram in many ways.
 The following parameters control how a histogram is displayed.
 
 1) "h": the name of the histogram you want to see.
@@ -325,19 +371,23 @@ equal to the bucket's upper limit.
   $ curl http://a.twitter.server/admin/histograms?h=clnt/p2cslowservertest-server/request_latency_ms&fmt=raw
 
   {
-    "lowerLimit" : 5,
-    "upperLimit" : 6,
-    "count" : 28
-  },
-  {
-    "lowerLimit" : 6,
-    "upperLimit" : 7,
-    "count" : 9188
-  },
-  {
-    "lowerLimit" : 7,
-    "upperLimit" : 8,
-    "count" : 25164
+    "clnt/p2cslowservertest-server/request_latency_ms" : [
+      {
+        "lowerLimit" : 5,
+        "upperLimit" : 6,
+        "count" : 28
+      },
+      {
+        "lowerLimit" : 6,
+        "upperLimit" : 7,
+        "count" : 9188
+      },
+      {
+        "lowerLimit" : 7,
+        "upperLimit" : 8,
+        "count" : 25164
+      }
+    ]
   }
 
 Here's an example where we query a cumulative distribution function (CDF). Each
@@ -349,29 +399,33 @@ equal to the bucket's upper limit.
   $ curl http://a.twitter.server/admin/histograms?h=clnt/p2cslowservertest-server/request_latency_ms&fmt=cdf
 
   {
-    "lowerLimit" : 5,
-    "upperLimit" : 6,
-    "percentage" : 6.444885E-5
-  },
-  {
-    "lowerLimit" : 6,
-    "upperLimit" : 7,
-    "percentage" : 0.03286891
-  },
-  {
-    "lowerLimit" : 7,
-    "upperLimit" : 8,
-    "percentage" : 0.15292539
-  },
-  {
-    "lowerLimit" : 8,
-    "upperLimit" : 9,
-    "percentage" : 0.26998794
-  },
-  {
-    "lowerLimit" : 9,
-    "upperLimit" : 10,
-    "percentage" : 0.41753477
+    "clnt/p2cslowservertest-server/request_latency_ms" : [
+      {
+        "lowerLimit" : 5,
+        "upperLimit" : 6,
+        "percentage" : 6.444885E-5
+      },
+      {
+        "lowerLimit" : 6,
+        "upperLimit" : 7,
+        "percentage" : 0.03286891
+      },
+      {
+        "lowerLimit" : 7,
+        "upperLimit" : 8,
+        "percentage" : 0.15292539
+      },
+      {
+        "lowerLimit" : 8,
+        "upperLimit" : 9,
+        "percentage" : 0.26998794
+      },
+      {
+        "lowerLimit" : 9,
+        "upperLimit" : 10,
+        "percentage" : 0.41753477
+      }
+    ]
   }
 
 Plotting the "finagle/timer/deviation_ms" cumulative distribution function:

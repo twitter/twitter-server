@@ -1,22 +1,28 @@
 package com.twitter.server
 
-import com.twitter.finagle.stats.InMemoryStatsReceiver
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
+import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.{Request, Response}
+import com.twitter.finagle.stats.{BucketAndCount, InMemoryStatsReceiver}
 import com.twitter.server.handler.HistogramQueryHandler
 import com.twitter.util.{Await, Future}
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class HistogramQueryHandlerTest extends FunSuite {
+  def await[A](f: Future[A]): A = Await.result(f, 5.seconds)
+  private[this] val mapper = new ObjectMapper with ScalaObjectMapper {
+    registerModule(DefaultScalaModule)
+  }
+
   test("histograms.json works with no stats") {
     val sr = new InMemoryStatsReceiver
     val handler = new HistogramQueryHandler(sr)
 
     val req = Request("/admin/histograms.json")
     val resp: Future[Response] = handler(req)
-    assert(Await.result(resp).contentString.contains("{ }"))
+    assert(await(resp).contentString.contains("{ }"))
   }
 
   test("histograms.json works with stats") {
@@ -27,7 +33,15 @@ class HistogramQueryHandlerTest extends FunSuite {
 
     val req = Request("/admin/histograms.json")
     val resp: Future[Response] = handler(req)
-    val result = Await.result(resp).contentString
+    val result = await(resp).contentString
+
+    val map = mapper.readValue[Map[String, Seq[BucketAndCount]]](result)
+    map("my/cool/stat") match {
+      case Seq(BucketAndCount(lowerLimit, upperLimit, count)) =>
+        assert(lowerLimit == 5)
+        assert(upperLimit == 6)
+        assert(count == 1)
+    }
 
     assert(result.contains("my/cool/stat"))
     assert(result.contains(raw""""lowerLimit" : 5,"""))
@@ -41,7 +55,7 @@ class HistogramQueryHandlerTest extends FunSuite {
 
     val req = Request("/admin/histograms?h=my/cool/stat&fmt=pdf")
     val resp: Future[Response] = handler(req)
-    assert(Await.result(resp).contentString.contains("not a valid histogram."))
+    assert(await(resp).contentString.contains("not a valid histogram."))
   }
 
   test("histograms work with a stat") {
@@ -52,7 +66,14 @@ class HistogramQueryHandlerTest extends FunSuite {
 
     val req = Request("/admin/histograms?h=my/cool/stat&fmt=pdf")
     val resp: Future[Response] = handler(req)
-    val result = Await.result(resp).contentString
+    val result = await(resp).contentString
+    val map = mapper.readValue[Map[String, Seq[HistogramQueryHandler.BucketAndPercentage]]](result)
+    map("my/cool/stat") match {
+      case Seq(HistogramQueryHandler.BucketAndPercentage(lowerLimit, upperLimit, percentage)) =>
+        assert(lowerLimit == 0)
+        assert(upperLimit == 1)
+        assert(percentage == 1.0)
+    }
     assert(result.contains(raw""""lowerLimit" : 0,"""))
     assert(result.contains(raw""""upperLimit" : 1,"""))
     assert(result.contains(raw""""percentage" : 1.0"""))

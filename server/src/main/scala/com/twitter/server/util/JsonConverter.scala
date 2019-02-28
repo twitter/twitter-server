@@ -11,9 +11,11 @@ object JsonConverter {
   private[this] val writer = {
     val factory = new MappingJsonFactory()
     factory.disable(JsonFactory.Feature.USE_THREAD_LOCAL_FOR_BUFFER_RECYCLING)
-    val mapper = new ObjectMapper(factory).registerModule(DefaultScalaModule)
+    val mapper = new ObjectMapper(factory)
+      .registerModule(DefaultScalaModule)
     val printer = new DefaultPrettyPrinter
     printer.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE)
+
     mapper.writer(printer)
   }
 
