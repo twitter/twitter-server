@@ -9,6 +9,7 @@ val jacksonLibs = Seq(
   "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion
 )
+val opencensusVersion = "0.19.1"
 val slf4jVersion = "1.7.21"
 
 def util(which: String) = "com.twitter" %% ("util-"+which) % releaseVersion
@@ -102,6 +103,7 @@ lazy val root = (project in file("."))
   .settings(noPublishSettings)
   .aggregate(
     twitterServer,
+    twitterServerOpenCensus,
     twitterServerSlf4jJdk14,
     twitterServerSlf4jLog4j12,
     twitterServerSlf4jLogbackClassic)
@@ -131,6 +133,25 @@ lazy val twitterServer = (project in file("server"))
       util("tunable")
     ),
     libraryDependencies ++= jacksonLibs)
+
+lazy val twitterServerOpenCensus = (project in file("opencensus"))
+  .enablePlugins(
+    ScalaUnidocPlugin
+  )
+  .settings(
+    name :=  "twitter-server-opencensus",
+    moduleName :=  "twitter-server-opencensus",
+    sharedSettings)
+  .settings(
+    libraryDependencies ++= Seq(
+      finagle("core"),
+      finagle("http"),
+      "io.opencensus" % "opencensus-api" % opencensusVersion,
+      "io.opencensus" % "opencensus-contrib-zpages" % opencensusVersion
+    ))
+  .dependsOn(
+    twitterServer)
+
 
 lazy val twitterServerSlf4jJdk14 = (project in file("slf4j-jdk14"))
   .settings(
