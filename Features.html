@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Features &#8212; TwitterServer 19.2.0 documentation</title>
+    <title>Features &#8212; TwitterServer 19.3.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '19.2.0',
+        VERSION:     '19.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="TwitterServer 19.2.0 documentation" href="index.html" />
+    <link rel="top" title="TwitterServer 19.3.0 documentation" href="index.html" />
     <link rel="next" title="HTTP Admin interface" href="Admin.html" />
     <link rel="prev" title="TwitterServer" href="index.html" />
    
@@ -374,7 +374,50 @@ p90, etc), but with the full PDF, you can see the bad mode flatten out.</p>
 <p>As with Metrics, in order to work with histograms you must have the
 finagle-stats jar on your classpath.</p>
 <img alt="_images/HistogramHomepage.png" src="_images/HistogramHomepage.png" />
-<p>The following parameters control how a histogram is displayed.</p>
+<p>There are two endpoints for histograms, <cite>/admin/histograms.json</cite> and <cite>/admin/histograms</cite>.</p>
+<p><cite>/admin/histograms.json</cite> will always return the full list of histograms.</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>$ curl http://a.twitter.server/admin/histograms.json
+
+{
+  &quot;clnt/p2cslowservertest-server/request_latency_ms&quot; : [
+    {
+      &quot;lowerLimit&quot; : 5,
+      &quot;upperLimit&quot; : 6,
+      &quot;count&quot; : 28
+    },
+    {
+      &quot;lowerLimit&quot; : 6,
+      &quot;upperLimit&quot; : 7,
+      &quot;count&quot; : 9188
+    },
+    {
+      &quot;lowerLimit&quot; : 7,
+      &quot;upperLimit&quot; : 8,
+      &quot;count&quot; : 25164
+    }
+  ],
+  &quot;jvm/gc/eden/pause_msec&quot; : [
+    {
+      &quot;lowerLimit&quot; : 8,
+      &quot;upperLimit&quot; : 9,
+      &quot;count&quot; : 1
+    },
+    {
+      &quot;lowerLimit&quot; : 9,
+      &quot;upperLimit&quot; : 10,
+      &quot;count&quot; : 1
+    },
+    {
+      &quot;lowerLimit&quot; : 53,
+      &quot;upperLimit&quot; : 54,
+      &quot;count&quot; : 1
+    }
+  ]
+}
+</pre></div>
+</div>
+<p><cite>/admin/histograms</cite> is more flexible, and can display a single histogram in many ways.
+The following parameters control how a histogram is displayed.</p>
 <ol class="arabic simple">
 <li>&#8220;h&#8221;: the name of the histogram you want to see.</li>
 <li>&#8220;fmt&#8221;: the desired format: raw | pdf | cdf | plot_pdf | plot_cdf</li>
@@ -398,19 +441,23 @@ equal to the bucket&#8217;s upper limit.</p>
 <div class="highlight-text"><div class="highlight"><pre><span></span>$ curl http://a.twitter.server/admin/histograms?h=clnt/p2cslowservertest-server/request_latency_ms&amp;fmt=raw
 
 {
-  &quot;lowerLimit&quot; : 5,
-  &quot;upperLimit&quot; : 6,
-  &quot;count&quot; : 28
-},
-{
-  &quot;lowerLimit&quot; : 6,
-  &quot;upperLimit&quot; : 7,
-  &quot;count&quot; : 9188
-},
-{
-  &quot;lowerLimit&quot; : 7,
-  &quot;upperLimit&quot; : 8,
-  &quot;count&quot; : 25164
+  &quot;clnt/p2cslowservertest-server/request_latency_ms&quot; : [
+    {
+      &quot;lowerLimit&quot; : 5,
+      &quot;upperLimit&quot; : 6,
+      &quot;count&quot; : 28
+    },
+    {
+      &quot;lowerLimit&quot; : 6,
+      &quot;upperLimit&quot; : 7,
+      &quot;count&quot; : 9188
+    },
+    {
+      &quot;lowerLimit&quot; : 7,
+      &quot;upperLimit&quot; : 8,
+      &quot;count&quot; : 25164
+    }
+  ]
 }
 </pre></div>
 </div>
@@ -420,29 +467,33 @@ equal to the bucket&#8217;s upper limit.</p>
 <div class="highlight-text"><div class="highlight"><pre><span></span>$ curl http://a.twitter.server/admin/histograms?h=clnt/p2cslowservertest-server/request_latency_ms&amp;fmt=cdf
 
 {
-  &quot;lowerLimit&quot; : 5,
-  &quot;upperLimit&quot; : 6,
-  &quot;percentage&quot; : 6.444885E-5
-},
-{
-  &quot;lowerLimit&quot; : 6,
-  &quot;upperLimit&quot; : 7,
-  &quot;percentage&quot; : 0.03286891
-},
-{
-  &quot;lowerLimit&quot; : 7,
-  &quot;upperLimit&quot; : 8,
-  &quot;percentage&quot; : 0.15292539
-},
-{
-  &quot;lowerLimit&quot; : 8,
-  &quot;upperLimit&quot; : 9,
-  &quot;percentage&quot; : 0.26998794
-},
-{
-  &quot;lowerLimit&quot; : 9,
-  &quot;upperLimit&quot; : 10,
-  &quot;percentage&quot; : 0.41753477
+  &quot;clnt/p2cslowservertest-server/request_latency_ms&quot; : [
+    {
+      &quot;lowerLimit&quot; : 5,
+      &quot;upperLimit&quot; : 6,
+      &quot;percentage&quot; : 6.444885E-5
+    },
+    {
+      &quot;lowerLimit&quot; : 6,
+      &quot;upperLimit&quot; : 7,
+      &quot;percentage&quot; : 0.03286891
+    },
+    {
+      &quot;lowerLimit&quot; : 7,
+      &quot;upperLimit&quot; : 8,
+      &quot;percentage&quot; : 0.15292539
+    },
+    {
+      &quot;lowerLimit&quot; : 8,
+      &quot;upperLimit&quot; : 9,
+      &quot;percentage&quot; : 0.26998794
+    },
+    {
+      &quot;lowerLimit&quot; : 9,
+      &quot;upperLimit&quot; : 10,
+      &quot;percentage&quot; : 0.41753477
+    }
+  ]
 }
 </pre></div>
 </div>
