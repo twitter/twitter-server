@@ -7,6 +7,11 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+Changes
+~~~~~~~
+
+* Remove deprecated uses of `c.t.server.ShadowAdminServer`. ``PHAB_ID=D269149``
+
 19.3.0
 ------
 

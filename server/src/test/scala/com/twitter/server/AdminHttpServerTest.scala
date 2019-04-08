@@ -5,7 +5,7 @@ import com.twitter.finagle.{Http, ListeningServer}
 import com.twitter.finagle.http._
 import com.twitter.server.util.HttpUtils._
 import com.twitter.util._
-import java.net.{InetAddress, InetSocketAddress}
+import java.net.InetSocketAddress
 import org.scalatest.FunSuite
 import org.scalatest.concurrent.{Eventually, IntegrationPatience}
 
@@ -101,21 +101,6 @@ class AdminHttpServerTest extends FunSuite with Eventually with IntegrationPatie
     }
     server.main(args = Array.empty[String])
     assert(MockClosableHandler.closed)
-  }
-
-  test("shadow server serves and is closed properly") {
-    val server = new TestTwitterServer with ShadowAdminServer {
-      override def main(): Unit = {
-        checkServer(shadowHttpServer, shadow = true)
-        // ShadowAdminServer does not listen for /quitquitquit
-        // so send it to the admin server
-        closeServer(this, adminHttpServer)
-        Await.result(close(5.seconds))
-      }
-    }
-    server.shadowAdminPort.let(new InetSocketAddress(InetAddress.getLoopbackAddress, 0)) {
-      server.main(args = Array.empty[String])
-    }
   }
 
   test("GET does not close server") {
