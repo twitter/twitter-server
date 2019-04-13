@@ -16,7 +16,7 @@ private object ThreadsView {
   private val ScriptFooter = s"""<script>$$('.$StackTraceRowClass').hide();</script>"""
 
   private[this] val StateTooltipContents =
-    "See <a href='http://docs.oracle.com/javase/7/docs/api/java/lang/Thread.State.html'>Thread.State</a>" +
+    "See <a href='https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.State.html'>Thread.State</a>" +
       "Javadocs for details. Idle may include threads that are 'runnable' but are not doing any real " +
       "work, for example threads in epoll wait."
 
@@ -38,7 +38,7 @@ private object ThreadsView {
           </th>
           <th>Daemon <a href="#" tabindex="0" data-toggle="popover" data-placement="bottom"
             data-html="true" data-trigger="focus"
-            data-content="See <a href='http://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html#isDaemon()'>Thread.isDaemon</a> Javadocs for details">
+            data-content="See <a href='https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html#isDaemon()'>Thread.isDaemon</a> Javadocs for details">
               <span class="glyphicon glyphicon-info-sign"></span>
             </a>
           </th>

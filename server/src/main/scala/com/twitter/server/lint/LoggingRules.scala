@@ -27,7 +27,7 @@ object LoggingRules {
     Category.Configuration,
     "Multiple Slf4j Implementations",
     "You should only depend on a single concrete implementation of the slf4j api. " +
-      "See http://www.slf4j.org/codes.html#multiple_bindings"
+      "See https://www.slf4j.org/codes.html#multiple_bindings"
   ) {
 
     // same logic as org.slf4j.LoggerFactory

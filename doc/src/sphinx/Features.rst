@@ -57,7 +57,7 @@ Logging
 -------
 
 TwitterServer uses the `Simple Logging Facade for Java (SLF4J) <https://www.slf4j.org/>`__
-for framework logging.
+for framework logging. 
 
 .. admonition:: From the SLF4J documentation
 
@@ -66,18 +66,18 @@ for framework logging.
     java.util.logging, Logback and log4j. SLF4J allows the end-user to
     plug in the desired logging framework at deployment time."
 
-As such, in order to log with `TwitterServer` you must
+As such, in order to log with `TwitterServer` you must 
 `depend on an actual logging implementation <https://www.slf4j.org/manual.html#swapping>`__.
 
 .. tip::
 
-  `Logback <https://logback.qos.ch/>`__ is a native `slf4j-api <https://www.slf4j.org/>`__
+  `Logback <https://logback.qos.ch/>`__ is a native `slf4j-api <https://www.slf4j.org/>`__ 
   implementation and is the recommended logging implementation for `TwitterServer`.
 
-Since `TwitterServer` uses the `slf4j-api <https://www.slf4j.org/>`__  for logging it no
-longer provides the |util-logging Logging|_ logging implementation directly. As such, logging
-configuration is handled on the choosen imlpementation and by default not through flags -- except
-in the case of choosing the `slf4j-jdk14` logging implementation.
+Since `TwitterServer` uses the `slf4j-api <https://www.slf4j.org/>`__  for logging it no 
+longer provides the |util-logging Logging|_ logging implementation directly. As such, logging 
+configuration is handled on the choosen imlpementation and by default not through flags -- except 
+in the case of choosing the `slf4j-jdk14` logging implementation. 
 
 See the `Backwards Compatibility <#backwards-compatibility-via-slf4j-jdk14>`__ section.
 
@@ -87,8 +87,8 @@ Backwards Compatibility (via `slf4j-jdk14`)
 .. includecode:: code/BackwardsCompatServer.scala
    :language: scala
 
-To continue using `TwitterServer` with no changes to your logging, simply depend on the
-|slf4j-jdk14|_ library which will use `slf4j-jdk14` as the |slf4j|_ logging
+To continue using `TwitterServer` with no changes to your logging, simply depend on the 
+|twitter-server/slf4j-jdk14|_ library which will use `slf4j-jdk14` as the |slf4j|_ logging 
 implementation, then mix in the |com.twitter.server.logging.Logging|_ to your `TwitterServer`.
 
 Example:
@@ -461,7 +461,7 @@ Lifecycle Management
 --------------------
 
 TwitterServer exposes endpoints to manage server lifecycle that are compatible with
-`Mesos's <http://mesos.apache.org/>`_ job manager:
+`Mesos's <https://mesos.apache.org/>`_ job manager:
 
 **/abortabortabort**
   Abort the process.
@@ -507,14 +507,14 @@ trait is built.
 .. |c.t.logging.Logging| replace:: ``c.t.logging.Logging``
 .. _c.t.logging.Logging: https://github.com/twitter/util/blob/70e19566e3f0a194a5364d95e04ce7fc6cf4827c/util-logging/src/main/scala/com/twitter/logging/Logging.scala#L20
 
-.. |slf4j-jdk14| replace:: ``slf4j-jdk14``
-.. _slf4j-jdk14: https://github.com/twitter/tree/develop/slf4j-jdk14
+.. |twitter-server/slf4j-jdk14| replace:: ``twitter-server/slf4j-jdk14``
+.. _twitter-server/slf4j-jdk14: https://github.com/twitter/twitter-server/tree/develop/slf4j-jdk14
 
-.. |slf4j-log4j12| replace:: ``slf4j-log4j12``
-.. _slf4j-log4j12 : https://github.com/twitter/tree/develop/slf4j-log4j12
+.. |twitter-server/slf4j-log4j12| replace:: ``twitter-server/slf4j-log4j12``
+.. _twitter-server/slf4j-log4j12 : https://github.com/twitter/twitter-server/tree/develop/slf4j-log4j12
 
-.. |logback-classic| replace:: ``logback-classic``
-.. _logback-classic : https://github.com/twitter/tree/develop/logback-classic
+.. |twitter-server/logback-classic| replace:: ``twitter-server/logback-classic``
+.. _twitter-server/logback-classic : https://github.com/twitter/twitter-server/tree/develop/logback-classic
 
 .. |com.twitter.server.logging.Logging| replace:: ``com.twitter.server.logging.Logging`` trait
-.. _com.twitter.server.logging.Logging: https://github.com/twitter/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala
+.. _com.twitter.server.logging.Logging: https://github.com/twitter/twitter-server/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala
