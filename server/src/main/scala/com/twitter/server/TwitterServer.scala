@@ -1,6 +1,7 @@
 package com.twitter.server
 
 import com.twitter.app.App
+import com.twitter.finagle.DtabFlags
 import com.twitter.finagle.util.DefaultTimer
 import com.twitter.util.Timer
 import com.twitter.util.logging.Logging
@@ -36,6 +37,7 @@ trait TwitterServer
     with Slf4jBridge
     with Logging
     with Linters
+    with DtabFlags
     with Hooks
     with AdminHttpServer
     with Admin

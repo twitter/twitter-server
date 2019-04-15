@@ -4,8 +4,9 @@ import com.twitter.app.GlobalFlag
 import com.twitter.finagle.{Addr, Resolver, Name}
 import com.twitter.util.Var
 
-// TODO: deprecate in favor of Wily dtabs.
-
+@deprecated(
+  "Users should prefer using Dtabs which are overridable by setting the `dtab.add` flag",
+  "2019-04-03")
 object resolverMap
     extends GlobalFlag[Map[String, String]](
       Map.empty,

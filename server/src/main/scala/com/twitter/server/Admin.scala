@@ -138,7 +138,7 @@ trait Admin { self: App with AdminHttpServer with Stats =>
       ),
       Route(
         path = "/admin/dtab",
-        handler = new TextBlockView().andThen(new DtabHandler),
+        handler = new DtabHandler,
         alias = "Dtab",
         group = Some(Grouping.ProcessInfo),
         includeInIndex = true
@@ -195,7 +195,7 @@ trait Admin { self: App with AdminHttpServer with Stats =>
       ),
       Route(
         path = LoadBalancersHandler.RoutePath,
-        handler = new LoadBalancersHandler(),
+        handler = new LoadBalancersHandler,
         alias = "Load Balancers",
         group = Some(Grouping.ProcessInfo),
         includeInIndex = true

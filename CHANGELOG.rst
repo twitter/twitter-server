@@ -12,6 +12,14 @@ Changes
 
 * Remove deprecated uses of `c.t.server.ShadowAdminServer`. ``PHAB_ID=D269149``
 
+* Mix in the `c.t.finagle.DtabFlags` to allow servers to append to the "base" `c.t.finagle.Dtab`
+  delegation table. Users can now call `c.t.finagle.DtabFlags#addDtabs()` when they want to append
+  the parsed Flag value to the `Dtab.base` delegation table. Users should note to only call this
+  method _after_ Flag parsing has occurred (which is after **init** and before **premain**).
+
+  We also update the `c.t.server.handler.DtabHandler` to always return a proper JSON response of
+  the currently configured `c.t.finagle.Dtab.base`. ``PHAB_ID=D297596``
+
 19.3.0
 ------
 
