@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Features &#8212; TwitterServer 19.3.0 documentation</title>
+    <title>Features &#8212; TwitterServer 19.4.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '19.3.0',
+        VERSION:     '19.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="TwitterServer 19.3.0 documentation" href="index.html" />
+    <link rel="top" title="TwitterServer 19.4.0 documentation" href="index.html" />
     <link rel="next" title="HTTP Admin interface" href="Admin.html" />
     <link rel="prev" title="TwitterServer" href="index.html" />
    
@@ -195,15 +195,15 @@ in the case of choosing the <cite>slf4j-jdk14</cite> logging implementation.</p>
 </pre></div>
 </div>
 <p>To continue using <cite>TwitterServer</cite> with no changes to your logging, simply depend on the
-<a class="reference external" href="https://github.com/twitter/tree/develop/slf4j-jdk14"><code class="docutils literal"><span class="pre">slf4j-jdk14</span></code></a> library which will use <cite>slf4j-jdk14</cite> as the <a class="reference external" href="https://www.slf4j.org/"><cite>slf4j</cite></a> logging
-implementation, then mix in the <a class="reference external" href="https://github.com/twitter/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a> to your <cite>TwitterServer</cite>.</p>
+<a class="reference external" href="https://github.com/twitter/twitter-server/tree/develop/slf4j-jdk14"><code class="docutils literal"><span class="pre">twitter-server/slf4j-jdk14</span></code></a> library which will use <cite>slf4j-jdk14</cite> as the <a class="reference external" href="https://www.slf4j.org/"><cite>slf4j</cite></a> logging
+implementation, then mix in the <a class="reference external" href="https://github.com/twitter/twitter-server/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a> to your <cite>TwitterServer</cite>.</p>
 <p>Example:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">object</span> <span class="nc">BackwardsCompatServer</span> <span class="k">extends</span> <span class="nc">TwitterServer</span> <span class="k">with</span> <span class="nc">JDK14Logging</span> <span class="o">{</span>
 </pre></div>
 </div>
-<p>In the above example, the <a class="reference external" href="https://github.com/twitter/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a> has been renamed to <code class="docutils literal"><span class="pre">JDK14Logging</span></code>
+<p>In the above example, the <a class="reference external" href="https://github.com/twitter/twitter-server/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a> has been renamed to <code class="docutils literal"><span class="pre">JDK14Logging</span></code>
 for clarity.</p>
-<p>The <a class="reference external" href="https://github.com/twitter/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a> provides a logger named <cite>log</cite> which can be configured via
+<p>The <a class="reference external" href="https://github.com/twitter/twitter-server/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a> provides a logger named <cite>log</cite> which can be configured via
 the command line flags: <cite>-log.level</cite> and <cite>-log.output</cite>.</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="o">(</span><span class="s">&quot;Received a request at &quot;</span> <span class="o">+</span> <span class="nc">Time</span><span class="o">.</span><span class="n">now</span><span class="o">)</span>
 </pre></div>
@@ -213,7 +213,7 @@ the command line flags: <cite>-log.level</cite> and <cite>-log.output</cite>.</p
 <h4>Log Format<a class="headerlink" href="#log-format" title="Permalink to this headline">¶</a></h4>
 <p>To change the format of the log output, a custom <cite>Formatter</cite> is needed.
 This is best done by overriding the <cite>defaultFormatter</cite> provided by the
-<a class="reference external" href="https://github.com/twitter/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a>.</p>
+<a class="reference external" href="https://github.com/twitter/twitter-server/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a>.</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">override</span> <span class="k">def</span> <span class="n">defaultFormatter</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Formatter</span><span class="o">(</span>
   <span class="n">timezone</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="s">&quot;UTC&quot;</span><span class="o">),</span>
   <span class="n">prefix</span> <span class="k">=</span> <span class="s">&quot;&lt;yyyy-MM-dd HH:mm:ss.SSS&gt; [%.3s] %s: &quot;</span>
@@ -222,7 +222,7 @@ This is best done by overriding the <cite>defaultFormatter</cite> provided by th
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">For more complicated logging schemes, you can extend the <a class="reference external" href="https://github.com/twitter/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a>
+<p class="last">For more complicated logging schemes, you can extend the <a class="reference external" href="https://github.com/twitter/twitter-server/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a>
 and mix it back into a <cite>TwitterServer</cite>.</p>
 </div>
 </div>
@@ -246,13 +246,13 @@ implementation which will provide the appropriate logging handler.</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>java.util.logging (JUL)</td>
-<td><a href="#id9"><span class="problematic" id="id10">|twitter-server/slf4j-jdk14|_</span></a></td>
+<td><a class="reference external" href="https://github.com/twitter/twitter-server/tree/develop/slf4j-jdk14"><code class="docutils literal"><span class="pre">twitter-server/slf4j-jdk14</span></code></a></td>
 </tr>
 <tr class="row-odd"><td>Log4j</td>
-<td><a href="#id11"><span class="problematic" id="id12">|twitter-server/slf4j-log4j12|_</span></a></td>
+<td><a class="reference external" href="https://github.com/twitter/twitter-server/tree/develop/slf4j-log4j12"><code class="docutils literal"><span class="pre">twitter-server/slf4j-log4j12</span></code></a></td>
 </tr>
 <tr class="row-even"><td>Logback (recommended)</td>
-<td><a href="#id13"><span class="problematic" id="id14">|twitter-server/logback-classic|_</span></a></td>
+<td><a class="reference external" href="https://github.com/twitter/twitter-server/tree/develop/logback-classic"><code class="docutils literal"><span class="pre">twitter-server/logback-classic</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -518,7 +518,7 @@ for diagnostics, profiling, and more. The details are covered in-depth
 <div class="section" id="lifecycle-management">
 <h2>Lifecycle Management<a class="headerlink" href="#lifecycle-management" title="Permalink to this headline">¶</a></h2>
 <p>TwitterServer exposes endpoints to manage server lifecycle that are compatible with
-<a class="reference external" href="http://mesos.apache.org/">Mesos&#8217;s</a> job manager:</p>
+<a class="reference external" href="https://mesos.apache.org/">Mesos&#8217;s</a> job manager:</p>
 <dl class="docutils">
 <dt><strong>/abortabortabort</strong></dt>
 <dd>Abort the process.</dd>
@@ -560,8 +560,8 @@ trait is built.</p>
 
 <h3>Useful Links</h3>
 <ul>
-  <li><a href="http://github.com/twitter/twitter-server">TwitterServer on GitHub</a></li>
-  <li><a href="http://github.com/twitter/twitter-server/issues">Issue Tracker</a></li>
+  <li><a href="https://github.com/twitter/twitter-server">TwitterServer on GitHub</a></li>
+  <li><a href="https://github.com/twitter/twitter-server/issues">Issue Tracker</a></li>
 </ul>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
@@ -610,7 +610,7 @@ trait is built.</p>
     </div>
   <div class="footer">
     &copy; Copyright 2019 Twitter, Inc.
-    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    Created using <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a>.
   </div>
   
   </body>
