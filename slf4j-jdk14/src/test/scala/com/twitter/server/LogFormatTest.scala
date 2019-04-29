@@ -1,13 +1,10 @@
 package com.twitter.server
 
-import com.twitter.finagle.tracing.{Trace, SpanId, TraceId}
-import com.twitter.logging.{Level => TwLevel, StringHandler}
+import com.twitter.finagle.tracing.{SpanId, Trace, TraceId}
+import com.twitter.logging.{StringHandler, Level => TwLevel}
 import java.util.logging.Logger
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class LogFormatTest extends FunSuite {
   def testStringHandler(f: (Logger, StringHandler) => Unit): Unit = {
     val handler = new StringHandler

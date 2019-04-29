@@ -4,19 +4,16 @@ import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.{Http, Service}
 import com.twitter.util.{Await, Future}
 import java.io.ByteArrayOutputStream
-import java.net.{InetAddress, InetSocketAddress}
+import java.net.InetSocketAddress
 import java.util.logging.{Logger, SimpleFormatter, StreamHandler}
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 import scala.collection.mutable
 
 /** Test TwitterServer which overrides the admin.port to localhost ephemeral port */
 class TestTwitterServer extends TwitterServer {
-  override val adminPort =
-    flag("admin.port", new InetSocketAddress(InetAddress.getLoopbackAddress, 0), "")
+  override val defaultAdminPort = 0
 
-  val bootstrapSeq = mutable.MutableList.empty[Symbol]
+  val bootstrapSeq: mutable.MutableList[Symbol] = mutable.MutableList.empty[Symbol]
 
   def main(): Unit = {
     bootstrapSeq += 'Main
@@ -46,11 +43,10 @@ class MockExceptionHandler extends Service[Request, Response] {
   }
 }
 
-@RunWith(classOf[JUnitRunner])
 class HandlersTest extends FunSuite {
 
   test("Exceptions thrown in handlers include stack traces") {
-    val twitterServer = new TestTwitterServer {
+    val twitterServer: TwitterServer = new TestTwitterServer {
       val mockExceptionHandler = new MockExceptionHandler
 
       override def main(): Unit = {
