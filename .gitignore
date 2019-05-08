@@ -1,2 +1,16 @@
-target/
+*.class
+*.iml
+*.ipr
+*.log
+.DS_Store
+.cache
+.history
+.idea/
+.lib
+dist/
+lib_managed/
+out/
+project/boot/
+project/plugins/project/
 sbt-launch.jar
+target/
