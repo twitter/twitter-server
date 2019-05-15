@@ -30,7 +30,8 @@ trait Linters { app: App =>
         NullStatsReceiversRule(ServerRegistry),
         MemcacheFailFastRule(ClientRegistry),
         LoggingRules.MultipleSlf4jImpls,
-        referenceLeakLintRule.rule()
+        referenceLeakLintRule.rule(),
+        DuplicateFlagDefinitions(app)
       )
   }
 

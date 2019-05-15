@@ -7,6 +7,13 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+Changes
+~~~~~~~
+
+* Add `DuplicateFlagDefinitions` lint rule which is violated when multiple Flags with the same
+  name are added to the underlying `com.twitter.app.App#flag` `com.twitter.app.Flags` instance.
+  ``PHAB_ID=D314410``
+
 19.4.0
 ------
 
