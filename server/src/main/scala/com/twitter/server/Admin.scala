@@ -187,6 +187,13 @@ trait Admin { self: App with AdminHttpServer with Stats =>
         includeInIndex = true
       ),
       Route(
+        path = "/admin/exp/metric_metadata",
+        handler = new MetricTypeQueryHandler,
+        alias = "Metric Metadata",
+        group = Some(Grouping.Metrics),
+        includeInIndex = false
+      ),
+      Route(
         path = Path.Clients,
         handler = new ClientRegistryHandler(Path.Clients),
         alias = "Clients",

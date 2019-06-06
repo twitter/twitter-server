@@ -9,9 +9,12 @@ import org.scalatest.junit.JUnitRunner
 
 private[server] object MetricSourceTest {
   class Ctx {
-    case class Entry(delta: Double, value: Double) extends StatEntry
+    case class Entry(delta: Double, value: Double, metricType: String) extends StatEntry
     private[twitter] var underlying = Map[String, StatEntry]()
-    val sr = new StatsRegistry { def apply() = underlying }
+    val sr = new StatsRegistry {
+      def apply() = underlying;
+      override val latched: Boolean = false
+    }
     val registry = { () =>
       Seq(sr)
     }
@@ -28,7 +31,7 @@ class MetricSourceTest extends FunSuite {
       val ctx = new Ctx
       import ctx._
 
-      underlying = Map("clnt/foo/requests" -> Entry(0.0, 10.0))
+      underlying = Map("clnt/foo/requests" -> Entry(0.0, 10.0, "counter"))
       assert(source.get("clnt/foo/requests") == None)
 
       tc.advance(1.second)
@@ -42,7 +45,7 @@ class MetricSourceTest extends FunSuite {
       val ctx = new Ctx
       import ctx._
 
-      underlying = Map("clnt/foo/requests" -> Entry(0.0, 0.0))
+      underlying = Map("clnt/foo/requests" -> Entry(0.0, 0.0, "counter"))
       assert(source.contains("clnt/foo/requests") == false)
 
       tc.advance(1.second)
@@ -55,8 +58,9 @@ class MetricSourceTest extends FunSuite {
       val ctx = new Ctx
       import ctx._
 
-      underlying =
-        Map("clnt/foo/requests" -> Entry(0.0, 0.0), "clnt/foo/success" -> Entry(0.0, 0.0))
+      underlying = Map(
+        "clnt/foo/requests" -> Entry(0.0, 0.0, "counter"),
+        "clnt/foo/success" -> Entry(0.0, 0.0, "counter"))
       assert(source.keySet == Set.empty[String])
       tc.advance(1.second)
       assert(source.keySet == Set("clnt/foo/requests", "clnt/foo/success"))

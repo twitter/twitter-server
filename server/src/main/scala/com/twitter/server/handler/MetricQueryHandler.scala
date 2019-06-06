@@ -1,7 +1,7 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{Request, Response}
+import com.twitter.finagle.http.{MediaType, Request, Response}
 import com.twitter.io.Buf
 import com.twitter.server.util.HtmlUtils.escapeHtml
 import com.twitter.server.util.HttpUtils.{newResponse, parse}
@@ -50,7 +50,7 @@ class MetricQueryHandler(source: MetricSource = new MetricSource)
 
       case someKeys =>
         newResponse(
-          contentType = "application/json;charset=UTF-8",
+          contentType = MediaType.JsonUtf8,
           content = Buf.Utf8(JsonConverter.writeToString(query(someKeys)))
         )
     }

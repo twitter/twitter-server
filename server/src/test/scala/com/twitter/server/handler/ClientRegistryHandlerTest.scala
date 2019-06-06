@@ -66,11 +66,11 @@ class ClientRegistryHandlerTest extends FunSuite {
       assert(Await.result(handler(req)).contentString == "")
 
       underlying = Map(
-        "clnt/client0/loadbalancer/adds" -> Entry(10.0, 10.0),
-        "clnt/client0/loadbalancer/size" -> Entry(10.0, 10.0),
-        "clnt/client0/loadbalancer/available" -> Entry(5.0, 5.0),
-        "clnt/client0/requests" -> Entry(50, 50),
-        "clnt/client0/failures" -> Entry(1, 1)
+        "clnt/client0/loadbalancer/adds" -> Entry(10.0, 10.0, "counter"),
+        "clnt/client0/loadbalancer/size" -> Entry(10.0, 10.0, "counter"),
+        "clnt/client0/loadbalancer/available" -> Entry(5.0, 5.0, "counter"),
+        "clnt/client0/requests" -> Entry(50, 50, "counter"),
+        "clnt/client0/failures" -> Entry(1, 1, "counter")
       )
 
       tc.advance(2.seconds)
