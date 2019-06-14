@@ -7,6 +7,11 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+Changes
+~~~~~~~
+
+* Remove the TwitterServer dependency on Netty 3. ``PHAB_ID=D328148``
+
 19.5.1
 ------
 

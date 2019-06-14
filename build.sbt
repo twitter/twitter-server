@@ -12,8 +12,6 @@ val jacksonLibs = Seq(
 val opencensusVersion = "0.19.1"
 val slf4jVersion = "1.7.21"
 
-val netty3Lib = "io.netty" % "netty" % "3.10.1.Final"
-
 def util(which: String) = "com.twitter" %% ("util-"+which) % releaseVersion
 def finagle(which: String) = "com.twitter" %% ("finagle-"+which) % releaseVersion
 
@@ -132,8 +130,7 @@ lazy val twitterServer = (project in file("server"))
       util("registry"),
       util("slf4j-api"),
       util("slf4j-jul-bridge"),
-      util("tunable"),
-      netty3Lib
+      util("tunable")
     ),
     libraryDependencies ++= jacksonLibs)
 

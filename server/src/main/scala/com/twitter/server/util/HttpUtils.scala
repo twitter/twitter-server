@@ -4,7 +4,7 @@ import com.twitter.finagle.Service
 import com.twitter.finagle.http.{MediaType, Request, Response, Status, Version, HttpMuxer}
 import com.twitter.io.Buf
 import com.twitter.util.{Future, Time, Closable}
-import org.jboss.netty.handler.codec.http.QueryStringDecoder
+import io.netty.handler.codec.http.QueryStringDecoder
 import scala.collection.JavaConverters._
 import scala.collection.{Map, Seq}
 
@@ -42,7 +42,7 @@ private[server] object HttpUtils {
    */
   def expectsHtml(req: Request): Boolean = {
     val decoder = new QueryStringDecoder(req.uri)
-    decoder.getPath.endsWith(".html") || accepts(req, MediaType.Html)
+    decoder.path().endsWith(".html") || accepts(req, MediaType.Html)
   }
 
   /**
@@ -50,7 +50,7 @@ private[server] object HttpUtils {
    */
   def expectsJson(req: Request): Boolean = {
     val decoder = new QueryStringDecoder(req.uri)
-    decoder.getPath.endsWith(".json") || accepts(req, MediaType.Json)
+    decoder.path().endsWith(".json") || accepts(req, MediaType.Json)
   }
 
   /**
@@ -97,7 +97,7 @@ private[server] object HttpUtils {
   /** Parse uri into (path, params) */
   def parse(uri: String): (String, Map[String, Seq[String]]) = {
     val qsd = new QueryStringDecoder(uri)
-    val params = qsd.getParameters.asScala.mapValues { _.asScala.toSeq }
-    (qsd.getPath, params)
+    val params = qsd.parameters().asScala.mapValues(_.asScala.toSeq)
+    (qsd.path(), params)
   }
 }
