@@ -7,6 +7,11 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+Changes
+~~~~~~~
+
+* Remove `c.t.server.util.TwitterStats` as it is dead code. ``PHAB_ID=D330013``
+
 19.6.0
 ------
 
