@@ -469,3 +469,9 @@ that your service is running.
 
 Surface server information exposed by Finagle. Per-server configuration parameters and
 values for each module are available at `/admin/servers/<server name>`.
+
+/admin/servers/connections
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Expose information about currently connected clients including encryption status,
+if available.

@@ -20,6 +20,12 @@ Changes
 
 * Remove the TwitterServer dependency on Netty 3. ``PHAB_ID=D328148``
 
+New Features
+~~~~~~~~~~~~
+
+* Added an admin page, /admin/servers/connections.json with details about incoming connections,
+  including encryption status and remote principal ``PHAB_ID=D329940``
+
 19.5.1
 ------
 

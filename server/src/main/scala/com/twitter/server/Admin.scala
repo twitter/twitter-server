@@ -263,6 +263,13 @@ trait Admin { self: App with AdminHttpServer with Stats =>
         alias = "Favicon",
         group = None,
         includeInIndex = false
+      ),
+      Route(
+        path = Path.Servers + "connections/",
+        handler = new AttachedClientsHandler(),
+        alias = "Incoming Connections",
+        group = Some(Grouping.Utilities),
+        includeInIndex = true
       )
     ).map(Route.isolate)
 
