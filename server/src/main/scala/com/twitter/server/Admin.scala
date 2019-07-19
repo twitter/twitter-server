@@ -187,13 +187,6 @@ trait Admin { self: App with AdminHttpServer with Stats =>
         includeInIndex = true
       ),
       Route(
-        path = "/admin/exp/metric_metadata",
-        handler = new MetricTypeQueryHandler,
-        alias = "Metric Metadata",
-        group = Some(Grouping.Metrics),
-        includeInIndex = false
-      ),
-      Route(
         path = Path.Clients,
         handler = new ClientRegistryHandler(Path.Clients),
         alias = "Clients",
@@ -277,28 +270,40 @@ trait Admin { self: App with AdminHttpServer with Stats =>
     val histos = DelegatingStatsReceiver
       .all(statsReceiver)
       .collect { case histo: WithHistogramDetails => histo }
+    val aggregate = if (histos.nonEmpty) Some(AggregateWithHistogramDetails(histos)) else None
     colocatedRoutes ++ standardRoutes ++ {
-      if (histos.nonEmpty) {
-        val aggregate = AggregateWithHistogramDetails(histos)
-
-        val histogramHandler = new HistogramQueryHandler(aggregate)
-        Seq(
-          Route(
-            path = "/admin/histograms",
-            handler = histogramHandler,
-            alias = "Histograms",
-            group = Some(Grouping.Metrics),
-            includeInIndex = true
-          ),
-          Route(
-            path = "/admin/histograms.json",
-            handler = histogramHandler,
-            alias = "/admin/histograms.json",
-            group = Some(Grouping.Metrics),
-            includeInIndex = false
+      aggregate match {
+        case Some(details) => {
+          val histogramHandler = new HistogramQueryHandler(details)
+          Seq(
+            Route(
+              path = "/admin/histograms",
+              handler = histogramHandler,
+              alias = "Histograms",
+              group = Some(Grouping.Metrics),
+              includeInIndex = true
+            ),
+            Route(
+              path = "/admin/histograms.json",
+              handler = histogramHandler,
+              alias = "/admin/histograms.json",
+              group = Some(Grouping.Metrics),
+              includeInIndex = false
+            )
           )
+        }
+        case None => Nil
+      }
+    } ++ {
+      Seq(
+        Route(
+          path = "/admin/exp/metric_metadata",
+          handler = new MetricTypeQueryHandler(details = aggregate),
+          alias = "Metric Metadata",
+          group = Some(Grouping.Metrics),
+          includeInIndex = false
         )
-      } else Nil
+      )
     }
   }
 }

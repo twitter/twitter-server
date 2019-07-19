@@ -1,7 +1,7 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.http.Request
-import com.twitter.finagle.stats.{StatEntry, StatsRegistry}
+import com.twitter.finagle.stats.{InMemoryStatsReceiver, StatEntry, StatsRegistry}
 import com.twitter.server.util.MetricSource
 import com.twitter.util.{Await, Duration}
 import java.util.concurrent.TimeUnit
@@ -14,18 +14,12 @@ class MetricTypeQueryHandlerTest extends FunSuite {
 
   trait UnlatchedRegistry extends StatsRegistry {
     val latched = false
-    val stats = mutable.Map(
-      "foo" -> TrialStat(3, 4, "counter"),
-      "bar" -> TrialStat(3, 4, "gauge"),
-      "baz" -> TrialStat(3, 4, "histogram"))
+    val stats = mutable.Map("foo" -> TrialStat(3, 4, "counter"), "bar" -> TrialStat(3, 4, "gauge"))
   }
 
   trait LatchedRegistry extends StatsRegistry {
     val latched = true
-    val stats = mutable.Map(
-      "foo" -> TrialStat(3, 4, "counter"),
-      "bar" -> TrialStat(3, 4, "gauge"),
-      "baz" -> TrialStat(3, 4, "histogram"))
+    val stats = mutable.Map("foo" -> TrialStat(3, 4, "counter"), "bar" -> TrialStat(3, 4, "gauge"))
   }
 
   val latchedStatsRegistry = new LatchedRegistry() {
@@ -48,8 +42,17 @@ class MetricTypeQueryHandlerTest extends FunSuite {
     }
   )
 
-  private[this] val latchedHandler = new MetricTypeQueryHandler(latchedMetricSource)
-  private[this] val unlatchedHandler = new MetricTypeQueryHandler(unlatchedMetricSource)
+  // generate artificial WithHistogramDetails as per HistogramQueryHandlerTest.
+  val histos = {
+    val sr = new InMemoryStatsReceiver
+    val myStat = sr.stat("baz")
+    sr
+  }
+
+  private[this] val latchedHandler =
+    new MetricTypeQueryHandler(latchedMetricSource, details = Some(histos))
+  private[this] val unlatchedHandler =
+    new MetricTypeQueryHandler(unlatchedMetricSource, details = Some(histos))
 
   val typeRequestNoArg = Request("http://$HOST:$PORT/admin/exp/metric_metadata")
 
@@ -57,13 +60,14 @@ class MetricTypeQueryHandlerTest extends FunSuite {
 
   val typeRequestWithManyArgs = Request("http://$HOST:$PORT/admin/exp/metric_metadata?m=foo&m=bar")
 
+  val typeRequestWithHisto = Request("http://$HOST:$PORT/admin/exp/metric_metadata?m=baz")
+
+  val typeRequestWithHistoAndNon = Request(
+    "http://$HOST:$PORT/admin/exp/metric_metadata?m=foo&m=baz")
+
   val responseToNoArg =
     """
       |   "metrics" : [
-      |     {
-      |       "name" : "baz",
-      |       "kind" : "histogram"
-      |     },
       |     {
       |       "name" : "foo",
       |       "kind" : "counter"
@@ -71,6 +75,10 @@ class MetricTypeQueryHandlerTest extends FunSuite {
       |     {
       |       "name" : "bar",
       |       "kind" : "gauge"
+      |     },
+      |     {
+      |       "name" : "baz",
+      |       "kind" : "histogram"
       |     }
       |   ]
       | }
@@ -102,6 +110,32 @@ class MetricTypeQueryHandlerTest extends FunSuite {
       | }
     """.stripMargin
 
+  val responseToHisto =
+    """
+      |   "metrics" : [
+      |     {
+      |       "name" : "baz",
+      |       "kind" : "histogram"
+      |     }
+      |   ]
+      | }
+    """.stripMargin
+
+  val responseToHistoAndNon =
+    """
+      |   "metrics" : [
+      |     {
+      |       "name" : "foo",
+      |       "kind" : "counter"
+      |     },
+      |     {
+      |       "name" : "baz",
+      |       "kind" : "histogram"
+      |     }
+      |   ]
+      | }
+    """.stripMargin
+
   val testNameStart = "MetricTypeQueryHandler generates reasonable json for "
 
   val timeout = Duration(5, TimeUnit.SECONDS)
@@ -123,6 +157,14 @@ class MetricTypeQueryHandlerTest extends FunSuite {
       testCase(latched, request, testNameStart + "a single requested metric", responseToAnArg)
     } else if (request == typeRequestWithManyArgs) {
       testCase(latched, request, testNameStart + "requested subset of metrics", responseToManyArgs)
+    } else if (request == typeRequestWithHisto) {
+      testCase(latched, request, testNameStart + "a single requested histogram", responseToHisto)
+    } else if (request == typeRequestWithHistoAndNon) {
+      testCase(
+        latched,
+        request,
+        testNameStart + "requested subset of metrics with a histogram",
+        responseToHistoAndNon)
     }
   }
 
@@ -163,8 +205,12 @@ class MetricTypeQueryHandlerTest extends FunSuite {
     testCase(true, typeRequestNoArg),
     testCase(true, typeRequestWithManyArgs),
     testCase(true, typeRequestWithAnArg),
+    testCase(true, typeRequestWithHisto),
+    testCase(true, typeRequestWithHistoAndNon),
     testCase(false, typeRequestNoArg),
     testCase(false, typeRequestWithManyArgs),
-    testCase(false, typeRequestWithAnArg)
+    testCase(false, typeRequestWithAnArg),
+    testCase(false, typeRequestWithHisto),
+    testCase(false, typeRequestWithHistoAndNon)
   )
 }
