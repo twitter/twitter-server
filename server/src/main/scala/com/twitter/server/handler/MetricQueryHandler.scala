@@ -11,8 +11,8 @@ import com.twitter.util.Future
 private object MetricQueryHandler {
   def render(title: String, keys: Set[String]): String =
     s"""<link type="text/css" href="/admin/files/css/metric-query.css" rel="stylesheet"/>
-        <script type="application/javascript" src="/admin/files/js/metric-query.js"></script>
         <script type="application/javascript" src="/admin/files/js/chart-renderer.js"></script>
+        <script type="application/javascript" src="/admin/files/js/metric-query.js"></script>
         <div id="metrics-grid" class="row" data-refresh-uri="/admin/metrics">
           <div class="col-md-4 snuggle-right">
             <ul id="metrics" class="list-unstyled">

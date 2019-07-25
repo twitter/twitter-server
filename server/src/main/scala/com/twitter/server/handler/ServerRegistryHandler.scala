@@ -14,8 +14,8 @@ import com.twitter.util.Future
 private object ServerRegistryHandler {
   def render(servers: Seq[(String, StackRegistry.Entry)]): String =
     s"""<link type="text/css" href="/admin/files/css/server-registry.css" rel="stylesheet"/>
-        <script type="application/javascript" src="/admin/files/js/server-registry.js"></script>
         <script type="application/javascript" src="/admin/files/js/chart-renderer.js"></script>
+        <script type="application/javascript" src="/admin/files/js/server-registry.js"></script>
         <ul id="server-tabs" class="nav nav-tabs" data-refresh-uri="/admin/metrics">
           ${(for {
       (scope, entry) <- servers
