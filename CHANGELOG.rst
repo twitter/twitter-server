@@ -7,6 +7,11 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+Changes
+~~~~~~~
+
+* Upgrade to Jackson 2.9.9. ``PHAB_ID=D345969``
+
 19.7.0
 ------
 
