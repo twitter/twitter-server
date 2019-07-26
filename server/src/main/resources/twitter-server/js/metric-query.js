@@ -1,7 +1,6 @@
 google.load('visualization', '1', { 'packages': ['corechart'], callback: graphLibLoaded })
 
 function graphLibLoaded() {
-  var charDiv = $("#chart-div")[0]
   var selected = undefined
   var interval = {}
 
@@ -28,7 +27,7 @@ function graphLibLoaded() {
     if (selected != undefined) selected.removeClass("selected")
     li.addClass("selected")
     selected = li
-    refreshStats(stat, new ChartRenderer(charDiv, stat))
+    refreshStats(stat, new ChartRenderer($("#chart-div")[0], stat))
   }
 
   $('#metrics li').on('click', function(e) { render($(e.target)) })
