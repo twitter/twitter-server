@@ -23,11 +23,44 @@ lazy val noPublishSettings = Seq(
   publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo")))
 )
 
+def gcJavaOptions: Seq[String] = {
+  Seq(
+    "-XX:+UseParNewGC",
+    "-XX:+UseConcMarkSweepGC",
+    "-XX:+CMSParallelRemarkEnabled",
+    "-XX:+CMSClassUnloadingEnabled",
+    "-XX:ReservedCodeCacheSize=128m",
+    "-XX:SurvivorRatio=128",
+    "-XX:MaxTenuringThreshold=0",
+    "-Xss8M",
+    "-Xms512M",
+    "-Xmx2G"
+  )
+}
+
+def travisTestJavaOptions: Seq[String] = {
+  // We have some custom configuration for the Travis environment
+  // https://docs.travis-ci.com/user/environment-variables/#default-environment-variables
+  val travisBuild = sys.env.getOrElse("TRAVIS", "false").toBoolean
+  if (travisBuild) {
+    Seq(
+      "-DSKIP_FLAKY=true",
+      "-DSKIP_FLAKY_TRAVIS=true",
+      "-Dsbt.log.noformat=true"
+    )
+  } else {
+    Seq(
+      "-DSKIP_FLAKY=true"
+    )
+  }
+}
+
 lazy val sharedSettings = Seq(
   version := releaseVersion,
   organization := "com.twitter",
   scalaVersion := "2.12.8",
   crossScalaVersions := Seq("2.11.12", "2.12.8"),
+  fork in Test := true, // We have to fork to get the JavaOptions
   libraryDependencies ++= Seq(
     "org.scalacheck" %% "scalacheck" % "1.13.4" % "test",
     "org.scalatest" %% "scalatest" % "3.0.0" % "test",
@@ -54,6 +87,16 @@ lazy val sharedSettings = Seq(
   ),
   javacOptions ++= Seq("-Xlint:unchecked", "-source", "1.8", "-target", "1.8"),
   javacOptions in doc := Seq("-source", "1.8"),
+  
+  javaOptions ++= Seq(
+    "-Djava.net.preferIPv4Stack=true",
+    "-XX:+AggressiveOpts",
+    "-server"
+  ),
+
+  javaOptions ++= gcJavaOptions,
+
+  javaOptions in Test ++= travisTestJavaOptions,
 
   // This is bad news for things like com.twitter.util.Time
   parallelExecution in Test := false,
