@@ -36,13 +36,12 @@ trait TwitterServer
     extends App
     with Slf4jBridge
     with Logging
+    with Stats
     with Linters
     with DtabFlags
     with Hooks
     with AdminHttpServer
-    with Admin
-    with Lifecycle
-    with Stats {
+    with Lifecycle {
 
   /** Don't let applications opt-out */
   final override val suppressGracefulShutdownErrors: Boolean = false

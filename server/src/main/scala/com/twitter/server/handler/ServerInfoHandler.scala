@@ -17,7 +17,7 @@ import scala.collection.JavaConverters._
  * A simple http service for serving up information pulled from a build.properties
  * file.
  */
-class ServerInfoHandler(obj: AnyRef) extends Service[Request, Response] {
+class ServerInfoHandler() extends Service[Request, Response] {
   private[this] val mxRuntime = ManagementFactory.getRuntimeMXBean
 
   private[this] val registry = GlobalRegistry.get

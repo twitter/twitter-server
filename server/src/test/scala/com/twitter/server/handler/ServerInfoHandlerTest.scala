@@ -14,7 +14,7 @@ class ServerInfoHandlerTest extends FunSuite {
     GlobalRegistry.get.exists(_.key.startsWith(key))
 
   test("ServerInfo handler display server information") {
-    val handler = new ServerInfoHandler(this)
+    val handler = new ServerInfoHandler()
     val req = Request("/")
     val res = Await.result(handler(req))
 
@@ -31,7 +31,7 @@ class ServerInfoHandlerTest extends FunSuite {
   }
 
   test("ServerInfo handler returns the right content-type") {
-    val handler = new ServerInfoHandler(this)
+    val handler = new ServerInfoHandler()
     val req = Request("/")
     val res = Await.result(handler(req))
     assert(res.contentType.contains("application/json;charset=UTF-8"))
@@ -42,7 +42,7 @@ class ServerInfoHandlerTest extends FunSuite {
       test(s"ServerInfo handler adds ${key.mkString(" ")} to Global Registry on instantiation") {
         GlobalRegistry.withRegistry(new SimpleRegistry) {
           assert(!isRegistered(key))
-          new ServerInfoHandler(this)
+          new ServerInfoHandler()
           assert(isRegistered(key))
         }
       }

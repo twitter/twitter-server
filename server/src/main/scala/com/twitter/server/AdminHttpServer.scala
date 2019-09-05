@@ -129,7 +129,7 @@ object AdminHttpServer {
 
 }
 
-trait AdminHttpServer { self: App =>
+trait AdminHttpServer { self: App with Stats =>
   import AdminHttpServer._
 
   // We use slf4-api directly b/c we're in a trait and want the trait class to be the Logger name
@@ -159,7 +159,8 @@ trait AdminHttpServer { self: App =>
     LoadService[AdminHttpMuxHandler]()
       .map(handler => Route.from(handler.route))
       .map(Route.isolate)
-  private var allRoutes: Seq[Route] = loadServiceRoutes
+
+  private[this] var allRoutes: Seq[Route] = loadServiceRoutes
 
   /**
    * The address to which the Admin HTTP server is bound.
@@ -179,8 +180,7 @@ trait AdminHttpServer { self: App =>
     addAdminRoutes(Seq(route))
   }
 
-  @deprecated("Routes should be added via `AdminHttpServer#addAdminRoutes`", "2018-10-17")
-  protected def routes: Seq[Route] = Nil
+  def routes: Seq[Route] = allRoutes
 
   /**
    * Name used for registration in the [[com.twitter.util.registry.Library]]
@@ -312,7 +312,7 @@ trait AdminHttpServer { self: App =>
   }
 
   premain {
-    addAdminRoutes(routes)
+    addAdminRoutes(Admin.adminRoutes(statsReceiver, self))
     startServer()
   }
 }

@@ -1,49 +1,23 @@
 package com.twitter.server
 
 import com.twitter.app.App
-import com.twitter.finagle.stats.{
-  WithHistogramDetails,
-  DelegatingStatsReceiver,
-  AggregateWithHistogramDetails
-}
 import com.twitter.finagle.http.Method
+import com.twitter.finagle.stats.{
+  AggregateWithHistogramDetails,
+  DelegatingStatsReceiver,
+  StatsReceiver,
+  WithHistogramDetails
+}
+import com.twitter.server.AdminHttpServer.Route
 import com.twitter.server.handler._
 import com.twitter.server.view._
 
 object Admin {
 
   /**
-   * Common constants for [[AdminHttpServer.Route]]'s `group`.
+   * Defines many of the default `/admin/` HTTP routes.
    */
-  object Grouping {
-    val ProcessInfo: String = "Process Info"
-    val PerfProfile: String = "Performance Profile"
-    val Utilities: String = "Utilities"
-    val Metrics: String = "Metrics"
-  }
-
-  /**
-   * Constants for Admin endpoints.
-   */
-  object Path {
-    val Root: String = ""
-    val Admin: String = "/admin"
-    val Clients: String = Admin + "/clients/"
-    val Servers: String = Admin + "/servers/"
-    val Files: String = Admin + "/files/"
-  }
-}
-
-/**
- * Defines many of the default `/admin/` HTTP routes.
- */
-trait Admin { self: App with AdminHttpServer with Stats =>
-  import Admin._
-  import AdminHttpServer.Route
-  import Admin.Grouping
-
-  override protected def routes: Seq[Route] = {
-
+  def adminRoutes(statsReceiver: StatsReceiver, app: App): Seq[Route] = {
     // we handle ping in-band with the global default worker pool
     val colocatedRoutes = Seq(
       Route(
@@ -82,7 +56,7 @@ trait Admin { self: App with AdminHttpServer with Stats =>
       ),
       Route(
         path = "/admin/server_info",
-        handler = new TextBlockView().andThen(new ServerInfoHandler(self)),
+        handler = new TextBlockView().andThen(new ServerInfoHandler()),
         alias = "Build Properties",
         group = Some(Grouping.ProcessInfo),
         includeInIndex = true
@@ -166,7 +140,7 @@ trait Admin { self: App with AdminHttpServer with Stats =>
       ),
       Route(
         path = "/admin/shutdown",
-        handler = new ShutdownHandler(this),
+        handler = new ShutdownHandler(app),
         alias = "Shutdown",
         group = Some(Grouping.Utilities),
         includeInIndex = true,
@@ -264,7 +238,7 @@ trait Admin { self: App with AdminHttpServer with Stats =>
         group = Some(Grouping.Utilities),
         includeInIndex = true
       )
-    ).map(Route.isolate)
+    ).map(AdminHttpServer.Route.isolate)
 
     // If histograms are available, add an additional endpoint
     val histos = DelegatingStatsReceiver
@@ -305,5 +279,26 @@ trait Admin { self: App with AdminHttpServer with Stats =>
         )
       )
     }
+  }
+
+  /**
+   * Common constants for [[AdminHttpServer.Route]]'s `group`.
+   */
+  object Grouping {
+    val ProcessInfo: String = "Process Info"
+    val PerfProfile: String = "Performance Profile"
+    val Utilities: String = "Utilities"
+    val Metrics: String = "Metrics"
+  }
+
+  /**
+   * Constants for Admin endpoints.
+   */
+  object Path {
+    val Root: String = ""
+    val Admin: String = "/admin"
+    val Clients: String = Admin + "/clients/"
+    val Servers: String = Admin + "/servers/"
+    val Files: String = Admin + "/files/"
   }
 }
