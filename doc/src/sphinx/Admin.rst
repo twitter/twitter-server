@@ -319,6 +319,27 @@ value (instantaneous value) for the specific metric.
     }
   ]
 
+You may specify as many `m` parameters as you like, one fore each metric you would like to retrieve.
+
+::
+
+  /admin/metrics?m=exceptions&m=jvm/uptime
+
+::
+
+  [
+    {
+      "name" : "jvm/uptime",
+      "delta" : 8.3826464E7,
+      "value" : 8.3826464E7
+    },
+    {
+      "name" : "exceptions",
+      "delta" : 0.0,
+      "value" : 0.0
+    }
+  ]
+
 /admin/metrics.json
 ~~~~~~~~~~~~~~~~~~~
 
