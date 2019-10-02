@@ -152,7 +152,7 @@ depended on libraries which can be found in the `https://maven.twttr.com
 
 The `statsReceiver` field of `TwitterServer` defines a sink for
 metrics. With it you can update counters and stats (histograms) or
-define gauges (instantaneous values).
+define gauges (instantaneous values) which are documented `here <http://twitter.github.io/util/guide/util-stats/basics.html#gauges>`_
 
 For instance, you define your stats:
 
