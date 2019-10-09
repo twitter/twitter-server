@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>HTTP Admin interface &#8212; TwitterServer 19.8.0 documentation</title>
+    <title>HTTP Admin interface &#8212; TwitterServer 19.10.0 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '19.8.0',
+        VERSION:     '19.10.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="TwitterServer 19.8.0 documentation" href="index.html" />
+    <link rel="top" title="TwitterServer 19.10.0 documentation" href="index.html" />
     <link rel="next" title="Using TwitterServer from Java" href="Java.html" />
     <link rel="prev" title="Features" href="Features.html" />
    
@@ -318,6 +318,24 @@ value (instantaneous value) for the specific metric.</p>
     &quot;name&quot; : &quot;mediainfo/mux/failuredetector/ping&quot;,
     &quot;delta&quot; : 3560.0,
     &quot;value&quot; : 41939.0
+  }
+]
+</pre></div>
+</div>
+<p>You may specify as many <cite>m</cite> parameters as you like, one fore each metric you would like to retrieve.</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>/admin/metrics?m=exceptions&amp;m=jvm/uptime
+</pre></div>
+</div>
+<div class="highlight-text"><div class="highlight"><pre><span></span>[
+  {
+    &quot;name&quot; : &quot;jvm/uptime&quot;,
+    &quot;delta&quot; : 8.3826464E7,
+    &quot;value&quot; : 8.3826464E7
+  },
+  {
+    &quot;name&quot; : &quot;exceptions&quot;,
+    &quot;delta&quot; : 0.0,
+    &quot;value&quot; : 0.0
   }
 ]
 </pre></div>
