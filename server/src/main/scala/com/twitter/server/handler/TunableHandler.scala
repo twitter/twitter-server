@@ -224,7 +224,7 @@ object TunableHandler {
 
   val Path = "/admin/tunables"
 
-  val PathForId = Path + "/"
+  val PathForId: String = Path + "/"
 
   private val log: Logger = Logger[TunableHandler]
 }

@@ -18,7 +18,7 @@ object IndexView {
   case class Group(id: String, links: Seq[Entry]) extends Entry
 
   implicit object EntryOrdering extends Ordering[Entry] {
-    def compare(a: Entry, b: Entry) = (a, b) match {
+    def compare(a: Entry, b: Entry): Int = (a, b) match {
       case (Link(_, _, _), Group(_, _)) => -1
       case (Group(_, _), Link(_, _, _)) => 1
       case (Link(id1, _, _), Link(id2, _, _)) => id1 compare id2
@@ -135,7 +135,7 @@ class IndexView(title: String, uri: String, index: () => Seq[IndexView.Entry])
     contentType.toLowerCase.contains("text/html") && !content.contains("<html>")
   }
 
-  def apply(req: Request, svc: Service[Request, Response]) =
+  def apply(req: Request, svc: Service[Request, Response]): Future[Response] =
     if (!expectsHtml(req)) svc(req)
     else
       svc(req) flatMap { res =>

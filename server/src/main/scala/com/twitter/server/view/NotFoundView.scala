@@ -37,7 +37,7 @@ object NotFoundView {
 class NotFoundView extends SimpleFilter[Request, Response] {
   import NotFoundView._
 
-  def apply(req: Request, svc: Service[Request, Response]) =
+  def apply(req: Request, svc: Service[Request, Response]): Future[Response] =
     if (!expectsHtml(req)) svc(req)
     else
       svc(req) flatMap { res =>

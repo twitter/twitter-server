@@ -4,9 +4,10 @@ import com.twitter.finagle.{Service, SimpleFilter}
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.{expectsHtml, newResponse}
+import com.twitter.util.Future
 
 class TextBlockView extends SimpleFilter[Request, Response] {
-  def apply(req: Request, svc: Service[Request, Response]) = {
+  def apply(req: Request, svc: Service[Request, Response]): Future[Response] = {
     val serviced = svc(req)
     if (!expectsHtml(req)) {
       serviced

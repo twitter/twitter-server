@@ -23,6 +23,7 @@ import java.net.InetSocketAddress
 import java.util.concurrent.Executors
 import org.slf4j.LoggerFactory
 import scala.language.reflectiveCalls
+import com.twitter.app.Flag
 
 object AdminHttpServer {
 
@@ -136,7 +137,7 @@ trait AdminHttpServer { self: App with Stats =>
   private[this] val log = LoggerFactory.getLogger(getClass)
 
   def defaultAdminPort: Int = 9990
-  val adminPort =
+  val adminPort: Flag[InetSocketAddress] =
     flag("admin.port", new InetSocketAddress(defaultAdminPort), "Admin http server port")
 
   private[this] val adminHttpMuxer = new Service[Request, Response] {

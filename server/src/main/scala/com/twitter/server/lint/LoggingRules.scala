@@ -23,7 +23,7 @@ object LoggingRules {
     }
   }
 
-  val MultipleSlf4jImpls = Rule(
+  val MultipleSlf4jImpls: Rule = Rule(
     Category.Configuration,
     "Multiple Slf4j Implementations",
     "You should only depend on a single concrete implementation of the slf4j api. " +
@@ -41,7 +41,7 @@ object LoggingRules {
   }
 
   /** Run only after it has been computed that the server does not have a configured logging handler implementation. */
-  val NoLoggingHandler = Rule(
+  val NoLoggingHandler: Rule = Rule(
     Category.Configuration,
     "Admin logging handler implementation to dynamically change log levels is not configured",
     "To configure, please add a dependency on one of the supported TwitterServer logging " +

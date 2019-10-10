@@ -7,7 +7,7 @@ import com.twitter.server.util.MetricSource.MetricTypeInfo
 import com.twitter.util.{Duration, Time}
 
 private[server] object MetricSource {
-  lazy val registry = LoadService[StatsRegistry]()
+  lazy val registry: Seq[StatsRegistry] = LoadService[StatsRegistry]()
   case class Entry(name: String, delta: Double, value: Double)
   case class MetricTypeInfo(name: String, kind: String)
 }
