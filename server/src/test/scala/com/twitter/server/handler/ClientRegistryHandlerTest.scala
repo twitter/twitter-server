@@ -6,11 +6,13 @@ import com.twitter.finagle.util.StackRegistry
 import com.twitter.finagle.{Stack, param}
 import com.twitter.finagle.http.{Request, Status}
 import com.twitter.server.util.MetricSourceTest
-import com.twitter.util.Await
-import com.twitter.util.Time
+import com.twitter.util.{Await, Awaitable, Time}
 import org.scalatest.FunSuite
 
 class ClientRegistryHandlerTest extends FunSuite {
+
+  private[this] def await[T](a: Awaitable[T]): T = Await.result(a, 2.seconds)
+
   test("query a client") {
     val metricsCtx = new MetricSourceTest.Ctx
     import metricsCtx._
@@ -28,19 +30,19 @@ class ClientRegistryHandlerTest extends FunSuite {
     )
     val handler = new ClientRegistryHandler("/admin/clients/", source, registry)
 
-    val res = Await.result(handler(Request("/admin/clients/client0")))
+    val res = await(handler(Request("/admin/clients/client0")))
     assert(res.status == Status.Ok)
     val content = res.contentString
     assert(content.contains("client0"))
     assert(content.contains("localhost:8080"))
 
-    val res2 = Await.result(handler(Request("/admin/clients/s/foo/bar")))
+    val res2 = await(handler(Request("/admin/clients/s/foo/bar")))
     assert(res2.status == Status.Ok)
     val content2 = res2.contentString
     assert(content2.contains("s/foo/bar"))
     assert(content2.contains("localhost:8081"))
 
-    val res1 = Await.result(handler(Request("/admin/clients/client1")))
+    val res1 = await(handler(Request("/admin/clients/client1")))
     assert(res1.status == Status.NotFound)
   }
 
@@ -60,7 +62,7 @@ class ClientRegistryHandlerTest extends FunSuite {
 
       tc.advance(1.second)
       val req = Request("/admin/clients/index.html")
-      assert(Await.result(handler(req)).contentString == "")
+      assert(await(handler(req)).contentString == "")
 
       underlying = Map(
         "clnt/client0/loadbalancer/adds" -> Entry(10.0, 10.0, "counter"),
@@ -71,7 +73,7 @@ class ClientRegistryHandlerTest extends FunSuite {
       )
 
       tc.advance(2.seconds)
-      val res = Await.result(handler(req))
+      val res = await(handler(req))
       val html = res.contentString
       assert(html.contains("client0"))
       assert(html.contains("localhost:8080"))

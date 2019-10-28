@@ -3,10 +3,12 @@ package com.twitter.server.handler
 import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.{Status, Request, Method}
 import com.twitter.server.TwitterServer
-import com.twitter.util.{Closable, Time, Await, Future}
+import com.twitter.util.{Await, Awaitable, Closable, Future, Time}
 import org.scalatest.FunSuite
 
 class ShutdownHandlerTest extends FunSuite {
+
+  private[this] def await[T](a: Awaitable[T]): T = Await.result(a, 2.seconds)
 
   class Closer(testDeadline: Time => Unit) extends TwitterServer {
     @volatile var closed = false
@@ -30,7 +32,7 @@ class ShutdownHandlerTest extends FunSuite {
       assert(deadline == now + 1.second)
     }
     val handler = new ShutdownHandler(closer)
-    val rsp = Await.result(handler(Request(Method.Post, "/foo")))
+    val rsp = await(handler(Request(Method.Post, "/foo")))
     assert(rsp.status == Status.Ok)
     assert(closer.closed)
   })
@@ -43,7 +45,7 @@ class ShutdownHandlerTest extends FunSuite {
       assert(deadline < expectedDeadline + 1.second)
     }
     val handler = new ShutdownHandler(closer)
-    val rsp = Await.result(handler(Request(Method.Post, "/foo?grace=" + grace.toString)))
+    val rsp = await(handler(Request(Method.Post, "/foo?grace=" + grace.toString)))
     assert(rsp.status == Status.Ok)
     assert(closer.closed)
   }
@@ -53,7 +55,7 @@ class ShutdownHandlerTest extends FunSuite {
       fail()
     }
     val handler = new ShutdownHandler(closer)
-    val rsp = Await.result(handler(Request(Method.Post, "/foo?grace=5")))
+    val rsp = await(handler(Request(Method.Post, "/foo?grace=5")))
     assert(rsp.status == Status.BadRequest)
     assert(!closer.closed)
   }
@@ -64,7 +66,7 @@ class ShutdownHandlerTest extends FunSuite {
       assert(deadline == now + 1.second)
     }
     val handler = new ShutdownHandler(closer)
-    val rsp = Await.result(handler(Request(Method.Get, "/foo")))
+    val rsp = await(handler(Request(Method.Get, "/foo")))
     assert(rsp.status == Status.MethodNotAllowed)
     assert(!closer.closed)
   }

@@ -1,11 +1,14 @@
 package com.twitter.server.handler
 
+import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.{Request, Status}
-import com.twitter.util.Await
 import com.twitter.util.registry.{GlobalRegistry, SimpleRegistry}
+import com.twitter.util.{Await, Awaitable}
 import org.scalatest.FunSuite
 
 class ServerInfoHandlerTest extends FunSuite {
+
+  private[this] def await[T](a: Awaitable[T]): T = Await.result(a, 2.seconds)
 
   private[this] def isRegistered(key: Seq[String]): Boolean =
     GlobalRegistry.get.exists(_.key.startsWith(key))
@@ -13,7 +16,7 @@ class ServerInfoHandlerTest extends FunSuite {
   test("ServerInfo handler display server information") {
     val handler = new ServerInfoHandler()
     val req = Request("/")
-    val res = Await.result(handler(req))
+    val res = await(handler(req))
 
     assert(res.status == Status.Ok)
     val info = res.contentString
@@ -30,7 +33,7 @@ class ServerInfoHandlerTest extends FunSuite {
   test("ServerInfo handler returns the right content-type") {
     val handler = new ServerInfoHandler()
     val req = Request("/")
-    val res = Await.result(handler(req))
+    val res = await(handler(req))
     assert(res.contentType.contains("application/json;charset=UTF-8"))
   }
 

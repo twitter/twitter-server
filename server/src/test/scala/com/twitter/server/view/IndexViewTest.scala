@@ -1,13 +1,17 @@
 package com.twitter.server.view
 
+import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.{Request, Response, Status, Version}
 import com.twitter.finagle.Service
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.{newOk, newResponse}
-import com.twitter.util.{Await, Future}
+import com.twitter.util.{Await, Awaitable, Future}
 import org.scalatest.FunSuite
 
 class IndexViewTest extends FunSuite {
+
+  private[this] def await[T](a: Awaitable[T]): T = Await.result(a, 2.seconds)
+
   test("wraps content based on http fragments") {
     val fragment = new Service[Request, Response] {
       def apply(req: Request) =
@@ -23,14 +27,14 @@ class IndexViewTest extends FunSuite {
     req.headerMap.set("Accept", "text/html")
 
     val svc0 = idx andThen fragment
-    val res0 = Await.result(svc0(req))
+    val res0 = await(svc0(req))
     assert(res0.headerMap.get("content-type") == Some("text/html;charset=UTF-8"))
     assert(res0.status == Status.Ok)
     assert(res0.contentString.contains("<html>"))
 
     val svc1 = idx andThen nofragment
     req.headerMap.set("Accept", "*/*")
-    val res1 = Await.result(svc1(req))
+    val res1 = await(svc1(req))
     assert(res1.headerMap.get("content-type") == Some("text/plain;charset=UTF-8"))
     assert(res1.status == Status.Ok)
     assert(res1.contentString == "hello")
@@ -49,7 +53,7 @@ class IndexViewTest extends FunSuite {
     val req = Request("/")
     req.headerMap.set("Accept", "text/html")
 
-    val res = Await.result(idx(req, svc))
+    val res = await(idx(req, svc))
     assert(res.status == Status.Ok)
     assert(res.contentType.isEmpty)
   }

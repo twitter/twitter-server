@@ -60,7 +60,7 @@ class TwitterServerTest extends FunSuite {
     val twitterServer = new TestTwitterServer {
       override def main(): Unit = {
         super.main()
-        Await.result(close())
+        Await.result(close(), 5.seconds)
       }
     }
 

@@ -1,8 +1,9 @@
 package com.twitter.server.handler
 
+import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http
 import com.twitter.io.Buf
-import com.twitter.util.Await
+import com.twitter.util.{Await, Awaitable}
 import java.io.{ByteArrayInputStream, File, FileWriter, InputStream}
 import java.nio.charset.StandardCharsets.ISO_8859_1
 import java.nio.file.Files
@@ -10,25 +11,28 @@ import org.scalatest.FunSuite
 import scala.io.Source
 
 class ResourceHandlerTest extends FunSuite {
+
+  private[this] def await[T](a: Awaitable[T]): T = Await.result(a, 2.seconds)
+
   private def staticResourceResolver(content: String): PartialFunction[String, InputStream] =
     PartialFunction(_ => new ByteArrayInputStream(content.getBytes("UTF8")))
 
   test("404") {
     val handler = new ResourceHandler("/", PartialFunction.empty)
-    val res = Await.result(handler(http.Request("nonexistent.filetype")))
+    val res = await(handler(http.Request("nonexistent.filetype")))
     assert(res.status == http.Status.NotFound)
   }
 
   test("400") {
     val handler = new ResourceHandler("/", PartialFunction.empty)
-    val res = Await.result(handler(http.Request("../../illegal")))
+    val res = await(handler(http.Request("../../illegal")))
     assert(res.status == http.Status.BadRequest)
   }
 
   test("load js") {
     val content = "var foo = function() { }"
     val handler = new ResourceHandler("/", staticResourceResolver(content))
-    val res = Await.result(handler(http.Request("test.js")))
+    val res = await(handler(http.Request("test.js")))
     assert(res.status == http.Status.Ok)
     assert(res.headerMap.get("content-type") == Some("application/javascript;charset=UTF-8"))
     assert(res.contentString == content)
@@ -37,7 +41,7 @@ class ResourceHandlerTest extends FunSuite {
   test("load css") {
     val content = "#foo { color: blue; }"
     val handler = new ResourceHandler("/", staticResourceResolver(content))
-    val res = Await.result(handler(http.Request("test.css")))
+    val res = await(handler(http.Request("test.css")))
     assert(res.status == http.Status.Ok)
     assert(res.headerMap.get("content-type") == Some("text/css;charset=UTF-8"))
     assert(res.contentString == content)
@@ -46,7 +50,7 @@ class ResourceHandlerTest extends FunSuite {
   test("load bytes") {
     val content = "jileuhto8q34ty3fni34oqbo87ybq"
     val handler = new ResourceHandler("/", staticResourceResolver(content))
-    val res = Await.result(handler(http.Request("test.raw")))
+    val res = await(handler(http.Request("test.raw")))
     assert(res.status == http.Status.Ok)
     assert(res.headerMap.get("content-type") == Some("application/octet-stream"))
     val bytes = Buf.ByteArray.Owned.extract(res.content)

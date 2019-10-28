@@ -96,7 +96,7 @@ class AdminHttpServerTest extends FunSuite with Eventually with IntegrationPatie
         checkServer(adminHttpServer)
 
         closeServer(this, adminHttpServer)
-        Await.result(close(5.seconds))
+        Await.result(close(5.seconds), 7.seconds)
       }
     }
     server.main(args = Array.empty[String])
@@ -116,7 +116,7 @@ class AdminHttpServerTest extends FunSuite with Eventually with IntegrationPatie
         assert(res.status == Status.MethodNotAllowed)
         // Check that the server is still up
         checkServer(adminHttpServer)
-        Await.result(close(5.seconds))
+        Await.result(close(5.seconds), 7.seconds)
       }
     }
     server.main(args = Array.empty[String])

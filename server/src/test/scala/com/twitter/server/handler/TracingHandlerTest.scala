@@ -1,13 +1,16 @@
 package com.twitter.server.handler
 
+import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.{Request, Status}
 import com.twitter.finagle.tracing.{Trace, Tracer}
-import com.twitter.util.Await
+import com.twitter.util.{Await, Awaitable}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 class TracingHandlerTest extends FunSuite with MockitoSugar with BeforeAndAfter {
   val service = new TracingHandler
+
+  private[this] def await[T](a: Awaitable[T]): T = Await.result(a, 2.seconds)
 
   test("enable tracing") {
     val tracer = mock[Tracer]
@@ -16,7 +19,7 @@ class TracingHandlerTest extends FunSuite with MockitoSugar with BeforeAndAfter 
       Trace.letTracer(tracer) {
         assert(!Trace.enabled)
         val request = Request("/", ("enable", "true"))
-        assert(Await.result(service(request)).status == Status.Ok)
+        assert(await(service(request)).status == Status.Ok)
         assert(Trace.enabled)
       }
     } finally {
@@ -31,7 +34,7 @@ class TracingHandlerTest extends FunSuite with MockitoSugar with BeforeAndAfter 
       Trace.letTracer(tracer) {
         assert(Trace.enabled)
         val request = Request("/", ("disable", "true"))
-        assert(Await.result(service(request)).status == Status.Ok)
+        assert(await(service(request)).status == Status.Ok)
         assert(!Trace.enabled)
       }
     } finally {

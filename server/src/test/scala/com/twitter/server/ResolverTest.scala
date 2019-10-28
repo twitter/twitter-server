@@ -1,7 +1,8 @@
 package com.twitter.server
 
+import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.{Announcer, Announcement, Resolver}
-import com.twitter.util.{Await, Future}
+import com.twitter.util.{Await, Awaitable, Future}
 import java.net.{InetAddress, InetSocketAddress}
 import org.scalatest.FunSuite
 
@@ -17,6 +18,9 @@ class TestAnnouncer extends Announcer {
 
 // Called InternalResolverTest to avoid conflict with twitter-server
 class ResolverTest extends FunSuite {
+
+  private[this] def await[T](a: Awaitable[T]): T = Await.result(a, 2.seconds)
+
   test("resolvers resolve from the main resolver") {
     resolverMap.let(Map("foo" -> ":8080")) {
       Resolver.eval("flag!foo") // doesn't throw.
@@ -28,7 +32,7 @@ class ResolverTest extends FunSuite {
 
     announcerMap.let(Map("foo" -> "test!127.0.0.1:80")) {
       // checks for non-exceptional
-      Await.result(Announcer.announce(addr, "flag!foo"))
+      await(Announcer.announce(addr, "flag!foo"))
     }
   }
 }

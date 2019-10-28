@@ -1,13 +1,17 @@
 package com.twitter.server.view
 
-import com.twitter.finagle.http.{Request, Response}
+import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.Service
+import com.twitter.finagle.http.{Request, Response}
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils._
-import com.twitter.util.Await
+import com.twitter.util.{Await, Awaitable}
 import org.scalatest.FunSuite
 
 class TextBlockViewTest extends FunSuite {
+
+  private[this] def await[T](a: Awaitable[T]): T = Await.result(a, 2.seconds)
+
   test("wraps content based on user-agent") {
     val handler = new Service[Request, Response] {
       def apply(req: Request) =
@@ -18,12 +22,12 @@ class TextBlockViewTest extends FunSuite {
 
     val req0 = Request("/")
     req0.headerMap.set("Accept", "text/html")
-    val res0 = Await.result(svc(req0))
+    val res0 = await(svc(req0))
     assert(res0.headerMap.get("content-type") == Some("text/html;charset=UTF-8"))
     assert(res0.contentString == "<pre>hello</pre>")
 
     val req = Request("/")
-    val res = Await.result(svc(req))
+    val res = await(svc(req))
     assert(res.headerMap.get("content-type") == Some("text/plain;charset=UTF-8"))
     assert(res.contentString == "hello")
   }
