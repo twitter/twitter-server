@@ -5,11 +5,8 @@ import com.twitter.finagle.Service
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils._
 import com.twitter.util.Await
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class TextBlockViewTest extends FunSuite {
   test("wraps content based on user-agent") {
     val handler = new Service[Request, Response] {

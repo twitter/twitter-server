@@ -2,13 +2,10 @@ package com.twitter.server.lint
 
 import com.twitter.concurrent.Scheduler
 import com.twitter.conversions.DurationOps._
-import org.junit.runner.RunWith
 import org.mockito.Mockito._
 import org.scalatest.{FunSuite, Matchers}
-import org.scalatest.junit.JUnitRunner
 import org.scalatest.mockito.MockitoSugar
 
-@RunWith(classOf[JUnitRunner])
 class SchedulerBlockingRuleTest extends FunSuite with Matchers with MockitoSugar {
 
   test("low amount of blocking is not an issue") {

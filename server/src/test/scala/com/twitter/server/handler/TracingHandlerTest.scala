@@ -3,12 +3,9 @@ package com.twitter.server.handler
 import com.twitter.finagle.http.{Request, Status}
 import com.twitter.finagle.tracing.{Trace, Tracer}
 import com.twitter.util.Await
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
-@RunWith(classOf[JUnitRunner])
 class TracingHandlerTest extends FunSuite with MockitoSugar with BeforeAndAfter {
   val service = new TracingHandler
 

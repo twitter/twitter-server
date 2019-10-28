@@ -5,11 +5,8 @@ import com.twitter.finagle.client.StackClient
 import com.twitter.finagle.param.ProtocolLibrary
 import com.twitter.finagle.service.FailFastFactory
 import com.twitter.finagle.util.StackRegistry
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class MemcacheFailFastRuleTest extends FunSuite {
 
   def newRegistry(): StackRegistry =

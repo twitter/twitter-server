@@ -1,11 +1,8 @@
 package com.twitter.server.handler
 
 import com.twitter.util.registry.{GlobalRegistry, SimpleRegistry}
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class RegistryHandlerTest extends FunSuite {
 
   private[this] val handler = new RegistryHandler()

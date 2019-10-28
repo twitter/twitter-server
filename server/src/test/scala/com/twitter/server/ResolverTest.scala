@@ -3,9 +3,7 @@ package com.twitter.server
 import com.twitter.finagle.{Announcer, Announcement, Resolver}
 import com.twitter.util.{Await, Future}
 import java.net.{InetAddress, InetSocketAddress}
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 
 case class TestAnnouncement(addr: InetSocketAddress, target: String) extends Announcement {
   def unannounce() = Future.Done
@@ -18,7 +16,6 @@ class TestAnnouncer extends Announcer {
 }
 
 // Called InternalResolverTest to avoid conflict with twitter-server
-@RunWith(classOf[JUnitRunner])
 class ResolverTest extends FunSuite {
   test("resolvers resolve from the main resolver") {
     resolverMap.let(Map("foo" -> ":8080")) {

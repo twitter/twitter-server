@@ -1,11 +1,8 @@
 package com.twitter.server
 
 import com.twitter.finagle.stats.BucketAndCount
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class ExportingHistogramsTest extends FunSuite {
   import handler.HistogramQueryHandler.{pdf, cdf, BucketAndPercentage}
 

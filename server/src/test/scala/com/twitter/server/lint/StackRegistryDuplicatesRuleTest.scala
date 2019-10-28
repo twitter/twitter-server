@@ -4,11 +4,8 @@ import com.twitter.finagle.Stack
 import com.twitter.finagle.client.StackClient
 import com.twitter.finagle.param.{Label, ProtocolLibrary}
 import com.twitter.finagle.util.StackRegistry
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class StackRegistryDuplicatesRuleTest extends FunSuite {
 
   def newRegistry(): StackRegistry =

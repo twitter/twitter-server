@@ -1,10 +1,7 @@
 package com.twitter.server
 
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class PromoteToOldGenTest extends FunSuite {
 
   test("beforeServing does nothing if flag is disabled") {

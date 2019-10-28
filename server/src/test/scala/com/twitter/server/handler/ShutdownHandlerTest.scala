@@ -4,11 +4,8 @@ import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.{Status, Request, Method}
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Closable, Time, Await, Future}
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class ShutdownHandlerTest extends FunSuite {
 
   class Closer(testDeadline: Time => Unit) extends TwitterServer {

@@ -3,11 +3,8 @@ package com.twitter.server.handler
 import com.twitter.finagle.http.{Request, Status}
 import com.twitter.util.Await
 import com.twitter.util.registry.{GlobalRegistry, SimpleRegistry}
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class ServerInfoHandlerTest extends FunSuite {
 
   private[this] def isRegistered(key: Seq[String]): Boolean =

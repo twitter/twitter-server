@@ -4,11 +4,8 @@ import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.Request
 import com.twitter.util.Await
 import com.twitter.util.lint.{Category, Issue, Rule}
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class LintHandlerTest extends FunSuite {
 
   private val ruleOk = Rule(Category.Performance, "ok", "desc") { Nil }

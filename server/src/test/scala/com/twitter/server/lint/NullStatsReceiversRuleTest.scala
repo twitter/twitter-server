@@ -5,11 +5,8 @@ import com.twitter.finagle.client.StackClient
 import com.twitter.finagle.param.{Label, Stats}
 import com.twitter.finagle.stats.{InMemoryStatsReceiver, NullStatsReceiver}
 import com.twitter.finagle.util.StackRegistry
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class NullStatsReceiversRuleTest extends FunSuite {
 
   def newRegistry(name: String): StackRegistry =

@@ -3,9 +3,7 @@ package com.twitter.server.view
 import com.twitter.finagle.param.Label
 import com.twitter.finagle.util.StackRegistry
 import com.twitter.finagle.{Stack, StackBuilder, Stackable}
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 
 private[server] object StackRegistryViewTest {
   case class Incr(incrementBy: Int)
@@ -62,7 +60,6 @@ private[server] object StackRegistryViewTest {
   val prms = Stack.Params.empty + Label("test")
 }
 
-@RunWith(classOf[JUnitRunner])
 class StackRegistryViewTest extends FunSuite {
   import StackRegistryViewTest._
 

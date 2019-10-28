@@ -4,9 +4,7 @@ import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util._
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 import scala.collection.mutable
 
 class TestTwitterServer extends TwitterServer {
@@ -43,7 +41,6 @@ class MockExceptionHandler extends Service[Request, Response] {
     throw new Exception("test exception")
   }
 }
-@RunWith(classOf[JUnitRunner])
 class TwitterServerTest extends FunSuite {
   test("TwitterServer does not prematurely execute lifecycle hooks") {
     val twitterServer = new TestTwitterServer

@@ -3,9 +3,7 @@ package com.twitter.server.util
 import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.stats.{StatsRegistry, StatEntry}
 import com.twitter.util.Time
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 
 private[server] object MetricSourceTest {
   class Ctx {
@@ -22,7 +20,6 @@ private[server] object MetricSourceTest {
   }
 }
 
-@RunWith(classOf[JUnitRunner])
 class MetricSourceTest extends FunSuite {
   import MetricSourceTest._
 

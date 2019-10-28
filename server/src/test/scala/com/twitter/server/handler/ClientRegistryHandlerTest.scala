@@ -8,11 +8,8 @@ import com.twitter.finagle.http.{Request, Status}
 import com.twitter.server.util.MetricSourceTest
 import com.twitter.util.Await
 import com.twitter.util.Time
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class ClientRegistryHandlerTest extends FunSuite {
   test("query a client") {
     val metricsCtx = new MetricSourceTest.Ctx

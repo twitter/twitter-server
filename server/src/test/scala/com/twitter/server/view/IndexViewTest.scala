@@ -5,11 +5,8 @@ import com.twitter.finagle.Service
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.{newOk, newResponse}
 import com.twitter.util.{Await, Future}
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class IndexViewTest extends FunSuite {
   test("wraps content based on http fragments") {
     val fragment = new Service[Request, Response] {

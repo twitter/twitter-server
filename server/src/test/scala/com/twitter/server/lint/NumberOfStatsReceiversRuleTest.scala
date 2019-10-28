@@ -1,11 +1,8 @@
 package com.twitter.server.lint
 
 import com.twitter.finagle.stats.InMemoryStatsReceiver
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class NumberOfStatsReceiversRuleTest extends FunSuite {
 
   test("One stats receiver doesn't create issues") {

@@ -5,11 +5,8 @@ import com.twitter.finagle.{http, Stack, param}
 import com.twitter.finagle.util.StackRegistry
 import com.twitter.server.util.MetricSourceTest
 import com.twitter.util.Await
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class ServerRegistryHandlerTest extends FunSuite {
   test("query a server") {
     val metricsCtx = new MetricSourceTest.Ctx

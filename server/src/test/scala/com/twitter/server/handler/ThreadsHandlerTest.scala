@@ -4,11 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.twitter.finagle.http.Request
 import com.twitter.util.Await
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class ThreadsHandlerTest extends FunSuite {
   type Threads = Map[String, Map[String, Map[String, Any]]]
 

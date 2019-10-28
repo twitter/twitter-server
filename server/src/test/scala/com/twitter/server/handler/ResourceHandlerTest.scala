@@ -6,12 +6,9 @@ import com.twitter.util.Await
 import java.io.{ByteArrayInputStream, File, FileWriter, InputStream}
 import java.nio.charset.StandardCharsets.ISO_8859_1
 import java.nio.file.Files
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 import scala.io.Source
 
-@RunWith(classOf[JUnitRunner])
 class ResourceHandlerTest extends FunSuite {
   private def staticResourceResolver(content: String): PartialFunction[String, InputStream] =
     PartialFunction(_ => new ByteArrayInputStream(content.getBytes("UTF8")))
