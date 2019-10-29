@@ -5,6 +5,7 @@ import com.twitter.finagle.client.{ClientRegistry, EndpointRegistry}
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.util.StackRegistry
 import com.twitter.io.Buf
+import com.twitter.server.model.ClientProfile
 import com.twitter.server.util.HtmlUtils.escapeHtml
 import com.twitter.server.util.HttpUtils.{parse, new404, newResponse}
 import com.twitter.server.util.MetricSource
@@ -14,13 +15,6 @@ import com.twitter.util.Future
 private object ClientRegistryHandler {
 
   private lazy val emptyEntry = Some(MetricSource.Entry("", 0.0, 0.0))
-
-  case class ClientProfile(
-    name: String,
-    addr: String,
-    scope: String,
-    successRate: Double,
-    unavailable: Int)
 
   val profileOrdering: Ordering[ClientProfile] = Ordering.by(_.successRate)
 
