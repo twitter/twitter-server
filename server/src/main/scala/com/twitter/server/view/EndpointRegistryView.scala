@@ -26,12 +26,12 @@ private[server] object EndpointRegistryView {
         <ul>
         ${(for ((dtab, observations) <- dtabEntries) yield {
       s"""
-            <li>Dtab</br>
+            <li>Dtab<br/>
               <div>${renderDtab(dtab)}</div>
-              <div>Resolved Endpoints</br>
+              <div>Resolved Endpoints<br/>
                 <ul>
                 ${(for ((path, addr) <- observations) yield {
-        s"""<li>Path: ${path}</br>""" +
+        s"""<li>Path: ${path}<br/>""" +
           (addr match {
             case Addr.Bound(endpoints, metadata) =>
               val weight: Double = metadata.get(AddrWeightKey) match {
@@ -41,8 +41,8 @@ private[server] object EndpointRegistryView {
                   -1.0
                 case None => 1.0
               }
-              s"""Weight: ${weight}</br>
-                            Endpoints:</br>
+              s"""Weight: ${weight}<br/>
+                            Endpoints:<br/>
                               <ul>
                               ${(for (endpoint <- endpoints) yield {
                 s"""<li>${endpoint}</li>"""

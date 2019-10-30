@@ -9,6 +9,8 @@ Unreleased
 
 * Add initial support for JDK 11 compatibility. ``PHAB_ID=D365075``
 
+* The endpoints section of the clients page has been fixed
+  to no longer render an incorrect html line break tag. ``PHAB_ID=D391907``
 
 19.10.0
 -------
