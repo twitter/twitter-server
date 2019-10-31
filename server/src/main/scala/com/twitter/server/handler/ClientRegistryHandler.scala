@@ -9,7 +9,7 @@ import com.twitter.server.model.ClientProfile
 import com.twitter.server.util.HtmlUtils.escapeHtml
 import com.twitter.server.util.HttpUtils.{parse, new404, newResponse}
 import com.twitter.server.util.MetricSource
-import com.twitter.server.view.{EndpointRegistryView, StackRegistryView}
+import com.twitter.server.view.{BalancerHtmlView, EndpointRegistryView, StackRegistryView}
 import com.twitter.util.Future
 
 private object ClientRegistryHandler {
@@ -146,7 +146,10 @@ class ClientRegistryHandler(
           val scope = findClientScope(client.name)
           val stackHtml = StackRegistryView.render(client, scope)
 
-          val loadBalancerHtml = LoadBalancersHandler.renderHtml(name)
+          val loadBalancerData = LoadBalancersHandler.getBalancer(Some(name))
+          val loadBalancerView =
+            new BalancerHtmlView(loadBalancerData, LoadBalancersHandler.RoutePath)
+          val loadBalancerHtml = loadBalancerView.render
 
           val endpointEntry = EndpointRegistry.registry.endpoints(name)
           val endpointHtml = EndpointRegistryView.render(endpointEntry)
