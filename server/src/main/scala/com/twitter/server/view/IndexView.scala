@@ -5,7 +5,7 @@ import com.twitter.finagle.http.Method
 import com.twitter.finagle.http.Method.{Get, Post}
 import com.twitter.finagle.{Service, SimpleFilter}
 import com.twitter.finagle.http.{Request, Response}
-import com.twitter.io.{Buf, BufReader, Reader}
+import com.twitter.io.{Buf, BufReader, Reader, Pipe}
 import com.twitter.server.util.HtmlUtils.escapeHtml
 import com.twitter.server.util.HttpUtils.{expectsHtml, newResponse}
 import com.twitter.util.Future
@@ -148,7 +148,7 @@ class IndexView(title: String, uri: String, index: () => Seq[IndexView.Entry])
             response.contentType = "text/html;charset=UTF-8"
             response.setChunked(true)
             val reader = render(title, uri, index().sorted, res.reader)
-            Reader.copy(reader, response.writer) ensure response.writer.close()
+            Pipe.copy(reader, response.writer) ensure response.writer.close()
             Future.value(response)
 
           case res =>
