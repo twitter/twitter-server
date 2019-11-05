@@ -7,6 +7,9 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+19.11.0
+-------
+
 * Add initial support for JDK 11 compatibility. ``PHAB_ID=D365075``
 
 * The endpoints section of the clients page has been fixed
