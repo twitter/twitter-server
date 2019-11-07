@@ -1,31 +1,34 @@
 package com.twitter.server
 
 import com.twitter.app.App
-import com.twitter.concurrent.NamedPoolThreadFactory
 import com.twitter.finagle.client.ClientRegistry
 import com.twitter.finagle.filter.ServerAdmissionControl
-import com.twitter.finagle.http.Method.Get
-import com.twitter.finagle.http.{HttpMuxer, Method, Request, Response}
+import com.twitter.finagle.http.{HttpMuxer, Method, Request, Response, Route => HttpRoute}
 import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.tracing.NullTracer
 import com.twitter.finagle.util.LoadService
-import com.twitter.finagle.{Http, ListeningServer, NullServer, Service, SimpleFilter, http}
+import com.twitter.finagle.{Http, ListeningServer, NullServer, Service}
 import com.twitter.server.Admin.Grouping
+import com.twitter.server.filters.AdminThreadPoolFilter
 import com.twitter.server.handler.{AdminHttpMuxHandler, NoLoggingHandler}
 import com.twitter.server.lint.LoggingRules
 import com.twitter.server.util.HttpUtils
 import com.twitter.server.view.{IndexView, NotFoundView}
 import com.twitter.util.lint.GlobalRules
 import com.twitter.util.registry.Library
-import com.twitter.util.{ExecutorServiceFuturePool, Future, FuturePool, Monitor, Time}
+import com.twitter.util.{Future, Monitor, Time}
 import java.net.InetSocketAddress
-import java.util.concurrent.Executors
 import org.slf4j.LoggerFactory
 import scala.language.reflectiveCalls
 import com.twitter.app.Flag
 
 object AdminHttpServer {
+
+  /**
+   * The name used for the finagle server.
+   */
+  val ServerName = "adminhttp"
 
   /**
    * Represents an element which can be routed to via the admin http server.
@@ -55,42 +58,17 @@ object AdminHttpServer {
     alias: String,
     group: Option[String],
     includeInIndex: Boolean,
-    method: Method = Get)
+    method: Method = Method.Get)
 
   object Route {
-
-    /**
-     * A filter which forces an [[Http]] [[Service]] to be handled outside the
-     * global default worker pool.
-     */
-    private[this] val IsolateFilter: SimpleFilter[Request, Response] =
-      new SimpleFilter[Request, Response] {
-        def apply(request: Request, service: Service[Request, Response]): Future[Response] =
-          Pool(service(request)).flatten
-        override def toString: String = s"${Route.getClass.getName}IsolateFilter"
-      }
-
-    private[this] lazy val Pool: FuturePool =
-      new ExecutorServiceFuturePool(
-        Executors
-          .newCachedThreadPool(new NamedPoolThreadFactory("AdminFuturePool", makeDaemons = true))
-      ) { override def toString: String = "Route.Pool" }
-
-    /**
-     * Force the [[Route]] `r` to be handled outside the global default worker pool.
-     */
-    def isolate(r: Route): Route =
-      r.copy(handler = IsolateFilter.andThen(r.handler))
-
-    /**
-     * Force the [[Service[Request, Response]] `s` to be handled outside the global default worker pool.
-     */
+    // backwards compatibility
+    def isolate(r: Route): Route = AdminThreadPoolFilter.isolateRoute(r)
     def isolate(s: Service[Request, Response]): Service[Request, Response] =
-      IsolateFilter.andThen(s)
+      AdminThreadPoolFilter.isolateService(s)
 
-    def from(route: http.Route): Route = route.index match {
+    def from(route: HttpRoute): Route = route.index match {
       case Some(index) =>
-        mkRoute(
+        Route(
           path = index.path.getOrElse(route.pattern),
           handler = route.handler,
           alias = index.alias,
@@ -99,7 +77,7 @@ object AdminHttpServer {
           method = index.method
         )
       case None =>
-        mkRoute(
+        Route(
           path = route.pattern,
           handler = route.handler,
           alias = route.pattern,
@@ -118,16 +96,10 @@ object AdminHttpServer {
     alias: String,
     group: Option[String],
     includeInIndex: Boolean,
-    method: Method = Get
+    method: Method = Method.Get
   ): Route = {
     Route(path, handler, alias, group, includeInIndex, method)
   }
-
-  /**
-   * The name used for the finagle server.
-   */
-  val ServerName = "adminhttp"
-
 }
 
 trait AdminHttpServer { self: App with Stats =>
@@ -159,7 +131,7 @@ trait AdminHttpServer { self: App with Stats =>
   private[this] val loadServiceRoutes: Seq[Route] =
     LoadService[AdminHttpMuxHandler]()
       .map(handler => Route.from(handler.route))
-      .map(Route.isolate)
+      .map(AdminThreadPoolFilter.isolateRoute)
 
   private[this] var allRoutes: Seq[Route] = loadServiceRoutes
 
@@ -211,14 +183,14 @@ trait AdminHttpServer { self: App with Stats =>
 
       allRoutes = allRoutes ++
         Seq(
-          mkRoute(
+          Route(
             path = "/admin/logging",
             handler = new NoLoggingHandler,
             alias = "Logging",
             group = Some(Grouping.Utilities),
             includeInIndex = true
           )
-        ).map(Route.isolate)
+        ).map(AdminThreadPoolFilter.isolateRoute)
     }
   }
 
@@ -284,7 +256,7 @@ trait AdminHttpServer { self: App with Stats =>
       .toSeq
   }
 
-  private[this] def routeToIndexLink(route: AdminHttpServer.Route): IndexView.Link =
+  private[this] def routeToIndexLink(route: Route): IndexView.Link =
     IndexView.Link(route.alias, route.path, route.method)
 
   private[this] def startServer(): Unit = {

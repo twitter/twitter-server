@@ -9,6 +9,7 @@ import com.twitter.finagle.stats.{
   WithHistogramDetails
 }
 import com.twitter.server.AdminHttpServer.Route
+import com.twitter.server.filters.AdminThreadPoolFilter
 import com.twitter.server.handler._
 import com.twitter.server.view._
 
@@ -238,7 +239,7 @@ object Admin {
         group = Some(Grouping.Utilities),
         includeInIndex = true
       )
-    ).map(AdminHttpServer.Route.isolate)
+    ).map(AdminThreadPoolFilter.isolateRoute)
 
     // If histograms are available, add an additional endpoint
     val histos = DelegatingStatsReceiver
