@@ -1,11 +1,11 @@
 package com.twitter.server.handler
 
 import com.twitter.conversions.DurationOps._
-import com.twitter.finagle.http.{Request, Response, Status}
+import com.twitter.finagle.http.{Request, Response, Status, Uri}
 import com.twitter.finagle.Service
 import com.twitter.io.Buf
 import com.twitter.jvm.CpuProfile
-import com.twitter.server.util.HttpUtils.{newResponse, parse}
+import com.twitter.server.util.HttpUtils.newResponse
 import com.twitter.util.{Duration, Future, Return, Throw}
 import java.io.ByteArrayOutputStream
 import com.twitter.util.logging.Logger
@@ -16,10 +16,11 @@ class ProfileResourceHandler(which: Thread.State) extends Service[Request, Respo
   case class Params(pause: Duration, frequency: Int)
 
   def apply(req: Request): Future[Response] = {
-    val params = parse(req.uri)._2.foldLeft(Params(10.seconds, 100)) {
-      case (parameters, ("seconds", Seq(pauseVal))) =>
+    val uri = Uri.fromRequest(req)
+    val params = uri.params.foldLeft(Params(10.seconds, 100)) {
+      case (parameters, ("seconds", pauseVal)) =>
         parameters.copy(pause = pauseVal.toInt.seconds)
-      case (parameters, ("hz", Seq(hz))) =>
+      case (parameters, ("hz", hz)) =>
         parameters.copy(frequency = hz.toInt)
       case (parameters, _) =>
         parameters

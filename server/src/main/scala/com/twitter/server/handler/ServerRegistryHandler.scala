@@ -1,12 +1,12 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{Request, Response}
+import com.twitter.finagle.http.{Request, Response, Uri}
 import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.util.StackRegistry
 import com.twitter.io.Buf
 import com.twitter.server.util.HtmlUtils.escapeHtml
-import com.twitter.server.util.HttpUtils.{new404, newResponse, parse}
+import com.twitter.server.util.HttpUtils.{new404, newResponse}
 import com.twitter.server.util.MetricSource
 import com.twitter.server.view.StackRegistryView
 import com.twitter.util.Future
@@ -77,8 +77,8 @@ class ServerRegistryHandler(
   }
 
   def apply(req: Request): Future[Response] = {
-    val (path, _) = parse(req.uri)
-    path.stripPrefix(uriPrefix) match {
+    val uri = Uri.fromRequest(req)
+    uri.path.stripPrefix(uriPrefix) match {
       case idx @ ("index.html" | "index.htm" | "index.txt" | "servers") =>
         val servers = (registry.registrants.flatMap {
           case e: StackRegistry.Entry if e.name.nonEmpty =>

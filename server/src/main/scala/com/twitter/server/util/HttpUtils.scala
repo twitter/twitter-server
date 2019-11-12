@@ -5,8 +5,6 @@ import com.twitter.finagle.http.{MediaType, Request, Response, Status, Version, 
 import com.twitter.io.Buf
 import com.twitter.util.{Future, Time, Closable}
 import io.netty.handler.codec.http.QueryStringDecoder
-import scala.collection.JavaConverters._
-import scala.collection.{Map, Seq}
 
 private[server] object HttpUtils {
 
@@ -94,10 +92,4 @@ private[server] object HttpUtils {
       content = Buf.Utf8(msg)
     )
 
-  /** Parse uri into (path, params) */
-  def parse(uri: String): (String, Map[String, Seq[String]]) = {
-    val qsd = new QueryStringDecoder(uri)
-    val params = qsd.parameters().asScala.mapValues(_.asScala.toSeq)
-    (qsd.path(), params)
-  }
 }

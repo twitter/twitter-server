@@ -1,10 +1,10 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{MediaType, Request, Response}
+import com.twitter.finagle.http.{MediaType, Request, Response, Uri}
 import com.twitter.finagle.stats.{HistogramDetail, WithHistogramDetails}
 import com.twitter.io.Buf
-import com.twitter.server.util.HttpUtils.{newResponse, parse}
+import com.twitter.server.util.HttpUtils.newResponse
 import com.twitter.server.util.{JsonConverter, MetricSource}
 import com.twitter.util.Future
 
@@ -50,7 +50,7 @@ class MetricTypeQueryHandler(
       case None => Map.empty
     }
 
-  private[this] def query(keys: Seq[String]) =
+  private[this] def query(keys: Iterable[String]) =
     for (k <- keys; e <- source.getType(k)) yield e
 
   private[this] def getHistos(): Iterable[MetricSource.MetricTypeInfo] = {
@@ -66,13 +66,14 @@ class MetricTypeQueryHandler(
   }
 
   def apply(req: Request): Future[Response] = {
-    val (_, params) = parse(req.uri)
+    val uri = Uri.fromRequest(req)
 
     val latched = source.hasLatchedCounters
-    val metrics = params.get("m") match {
-      case None => source.typeMap ++ getHistos()
-      case Some(keysParam) => query(keysParam) ++ queryHistos(keysParam.toSet)
-    }
+    val keysParam = uri.params.getAll("m")
+
+    val metrics =
+      if (keysParam.isEmpty) source.typeMap ++ getHistos()
+      else query(keysParam) ++ queryHistos(keysParam.toSet)
 
     newResponse(
       contentType = MediaType.JsonUtf8,

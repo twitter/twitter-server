@@ -1,9 +1,9 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{Request, Response, Status}
+import com.twitter.finagle.http.{Request, Response, Status, Uri}
 import com.twitter.io.Buf
-import com.twitter.server.util.HttpUtils.{new404, newResponse, parse}
+import com.twitter.server.util.HttpUtils.{new404, newResponse}
 import com.twitter.util.{Future, FuturePool, JavaSingleton}
 import java.io.{File, FileInputStream, InputStream}
 import java.nio.charset.{Charset, StandardCharsets}
@@ -36,8 +36,8 @@ class ResourceHandler(
   }
 
   def apply(req: Request): Future[Response] = {
-    val (uri, _) = parse(req.uri)
-    val path = uri.stripPrefix(baseRequestPath)
+    val uri = Uri.fromRequest(req)
+    val path = uri.path.stripPrefix(baseRequestPath)
 
     if (path.contains(".."))
       return newResponse(

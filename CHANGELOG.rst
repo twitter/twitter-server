@@ -7,6 +7,15 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+* Multiple changes have happened around query parameter retrieval in order
+  to remove duplicated functionality from Twitter Server that exists in
+  Finagle. Users are encouraged to use finagle-http's `Uri` class within their
+  own code to retrieve params. ``PHAB_ID=D398387``
+  * The `parse` method of `HttpUtils` has been removed.
+  * The protected `getParams` method of `TwitterHandler` has been removed.
+  * The signature of the `getGraceParam` method of `ShutdownHandler` has
+    been changed to take a `Request`.
+
 19.11.0
 -------
 

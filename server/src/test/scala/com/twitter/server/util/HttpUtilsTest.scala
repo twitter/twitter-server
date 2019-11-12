@@ -192,18 +192,4 @@ class HttpUtilsTest extends FunSuite {
     assert(res.contentString == "not found")
   }
 
-  test("Extract query values") {
-    val uri = "http://test.com/testing?foo=bar&baz=qux&hello=world"
-    val (_, params) = parse(uri)
-    assert(params("foo") == Seq("bar"))
-    assert(params.get("fun") == None)
-  }
-
-  test("Extract multiple query values") {
-    val uri = "http://test.com/testing?foo=bar&baz=qux&foo=world"
-    val (_, params) = parse(uri)
-    assert(params("foo") == Seq("bar", "world"))
-    assert(params("baz") == Seq("qux"))
-    assert(params.get("fun") == None)
-  }
 }

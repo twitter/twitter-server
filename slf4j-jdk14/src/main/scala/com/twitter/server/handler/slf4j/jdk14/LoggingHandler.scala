@@ -100,10 +100,11 @@ private class LoggingHandler extends AdminHttpMuxHandler {
     )
 
   def apply(request: Request): Future[Response] = {
-    val (_, params) = parse(request.uri)
+    val uri = Uri.fromRequest(request)
+    val params = uri.params
 
     val loggerName: Option[String] = parseLoggerName(params)
-    val loggerLevel: Option[String] = params.getOrElse("level", Seq.empty).headOption
+    val loggerLevel: Option[String] = params.get("level")
 
     val updateMsg = (loggerLevel, loggerName) match {
       case (Some(level), Some(name)) =>
@@ -137,10 +138,8 @@ private class LoggingHandler extends AdminHttpMuxHandler {
     }
   }
 
-  private[this] def parseLoggerName(
-    params: scala.collection.Map[String, scala.collection.Seq[String]]
-  ): Option[String] = {
-    params.getOrElse("logger", Seq.empty).headOption.map {
+  private[this] def parseLoggerName(params: ParamMap): Option[String] = {
+    params.get("logger").map {
       case "root" => ""
       case name => name
     }

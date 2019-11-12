@@ -1,11 +1,11 @@
 package com.twitter.server.handler
 
 import com.twitter.conversions.DurationOps._
-import com.twitter.finagle.http.{Request, Response, Status}
+import com.twitter.finagle.http.{Request, Response, Status, Uri}
 import com.twitter.finagle.Service
 import com.twitter.io.Buf
 import com.twitter.jvm.Heapster
-import com.twitter.server.util.HttpUtils.{newResponse, parse}
+import com.twitter.server.util.HttpUtils.newResponse
 import com.twitter.util.{Duration, Future}
 import com.twitter.util.logging.Logger
 
@@ -24,14 +24,15 @@ class HeapResourceHandler extends Service[Request, Response] {
 
     val heapster = Heapster.instance.get
 
-    val params = parse(req.uri)._2.foldLeft(Params(10.seconds, 10 << 19, forceGC = true)) {
-      case (parameters, ("pause", Seq(pauseVal))) =>
+    val uri = Uri.fromRequest(req)
+    val params = uri.params.foldLeft(Params(10.seconds, 10 << 19, forceGC = true)) {
+      case (parameters, ("pause", pauseVal)) =>
         parameters.copy(pause = pauseVal.toInt.seconds)
-      case (parameters, ("sample_period", Seq(sampleVal))) =>
+      case (parameters, ("sample_period", sampleVal)) =>
         parameters.copy(samplingPeriod = sampleVal.toInt)
-      case (parameters, ("force_gc", Seq("no"))) =>
+      case (parameters, ("force_gc", "no")) =>
         parameters.copy(forceGC = false)
-      case (parameters, ("force_gc", Seq("0"))) =>
+      case (parameters, ("force_gc", "0")) =>
         parameters.copy(forceGC = false)
       case (parameters, _) =>
         parameters

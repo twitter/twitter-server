@@ -1,22 +1,22 @@
 package com.twitter.server.handler
 
 import com.twitter.app.App
-import com.twitter.finagle.http.{Method, Request, Response, Status}
+import com.twitter.finagle.http.{Method, Request, Response, Status, Uri}
 import com.twitter.finagle.Service
 import com.twitter.io.Buf
-import com.twitter.server.util.HttpUtils.{parse, newOk, newResponse}
+import com.twitter.server.util.HttpUtils.{newOk, newResponse}
 import com.twitter.util.{Duration, Future}
 import com.twitter.util.logging.Logger
 
 class ShutdownHandler(app: App) extends Service[Request, Response] {
   private[this] val log = Logger[ShutdownHandler]
 
-  protected def getGraceParam(uri: String): Option[String] =
-    parse(uri)._2.get("grace").flatMap(_.headOption)
+  protected def getGraceParam(request: Request): Option[String] =
+    Uri.fromRequest(request).params.get("grace")
 
   def apply(req: Request): Future[Response] = {
     if (req.method == Method.Post) {
-      val specifiedGracePeriod = getGraceParam(req.uri).map { d =>
+      val specifiedGracePeriod = getGraceParam(req).map { d =>
         try Duration.parse(d)
         catch {
           case e: NumberFormatException =>

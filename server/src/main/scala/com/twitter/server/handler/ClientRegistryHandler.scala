@@ -2,12 +2,12 @@ package com.twitter.server.handler
 
 import com.twitter.finagle.Service
 import com.twitter.finagle.client.{ClientRegistry, EndpointRegistry}
-import com.twitter.finagle.http.{Request, Response}
+import com.twitter.finagle.http.{Request, Response, Uri}
 import com.twitter.finagle.util.StackRegistry
 import com.twitter.io.Buf
 import com.twitter.server.model.ClientProfile
 import com.twitter.server.util.HtmlUtils.escapeHtml
-import com.twitter.server.util.HttpUtils.{parse, new404, newResponse}
+import com.twitter.server.util.HttpUtils.{new404, newResponse}
 import com.twitter.server.util.MetricSource
 import com.twitter.server.view.{BalancerHtmlView, EndpointRegistryView, StackRegistryView}
 import com.twitter.util.Future
@@ -120,8 +120,8 @@ class ClientRegistryHandler(
     }).toSeq
 
   def apply(req: Request): Future[Response] = {
-    val (path, _) = parse(req.uri)
-    path.stripPrefix(uriPrefix) match {
+    val uri = Uri.fromRequest(req)
+    uri.path.stripPrefix(uriPrefix) match {
       case idx @ ("index.html" | "index.htm" | "index.txt" | "clients") =>
         val leastPerformant = clientProfiles.sorted(profileOrdering).take(4)
         val html =

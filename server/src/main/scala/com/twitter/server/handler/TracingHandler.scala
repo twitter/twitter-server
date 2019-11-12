@@ -1,9 +1,9 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{Request, Response, Status}
+import com.twitter.finagle.http.{Request, Response, Status, Uri}
 import com.twitter.io.Buf
-import com.twitter.server.util.HttpUtils.{newResponse, parse}
+import com.twitter.server.util.HttpUtils.newResponse
 import com.twitter.util.Future
 import com.twitter.util.logging.Logger
 
@@ -32,7 +32,8 @@ class TracingHandler extends Service[Request, Response] {
   private[this] val log = Logger[TracingHandler]
 
   def apply(request: Request): Future[Response] = {
-    val (_, params) = parse(request.uri)
+    val uri = Uri.fromRequest(request)
+    val params = uri.params
 
     try {
       if (FinagleTracing.instance.isEmpty)
@@ -53,10 +54,10 @@ class TracingHandler extends Service[Request, Response] {
     }
 
     val tracing = FinagleTracing.instance.get
-    val msg = if (params.getOrElse("enable", Seq()).headOption.equals(Some("true"))) {
+    val msg = if (params.getOrElse("enable", "") == "true") {
       tracing.enable()
       "Enabled Finagle tracing"
-    } else if (params.getOrElse("disable", Seq()).headOption.equals(Some("true"))) {
+    } else if (params.getOrElse("disable", "") == "true") {
       tracing.disable()
       "Disabling Finagle tracing"
     } else {

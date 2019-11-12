@@ -1,10 +1,10 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{MediaType, Request, Response}
+import com.twitter.finagle.http.{MediaType, Request, Response, Uri}
 import com.twitter.io.Buf
 import com.twitter.server.util.HtmlUtils.escapeHtml
-import com.twitter.server.util.HttpUtils.{newResponse, parse}
+import com.twitter.server.util.HttpUtils.newResponse
 import com.twitter.server.util.{JsonConverter, MetricSource}
 import com.twitter.util.Future
 
@@ -35,24 +35,23 @@ class MetricQueryHandler(source: MetricSource = new MetricSource)
     extends Service[Request, Response] {
   import MetricQueryHandler._
 
-  private[this] def query(keys: Seq[String]) =
+  private[this] def query(keys: Iterable[String]) =
     for (k <- keys; e <- source.get(k)) yield e
 
   def apply(req: Request): Future[Response] = {
-    val (_, params) = parse(req.uri)
+    val uri = Uri.fromRequest(req)
 
-    params.getOrElse("m", Nil) match {
-      case Nil =>
-        newResponse(
-          contentType = "text/html;charset=UTF-8",
-          content = Buf.Utf8(render("Test", source.keySet))
-        )
-
-      case someKeys =>
-        newResponse(
-          contentType = MediaType.JsonUtf8,
-          content = Buf.Utf8(JsonConverter.writeToString(query(someKeys)))
-        )
+    if (uri.params.contains("m")) {
+      val someKeys = uri.params.getAll("m")
+      newResponse(
+        contentType = MediaType.JsonUtf8,
+        content = Buf.Utf8(JsonConverter.writeToString(query(someKeys)))
+      )
+    } else {
+      newResponse(
+        contentType = "text/html;charset=UTF-8",
+        content = Buf.Utf8(render("Test", source.keySet))
+      )
     }
   }
 }

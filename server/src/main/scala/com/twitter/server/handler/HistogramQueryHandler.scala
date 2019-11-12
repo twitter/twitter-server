@@ -1,11 +1,11 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{Request, Response}
+import com.twitter.finagle.http.{Request, Response, Uri}
 import com.twitter.finagle.stats.{BucketAndCount, HistogramDetail, WithHistogramDetails}
 import com.twitter.io.Buf
 import com.twitter.server.util.HtmlUtils.escapeHtml
-import com.twitter.server.util.HttpUtils.{newResponse, parse}
+import com.twitter.server.util.HttpUtils.newResponse
 import com.twitter.server.util.JsonConverter
 import com.twitter.util.Future
 
@@ -331,7 +331,9 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails)
    * If `h` is not found, an empty JSON hash will be returned `{}`.
    */
   def apply(req: Request): Future[Response] = {
-    val (path, params) = parse(req.uri)
+    val uri = Uri.fromRequest(req)
+    val path = uri.path
+    val params = uri.params
 
     path match {
       case "/admin/histograms.json" =>
@@ -339,7 +341,7 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails)
           newResponse(contentType = ContentTypeJson, content = Buf.Utf8(renderHistogramsJson))
         } else {
           val summary: Option[Summary] = params.get("h") match {
-            case Some(Seq(histoName)) => generateSummary(histoName)
+            case Some(histoName) => generateSummary(histoName)
             case _ => None
           }
           val text: String = summary match {
@@ -350,22 +352,22 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails)
         }
       case "/admin/histograms" =>
         params.get("h") match {
-          case Some(Seq(query)) =>
+          case Some(query) =>
             params.get("fmt") match {
-              case Some(Seq("plot_pdf")) | Some(Seq("plot_cdf")) =>
+              case Some("plot_pdf") | Some("plot_cdf") =>
                 htmlResponse(query)
 
-              case Some(Seq("raw")) =>
+              case Some("raw") =>
                 jsonResponse(query, { counts: Seq[BucketAndCount] =>
                   deliverData(Map(query -> counts), identity)
                 })
 
-              case Some(Seq("pdf")) =>
+              case Some("pdf") =>
                 jsonResponse(query, { counts: Seq[BucketAndCount] =>
                   deliverData(Map(query -> counts), x => pdf(x))
                 })
 
-              case Some(Seq("cdf")) =>
+              case Some("cdf") =>
                 jsonResponse(query, { counts: Seq[BucketAndCount] =>
                   deliverData(Map(query -> counts), x => cdf(x))
                 })
