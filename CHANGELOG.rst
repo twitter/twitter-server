@@ -16,6 +16,10 @@ Unreleased
   * The signature of the `getGraceParam` method of `ShutdownHandler` has
     been changed to take a `Request`.
 
+* Add a `disableAdminHttpServer` property to the `AdminHttpServer` that can be used to
+  prevent the `AdminHttpServer` from starting by default on a `TwitterServer`. ``PHAB_ID=D397925``
+
+
 19.11.0
 -------
 

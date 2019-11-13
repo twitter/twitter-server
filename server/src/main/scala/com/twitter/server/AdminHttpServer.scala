@@ -108,6 +108,12 @@ trait AdminHttpServer { self: App with Stats =>
   // We use slf4-api directly b/c we're in a trait and want the trait class to be the Logger name
   private[this] val log = LoggerFactory.getLogger(getClass)
 
+  /**
+   * If true, the Twitter-Server admin server will be disabled.
+   * Note: Disabling the admin server allows services to be deployed into environments where only a single port is allowed
+   */
+  protected def disableAdminHttpServer: Boolean = false
+
   def defaultAdminPort: Int = 9990
   val adminPort: Flag[InetSocketAddress] =
     flag("admin.port", new InetSocketAddress(defaultAdminPort), "Admin http server port")
@@ -285,7 +291,16 @@ trait AdminHttpServer { self: App with Stats =>
   }
 
   premain {
+    // For consistency, we will add the routes regardless of whether the `adminHttpServer` gets
+    // started. This may not always be true and we may change this behavior in the future.
     addAdminRoutes(Admin.adminRoutes(statsReceiver, self))
-    startServer()
+
+    // we delay this check until we call the premain to ensure the `disableAdminHttpServer` value
+    // has the correct initialization order
+    if (disableAdminHttpServer) {
+      log.info("admin http is disabled and will not be started.")
+    } else {
+      startServer()
+    }
   }
 }

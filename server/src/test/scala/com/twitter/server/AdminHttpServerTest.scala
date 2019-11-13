@@ -103,6 +103,52 @@ class AdminHttpServerTest extends FunSuite with Eventually with IntegrationPatie
     assert(MockClosableHandler.closed)
   }
 
+  test("a closed server cannot be restarted") {
+    val server = new TestTwitterServer {
+      override def main(): Unit = {
+        Await.result(adminHttpServer.close(5.seconds), 7.seconds)
+        intercept[Exception] {
+          checkServer(adminHttpServer)
+        }
+
+        val adminServerBoundPort =
+          adminHttpServer.boundAddress.asInstanceOf[InetSocketAddress].getPort
+        assert(adminServerBoundPort == adminBoundAddress.getPort)
+        val client = Http.client.newService(s"localhost:$adminServerBoundPort")
+        intercept[Exception] { // the admin is already closed, this should error
+          Await.result(client(Request(Method.Post, "/quitquitquit")), 1.second)
+        }
+
+        Await.result(close(5.seconds), 7.seconds)
+      }
+    }
+    server.main(args = Array.empty[String])
+    assert(MockClosableHandler.closed)
+  }
+
+  test("a disabled server cannot be started") {
+    val server = new TestTwitterServer {
+      override protected def disableAdminHttpServer: Boolean = true
+      override def main(): Unit = {
+        intercept[Exception] {
+          checkServer(adminHttpServer)
+        }
+
+        val adminServerBoundPort =
+          adminHttpServer.boundAddress.asInstanceOf[InetSocketAddress].getPort
+        assert(adminServerBoundPort == adminBoundAddress.getPort)
+        val client = Http.client.newService(s"localhost:$adminServerBoundPort")
+        intercept[Exception] { // the admin is already closed, this should error
+          Await.result(client(Request(Method.Post, "/quitquitquit")), 1.second)
+        }
+
+        Await.result(close(5.seconds), 7.seconds)
+      }
+    }
+    server.main(args = Array.empty[String])
+    assert(MockClosableHandler.closed)
+  }
+
   test("GET does not close server") {
     val server = new TestTwitterServer {
       override def main(): Unit = {
