@@ -1,10 +1,9 @@
 package com.twitter.server.filters
 
 import com.twitter.concurrent.NamedPoolThreadFactory
-import com.twitter.finagle.{Service}
+import com.twitter.finagle.Service
 import com.twitter.finagle.filter.OffloadFilter
 import com.twitter.finagle.http.{Request, Response}
-import com.twitter.finagle.filter.OffloadFilter
 import com.twitter.server.AdminHttpServer.Route
 import com.twitter.util.{ExecutorServiceFuturePool, FuturePool}
 import java.util.concurrent.Executors
