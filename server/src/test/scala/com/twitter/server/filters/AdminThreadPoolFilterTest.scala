@@ -25,6 +25,5 @@ class AdminThreadPoolFilterTest extends FunSuite {
 
     assert(workingThreadId != -1)
     assert(workingThreadId != caller.getId)
-    assert(AdminThreadPoolFilter.Pool.numCompletedTasks == 1)
   }
 }

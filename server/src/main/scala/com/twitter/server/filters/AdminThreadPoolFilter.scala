@@ -9,8 +9,7 @@ import com.twitter.util.{ExecutorServiceFuturePool, FuturePool}
 import java.util.concurrent.Executors
 
 object AdminThreadPoolFilter {
-  // scoped for testing
-  private[filters] lazy val Pool: FuturePool =
+  private lazy val Pool: FuturePool =
     new ExecutorServiceFuturePool(
       Executors
         .newCachedThreadPool(new NamedPoolThreadFactory("AdminFuturePool", makeDaemons = true))
