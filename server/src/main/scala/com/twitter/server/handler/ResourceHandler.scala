@@ -4,7 +4,7 @@ import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response, Status, Uri}
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.{new404, newResponse}
-import com.twitter.util.{Future, FuturePool, JavaSingleton}
+import com.twitter.util.{Future, FuturePool}
 import java.io.{File, FileInputStream, InputStream}
 import java.nio.charset.{Charset, StandardCharsets}
 import scala.io.Source
@@ -63,7 +63,7 @@ class ResourceHandler(
   }
 }
 
-object ResourceHandler extends JavaSingleton {
+object ResourceHandler {
 
   /**
    * Constructs a ResourceHandler which tries to read resources from disk on every request,

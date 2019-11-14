@@ -19,6 +19,8 @@ Unreleased
 * Add a `disableAdminHttpServer` property to the `AdminHttpServer` that can be used to
   prevent the `AdminHttpServer` from starting by default on a `TwitterServer`. ``PHAB_ID=D397925``
 
+* The `ResourceHandler` companion object is no longer a `JavaSingleton`.
+  ``PHAB_ID=D399947``
 
 19.11.0
 -------
