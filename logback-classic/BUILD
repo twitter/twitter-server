@@ -1,5 +1,5 @@
 target(
-  dependencies=[
-    'twitter-server/logback-classic/src/main/scala'
-  ]
+    dependencies = [
+        "twitter-server/logback-classic/src/main/scala",
+    ],
 )

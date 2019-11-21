@@ -29,7 +29,7 @@ logging.
 Admin HTTP Interface Logging Handler
 ------------------------------------
 
-Depending on this library will install a logging handler on the [HTTP admin interface](https://twitter.github.io/Admin.html#admin-interface)
+Depending on this library will install a logging handler on the [HTTP admin interface](https://twitter.github.io/twitter-server/Admin.html#admin-interface)
 which allows users to dynamically change `com.twitter.logging.Logger` log levels.
 
-For more information see the `TwitterServer` user guide section on [Logging](https://twitter.github.io/Features.html#logging)
+For more information see the `TwitterServer` user guide section on [Logging](https://twitter.github.io/twitter-server/Features.html#logging)
