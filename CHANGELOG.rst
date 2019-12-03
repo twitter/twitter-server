@@ -22,8 +22,6 @@ Unreleased
 * The `ResourceHandler` companion object is no longer a `JavaSingleton`.
   ``PHAB_ID=D399947``
 
-* Upgrade Jackson dependency from version `2.9.9` to version `2.10.1` ``PHAB_ID=D402722``
-
 19.11.0
 -------
 

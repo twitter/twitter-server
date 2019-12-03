@@ -1,7 +1,8 @@
 package com.twitter.server
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, ScalaObjectMapper}
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.stats.{BucketAndCount, InMemoryStatsReceiver}
