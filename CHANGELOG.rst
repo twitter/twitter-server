@@ -22,6 +22,8 @@ Unreleased
 * The `ResourceHandler` companion object is no longer a `JavaSingleton`.
   ``PHAB_ID=D399947``
 
+* Update ScalaTest to 3.0.8, and ScalaCheck to 1.14.0. ``PHAB_ID=D408331``
+
 19.11.0
 -------
 

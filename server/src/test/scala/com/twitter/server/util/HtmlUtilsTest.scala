@@ -2,9 +2,9 @@ package com.twitter.server.util
 
 import org.scalacheck.Gen
 import org.scalatest.FunSuite
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
-class HtmlUtilsTest extends FunSuite with GeneratorDrivenPropertyChecks {
+class HtmlUtilsTest extends FunSuite with ScalaCheckDrivenPropertyChecks {
 
   private val escapedChars = Seq('>', '<', '&', '"', '\'')
 
