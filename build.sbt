@@ -4,9 +4,10 @@ import scoverage.ScoverageKeys
 val releaseVersion = "19.12.0-SNAPSHOT"
 
 val jacksonVersion = "2.9.9"
+val jacksonDatabindVersion = "2.9.10.1"
 val jacksonLibs = Seq(
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
-  "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
+  "com.fasterxml.jackson.core" % "jackson-databind" % jacksonDatabindVersion,
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion exclude("com.google.guava", "guava")
 )
 val opencensusVersion = "0.19.1"

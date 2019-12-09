@@ -7,6 +7,8 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+* Upgrade to jackson 2.9.10 and jackson-databind 2.9.10.1 ``PHAB_ID=D410846``
+
 * Multiple changes have happened around query parameter retrieval in order
   to remove duplicated functionality from Twitter Server that exists in
   Finagle. Users are encouraged to use finagle-http's `Uri` class within their
