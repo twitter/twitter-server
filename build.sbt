@@ -11,7 +11,7 @@ val jacksonLibs = Seq(
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion exclude("com.google.guava", "guava")
 )
 val opencensusVersion = "0.19.1"
-val slf4jVersion = "1.7.21"
+val slf4jVersion = "1.7.30"
 
 def util(which: String) = "com.twitter" %% ("util-"+which) % releaseVersion
 def finagle(which: String) = "com.twitter" %% ("finagle-"+which) % releaseVersion
