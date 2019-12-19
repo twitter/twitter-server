@@ -255,8 +255,8 @@ lazy val twitterServerSlf4jLogbackClassic = (project in file("logback-classic"))
     sharedSettings)
   .settings(
     libraryDependencies ++= Seq(
-      "ch.qos.logback" % "logback-classic" % "1.1.7" % "provided",
-      "ch.qos.logback" % "logback-core" % "1.1.7" % "provided",
+      "ch.qos.logback" % "logback-classic" % "1.2.3" % "provided",
+      "ch.qos.logback" % "logback-core" % "1.2.3" % "provided",
       "org.slf4j" % "slf4j-api" % slf4jVersion,
       "org.slf4j" % "jcl-over-slf4j" % slf4jVersion,
       "org.slf4j" % "jul-to-slf4j" % slf4jVersion,

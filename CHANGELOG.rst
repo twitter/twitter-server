@@ -7,6 +7,12 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+Changed
+~~~~~~~
+
+* Upgrade logback to 1.2.3 ``PHAB_ID=D415888``
+
+
 19.12.0
 -------
 
