@@ -150,15 +150,24 @@ trait AdminHttpServer { self: App with Stats =>
     adminHttpServer.boundAddress.asInstanceOf[InetSocketAddress]
   }
 
+  /**
+   * Add a collection of [[Route]]s into admin http server.
+   */
   def addAdminRoutes(newRoutes: Seq[Route]): Unit = synchronized {
     allRoutes = allRoutes ++ newRoutes
     updateMuxer()
   }
 
+  /**
+   * Add a [[Route]] into admin http server.
+   */
   def addAdminRoute(route: Route): Unit = {
     addAdminRoutes(Seq(route))
   }
 
+  /**
+   * Get all [[Route]]s of admin http server.
+   */
   def routes: Seq[Route] = allRoutes
 
   /**

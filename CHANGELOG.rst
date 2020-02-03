@@ -54,7 +54,10 @@ No Changes
 19.9.0
 ------
 
-No Changes
+* Changed `com.twitter.server.AdminHttpServer.routes` from a setter to getter, use it to get
+  all admin http server Routes. Use `com.twitter.server.AdminHttpServer.addAdminRoute` to add
+  a Route and `com.twitter.server.AdminHttpServer.addAdminRoutes` to add many Routes.
+  ``PHAB_ID=D354013``
 
 19.8.0
 ------
