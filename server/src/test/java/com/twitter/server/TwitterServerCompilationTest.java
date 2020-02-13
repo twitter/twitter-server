@@ -13,6 +13,11 @@ public class TwitterServerCompilationTest extends AbstractTwitterServer  {
     flag().create("foo", "default-foo", "help-foo", Flaggable.ofString());
 
   @Override
+  public void onInit() {
+    LOG.info("on-init");
+  }
+
+  @Override
   public void preMain() {
     LOG.info("pre-exit");
   }
@@ -36,12 +41,12 @@ public class TwitterServerCompilationTest extends AbstractTwitterServer  {
   }
 
   @Override
-  public void onInit() {
-    LOG.info("on-init");
+  public void onExit() {
+    LOG.info("on-exit");
   }
 
   @Override
-  public void onExit() {
-    LOG.info("on-exit");
+  public void onExitLast() {
+    LOG.info("on-exit-last");
   }
 }

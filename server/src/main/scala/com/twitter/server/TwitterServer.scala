@@ -97,6 +97,11 @@ abstract class AbstractTwitterServer extends TwitterServer {
   def onExit(): Unit = ()
 
   /**
+   * Called prior to application exiting after `onExit`.
+   */
+  def onExitLast(): Unit = ()
+
+  /**
    * The `main` method of this server.
    */
   @throws[Throwable]
@@ -106,4 +111,5 @@ abstract class AbstractTwitterServer extends TwitterServer {
   premain(preMain())
   postmain(postMain())
   onExit(onExit())
+  onExitLast(onExitLast())
 }
