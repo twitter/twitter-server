@@ -1,5 +1,5 @@
 scala_library(
-    sources = globs("*.scala"),
+    sources = ["*.scala"],
     compiler_option_sets = {"fatal_warnings"},
     dependencies = [
         "3rdparty/jvm/io/opencensus:opencensus-api",
