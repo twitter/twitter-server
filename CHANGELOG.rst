@@ -7,6 +7,9 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+20.2.0
+------
+
 * Add `c.t.server.AbstractTwitterServer#onExitLast` to allow Java users to
   easily register a final exit function. ``PHAB_ID=D433874``
 
