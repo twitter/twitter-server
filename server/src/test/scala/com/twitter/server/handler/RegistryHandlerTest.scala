@@ -1,9 +1,16 @@
 package com.twitter.server.handler
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import com.twitter.util.registry.{GlobalRegistry, SimpleRegistry}
 import org.scalatest.FunSuite
 
 class RegistryHandlerTest extends FunSuite {
+
+  private[this] val mapper = new ObjectMapper with ScalaObjectMapper {
+    registerModule(DefaultScalaModule)
+  }
 
   private[this] val handler = new RegistryHandler()
 
@@ -17,12 +24,27 @@ class RegistryHandlerTest extends FunSuite {
   filterRegistry.put(Seq("1", "a", "3"), "4")
   filterRegistry.put(Seq("1", "b", "3"), "5")
 
-  // NOTE: these tests assume a specific iteration order over the registries
+  // Some of these tests assume a specific iteration order over the registries
   // and HashMaps which IS NOT a guarantee. should these tests begin to fail
-  // due to that, we will need a more robust approach to validation.
+  // due to that, we will need to use `assertJsonResponseFor` for them as well.
   private[this] def assertJsonResponse(filter: Option[String], expected: String) = {
     val actual = stripWhitespace(handler.jsonResponse(filter))
     assert(actual == expected)
+  }
+
+  /**
+   * Relying on the ordering of HashMaps is a bad idea and is different between 2.13 and earlier versions.
+   *
+   * This helper will try to deserialize both strings to the given type `T` before comparison, which
+   * avoids the ordering issue.
+   */
+  private[this] def assertJsonResponseFor[T: Manifest](filter: Option[String], expected: String) = {
+    val actual = stripWhitespace(handler.jsonResponse(filter))
+
+    val expectedObj = mapper.readValue[T](expected)
+    val actualObj = mapper.readValue[T](actual)
+
+    assert(actualObj == expectedObj)
   }
 
   private[this] def stripWhitespace(string: String): String =
@@ -40,9 +62,13 @@ class RegistryHandlerTest extends FunSuite {
 
   test("RegistryHandler.jsonResponse filters with basic matches") {
     GlobalRegistry.withRegistry(filterRegistry) {
-      assertJsonResponse(Some("oof"), """{"registry":{"oof":"gah"}}""")
-      assertJsonResponse(Some("foo"), """{"registry":{"foo":{"bar":"baz","qux":"quux"}}}""")
-      assertJsonResponse(Some("foo/bar"), """{"registry":{"foo":{"bar":"baz"}}}""")
+      type Response = Map[String, Object]
+
+      assertJsonResponseFor[Response](Some("oof"), """{"registry":{"oof":"gah"}}""")
+      assertJsonResponseFor[Response](
+        Some("foo"),
+        """{"registry":{"foo":{"bar":"baz","qux":"quux"}}}""")
+      assertJsonResponseFor[Response](Some("foo/bar"), """{"registry":{"foo":{"bar":"baz"}}}""")
     }
   }
 

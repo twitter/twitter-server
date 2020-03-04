@@ -121,7 +121,7 @@ private class LoggingHandler extends AdminHttpMuxHandler with Logging {
           .filter(_.getLevel != null)
           .filter(_.getName != org.slf4j.Logger.ROOT_LOGGER_NAME)
       } else loggers
-      val html = renderHtml(filteredLoggers, julLoggers, message, showOverriddenOnly)
+      val html = renderHtml(filteredLoggers.toSeq, julLoggers, message, showOverriddenOnly)
 
       newResponse(
         contentType = "text/html;charset=UTF-8",

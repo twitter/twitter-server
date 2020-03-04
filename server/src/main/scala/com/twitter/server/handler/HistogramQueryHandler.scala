@@ -65,7 +65,9 @@ object HistogramQueryHandler {
     counts: Map[String, Seq[BucketAndCount]],
     transform: Seq[BucketAndCount] => Any
   ): String =
-    JsonConverter.writeToString(counts.mapValues(transform))
+    // ".toMap" is important here for scala 2.13 as otherwise it will be a MapView which
+    // doesn't serialize correctly with Jackson
+    JsonConverter.writeToString(counts.mapValues(transform).toMap)
 
   // Generates html for visualizing histograms
   private[HistogramQueryHandler] val render: String = {

@@ -141,7 +141,7 @@ class ToggleHandler private[handler] (registeredLibrariesFn: () => Map[String, T
     if (errors.isEmpty) {
       newOk(getResponse(parsed))
     } else {
-      genericResponse(Status.BadRequest, "Get failed", errors)
+      genericResponse(Status.BadRequest, "Get failed", errors.toSeq)
     }
   }
 
@@ -159,7 +159,7 @@ class ToggleHandler private[handler] (registeredLibrariesFn: () => Map[String, T
     genericResponse(
       if (errors.isEmpty) Status.Ok else Status.BadRequest,
       if (errors.isEmpty) "Update successful" else "Update failed",
-      errors
+      errors.toSeq
     )
   }
 
@@ -177,7 +177,7 @@ class ToggleHandler private[handler] (registeredLibrariesFn: () => Map[String, T
     genericResponse(
       if (errors.isEmpty) Status.Ok else Status.BadRequest,
       if (errors.isEmpty) "Delete successful" else "Delete failed",
-      errors
+      errors.toSeq
     )
   }
 
@@ -260,7 +260,7 @@ class ToggleHandler private[handler] (registeredLibrariesFn: () => Map[String, T
             errors += s"Fraction must be [0.0-1.0], was: '$fractionStr'"
         }
     }
-    errors
+    errors.toSeq
   }
 
   /**
@@ -276,7 +276,7 @@ class ToggleHandler private[handler] (registeredLibrariesFn: () => Map[String, T
     val toggleMap = registeredLibrariesFn()(libraryName)
     log.info(s"Deleted $libraryName's toggle $id")
     toggleMap.remove(id)
-    errors
+    errors.toSeq
   }
 
   /** package protected for testing */
@@ -338,7 +338,7 @@ class ToggleHandler private[handler] (registeredLibrariesFn: () => Map[String, T
           case captured: Toggle.Captured => captured.lastApply
           case _ => None
         }
-        LibraryToggle(Current(id, md.fraction, lastApply, md.description), details)
+        LibraryToggle(Current(id, md.fraction, lastApply, md.description), details.toSeq)
     }.toSeq
   }
 

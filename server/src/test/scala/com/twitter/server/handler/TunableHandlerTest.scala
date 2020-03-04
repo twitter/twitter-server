@@ -1,12 +1,27 @@
 package com.twitter.server.handler
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.{MediaType, Method, Request, Status}
 import com.twitter.util.Await
 import com.twitter.util.tunable.TunableMap
 import org.scalatest.FunSuite
 
+object TunableHandlerTest {
+  // Needs to be in companion object because of Jackson. We use `Set` to avoid ordering issues here.
+  case class Response(id: String, tunables: Set[Tunable])
+  case class Tunable(id: String, value: String, components: Set[Component])
+  case class Component(source: String, value: String)
+}
+
 class TunableHandlerTest extends FunSuite {
+  import TunableHandlerTest._
+
+  private[this] val mapper = new ObjectMapper with ScalaObjectMapper {
+    registerModule(DefaultScalaModule)
+  }
 
   test("Non-{DELETE, GET, PUT} request returns 'MethodNotAllowed response") {
     val handler = new TunableHandler
@@ -43,6 +58,19 @@ class TunableHandlerTest extends FunSuite {
       assert(resp.contentString.contains("TunableMap not found for id: foo"))
       assert(resp.status == Status.NotFound)
     }
+  }
+
+  /**
+   * Relying on the ordering of HashMaps is a bad idea and is different between 2.13 and earlier versions.
+   *
+   * This helper will try to deserialize both strings to the given type `T` before comparison, which
+   * avoids the ordering issue.
+   */
+  private[this] def assertJsonResponseFor[T: Manifest](actual: String, expected: String) = {
+    val expectedObj = mapper.readValue[T](expected)
+    val actualObj = mapper.readValue[T](actual)
+
+    assert(actualObj == expectedObj)
   }
 
   testIdErrorHandling(Method.Get)
@@ -98,7 +126,7 @@ class TunableHandlerTest extends FunSuite {
         |    }
         |  ]
         |}""".stripMargin
-    assert(resp.contentString == expected)
+    assertJsonResponseFor[Response](resp.contentString, expected)
   }
 
   test("GET: returns tunables for all ids") {
