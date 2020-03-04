@@ -22,7 +22,7 @@ class HookTestTwitterServer(hooks: Seq[Hook]) extends TwitterServer {
   /* ensure enough time to close resources */
   override val defaultCloseGracePeriod: Duration = 30.seconds
 
-  val bootstrapSeq: mutable.MutableList[Symbol] = mutable.MutableList.empty[Symbol]
+  val bootstrapSeq: mutable.ArrayBuffer[Symbol] = mutable.ArrayBuffer.empty[Symbol]
 
   def main(): Unit = {
     bootstrapSeq += 'Main

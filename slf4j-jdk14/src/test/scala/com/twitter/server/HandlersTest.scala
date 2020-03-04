@@ -13,7 +13,7 @@ import scala.collection.mutable
 class TestTwitterServer extends TwitterServer {
   override val defaultAdminPort = 0
 
-  val bootstrapSeq: mutable.MutableList[Symbol] = mutable.MutableList.empty[Symbol]
+  val bootstrapSeq: mutable.ArrayBuffer[Symbol] = mutable.ArrayBuffer.empty[Symbol]
 
   def main(): Unit = {
     bootstrapSeq += 'Main

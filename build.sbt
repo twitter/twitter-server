@@ -82,7 +82,7 @@ lazy val sharedSettings = Seq(
   version := releaseVersion,
   organization := "com.twitter",
   scalaVersion := "2.12.8",
-  crossScalaVersions := Seq("2.11.12", "2.12.8"),
+  crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.1"),
   fork in Test := true, // We have to fork to get the JavaOptions
   libraryDependencies ++= Seq(
     "org.scalacheck" %% "scalacheck" % "1.14.0" % "test",

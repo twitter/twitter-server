@@ -5,10 +5,26 @@ import com.twitter.finagle.stats.{InMemoryStatsReceiver, StatEntry, StatsRegistr
 import com.twitter.server.util.MetricSource
 import com.twitter.util.{Await, Duration}
 import java.util.concurrent.TimeUnit
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import org.scalatest.FunSuite
+
 import scala.collection.mutable
 
+object MetricTypeQueryHandlerTest {
+  // Needs to be in companion object because of Jackson. We use `Set` to avoid ordering issues here.
+  case class Response(latched: Boolean, metrics: Set[Metric])
+  case class Metric(name: String, kind: String)
+}
+
 class MetricTypeQueryHandlerTest extends FunSuite {
+  import MetricTypeQueryHandlerTest._
+
+  private[this] val mapper = new ObjectMapper with ScalaObjectMapper {
+    registerModule(DefaultScalaModule)
+  }
 
   case class TrialStat(delta: Double, value: Double, metricType: String) extends StatEntry
 
@@ -45,7 +61,7 @@ class MetricTypeQueryHandlerTest extends FunSuite {
   // generate artificial WithHistogramDetails as per HistogramQueryHandlerTest.
   val histos = {
     val sr = new InMemoryStatsReceiver
-    val myStat = sr.stat("baz")
+    val _ = sr.stat("baz")
     sr
   }
 
@@ -140,15 +156,18 @@ class MetricTypeQueryHandlerTest extends FunSuite {
 
   val timeout = Duration(5, TimeUnit.SECONDS)
 
-  // NOTE: these tests assume a specific iteration order over the registries
-  // and HashMaps which IS NOT a guarantee. should these tests begin to fail
-  // due to that, we will need a more robust approach to validation.
-  private[this] def assertJsonResponse(actual: String, expected: String) = {
-    assert(stripWhitespace(actual) == stripWhitespace(expected))
-  }
+  /**
+   * Relying on the ordering of HashMaps is a bad idea and is different between 2.13 and earlier versions.
+   *
+   * This helper will try to deserialize both strings to the given type `T` before comparison, which
+   * avoids the ordering issue.
+   */
+  private[this] def assertJsonResponseFor[T: Manifest](actual: String, expected: String) = {
+    val expectedObj = mapper.readValue[T](expected)
+    val actualObj = mapper.readValue[T](actual)
 
-  private[this] def stripWhitespace(string: String): String =
-    string.filter { case c => !c.isWhitespace }
+    assert(actualObj == expectedObj)
+  }
 
   def testCase(latched: Boolean, request: Request): Unit = {
     if (request == typeRequestNoArg) {
@@ -181,7 +200,7 @@ class MetricTypeQueryHandlerTest extends FunSuite {
           |   "latched" : true,
         """.stripMargin
       test(testName + " when using latched counters") {
-        assertJsonResponse(
+        assertJsonResponseFor[Response](
           responseStart + responseMetrics,
           Await.result(latchedHandler(request), timeout).contentString)
       }
@@ -193,7 +212,7 @@ class MetricTypeQueryHandlerTest extends FunSuite {
           |   "latched" : false,
         """.stripMargin
       test(testName + " when using unlatched counters") {
-        assertJsonResponse(
+        assertJsonResponseFor[Response](
           responseStart + responseMetrics,
           Await.result(unlatchedHandler(request), timeout).contentString)
       }

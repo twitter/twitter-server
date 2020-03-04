@@ -112,7 +112,7 @@ class LoggingHandlerTest extends FunSuite {
   test("displays all loggers when in display all mode") {
     val req = Request(("overridden", "false"))
     val html = Await.result(handler(req), 5.seconds).contentString
-    val loggerNames: Seq[String] = handler.loggers.map(_.getName)
+    val loggerNames: Seq[String] = handler.loggers.map(_.getName).toSeq
 
     for (name <- loggerNames) assert(html.contains(name))
   }

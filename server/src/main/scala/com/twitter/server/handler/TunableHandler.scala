@@ -140,7 +140,7 @@ class TunableHandler private[handler] (registeredIdsFn: () => Map[String, Tunabl
     val tunables = componentsMap.map {
       case (id, components) =>
         val md = currentsMap(id)
-        TunableView(id, md.value.toString, components)
+        TunableView(id, md.value.toString, components.toSeq)
     }.toSeq
 
     TunableMapView(id, tunables)
