@@ -30,19 +30,23 @@ class MetricTypeQueryHandlerTest extends FunSuite {
 
   trait UnlatchedRegistry extends StatsRegistry {
     val latched = false
-    val stats = mutable.Map("foo" -> TrialStat(3, 4, "counter"), "bar" -> TrialStat(3, 4, "gauge"))
+    val stats: mutable.Map[String, TrialStat] =
+      mutable.Map("foo" -> TrialStat(3, 4, "counter"), "bar" -> TrialStat(3, 4, "gauge"))
   }
 
   trait LatchedRegistry extends StatsRegistry {
     val latched = true
-    val stats = mutable.Map("foo" -> TrialStat(3, 4, "counter"), "bar" -> TrialStat(3, 4, "gauge"))
+    val stats: mutable.Map[String, TrialStat] =
+      mutable.Map("foo" -> TrialStat(3, 4, "counter"), "bar" -> TrialStat(3, 4, "gauge"))
   }
 
-  val latchedStatsRegistry = new LatchedRegistry() {
-    override def apply(): Map[String, StatEntry] = stats.toMap
+  val latchedStatsRegistry: LatchedRegistry = new LatchedRegistry() {
+    override def apply(): Map[String, StatEntry] = {
+      stats.toMap
+    }
   }
 
-  val unlatchedStatsRegistry = new UnlatchedRegistry() {
+  val unlatchedStatsRegistry: UnlatchedRegistry = new UnlatchedRegistry() {
     override def apply(): Map[String, StatEntry] = stats.toMap
   }
 
@@ -59,7 +63,7 @@ class MetricTypeQueryHandlerTest extends FunSuite {
   )
 
   // generate artificial WithHistogramDetails as per HistogramQueryHandlerTest.
-  val histos = {
+  val histos: InMemoryStatsReceiver = {
     val sr = new InMemoryStatsReceiver
     val _ = sr.stat("baz")
     sr
@@ -70,18 +74,19 @@ class MetricTypeQueryHandlerTest extends FunSuite {
   private[this] val unlatchedHandler =
     new MetricTypeQueryHandler(unlatchedMetricSource, details = Some(histos))
 
-  val typeRequestNoArg = Request("http://$HOST:$PORT/admin/exp/metric_metadata")
+  val typeRequestNoArg: Request = Request("http://$HOST:$PORT/admin/exp/metric_metadata")
 
-  val typeRequestWithAnArg = Request("http://$HOST:$PORT/admin/exp/metric_metadata?m=bar")
+  val typeRequestWithAnArg: Request = Request("http://$HOST:$PORT/admin/exp/metric_metadata?m=bar")
 
-  val typeRequestWithManyArgs = Request("http://$HOST:$PORT/admin/exp/metric_metadata?m=foo&m=bar")
+  val typeRequestWithManyArgs: Request = Request(
+    "http://$HOST:$PORT/admin/exp/metric_metadata?m=foo&m=bar")
 
-  val typeRequestWithHisto = Request("http://$HOST:$PORT/admin/exp/metric_metadata?m=baz")
+  val typeRequestWithHisto: Request = Request("http://$HOST:$PORT/admin/exp/metric_metadata?m=baz")
 
-  val typeRequestWithHistoAndNon = Request(
+  val typeRequestWithHistoAndNon: Request = Request(
     "http://$HOST:$PORT/admin/exp/metric_metadata?m=foo&m=baz")
 
-  val responseToNoArg =
+  val responseToNoArg: String =
     """
       |   "metrics" : [
       |     {
@@ -100,7 +105,7 @@ class MetricTypeQueryHandlerTest extends FunSuite {
       | }
     """.stripMargin
 
-  val responseToAnArg =
+  val responseToAnArg: String =
     """
       |   "metrics" : [
       |     {
@@ -111,7 +116,7 @@ class MetricTypeQueryHandlerTest extends FunSuite {
       | }
     """.stripMargin
 
-  val responseToManyArgs =
+  val responseToManyArgs: String =
     """
       |   "metrics" : [
       |     {
@@ -126,7 +131,7 @@ class MetricTypeQueryHandlerTest extends FunSuite {
       | }
     """.stripMargin
 
-  val responseToHisto =
+  val responseToHisto: String =
     """
       |   "metrics" : [
       |     {
@@ -137,7 +142,7 @@ class MetricTypeQueryHandlerTest extends FunSuite {
       | }
     """.stripMargin
 
-  val responseToHistoAndNon =
+  val responseToHistoAndNon: String =
     """
       |   "metrics" : [
       |     {
@@ -154,20 +159,7 @@ class MetricTypeQueryHandlerTest extends FunSuite {
 
   val testNameStart = "MetricTypeQueryHandler generates reasonable json for "
 
-  val timeout = Duration(5, TimeUnit.SECONDS)
-
-  /**
-   * Relying on the ordering of HashMaps is a bad idea and is different between 2.13 and earlier versions.
-   *
-   * This helper will try to deserialize both strings to the given type `T` before comparison, which
-   * avoids the ordering issue.
-   */
-  private[this] def assertJsonResponseFor[T: Manifest](actual: String, expected: String) = {
-    val expectedObj = mapper.readValue[T](expected)
-    val actualObj = mapper.readValue[T](actual)
-
-    assert(actualObj == expectedObj)
-  }
+  val timeout: Duration = Duration(5, TimeUnit.SECONDS)
 
   def testCase(latched: Boolean, request: Request): Unit = {
     if (request == typeRequestNoArg) {
@@ -200,7 +192,8 @@ class MetricTypeQueryHandlerTest extends FunSuite {
           |   "latched" : true,
         """.stripMargin
       test(testName + " when using latched counters") {
-        assertJsonResponseFor[Response](
+        JsonHelper.assertJsonResponseFor[Response](
+          mapper,
           responseStart + responseMetrics,
           Await.result(latchedHandler(request), timeout).contentString)
       }
@@ -212,7 +205,8 @@ class MetricTypeQueryHandlerTest extends FunSuite {
           |   "latched" : false,
         """.stripMargin
       test(testName + " when using unlatched counters") {
-        assertJsonResponseFor[Response](
+        JsonHelper.assertJsonResponseFor[Response](
+          mapper,
           responseStart + responseMetrics,
           Await.result(unlatchedHandler(request), timeout).contentString)
       }
@@ -221,15 +215,15 @@ class MetricTypeQueryHandlerTest extends FunSuite {
   }
 
   Seq(
-    testCase(true, typeRequestNoArg),
-    testCase(true, typeRequestWithManyArgs),
-    testCase(true, typeRequestWithAnArg),
-    testCase(true, typeRequestWithHisto),
-    testCase(true, typeRequestWithHistoAndNon),
-    testCase(false, typeRequestNoArg),
-    testCase(false, typeRequestWithManyArgs),
-    testCase(false, typeRequestWithAnArg),
-    testCase(false, typeRequestWithHisto),
-    testCase(false, typeRequestWithHistoAndNon)
+    testCase(latched = true, typeRequestNoArg),
+    testCase(latched = true, typeRequestWithManyArgs),
+    testCase(latched = true, typeRequestWithAnArg),
+    testCase(latched = true, typeRequestWithHisto),
+    testCase(latched = true, typeRequestWithHistoAndNon),
+    testCase(latched = false, typeRequestNoArg),
+    testCase(latched = false, typeRequestWithManyArgs),
+    testCase(latched = false, typeRequestWithAnArg),
+    testCase(latched = false, typeRequestWithHisto),
+    testCase(latched = false, typeRequestWithHistoAndNon)
   )
 }

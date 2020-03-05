@@ -29,7 +29,7 @@ class TunableHandlerTest extends FunSuite {
     assert(Await.result(resp, 1.second).status == Status.MethodNotAllowed)
   }
 
-  def testJsonErrorHandling(method: Method) = {
+  def testJsonErrorHandling(method: Method): Unit = {
     test(method + ": Returns response with error if Media-Type is not JSON") {
       val handler = new TunableHandler
       val req = Request(method, "/")
@@ -48,7 +48,7 @@ class TunableHandlerTest extends FunSuite {
     }
   }
 
-  def testIdErrorHandling(method: Method) = {
+  def testIdErrorHandling(method: Method): Unit = {
     test(method + ": Returns response with Status.NotFound if id in path is not registered") {
       val handler = new TunableHandler
       val req = Request(method, "/admin/tunables/foo")
@@ -58,19 +58,6 @@ class TunableHandlerTest extends FunSuite {
       assert(resp.contentString.contains("TunableMap not found for id: foo"))
       assert(resp.status == Status.NotFound)
     }
-  }
-
-  /**
-   * Relying on the ordering of HashMaps is a bad idea and is different between 2.13 and earlier versions.
-   *
-   * This helper will try to deserialize both strings to the given type `T` before comparison, which
-   * avoids the ordering issue.
-   */
-  private[this] def assertJsonResponseFor[T: Manifest](actual: String, expected: String) = {
-    val expectedObj = mapper.readValue[T](expected)
-    val actualObj = mapper.readValue[T](actual)
-
-    assert(actualObj == expectedObj)
   }
 
   testIdErrorHandling(Method.Get)
@@ -126,7 +113,7 @@ class TunableHandlerTest extends FunSuite {
         |    }
         |  ]
         |}""".stripMargin
-    assertJsonResponseFor[Response](resp.contentString, expected)
+    JsonHelper.assertJsonResponseFor[Response](mapper, resp.contentString, expected)
   }
 
   test("GET: returns tunables for all ids") {
@@ -195,7 +182,7 @@ class TunableHandlerTest extends FunSuite {
         |  ]
         |}""".stripMargin
     val resp = handler(req)
-    assert(map(TunableMap.Key[String]("test_id"))() == Some("hello"))
+    assert(map(TunableMap.Key[String]("test_id"))().contains("hello"))
     assert(Await.result(resp, 1.second).status == Status.Ok)
   }
 
@@ -216,9 +203,9 @@ class TunableHandlerTest extends FunSuite {
         |     }
         |  ]
         |}""".stripMargin
-    assert(map(key)() == Some("hello"))
+    assert(map(key)().contains("hello"))
     val resp = handler(req)
-    assert(map(key)() == Some("goodbye"))
+    assert(map(key)().contains("goodbye"))
     assert(Await.result(resp, 1.second).status == Status.Ok)
   }
 
@@ -240,11 +227,11 @@ class TunableHandlerTest extends FunSuite {
         |     }
         |  ]
         |}""".stripMargin
-    assert(map(key1)() == Some("hello"))
-    assert(map(key2)() == Some("i'd better stick around"))
+    assert(map(key1)().contains("hello"))
+    assert(map(key2)().contains("i'd better stick around"))
     val resp = handler(req)
-    assert(map(key1)() == Some("goodbye"))
-    assert(map(key2)() == Some("i'd better stick around"))
+    assert(map(key1)().contains("goodbye"))
+    assert(map(key2)().contains("i'd better stick around"))
     assert(Await.result(resp, 1.second).status == Status.Ok)
   }
 
@@ -266,7 +253,7 @@ class TunableHandlerTest extends FunSuite {
         |  ]
         |}""".stripMargin
     val resp = handler(req)
-    assert(map(TunableMap.Key[String]("test_id"))() == None)
+    assert(map(key)().isEmpty)
     assert(Await.result(resp, 1.second).status == Status.Ok)
   }
 
@@ -288,11 +275,11 @@ class TunableHandlerTest extends FunSuite {
         |     }
         |  ]
         |}""".stripMargin
-    assert(map(key1)() == Some("hello"))
-    assert(map(key2)() == Some("i'd better stick around"))
+    assert(map(key1)().contains("hello"))
+    assert(map(key2)().contains("i'd better stick around"))
     val resp = handler(req)
-    assert(map(key1)() == None)
-    assert(map(key2)() == Some("i'd better stick around"))
+    assert(map(key1)().isEmpty)
+    assert(map(key2)().contains("i'd better stick around"))
     assert(Await.result(resp, 1.second).status == Status.Ok)
   }
 }

@@ -32,23 +32,8 @@ class RegistryHandlerTest extends FunSuite {
     assert(actual == expected)
   }
 
-  /**
-   * Relying on the ordering of HashMaps is a bad idea and is different between 2.13 and earlier versions.
-   *
-   * This helper will try to deserialize both strings to the given type `T` before comparison, which
-   * avoids the ordering issue.
-   */
-  private[this] def assertJsonResponseFor[T: Manifest](filter: Option[String], expected: String) = {
-    val actual = stripWhitespace(handler.jsonResponse(filter))
-
-    val expectedObj = mapper.readValue[T](expected)
-    val actualObj = mapper.readValue[T](actual)
-
-    assert(actualObj == expectedObj)
-  }
-
   private[this] def stripWhitespace(string: String): String =
-    string.filter { case c => !c.isWhitespace }
+    string.filterNot(_.isWhitespace)
 
   test("RegistryHandler generates reasonable json") {
     val simple = new SimpleRegistry
@@ -64,11 +49,18 @@ class RegistryHandlerTest extends FunSuite {
     GlobalRegistry.withRegistry(filterRegistry) {
       type Response = Map[String, Object]
 
-      assertJsonResponseFor[Response](Some("oof"), """{"registry":{"oof":"gah"}}""")
-      assertJsonResponseFor[Response](
-        Some("foo"),
+      JsonHelper.assertJsonResponseFor[Response](
+        mapper,
+        stripWhitespace(handler.jsonResponse(Some("oof"))),
+        """{"registry":{"oof":"gah"}}""")
+      JsonHelper.assertJsonResponseFor[Response](
+        mapper,
+        stripWhitespace(handler.jsonResponse(Some("foo"))),
         """{"registry":{"foo":{"bar":"baz","qux":"quux"}}}""")
-      assertJsonResponseFor[Response](Some("foo/bar"), """{"registry":{"foo":{"bar":"baz"}}}""")
+      JsonHelper.assertJsonResponseFor[Response](
+        mapper,
+        stripWhitespace(handler.jsonResponse(Some("foo/bar"))),
+        """{"registry":{"foo":{"bar":"baz"}}}""")
     }
   }
 
