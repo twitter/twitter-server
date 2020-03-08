@@ -1,40 +1,27 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>HTTP Admin interface &#8212; TwitterServer 20.1.0 documentation</title>
-    
+    <meta charset="utf-8" />
+    <title>HTTP Admin interface &#8212; TwitterServer 20.3.0 documentation</title>
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '20.1.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="TwitterServer 20.1.0 documentation" href="index.html" />
     <link rel="next" title="Using TwitterServer from Java" href="Java.html" />
     <link rel="prev" title="Features" href="Features.html" />
    
   
   <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
 
-  </head>
-  <body role="document">
+  </head><body>
   
   
 
@@ -65,22 +52,22 @@
 for diagnostics, profiling, and more.
 It binds to the port defined by the <a class="reference internal" href="Features.html#id1"><span class="std std-ref">flag</span></a>
 <cite>-admin.port</cite> and uses port 9990 by default.</p>
-<p>Visit <cite>/admin</cite> on your service&#8217;s admin port in a web browser to see what is
+<p>Visit <cite>/admin</cite> on your service’s admin port in a web browser to see what is
 available.</p>
 <img alt="_images/intro.png" src="_images/intro.png" />
 <p>TwitterServer defines a series of default endpoints grouped into a variety
 of categories.</p>
 <ul class="simple">
-<li><a class="reference internal" href="#admin-info"><span class="std std-ref">Process Info</span></a></li>
-<li><a class="reference internal" href="#admin-utilities"><span class="std std-ref">Utilities</span></a></li>
-<li><a class="reference internal" href="#admin-metrics"><span class="std std-ref">Metrics</span></a></li>
-<li><a class="reference internal" href="#admin-profile"><span class="std std-ref">Profiling</span></a></li>
-<li><a class="reference internal" href="#admin-clients"><span class="std std-ref">Downstream Clients</span></a></li>
-<li><a class="reference internal" href="#admin-servers"><span class="std std-ref">Listening Servers</span></a></li>
+<li><p><a class="reference internal" href="#admin-info"><span class="std std-ref">Process Info</span></a></p></li>
+<li><p><a class="reference internal" href="#admin-utilities"><span class="std std-ref">Utilities</span></a></p></li>
+<li><p><a class="reference internal" href="#admin-metrics"><span class="std std-ref">Metrics</span></a></p></li>
+<li><p><a class="reference internal" href="#admin-profile"><span class="std std-ref">Profiling</span></a></p></li>
+<li><p><a class="reference internal" href="#admin-clients"><span class="std std-ref">Downstream Clients</span></a></p></li>
+<li><p><a class="reference internal" href="#admin-servers"><span class="std std-ref">Listening Servers</span></a></p></li>
 </ul>
 <div class="section" id="process-info">
 <h2>Process Info<a class="headerlink" href="#process-info" title="Permalink to this headline">¶</a></h2>
-<p id="admin-info">Endpoints that provide insights into your service&#8217;s configuration and usage.</p>
+<p id="admin-info">Endpoints that provide insights into your service’s configuration and usage.</p>
 <div class="section" id="admin-lint">
 <h3>/admin/lint<a class="headerlink" href="#admin-lint" title="Permalink to this headline">¶</a></h3>
 <p>Runs and displays the results for all registered linters to check for various
@@ -101,11 +88,11 @@ including the client stack, server stack, flags, service loader values,
 system properties, environment variables, build properties and more.</p>
 <img alt="_images/registry.png" src="_images/registry.png" />
 <p>The HTTP request parameter <cite>filter</cite> allows for simple filtering of the returned data.
-The value takes the form &#8220;path/to/data&#8221; and returns registry entries whose prefix
+The value takes the form “path/to/data” and returns registry entries whose prefix
 matches the parameter. A glob, <cite>*</cite>, can be used to match any component of the path.
-For example, using &#8220;filter=registry/server/http&#8221; will output all Finagle Http servers.
-Using &#8220;filter=registry/client/*/user_service&#8221; would output all Finagle clients with
-a label of &#8220;user_service&#8221; regardless of protocol.</p>
+For example, using “filter=registry/server/http” will output all Finagle Http servers.
+Using “filter=registry/client/*/user_service” would output all Finagle clients with
+a label of “user_service” regardless of protocol.</p>
 <p>Due to the usage of <cite>/</cite> as a delimiter, it means you cannot match components
 containing a <cite>/</cite>. The choice of <cite>*</cite> as a glob also means you cannot match registry
 components with the exact value of <cite>*</cite>. For these use cases, there is the
@@ -119,7 +106,7 @@ and current status.</p>
 <p>The HTTP request parameter <cite>label</cite> allows for filtering down to a client
 whose label matches that.</p>
 <p>Example JSON output:</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>{
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{
   &quot;clients&quot; : [
     {
       &quot;label&quot; : &quot;cool_service&quot;,
@@ -144,7 +131,7 @@ whose label matches that.</p>
 <h3>/admin/server_info<a class="headerlink" href="#admin-server-info" title="Permalink to this headline">¶</a></h3>
 <p>Return build information about this server.
 See <cite>/admin/registry.json</cite> for this in addition to other details.</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>{
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{
   &quot;name&quot; : &quot;myserver&quot;,
   &quot;version&quot; : &quot;1.0.0-SNAPSHOT&quot;,
   &quot;build&quot; : &quot;20130221-105425&quot;,
@@ -184,13 +171,13 @@ each logger can also be modified on-the-fly.</p>
 </div>
 <div class="section" id="admin-toggles">
 <h3>/admin/toggles<a class="headerlink" href="#admin-toggles" title="Permalink to this headline">¶</a></h3>
-<p>See and modify the server&#8217;s in-memory mutable <cite>com.twitter.finagle.toggle.Toggles</cite>.</p>
+<p>See and modify the server’s in-memory mutable <cite>com.twitter.finagle.toggle.Toggles</cite>.</p>
 <p><cite>GET</cite> requests show the current state of all <cite>StandardToggleMap StandardToggleMaps</cite>.
 Requests should be of the form <cite>/admin/toggles{/$libraryName}{/$id}</cite>.
 Note that the library name and toggle id components are optional and allow
 for filtering the output on those constraints.
 The output is JSON and it looks roughly like:</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>{
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{
   &quot;libraries&quot;: [
     {
       &quot;libraryName&quot; : &quot;$libraryName&quot;,
@@ -219,8 +206,8 @@ The output is JSON and it looks roughly like:</p>
 </div>
 <p>There will be a hash for each library registered with
 <cite>com.twitter.finagle.toggle.StandardToggleMap</cite>. For each <cite>Toggle</cite>
-the &#8220;current&#8221; hash shows the current configuration while the
-&#8220;components&#8221; array has a hash per <cite>ToggleMap</cite> source. These
+the “current” hash shows the current configuration while the
+“components” array has a hash per <cite>ToggleMap</cite> source. These
 are ordered by evaluation order and as such, sources earlier in a
 component array are used first.</p>
 <p><cite>PUT</cite> requests allow for updates/creation of the mutable <cite>Toggles</cite>
@@ -232,10 +219,10 @@ must be set as well.</p>
 </div>
 <div class="section" id="admin-tunables">
 <h3>/admin/tunables<a class="headerlink" href="#admin-tunables" title="Permalink to this headline">¶</a></h3>
-<p>See and modify the server&#8217;s in-memory mutable <cite>com.twitter.util.tunable.Tunables</cite>.</p>
+<p>See and modify the server’s in-memory mutable <cite>com.twitter.util.tunable.Tunables</cite>.</p>
 <p><cite>GET</cite> requests to <cite>/admin/tunables</cite> show the current state of all registered
 <cite>StandardTunableMap StandardTunableMaps</cite>. The returned JSON is of the form:</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>[
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[
   {
     &quot;id&quot; : &quot;$id&quot;,
     &quot;tunables&quot; : [
@@ -263,7 +250,7 @@ registered for <cite>$id</cite>.</p>
 and should have a JSON body in the same format as a <cite>Tunable</cite> configuration file,
 detailed in
 <a class="reference external" href="https://github.com/twitter/util/blob/master/util-tunable/src/main/scala/com/twitter/util/tunable/JsonTunableMapper.scala">JsonTunableMapper</a>:</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>{
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{
   &quot;tunables&quot;:
     [
        {
@@ -279,7 +266,7 @@ detailed in
 <p>For a <cite>PUT</cite> request, these <cite>Tunables</cite> will be updated or added. Note that <cite>PUT</cite> requests
 will <em>not</em> cause any existing <cite>Tunables</cite> to be removed.</p>
 <p>For a <cite>DELETE</cite> request, these <cite>Tunables</cite> will cleared from the <cite>TunableMap</cite>. The <cite>Tunables</cite> are keyed
-by &#8220;id&#8221; and &#8220;type&#8221;; the &#8220;value&#8221; for each of <cite>Tunables</cite> to delete can be any valid value for this
+by “id” and “type”; the “value” for each of <cite>Tunables</cite> to delete can be any valid value for this
 <cite>Tunable</cite>. Because the value of a <cite>Tunable</cite> is the result of a composition of <cite>TunableMaps</cite>
 (see <a class="reference external" href="https://github.com/twitter/finagle/blob/master/finagle-tunable/src/main/scala/com/twitter/finagle/tunable/StandardTunableMap.scala">StandardTunableMap</a>), deleting an in-memory Tunable will cause the value from the
 composition of the other TunableMaps to be used.</p>
@@ -287,7 +274,7 @@ composition of the other TunableMaps to be used.</p>
 </div>
 <div class="section" id="metrics">
 <h2>Metrics<a class="headerlink" href="#metrics" title="Permalink to this headline">¶</a></h2>
-<p id="admin-metrics">Endpoints regarding your service&#8217;s metrics. The <a class="reference external" href="https://twitter.github.io/finagle/guide/Metrics.html">Finagle User Guide</a> explains what
+<p id="admin-metrics">Endpoints regarding your service’s metrics. The <a class="reference external" href="https://twitter.github.io/finagle/guide/Metrics.html">Finagle User Guide</a> explains what
 many of them represent.</p>
 <div class="section" id="id1">
 <h3>/admin/metrics<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
@@ -303,17 +290,17 @@ value changes over time.</p>
 <p>If you know the exact name of the metric that you would like to watch, you can
 use a fragment (named anchor) within the url to navigate directly to viewing
 that specific metric.</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>/admin/metrics#mediainfo/mux/failuredetector/ping
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/admin/metrics#mediainfo/mux/failuredetector/ping
 </pre></div>
 </div>
 <p>If you would like to download data for an individual metric instead, you may use
 the <cite>m</cite> request parameter with the full metric name. The response returned will be
 JSON and include the name, delta (change since the metric was last sampled), and
 value (instantaneous value) for the specific metric.</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>/admin/metrics?m=mediainfo/mux/failuredetector/ping
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/admin/metrics?m=mediainfo/mux/failuredetector/ping
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre><span></span>[
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[
   {
     &quot;name&quot; : &quot;mediainfo/mux/failuredetector/ping&quot;,
     &quot;delta&quot; : 3560.0,
@@ -323,10 +310,10 @@ value (instantaneous value) for the specific metric.</p>
 </pre></div>
 </div>
 <p>You may specify as many <cite>m</cite> parameters as you like, one fore each metric you would like to retrieve.</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>/admin/metrics?m=exceptions&amp;m=jvm/uptime
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/admin/metrics?m=exceptions&amp;m=jvm/uptime
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre><span></span>[
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[
   {
     &quot;name&quot; : &quot;jvm/uptime&quot;,
     &quot;delta&quot; : 8.3826464E7,
@@ -353,7 +340,7 @@ See the <a class="reference internal" href="Features.html#metrics-label"><span c
 <div class="section" id="admin-histograms">
 <h3>/admin/histograms<a class="headerlink" href="#admin-histograms" title="Permalink to this headline">¶</a></h3>
 <p>Visualize and download histogram-style metrics.  The metrics endpoint exposes a
-summary of the histogram, but it doesn&#8217;t expose the full histogram.  The full
+summary of the histogram, but it doesn’t expose the full histogram.  The full
 histogram can be useful for seeing the different modes of your metric, which often
 represent different states of your program.</p>
 <p>This endpoint is available when you are using the <cite>finagle-stats</cite> library.
@@ -388,7 +375,7 @@ respectively.</p>
 <div class="section" id="admin-contention">
 <h3>/admin/contention<a class="headerlink" href="#admin-contention" title="Permalink to this headline">¶</a></h3>
 <p>Show call stacks of blocked and waiting threads.</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>$ curl localhost:9990/admin/contention
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ curl localhost:9990/admin/contention
 Blocked:
 &quot;util-jvm-timer-1&quot; Id=11 TIMED_WAITING on java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject@33aac3c
   at sun.misc.Unsafe.park(Native Method)
@@ -410,7 +397,7 @@ Blocked:
 The process will be profiled for 10 seconds at a frequency of 100 hz. These
 values can be controlled via HTTP request parameters <cite>seconds</cite> and <cite>hz</cite>
 respectively.</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>$ curl -s localhost:9990/admin/pprof/profile &gt; /tmp/cpu_profiling
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ curl -s localhost:9990/admin/pprof/profile &gt; /tmp/cpu_profiling
 $ pprof --text /tmp/cpu_profiling
 Using local file /tmp/cpu_profiling.
 Using local file /tmp/cpu_profiling.
@@ -430,7 +417,7 @@ Total: 83 samples
 <h3>/admin/pprof/heap<a class="headerlink" href="#admin-pprof-heap" title="Permalink to this headline">¶</a></h3>
 <p>Returns a heap profile computed by the <a class="reference external" href="https://github.com/mariusae/heapster">heapster agent</a>.  The output is in
 <a class="reference external" href="https://github.com/gperftools/gperftools">pprof</a> format.</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>$ java -agentlib:heapster -jar target/myserver-1.0.0-SNAPSHOT.jar
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ java -agentlib:heapster -jar target/myserver-1.0.0-SNAPSHOT.jar
 $ pprof /tmp/heapster_profile
 Welcome to pprof!  For help, type &#39;help&#39;.
 (pprof) top
@@ -485,7 +472,7 @@ if available.</p>
   <li><a href="https://github.com/twitter/twitter-server">TwitterServer on GitHub</a></li>
   <li><a href="https://github.com/twitter/twitter-server/issues">Issue Tracker</a></li>
 </ul>
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">HTTP Admin interface</a><ul>
 <li><a class="reference internal" href="#process-info">Process Info</a><ul>
