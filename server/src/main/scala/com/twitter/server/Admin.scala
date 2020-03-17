@@ -162,6 +162,13 @@ object Admin {
         includeInIndex = true
       ),
       Route(
+        path = "/admin/metric_metadata.json",
+        handler = new MetricMetadataQueryHandler(),
+        alias = "Metric Metadata",
+        group = Some(Grouping.Metrics),
+        includeInIndex = true
+      ),
+      Route(
         path = Path.Clients,
         handler = new ClientRegistryHandler(Path.Clients),
         alias = "Clients",

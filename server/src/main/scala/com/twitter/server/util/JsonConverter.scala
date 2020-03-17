@@ -13,6 +13,7 @@ object JsonConverter {
     factory.disable(JsonFactory.Feature.USE_THREAD_LOCAL_FOR_BUFFER_RECYCLING)
     val mapper = new ObjectMapper(factory)
       .registerModule(DefaultScalaModule)
+      .registerModule(MetricSchemaJsonModule)
     val printer = new DefaultPrettyPrinter
     printer.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE)
 
