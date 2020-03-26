@@ -51,9 +51,7 @@ class ShutdownHandlerTest extends FunSuite {
   }
 
   test("fail when an invalid grace parameter is specified") {
-    val closer = Closer.mk { _ =>
-      fail()
-    }
+    val closer = Closer.mk { _ => fail() }
     val handler = new ShutdownHandler(closer)
     val rsp = await(handler(Request(Method.Post, "/foo?grace=5")))
     assert(rsp.status == Status.BadRequest)
@@ -62,9 +60,7 @@ class ShutdownHandlerTest extends FunSuite {
 
   test("do not close when given a GET request") {
     val now = Time.now
-    val closer = Closer.mk { deadline =>
-      assert(deadline == now + 1.second)
-    }
+    val closer = Closer.mk { deadline => assert(deadline == now + 1.second) }
     val handler = new ShutdownHandler(closer)
     val rsp = await(handler(Request(Method.Get, "/foo")))
     assert(rsp.status == Status.MethodNotAllowed)

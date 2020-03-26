@@ -8,13 +8,13 @@ val jacksonDatabindVersion = "2.9.10.1"
 val jacksonLibs = Seq(
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
   "com.fasterxml.jackson.core" % "jackson-databind" % jacksonDatabindVersion,
-  "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion exclude("com.google.guava", "guava")
+  "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion exclude ("com.google.guava", "guava")
 )
 val opencensusVersion = "0.19.1"
 val slf4jVersion = "1.7.30"
 
-def util(which: String) = "com.twitter" %% ("util-"+which) % releaseVersion
-def finagle(which: String) = "com.twitter" %% ("finagle-"+which) % releaseVersion
+def util(which: String) = "com.twitter" %% ("util-" + which) % releaseVersion
+def finagle(which: String) = "com.twitter" %% ("finagle-" + which) % releaseVersion
 
 lazy val noPublishSettings = Seq(
   publish := {},
@@ -91,42 +91,35 @@ lazy val sharedSettings = Seq(
     "com.novocode" % "junit-interface" % "0.11" % "test",
     "org.mockito" % "mockito-all" % "1.9.5" % "test"
   ),
-
   ScoverageKeys.coverageHighlighting := true,
-
   ivyXML :=
     <dependencies>
       <exclude org="com.sun.jmx" module="jmxri" />
       <exclude org="com.sun.jdmk" module="jmxtools" />
       <exclude org="javax.jms" module="jms" />
     </dependencies>,
-
   scalacOptions ++= Seq(
     "-target:jvm-1.8",
     "-deprecation",
     "-unchecked",
-    "-feature", "-Xlint",
-    "-encoding", "utf8"
+    "-feature",
+    "-Xlint",
+    "-encoding",
+    "utf8"
   ),
   javacOptions ++= Seq("-Xlint:unchecked", "-source", "1.8", "-target", "1.8"),
   javacOptions in doc := Seq("-source", "1.8"),
-  
   javaOptions ++= Seq(
     "-Djava.net.preferIPv4Stack=true",
     "-XX:+AggressiveOpts",
     "-server"
   ),
-
   javaOptions ++= gcJavaOptions,
-
   javaOptions in Test ++= travisTestJavaOptions,
-
   // This is bad news for things like com.twitter.util.Time
   parallelExecution in Test := false,
-
   // -a: print stack traces for failing asserts
   testOptions += Tests.Argument(TestFrameworks.JUnit, "-a"),
-
   // Sonatype publishing
   publishArtifact in Test := false,
   pomIncludeRepository := { _ => false },
@@ -158,7 +151,7 @@ lazy val sharedSettings = Seq(
     if (version.value.trim.endsWith("SNAPSHOT"))
       Some("snapshots" at nexus + "content/repositories/snapshots")
     else
-      Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+      Some("releases" at nexus + "service/local/staging/deploy/maven2")
   }
 )
 
@@ -179,10 +172,7 @@ lazy val twitterServer = (project in file("server"))
   .enablePlugins(
     ScalaUnidocPlugin
   )
-  .settings(
-    name :=  "twitter-server",
-    moduleName :=  "twitter-server",
-    sharedSettings)
+  .settings(name := "twitter-server", moduleName := "twitter-server", sharedSettings)
   .settings(
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % slf4jVersion,
@@ -199,15 +189,16 @@ lazy val twitterServer = (project in file("server"))
       util("slf4j-jul-bridge"),
       util("tunable")
     ),
-    libraryDependencies ++= jacksonLibs)
+    libraryDependencies ++= jacksonLibs
+  )
 
 lazy val twitterServerOpenCensus = (project in file("opencensus"))
   .enablePlugins(
     ScalaUnidocPlugin
   )
   .settings(
-    name :=  "twitter-server-opencensus",
-    moduleName :=  "twitter-server-opencensus",
+    name := "twitter-server-opencensus",
+    moduleName := "twitter-server-opencensus",
     sharedSettings)
   .settings(
     libraryDependencies ++= Seq(
@@ -216,54 +207,49 @@ lazy val twitterServerOpenCensus = (project in file("opencensus"))
       "io.opencensus" % "opencensus-api" % opencensusVersion,
       "io.opencensus" % "opencensus-contrib-zpages" % opencensusVersion
     ))
-  .dependsOn(
-    twitterServer)
-
+  .dependsOn(twitterServer)
 
 lazy val twitterServerSlf4jJdk14 = (project in file("slf4j-jdk14"))
   .settings(
-    name :=  "twitter-server-slf4j-jdk14",
-    moduleName :=  "twitter-server-slf4j-jdk14",
+    name := "twitter-server-slf4j-jdk14",
+    moduleName := "twitter-server-slf4j-jdk14",
     sharedSettings)
-  .settings(
-    libraryDependencies ++= Seq(
-      "org.slf4j" % "slf4j-api" % slf4jVersion,
-      "org.slf4j" % "slf4j-jdk14" % slf4jVersion,
-      "org.slf4j" % "jcl-over-slf4j" % slf4jVersion,
-      "org.slf4j" % "log4j-over-slf4j" % slf4jVersion))
-  .dependsOn(
-    twitterServer)
+  .settings(libraryDependencies ++= Seq(
+    "org.slf4j" % "slf4j-api" % slf4jVersion,
+    "org.slf4j" % "slf4j-jdk14" % slf4jVersion,
+    "org.slf4j" % "jcl-over-slf4j" % slf4jVersion,
+    "org.slf4j" % "log4j-over-slf4j" % slf4jVersion
+  ))
+  .dependsOn(twitterServer)
 
 lazy val twitterServerSlf4jLog4j12 = (project in file("slf4j-log4j12"))
   .settings(
-    name :=  "twitter-server-slf4j-log4j12",
-    moduleName :=  "twitter-server-slf4j-log4j12",
+    name := "twitter-server-slf4j-log4j12",
+    moduleName := "twitter-server-slf4j-log4j12",
     sharedSettings)
-  .settings(
-    libraryDependencies ++= Seq(
-      "log4j" % "log4j" % "1.2.17" % "provided",
-      "org.slf4j" % "slf4j-api" % slf4jVersion,
-      "org.slf4j" % "slf4j-log4j12" % slf4jVersion,
-      "org.slf4j" % "jcl-over-slf4j" % slf4jVersion,
-      "org.slf4j" % "jul-to-slf4j" % slf4jVersion))
-  .dependsOn(
-    twitterServer)
+  .settings(libraryDependencies ++= Seq(
+    "log4j" % "log4j" % "1.2.17" % "provided",
+    "org.slf4j" % "slf4j-api" % slf4jVersion,
+    "org.slf4j" % "slf4j-log4j12" % slf4jVersion,
+    "org.slf4j" % "jcl-over-slf4j" % slf4jVersion,
+    "org.slf4j" % "jul-to-slf4j" % slf4jVersion
+  ))
+  .dependsOn(twitterServer)
 
 lazy val twitterServerSlf4jLogbackClassic = (project in file("logback-classic"))
   .settings(
-    name :=  "twitter-server-logback-classic",
-    moduleName :=  "twitter-server-logback-classic",
+    name := "twitter-server-logback-classic",
+    moduleName := "twitter-server-logback-classic",
     sharedSettings)
-  .settings(
-    libraryDependencies ++= Seq(
-      "ch.qos.logback" % "logback-classic" % "1.2.3" % "provided",
-      "ch.qos.logback" % "logback-core" % "1.2.3" % "provided",
-      "org.slf4j" % "slf4j-api" % slf4jVersion,
-      "org.slf4j" % "jcl-over-slf4j" % slf4jVersion,
-      "org.slf4j" % "jul-to-slf4j" % slf4jVersion,
-      "org.slf4j" % "log4j-over-slf4j" % slf4jVersion))
-  .dependsOn(
-    twitterServer)
+  .settings(libraryDependencies ++= Seq(
+    "ch.qos.logback" % "logback-classic" % "1.2.3" % "provided",
+    "ch.qos.logback" % "logback-core" % "1.2.3" % "provided",
+    "org.slf4j" % "slf4j-api" % slf4jVersion,
+    "org.slf4j" % "jcl-over-slf4j" % slf4jVersion,
+    "org.slf4j" % "jul-to-slf4j" % slf4jVersion,
+    "org.slf4j" % "log4j-over-slf4j" % slf4jVersion
+  ))
+  .dependsOn(twitterServer)
 
 lazy val twitterServerDoc = (project in file("doc"))
   .enablePlugins(
@@ -275,14 +261,15 @@ lazy val twitterServerDoc = (project in file("doc"))
     sharedSettings,
     Seq(
       scalacOptions in doc ++= Seq("-doc-title", "TwitterServer", "-doc-version", version.value),
-      includeFilter in Sphinx := ("*.html" | "*.png" | "*.js" | "*.css" | "*.gif" | "*.txt")))
-  .configs(DocTest).settings(
-    inConfig(DocTest)(Defaults.testSettings): _*)
+      includeFilter in Sphinx := ("*.html" | "*.png" | "*.js" | "*.css" | "*.gif" | "*.txt")
+    )
+  )
+  .configs(DocTest).settings(inConfig(DocTest)(Defaults.testSettings): _*)
   .settings(
     unmanagedSourceDirectories in DocTest += baseDirectory.value / "src/sphinx/code",
-
     // Make the "test" command run both, test and doctest:test
-    test := Seq(test in Test, test in DocTest).dependOn.value)
+    test := Seq(test in Test, test in DocTest).dependOn.value
+  )
   .dependsOn(twitterServer)
 
 /* Test Configuration for running tests on doc sources */

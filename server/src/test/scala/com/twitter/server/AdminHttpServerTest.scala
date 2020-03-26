@@ -176,9 +176,7 @@ class AdminHttpServerTest extends FunSuite with Eventually with IntegrationPatie
         override def main(): Unit = {
           val p = new Promise[Unit]
           var sawClose = false
-          val drainingClosable = Closable.make { _ =>
-            sawClose = true; p
-          }
+          val drainingClosable = Closable.make { _ => sawClose = true; p }
           closeOnExit(drainingClosable)
           val closeF: Future[Unit] = close(Time.now + 10.seconds)
           assert(sawClose)
@@ -208,9 +206,7 @@ class AdminHttpServerTest extends FunSuite with Eventually with IntegrationPatie
         override protected def exitOnError(throwable: Throwable): Unit = ()
 
         override def main(): Unit = {
-          val drainingClosable = Closable.make { _ =>
-            Future.never
-          }
+          val drainingClosable = Closable.make { _ => Future.never }
           closeOnExit(drainingClosable)
           val closeF: Future[Unit] = close(Time.now + 10.seconds)
           // `drainingClosable` keeps the admin server from shutting down

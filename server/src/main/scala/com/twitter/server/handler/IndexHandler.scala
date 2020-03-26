@@ -16,9 +16,7 @@ class IndexHandler(prefix: String = "/", patterns: Seq[String] = HttpMuxer.patte
     extends Service[Request, Response] {
   def apply(req: Request): Future[Response] = {
     val paths = patterns.filter(_.startsWith(prefix))
-    val links = paths map { p =>
-      s"<a href='$p'>${escapeHtml(p)}</a>"
-    }
+    val links = paths map { p => s"<a href='$p'>${escapeHtml(p)}</a>" }
     if (!expectsHtml(req)) newOk(paths.mkString("\n"))
     else
       newResponse(

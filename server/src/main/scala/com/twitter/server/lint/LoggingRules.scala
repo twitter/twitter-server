@@ -15,9 +15,7 @@ object LoggingRules {
 
   private[lint] def issues(jarPaths: Seq[String]): Seq[Issue] = {
     if (jarPaths.length > 1) {
-      jarPaths.map { jarPath =>
-        Issue(jarName(jarPath))
-      }
+      jarPaths.map { jarPath => Issue(jarName(jarPath)) }
     } else {
       Nil
     }

@@ -27,9 +27,7 @@ object DuplicateLoadServiceBindings {
     if (dupes.isEmpty) {
       Nil
     } else {
-      dupes.map { dupe =>
-        Issue(s"Duplicate for interface: ${dupe.getName}")
-      }.toSeq
+      dupes.map { dupe => Issue(s"Duplicate for interface: ${dupe.getName}") }.toSeq
     }
 
 }

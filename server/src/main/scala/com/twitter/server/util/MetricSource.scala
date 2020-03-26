@@ -17,18 +17,14 @@ private[server] object MetricSource {
  * which allows for stale StatEntries up to `refreshInterval`.
  */
 private[server] class MetricSource(
-  registry: () => Seq[StatsRegistry] = { () =>
-    MetricSource.registry
-  },
+  registry: () => Seq[StatsRegistry] = { () => MetricSource.registry },
   refreshInterval: Duration = 1.second) {
   private[this] var lastRefresh = Time.now - refreshInterval
   private[this] var underlying: Map[String, StatEntry] = Map.empty
 
   private[this] def refresh(): Unit = {
     if (Time.now - lastRefresh > refreshInterval) {
-      val newStats = registry().foldLeft(Map[String, StatEntry]()) { (map, r) =>
-        map ++ r()
-      }
+      val newStats = registry().foldLeft(Map[String, StatEntry]()) { (map, r) => map ++ r() }
       underlying = newStats
       lastRefresh = Time.now
     }

@@ -17,9 +17,7 @@ class HtmlUtilsTest extends FunSuite with ScalaCheckDrivenPropertyChecks {
   }
 
   test("escapeHtml leaves Strings untouched if they do not need escaping") {
-    forAll(Gen.alphaStr) { s =>
-      assert(s == HtmlUtils.escapeHtml(s))
-    }
+    forAll(Gen.alphaStr) { s => assert(s == HtmlUtils.escapeHtml(s)) }
   }
 
   test("escapeHtml escapes Strings if they need escaping") {

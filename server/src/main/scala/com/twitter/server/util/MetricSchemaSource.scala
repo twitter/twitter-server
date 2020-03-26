@@ -32,9 +32,7 @@ private[server] class MetricSchemaSource(
   /** Returns all schemas */
   def schemaList(): Iterable[MetricSchema] = synchronized {
     registry
-      .foldLeft(IndexedSeq[MetricSchema]()) { (seq, r) =>
-        seq ++ r.schemas().values
-      }
+      .foldLeft(IndexedSeq[MetricSchema]()) { (seq, r) => seq ++ r.schemas().values }
   }
 
   /** Returns true if the map contains `key` and false otherwise. */
@@ -45,8 +43,6 @@ private[server] class MetricSchemaSource(
   /** Returns the set of stat keys. */
   def keySet: Set[String] = synchronized {
     registry
-      .foldLeft(Set[String]()) { (set, r) =>
-        set ++ r.schemas().keySet
-      }
+      .foldLeft(Set[String]()) { (set, r) => set ++ r.schemas().keySet }
   }
 }

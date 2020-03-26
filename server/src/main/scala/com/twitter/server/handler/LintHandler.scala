@@ -174,9 +174,7 @@ private object LintHandler {
         .map {
           case (rule, issues) =>
             issues
-              .map { issue =>
-                failedRow(rule, issue)
-              }
+              .map { issue => failedRow(rule, issue) }
               .mkString("")
         }
         .mkString("")

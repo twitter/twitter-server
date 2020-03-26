@@ -46,9 +46,7 @@ object HistogramQueryHandler {
   // For each key return a percentage
   private[server] def pdf(counts: Seq[BucketAndCount]): Seq[BucketAndPercentage] = {
     val count = countPoints(counts)
-    counts.map { v =>
-      BucketAndPercentage(v.lowerLimit, v.upperLimit, v.count.toFloat / count)
-    }
+    counts.map { v => BucketAndPercentage(v.lowerLimit, v.upperLimit, v.count.toFloat / count) }
   }
 
   // For each key return a cumulative percentage

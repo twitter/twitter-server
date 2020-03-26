@@ -46,9 +46,7 @@ private[handler] object AttachedClientsHandler {
                     sessionId = clientConnection.sslSessionInfo.sessionId,
                     cipherSuite = clientConnection.sslSessionInfo.cipherSuite,
                     peerCertificate = clientConnection.sslSessionInfo.peerCertificates.headOption
-                      .map { peerCertificate =>
-                        PeerCertInfo(peerCertificate.getSubjectDN.getName)
-                      }
+                      .map { peerCertificate => PeerCertInfo(peerCertificate.getSubjectDN.getName) }
                   ))
                 }
               )

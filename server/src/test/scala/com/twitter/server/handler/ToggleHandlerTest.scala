@@ -31,12 +31,8 @@ class ToggleHandlerTest extends FunSuite {
     assert(mappings.keySet == libs.libraries.map(_.libraryName).toSet)
 
     // check the empty ToggleMap
-    assert(libs.libraries.forall { lib =>
-      lib.libraryName.startsWith("com.twitter.Empty")
-    })
-    assert(libs.libraries.forall { lib =>
-      lib.toggles.isEmpty
-    })
+    assert(libs.libraries.forall { lib => lib.libraryName.startsWith("com.twitter.Empty") })
+    assert(libs.libraries.forall { lib => lib.toggles.isEmpty })
   }
 
   test("toLibraryToggles") {

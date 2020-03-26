@@ -13,9 +13,7 @@ private[server] object MetricSourceTest {
       def apply() = underlying;
       override val latched: Boolean = false
     }
-    val registry = { () =>
-      Seq(sr)
-    }
+    val registry = { () => Seq(sr) }
     val source = new MetricSource(registry, 1.second)
   }
 }

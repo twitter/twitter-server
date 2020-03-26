@@ -20,9 +20,7 @@ private object ZPagesAdminRoutes {
       def apply(request: Request): Future[Response] = {
         val requestParams =
           request
-            .getParamNames().asScala.map { name =>
-              name -> request.getParam(name)
-            }.toMap.asJava
+            .getParamNames().asScala.map { name => name -> request.getParam(name) }.toMap.asJava
 
         // process in a FuturePool to handle the possibility
         // of zpages having blocking code.

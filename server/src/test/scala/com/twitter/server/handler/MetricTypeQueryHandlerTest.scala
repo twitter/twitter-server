@@ -50,17 +50,13 @@ class MetricTypeQueryHandlerTest extends FunSuite {
     override def apply(): Map[String, StatEntry] = stats.toMap
   }
 
-  val latchedMetricSource = new MetricSource(
-    () => {
-      Seq(latchedStatsRegistry)
-    }
-  )
+  val latchedMetricSource = new MetricSource(() => {
+    Seq(latchedStatsRegistry)
+  })
 
-  val unlatchedMetricSource = new MetricSource(
-    () => {
-      Seq(unlatchedStatsRegistry)
-    }
-  )
+  val unlatchedMetricSource = new MetricSource(() => {
+    Seq(unlatchedStatsRegistry)
+  })
 
   // generate artificial WithHistogramDetails as per HistogramQueryHandlerTest.
   val histos: InMemoryStatsReceiver = {

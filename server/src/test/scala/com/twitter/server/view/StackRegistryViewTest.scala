@@ -28,9 +28,7 @@ private[server] object StackRegistryViewTest {
       new Stack.Module0[Int => Int] {
         val role = Stack.Role("bar")
         val description = "adds 2 to every value."
-        def make(next: Int => Int) = { i =>
-          next(i + 2)
-        }
+        def make(next: Int => Int) = { i => next(i + 2) }
       }
   }
 

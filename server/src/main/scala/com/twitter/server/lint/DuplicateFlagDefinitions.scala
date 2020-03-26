@@ -23,8 +23,6 @@ object DuplicateFlagDefinitions {
     if (dupes.isEmpty) {
       Nil
     } else {
-      dupes.map { dupe =>
-        Issue(s"Duplicate flag named: $dupe")
-      }.toSeq
+      dupes.map { dupe => Issue(s"Duplicate flag named: $dupe") }.toSeq
     }
 }

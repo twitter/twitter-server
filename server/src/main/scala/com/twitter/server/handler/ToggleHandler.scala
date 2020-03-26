@@ -289,14 +289,12 @@ class ToggleHandler private[handler] (registeredLibrariesFn: () => Map[String, T
     val libraryFilter: String => Boolean = parsedPath.libraryName match {
       case Some(name) => _ == name
       case None =>
-        _ =>
-          true
+        _ => true
     }
     val idFilter: String => Boolean = parsedPath.id match {
       case Some(name) => _ == name
       case None =>
-        _ =>
-          true
+        _ => true
     }
 
     val registered = registeredLibrariesFn()
@@ -317,9 +315,7 @@ class ToggleHandler private[handler] (registeredLibrariesFn: () => Map[String, T
 
   private[this] def toLibraryToggles(toggleMap: ToggleMap): Seq[LibraryToggle] = {
     // create a map of id to metadata for faster lookups
-    val idToMetadata = toggleMap.iterator.map { md =>
-      md.id -> md
-    }.toMap
+    val idToMetadata = toggleMap.iterator.map { md => md.id -> md }.toMap
 
     // create a mapping of id to a seq of its components.
     val idToComponents = mutable.Map.empty[String, mutable.ArrayBuffer[Component]]

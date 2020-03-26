@@ -58,9 +58,7 @@ private object ThreadsView {
  */
 private[server] class ThreadsView(all: Seq[ThreadInfo], deadlockedIds: Seq[Long]) {
   private def summary: String = {
-    val filtered = all.filter { info =>
-      deadlockedIds.contains(info.thread.getId)
-    }
+    val filtered = all.filter { info => deadlockedIds.contains(info.thread.getId) }
 
     val deadlockLinks =
       if (filtered.isEmpty) "none"

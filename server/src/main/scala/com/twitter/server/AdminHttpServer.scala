@@ -220,9 +220,7 @@ trait AdminHttpServer { self: App with Stats =>
         muxer.withHandler(route.path, service)
     }
 
-    val endpoints = allRoutes.map { route =>
-      s"\t${route.path} => ${route.handler.toString}"
-    }
+    val endpoints = allRoutes.map { route => s"\t${route.path} => ${route.handler.toString}" }
 
     log.debug(s"AdminHttpServer Muxer endpoints:\n" + endpoints.mkString("\n"))
     adminHttpMuxer.underlying = HttpUtils.combine(Seq(localMuxer, HttpMuxer))
