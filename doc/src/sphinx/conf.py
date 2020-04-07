@@ -32,8 +32,8 @@ html_theme_options = {
 
 html_show_sphinx = False
 
-project = u'TwitterServer'
-copyright = u'{} Twitter, Inc'.format(datetime.datetime.now().year)
+project = 'TwitterServer'
+copyright = '{} Twitter, Inc'.format(datetime.datetime.now().year)
 version = ''
 release = ''
 htmlhelp_basename = "twitter-server"
@@ -55,12 +55,12 @@ pygments_style = 'flask_theme_support.FlaskyStyle'
 try:
     __import__('flask_theme_support')
 except ImportError as e:
-    print '-' * 74
-    print 'Warning: Flask themes unavailable.  Building with default theme'
-    print 'If you want the Flask themes, run this command and build again:'
-    print
-    print '  git submodule update --init'
-    print '-' * 74
+    print('-' * 74)
+    print('Warning: Flask themes unavailable.  Building with default theme')
+    print('If you want the Flask themes, run this command and build again:')
+    print()
+    print('  git submodule update --init')
+    print('-' * 74)
 
     pygments_style = 'tango'
     html_theme = 'default'
