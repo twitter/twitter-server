@@ -15,7 +15,7 @@ scala_library(
         "3rdparty/jvm/io/netty:netty4",
         "3rdparty/jvm/org/slf4j:slf4j-api",
         "finagle/finagle-base-http/src/main/scala",
-        "finagle/finagle-core/src/main/scala",
+        "finagle/finagle-core/src/main",
         "finagle/finagle-http/src/main/scala",
         "finagle/finagle-netty4-http/src/main/scala",
         "finagle/finagle-netty4/src/main/scala",
