@@ -13,7 +13,7 @@ scala_library(
         "3rdparty/jvm/org/slf4j:log4j-over-slf4j",
         "3rdparty/jvm/org/slf4j:slf4j-api",
         "3rdparty/jvm/org/slf4j:slf4j-jdk14",
-        "finagle/finagle-base-http/src/main/scala",
+        "finagle/finagle-base-http/src/main",
         "finagle/finagle-http/src/main/scala",
         "twitter-server/server/src/main/scala",
         "twitter-server/slf4j-jdk14/src/main/resources",

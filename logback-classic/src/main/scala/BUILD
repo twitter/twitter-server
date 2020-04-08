@@ -15,7 +15,7 @@ scala_library(
         "3rdparty/jvm/org/slf4j:jul-to-slf4j",
         "3rdparty/jvm/org/slf4j:log4j-over-slf4j",
         "3rdparty/jvm/org/slf4j:slf4j-api",
-        "finagle/finagle-base-http/src/main/scala",
+        "finagle/finagle-base-http/src/main",
         "finagle/finagle-http/src/main/scala",
         "twitter-server/logback-classic/src/main/resources",
         "twitter-server/server/src/main/scala",
