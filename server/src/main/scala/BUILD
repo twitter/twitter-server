@@ -13,6 +13,7 @@ scala_library(
         "3rdparty/jvm/com/fasterxml/jackson/core:jackson-databind",
         "3rdparty/jvm/com/fasterxml/jackson/module:jackson-module-scala",
         "3rdparty/jvm/io/netty:netty4",
+        "3rdparty/jvm/io/netty:netty4-codec-http",
         "3rdparty/jvm/org/slf4j:slf4j-api",
         "finagle/finagle-base-http/src/main",
         "finagle/finagle-core/src/main",
