@@ -3,11 +3,10 @@ import scoverage.ScoverageKeys
 // All Twitter library releases are date versioned as YY.MM.patch
 val releaseVersion = "20.5.0-SNAPSHOT"
 
-val jacksonVersion = "2.9.9"
-val jacksonDatabindVersion = "2.9.10.1"
+val jacksonVersion = "2.11.0"
 val jacksonLibs = Seq(
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
-  "com.fasterxml.jackson.core" % "jackson-databind" % jacksonDatabindVersion,
+  "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion exclude ("com.google.guava", "guava")
 )
 val opencensusVersion = "0.19.1"
