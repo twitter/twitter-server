@@ -36,7 +36,7 @@ object AdvancedServer extends TwitterServer {
     }
   }
 
-  def main() {
+  def main(): Unit = {
     // We could create a new http server but in this case we use the
     // one already started for /admin/* endpoints.
     // The `TwitterServer` trait exposes an `adminHttpServer` that serve all routes
