@@ -358,19 +358,25 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails)
                 htmlResponse(query)
 
               case Some("raw") =>
-                jsonResponse(query, { counts: Seq[BucketAndCount] =>
-                  deliverData(Map(query -> counts), identity)
-                })
+                jsonResponse(
+                  query,
+                  { counts: Seq[BucketAndCount] =>
+                    deliverData(Map(query -> counts), identity)
+                  })
 
               case Some("pdf") =>
-                jsonResponse(query, { counts: Seq[BucketAndCount] =>
-                  deliverData(Map(query -> counts), x => pdf(x))
-                })
+                jsonResponse(
+                  query,
+                  { counts: Seq[BucketAndCount] =>
+                    deliverData(Map(query -> counts), x => pdf(x))
+                  })
 
               case Some("cdf") =>
-                jsonResponse(query, { counts: Seq[BucketAndCount] =>
-                  deliverData(Map(query -> counts), x => cdf(x))
-                })
+                jsonResponse(
+                  query,
+                  { counts: Seq[BucketAndCount] =>
+                    deliverData(Map(query -> counts), x => cdf(x))
+                  })
 
               case _ =>
                 newResponse(

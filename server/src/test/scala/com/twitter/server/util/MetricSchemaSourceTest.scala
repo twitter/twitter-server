@@ -79,7 +79,8 @@ class MetricSchemaSourceTest extends FunSuite {
     assert(emptyMetricSchemaSource.schemaList() == Seq())
   }
 
-  test("contains accurately reflect the presence or absence of a Metric from the MetricSchema map") {
+  test(
+    "contains accurately reflect the presence or absence of a Metric from the MetricSchema map") {
     assert(metricSchemaSource.contains("my/cool/counter"))
     assert(!metricSchemaSource.contains("my/dull/counter"))
     assert(metricSchemaSource.contains("my/only/histo"))

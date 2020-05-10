@@ -43,7 +43,8 @@ private object ClientRegistryHandler {
                             data-toggle="tooltip" data-placement="top"
                             class="conn-trouble btn-xs btn-default">
                             <span class="glyphicon glyphicon-exclamation-sign"
-                            aria-hidden="true"></span> ${escapeHtml(unavailable.toString)} unavailable endpoint(s)</a>"""
+                            aria-hidden="true"></span> ${escapeHtml(
+          unavailable.toString)} unavailable endpoint(s)</a>"""
       }}
                     <hr/>
                     <div class="row">
