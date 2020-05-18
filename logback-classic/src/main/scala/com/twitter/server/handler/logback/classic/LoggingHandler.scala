@@ -4,9 +4,8 @@ import ch.qos.logback.classic.{Level, Logger, LoggerContext}
 import com.twitter.finagle.http._
 import com.twitter.io.Buf
 import com.twitter.server.Admin.Grouping
-import com.twitter.server.handler.AdminHttpMuxHandler
-import com.twitter.server.util.HttpUtils._
 import com.twitter.server.util.HtmlUtils.escapeHtml
+import com.twitter.server.util.HttpUtils._
 import com.twitter.util.Future
 import com.twitter.util.logging.Logging
 import java.net.URLEncoder
@@ -15,7 +14,10 @@ import org.slf4j.LoggerFactory
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 
-private class LoggingHandler extends AdminHttpMuxHandler with Logging {
+private class LoggingHandler extends com.twitter.server.handler.LoggingHandler with Logging {
+
+  /** Implementation name */
+  override val name: String = "logback-classic"
 
   implicit val loggerOrder: Ordering[Logger] = Ordering.by(_.getName)
   implicit val levelOrder: Ordering[Level] = Ordering.by(_.levelInt)

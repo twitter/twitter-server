@@ -48,4 +48,14 @@ object LoggingRules {
   ) {
     Seq(Issue("No logging handler implementation configured."))
   }
+
+  def multipleLoggingHandlers(names: Seq[String]): Rule = Rule(
+    Category.Configuration,
+    "Multiple Admin logging handler implementations detected",
+    "To properly configure the ability to dynamically change log levels, please specify only " +
+      "one of the supported TwitterServer logging implementations on your " +
+      "classpath: logback-classic, slf4j-log4j12, or slf4j-jdk14."
+  ) {
+    Seq(Issue(s"Multiple logging handler implementations found: ${names.mkString(", ")}"))
+  }
 }

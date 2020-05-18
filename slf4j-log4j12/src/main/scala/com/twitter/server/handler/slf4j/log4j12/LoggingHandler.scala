@@ -3,7 +3,6 @@ package com.twitter.server.handler.slf4j.log4j12
 import com.twitter.finagle.http._
 import com.twitter.io.Buf
 import com.twitter.server.Admin.Grouping
-import com.twitter.server.handler.AdminHttpMuxHandler
 import com.twitter.server.util.HtmlUtils._
 import com.twitter.server.util.HttpUtils._
 import com.twitter.util.Future
@@ -12,7 +11,10 @@ import java.net.URLEncoder
 import org.apache.log4j.{Level, LogManager, Logger}
 import scala.collection.JavaConverters._
 
-private class LoggingHandler extends AdminHttpMuxHandler with Logging {
+private class LoggingHandler extends com.twitter.server.handler.LoggingHandler with Logging {
+
+  /** Implementation name */
+  override def name: String = "slf4j-log412"
 
   implicit val loggerOrder: Ordering[Logger] = Ordering.by(_.getName)
   implicit val levelOrder: Ordering[Level] = Ordering.by(_.toInt)

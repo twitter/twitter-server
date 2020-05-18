@@ -1,6 +1,6 @@
 package com.twitter.server
 
-import com.twitter.app.App
+import com.twitter.app.{App, Flag}
 import com.twitter.finagle.client.ClientRegistry
 import com.twitter.finagle.filter.ServerAdmissionControl
 import com.twitter.finagle.http.{HttpMuxer, Method, Request, Response, Route => HttpRoute}
@@ -11,7 +11,7 @@ import com.twitter.finagle.util.LoadService
 import com.twitter.finagle.{Http, ListeningServer, NullServer, Service}
 import com.twitter.server.Admin.Grouping
 import com.twitter.server.filters.AdminThreadPoolFilter
-import com.twitter.server.handler.{AdminHttpMuxHandler, NoLoggingHandler}
+import com.twitter.server.handler.{AdminHttpMuxHandler, LoggingHandler, NoLoggingHandler}
 import com.twitter.server.lint.LoggingRules
 import com.twitter.server.util.HttpUtils
 import com.twitter.server.view.{IndexView, NotFoundView}
@@ -21,7 +21,6 @@ import com.twitter.util.{Future, Monitor, Time}
 import java.net.InetSocketAddress
 import org.slf4j.LoggerFactory
 import scala.language.reflectiveCalls
-import com.twitter.app.Flag
 
 object AdminHttpServer {
 
@@ -100,6 +99,22 @@ object AdminHttpServer {
   ): Route = {
     Route(path, handler, alias, group, includeInIndex, method)
   }
+
+  /** Convert an AdminHttpMuxHandler to a AdminHttpServer.Route */
+  private def muxHandlerToRoute(handler: AdminHttpMuxHandler): Route = {
+    AdminThreadPoolFilter.isolateRoute(Route.from(handler.route))
+  }
+
+  private val defaultLoggingHandlerRoute: Route =
+    AdminThreadPoolFilter.isolateRoute(
+      Route(
+        path = "/admin/logging",
+        handler = new NoLoggingHandler,
+        alias = "Logging",
+        group = Some(Grouping.Utilities),
+        includeInIndex = true
+      )
+    )
 }
 
 trait AdminHttpServer { self: App with Stats =>
@@ -132,12 +147,27 @@ trait AdminHttpServer { self: App with Stats =>
 
   @volatile protected var adminHttpServer: ListeningServer = NullServer
 
+  // Look up a logging handler, will only be added if a single one is found.
+  private[this] val loggingHandlerRoute: Seq[Route] = {
+    val handlers = LoadService[LoggingHandler]()
+    if (handlers.length > 1) {
+      // add linting issue for multiple logging handlers
+      GlobalRules.get.add(LoggingRules.multipleLoggingHandlers(handlers.map(_.name)))
+      Seq(defaultLoggingHandlerRoute)
+    } else if (handlers.length == 1) {
+      // add the logging handler
+      handlers.map(muxHandlerToRoute)
+    } else {
+      // add linting issue for missing logging handler
+      GlobalRules.get.add(LoggingRules.NoLoggingHandler)
+      Seq(defaultLoggingHandlerRoute)
+    }
+  }
+
   // We start with routes added via load service, note that these will be overridden
   // by any routes added in any call to updateMuxer().
   private[this] val loadServiceRoutes: Seq[Route] =
-    LoadService[AdminHttpMuxHandler]()
-      .map(handler => Route.from(handler.route))
-      .map(AdminThreadPoolFilter.isolateRoute)
+    LoadService[AdminHttpMuxHandler]().map(muxHandlerToRoute) ++ loggingHandlerRoute
 
   private[this] var allRoutes: Seq[Route] = loadServiceRoutes
 
@@ -190,28 +220,7 @@ trait AdminHttpServer { self: App with Stats =>
    */
   protected def configureAdminHttpServer(server: Http.Server): Http.Server = server
 
-  /** Provide a "catch-all" LoggingHandler that displays a message about configuring a logging implementation */
-  private[this] def addLoggingHandler(): Unit = {
-    if (!allRoutes.exists(_.path == "/admin/logging")) {
-      // add linting issue for un-configured logging handler
-      GlobalRules.get.add(LoggingRules.NoLoggingHandler)
-
-      allRoutes = allRoutes ++
-        Seq(
-          Route(
-            path = "/admin/logging",
-            handler = new NoLoggingHandler,
-            alias = "Logging",
-            group = Some(Grouping.Utilities),
-            includeInIndex = true
-          )
-        ).map(AdminThreadPoolFilter.isolateRoute)
-    }
-  }
-
   private[this] def updateMuxer(): Unit = {
-    addLoggingHandler() // ensure there is an /admin/logging handler
-
     // create a service which multiplexes across all endpoints.
     val localMuxer = allRoutes.foldLeft(new HttpMuxer) {
       case (muxer, route) =>

@@ -7,6 +7,11 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+* Make lookup of Admin `LoggingHandler` more resilient when multiple implementations are detected.
+  Now instead of perhaps using an incorrect handler the server will instead emit a lint rule violation
+  and not attempt to install a logging handler ensuring that only when a single `LoggingHandler`
+  is located that the functionality is enabled. ``PHAB_ID=D484965``
+
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 

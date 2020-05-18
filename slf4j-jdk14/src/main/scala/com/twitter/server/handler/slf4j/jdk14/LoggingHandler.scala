@@ -4,7 +4,6 @@ import com.twitter.finagle.http._
 import com.twitter.io.Buf
 import com.twitter.logging.{Level, Logger}
 import com.twitter.server.Admin.Grouping
-import com.twitter.server.handler.AdminHttpMuxHandler
 import com.twitter.server.handler.slf4j.jdk14.LoggingHandler._
 import com.twitter.server.util.HtmlUtils._
 import com.twitter.server.util.HttpUtils._
@@ -83,7 +82,10 @@ private object LoggingHandler {
  * [[com.twitter.logging.Logger]] configuration state and allows for runtime changes
  * via HTTP query strings (?logger=<logger>&level=<level>).
  */
-private class LoggingHandler extends AdminHttpMuxHandler {
+private class LoggingHandler extends com.twitter.server.handler.LoggingHandler {
+
+  /** Implementation name */
+  override val name: String = "slf4j-jdk14"
 
   private[this] val levels = Logger.levels.values.toSeq.sorted(LoggingHandler.levelOrder)
   private[this] val logManager = java.util.logging.LogManager.getLogManager
