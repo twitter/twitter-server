@@ -3,14 +3,15 @@ scala_library(
     compiler_option_sets = ["fatal_warnings"],
     provides = scala_artifact(
         org = "com.twitter",
-        name = "twitter-server-slf4j-jdk14-handler",
+        name = "twitter-server-slf4j-jdk14",
         repo = artifactory,
     ),
     strict_deps = True,
     dependencies = [
-        "finagle/finagle-http/src/main/scala",
         "twitter-server/server/src/main/scala",
-        "util/util-core/src/main/scala/com/twitter/io",
-        "util/util-logging/src/main/scala/com/twitter/logging",
+        "twitter-server/slf4j-jdk14/src/main/scala/com/twitter/server/logging",
+    ],
+    exports = [
+        "twitter-server/slf4j-jdk14/src/main/scala/com/twitter/server/logging",
     ],
 )
