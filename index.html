@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>TwitterServer &#8212; TwitterServer 20.4.0 documentation</title>
+    <title>TwitterServer &#8212; TwitterServer 20.5.0 documentation</title>
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -56,10 +56,10 @@ wired in correctly for use in production at Twitter.</p>
 <pre class="literal-block">&lt;dependency&gt;
   &lt;groupId&gt;com.twitter&lt;/groupId&gt;
   &lt;artifactId&gt;twitter-server_2.12&lt;/artifactId&gt;
-  &lt;version&gt;20.4.0&lt;/version&gt;
+  &lt;version&gt;20.5.0&lt;/version&gt;
 &lt;/dependency&gt;</pre>
 <p>or, with sbt:</p>
-<pre class="literal-block">libraryDependencies += &quot;com.twitter&quot; %% &quot;twitter-server&quot; % &quot;20.4.0&quot;</pre>
+<pre class="literal-block">libraryDependencies += &quot;com.twitter&quot; %% &quot;twitter-server&quot; % &quot;20.5.0&quot;</pre>
 <p>First we’ll need to import a few things into our namespace.</p>
 <div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">com.twitter.finagle.</span><span class="o">{</span><span class="nc">Http</span><span class="o">,</span> <span class="nc">Service</span><span class="o">}</span>
 <span class="k">import</span> <span class="nn">com.twitter.finagle.http.</span><span class="o">{</span><span class="nc">Request</span><span class="o">,</span> <span class="nc">Response</span><span class="o">,</span> <span class="nc">Status</span><span class="o">}</span>
@@ -81,7 +81,7 @@ port 8888. The service bound to this port is a simple hello service.</p>
     <span class="o">}</span>
   <span class="o">}</span>
 
-  <span class="k">def</span> <span class="n">main</span><span class="o">()</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">main</span><span class="o">()</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
     <span class="k">val</span> <span class="n">server</span> <span class="k">=</span> <span class="nc">Http</span><span class="o">.</span><span class="n">serve</span><span class="o">(</span><span class="s">&quot;:8888&quot;</span><span class="o">,</span> <span class="n">service</span><span class="o">)</span>
     <span class="n">onExit</span> <span class="o">{</span>
       <span class="n">server</span><span class="o">.</span><span class="n">close</span><span class="o">()</span>
@@ -194,195 +194,200 @@ environment. See <a class="reference internal" href="Features.html"><span class=
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Changelog.html">Changelog</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Changelog.html#unreleased">Unreleased</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id1">20.4.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id2">20.3.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id3">20.2.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id4">20.1.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#changed">Changed</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id5">19.12.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id6">19.11.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id7">19.10.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id8">19.9.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id9">19.8.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#changes">Changes</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id10">19.7.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id11">Changes</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id12">19.6.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id13">Changes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#new-features">New Features</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id14">19.5.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id15">19.5.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id16">Changes</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id17">19.4.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id18">Changes</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id19">19.3.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id20">19.2.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id21">19.1.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id22">18.12.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id23">18.11.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id24">18.10.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id25">Changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id1">20.5.0</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Changelog.html#runtime-behavior-changes">Runtime Behavior Changes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id26">18.9.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id27">18.9.0</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id2">20.4.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id3">20.4.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id4">20.3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id5">20.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id6">20.1.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#changed">Changed</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id7">19.12.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id8">19.11.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id9">19.10.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id10">19.9.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id11">19.8.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#changes">Changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id12">19.7.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id13">Changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id14">19.6.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id15">Changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#new-features">New Features</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id16">19.5.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id17">19.5.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id18">Changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id19">19.4.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id20">Changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id21">19.3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id22">19.2.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id23">19.1.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id24">18.12.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id25">18.11.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id26">18.10.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id27">Changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Changelog.html#id28">Runtime Behavior Changes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id29">18.8.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id30">New Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id29">18.9.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id30">18.9.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id31">Runtime Behavior Changes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id31">18.7.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id32">18.6.0</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id32">18.8.0</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Changelog.html#id33">New Features</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id34">18.5.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id35">Runtime Behavior Changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id34">18.7.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id35">18.6.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id36">New Features</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id36">18.4.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id37">18.3.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id38">18.2.0</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id37">18.5.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id38">Runtime Behavior Changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id39">18.4.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id40">18.3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id41">18.2.0</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Changelog.html#dependencies">Dependencies</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id39">18.1.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id40">17.12.0</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id42">18.1.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id43">17.12.0</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Changelog.html#bug-fixes">Bug Fixes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id41">17.11.0</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id44">17.11.0</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Changelog.html#breaking-api-changes">Breaking API Changes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id42">17.10.0</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id45">17.10.0</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Changelog.html#release-version-format">Release Version Format</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id43">Runtime Behavior Changes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id44">Breaking API Changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id46">Runtime Behavior Changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id47">Breaking API Changes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id45">1.32.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id46">Breaking API Changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id48">1.32.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id49">Breaking API Changes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id47">1.31.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id48">1.30.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id49">Runtime Behavior Changes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id50">Breaking API Changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id50">1.31.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id51">1.30.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id52">Runtime Behavior Changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id53">Breaking API Changes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id51">1.29.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id52">1.28.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id53">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id54">1.29.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id55">1.28.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id56">Dependencies</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id54">1.27.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id55">New Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id57">1.27.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id58">New Features</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id56">1.26.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id57">Bug Fixes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id59">1.26.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id60">Bug Fixes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id58">1.25.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id59">New Features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id60">Runtime Behavior Changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id61">1.25.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id62">New Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id63">Runtime Behavior Changes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id61">1.24.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id62">1.23.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id63">1.22.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id64">New Features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id65">Runtime Behavior Changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id64">1.24.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id65">1.23.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id66">1.22.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id67">New Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id68">Runtime Behavior Changes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id66">1.21.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id67">Bug Fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id68">New Features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id69">Breaking API Changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id69">1.21.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id70">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id71">New Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id72">Breaking API Changes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id70">1.20.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id71">Runtime Behavior Changes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id72">New Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id73">1.20.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id74">Runtime Behavior Changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id75">New Features</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id73">1.19.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id74">New Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id76">1.19.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id77">New Features</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id75">1.18.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id76">New Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id78">1.18.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id79">New Features</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id77">1.17.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id78">1.16.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id79">1.15.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id80">New Features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id81">Runtime Behavior Changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id80">1.17.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id81">1.16.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id82">1.15.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id83">New Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id84">Runtime Behavior Changes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id82">1.14.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id83">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id85">1.14.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id86">Dependencies</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id84">1.13.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id85">1.12.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id86">1.11.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id87">New Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id87">1.13.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id88">1.12.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id89">1.11.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id90">New Features</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id88">1.10.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id89">New Features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id90">Dependencies</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id91">1.9.0</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id91">1.10.0</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Changelog.html#id92">New Features</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Changelog.html#id93">Dependencies</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id94">1.8.0</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id94">1.9.0</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Changelog.html#id95">New Features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id96">Runtime Behavior Changes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id97">Breaking API Changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id96">Dependencies</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id98">1.7.6</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id99">1.7.3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id100">1.7.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id101">1.7.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id102">1.7.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id103">1.6.3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id104">1.6.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id105">1.6.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id106">1.6.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id107">1.5.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id108">1.5.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id109">1.4.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id110">1.4.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id111">1.3.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id112">1.3.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id113">1.2.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id114">1.1.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id115">1.0.3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id116">1.0.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id117">1.0.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id97">1.8.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id98">New Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id99">Runtime Behavior Changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Changelog.html#id100">Breaking API Changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id101">1.7.6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id102">1.7.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id103">1.7.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id104">1.7.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id105">1.7.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id106">1.6.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id107">1.6.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id108">1.6.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id109">1.6.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id110">1.5.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id111">1.5.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id112">1.4.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id113">1.4.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id114">1.3.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id115">1.3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id116">1.2.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id117">1.1.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id118">1.0.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id119">1.0.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Changelog.html#id120">1.0.1</a></li>
 </ul>
 </li>
 </ul>
