@@ -7,6 +7,9 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+* Allow the `AdminHttpServer` to be started later in the server lifecycle. ``PHAB_ID=D500652``
+
+
 20.5.0
 ------
 

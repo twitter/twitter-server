@@ -3,6 +3,7 @@ package com.twitter.server
 import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.{Http, ListeningServer}
 import com.twitter.finagle.http._
+import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.server.util.HttpUtils._
 import com.twitter.util._
 import java.net.InetSocketAddress
@@ -147,6 +148,98 @@ class AdminHttpServerTest extends FunSuite with Eventually with IntegrationPatie
     }
     server.main(args = Array.empty[String])
     assert(MockClosableHandler.closed)
+    // assert routes are not added when the admin is disabled
+    val adminRoutes = Admin.adminRoutes(NullStatsReceiver, server)
+    assert(server.routes.map(_.path).intersect(adminRoutes.map(_.path)).isEmpty)
+  }
+
+  test("a non eagerly started server does not start") {
+    val server = new TestTwitterServer {
+      override protected[twitter] def eagerlyStartAdminHttpServer: Boolean = false
+      override def main(): Unit = {
+        intercept[Exception] {
+          checkServer(adminHttpServer)
+        }
+
+        val adminServerBoundPort =
+          adminHttpServer.boundAddress.asInstanceOf[InetSocketAddress].getPort
+        assert(adminServerBoundPort == adminBoundAddress.getPort)
+        val client = Http.client.newService(s"localhost:$adminServerBoundPort")
+        intercept[Exception] { // the admin is already closed, this should error
+          Await.result(client(Request(Method.Post, "/quitquitquit")), 1.second)
+        }
+
+        Await.result(close(5.seconds), 7.seconds)
+      }
+    }
+    server.main(args = Array.empty[String])
+    assert(MockClosableHandler.closed)
+    // assert routes are not added as the admin is not started
+    val adminRoutes = Admin.adminRoutes(NullStatsReceiver, server)
+    assert(server.routes.map(_.path).intersect(adminRoutes.map(_.path)).isEmpty)
+  }
+
+  test("a non eagerly started server can be started explicitly") {
+    val server = new TestTwitterServer {
+      override protected[twitter] def eagerlyStartAdminHttpServer: Boolean = false
+
+      premain {
+        // admin server has not yet been started
+        intercept[Exception] {
+          checkServer(adminHttpServer)
+        }
+      }
+
+      override def main(): Unit = {
+        startAdminHttpServer()
+        checkServer(adminHttpServer)
+
+        closeServer(this, adminHttpServer)
+        Await.result(close(5.seconds), 7.seconds)
+      }
+    }
+    server.main(args = Array.empty[String])
+    assert(MockClosableHandler.closed)
+    // assert routes are added
+    val adminRoutes = Admin.adminRoutes(NullStatsReceiver, server)
+    assert(server.routes.map(_.path).intersect(adminRoutes.map(_.path)).nonEmpty)
+  }
+
+  test("a non eagerly started server still doesn't start when disabled") {
+    val server = new TestTwitterServer {
+      override protected def disableAdminHttpServer: Boolean = true
+      override protected[twitter] def eagerlyStartAdminHttpServer: Boolean = false
+
+      premain {
+        // admin server has not yet been started
+        intercept[Exception] {
+          checkServer(adminHttpServer)
+        }
+      }
+
+      override def main(): Unit = {
+        startAdminHttpServer()
+        // still disabled
+        intercept[Exception] {
+          checkServer(adminHttpServer)
+        }
+
+        val adminServerBoundPort =
+          adminHttpServer.boundAddress.asInstanceOf[InetSocketAddress].getPort
+        assert(adminServerBoundPort == adminBoundAddress.getPort)
+        val client = Http.client.newService(s"localhost:$adminServerBoundPort")
+        intercept[Exception] { // the admin is already closed, this should error
+          Await.result(client(Request(Method.Post, "/quitquitquit")), 1.second)
+        }
+
+        Await.result(close(5.seconds), 7.seconds)
+      }
+    }
+    server.main(args = Array.empty[String])
+    assert(MockClosableHandler.closed)
+    // assert routes are not added when the admin is disabled
+    val adminRoutes = Admin.adminRoutes(NullStatsReceiver, server)
+    assert(server.routes.map(_.path).intersect(adminRoutes.map(_.path)).isEmpty)
   }
 
   test("GET does not close server") {
