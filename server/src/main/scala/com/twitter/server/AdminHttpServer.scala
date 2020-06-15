@@ -129,14 +129,6 @@ trait AdminHttpServer { self: App with Stats =>
    */
   protected def disableAdminHttpServer: Boolean = false
 
-  /**
-   * By default the Twitter-Server admin will be started in premain -- however there are cases where
-   * the admin server should be started later. Setting this to false will cause the
-   * admin server to never be started -- thus the [[startAdminHttpServer()]] should be
-   * called manually at the desired time to start the admin server.
-   */
-  protected[twitter] def eagerlyStartAdminHttpServer: Boolean = true
-
   def defaultAdminPort: Int = 9990
   val adminPort: Flag[InetSocketAddress] =
     flag("admin.port", new InetSocketAddress(defaultAdminPort), "Admin http server port")
@@ -228,39 +220,6 @@ trait AdminHttpServer { self: App with Stats =>
    */
   protected def configureAdminHttpServer(server: Http.Server): Http.Server = server
 
-  /** Start the AdminHttpServer if [[disableAdminHttpServer]] equals false. */
-  protected[twitter] def startAdminHttpServer(): Unit = {
-    // we delay this check until we call the premain to ensure the `disableAdminHttpServer` value
-    // has the correct initialization order
-    if (disableAdminHttpServer) {
-      log.info("admin http is disabled and will not be started.")
-    } else {
-      // add the admin routes
-      addAdminRoutes(Admin.adminRoutes(statsReceiver, self))
-
-      log.info(s"Serving admin http on ${adminPort()}")
-      adminHttpServer = configureAdminHttpServer(
-        Http.server
-          .configured(Http.Netty4Impl)
-          .withStatsReceiver(NullStatsReceiver)
-          .withTracer(NullTracer)
-          .withMonitor(new Monitor {
-            def handle(exc: Throwable): Boolean = {
-              log.error(s"Caught exception in AdminHttpServer: $exc", exc)
-              false
-            }
-          })
-          .withLabel(ServerName)
-          // disable admission control, since we want the server to report stats
-          // especially when it's in a bad state.
-          .configured(ServerAdmissionControl.Param(false))
-      ).serve(adminPort(), new NotFoundView andThen adminHttpMuxer)
-
-      closeOnExitLast(adminHttpServer)
-      Library.register(libraryName, Map.empty)
-    }
-  }
-
   private[this] def updateMuxer(): Unit = {
     // create a service which multiplexes across all endpoints.
     val localMuxer = allRoutes.foldLeft(new HttpMuxer) {
@@ -322,7 +281,42 @@ trait AdminHttpServer { self: App with Stats =>
   private[this] def routeToIndexLink(route: Route): IndexView.Link =
     IndexView.Link(route.alias, route.path, route.method)
 
+  private[this] def startServer(): Unit = {
+    val loggingMonitor = new Monitor {
+      def handle(exc: Throwable): Boolean = {
+        log.error(s"Caught exception in AdminHttpServer: $exc", exc)
+        false
+      }
+    }
+
+    log.info(s"Serving admin http on ${adminPort()}")
+    adminHttpServer = configureAdminHttpServer(
+      Http.server
+        .configured(Http.Netty4Impl)
+        .withStatsReceiver(NullStatsReceiver)
+        .withTracer(NullTracer)
+        .withMonitor(loggingMonitor)
+        .withLabel(ServerName)
+        // disable admission control, since we want the server to report stats
+        // especially when it's in a bad state.
+        .configured(ServerAdmissionControl.Param(false))
+    ).serve(adminPort(), new NotFoundView andThen adminHttpMuxer)
+
+    closeOnExitLast(adminHttpServer)
+    Library.register(libraryName, Map.empty)
+  }
+
   premain {
-    if (eagerlyStartAdminHttpServer) startAdminHttpServer()
+    // For consistency, we will add the routes regardless of whether the `adminHttpServer` gets
+    // started. This may not always be true and we may change this behavior in the future.
+    addAdminRoutes(Admin.adminRoutes(statsReceiver, self))
+
+    // we delay this check until we call the premain to ensure the `disableAdminHttpServer` value
+    // has the correct initialization order
+    if (disableAdminHttpServer) {
+      log.info("admin http is disabled and will not be started.")
+    } else {
+      startServer()
+    }
   }
 }
