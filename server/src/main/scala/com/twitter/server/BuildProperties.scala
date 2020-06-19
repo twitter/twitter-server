@@ -12,7 +12,7 @@ import scala.util.control.NonFatal
  * the given object's class's package (class-package-name/build.properties), and if not found there,
  * then it is searched for with an absolute path ("/build.properties").
  */
-private[server] object BuildProperties {
+private[twitter] object BuildProperties {
   private[this] val log = Logger(BuildProperties.getClass)
 
   private[this] val basicServerInfo: Map[String, String] =
@@ -27,26 +27,25 @@ private[server] object BuildProperties {
       "scm_repository" -> "unknown"
     )
 
-  private[this] val buildProperties = new Properties
-  try {
-    buildProperties.load(BuildProperties.getClass.getResource("build.properties").openStream)
-  } catch {
-    case NonFatal(_) =>
-      try {
-        BuildProperties.getClass.getResource("/build.properties") match {
-          case resource: URL =>
-            buildProperties.load(resource.openStream)
-          case _ => // do nothing
+  private[this] val properties: Map[String, String] = {
+    val buildProperties = new Properties
+    try {
+      buildProperties.load(BuildProperties.getClass.getResource("build.properties").openStream)
+    } catch {
+      case NonFatal(_) =>
+        try {
+          BuildProperties.getClass.getResource("/build.properties") match {
+            case resource: URL =>
+              buildProperties.load(resource.openStream)
+            case _ => // do nothing
+          }
+        } catch {
+          case NonFatal(e) =>
+            log.warn("Unable to load build.properties file from classpath. " + e.getMessage)
         }
-      } catch {
-        case NonFatal(e) =>
-          log.warn("Unable to load build.properties file from classpath. " + e.getMessage)
-      }
-  }
-
-  /* Lazy to allow for loading of the buildProperties before this val is read */
-  private[this] lazy val combinedInfo: Map[String, String] =
+    }
     basicServerInfo ++ buildProperties.asScala
+  }
 
   /**
    * Returns the [[String]] value associated with this key or a `NoSuchElementException` if there
@@ -55,9 +54,7 @@ private[server] object BuildProperties {
    * @param key the key
    * @return the value associated with the given key, or a `NoSuchElementException`.
    */
-  def get(key: String): String = {
-    all(key)
-  }
+  def get(key: String): String = all(key)
 
   /**
    * Returns the value associated with a key, or a default value if the key is not contained in the map.
@@ -66,14 +63,10 @@ private[server] object BuildProperties {
    * @param defaultValue a default value in case no binding for `key` is found in the map.
    * @return  the value associated with `key` if it exists, otherwise the `defaultValue`.
    */
-  def get(key: String, defaultValue: String): String = {
-    all.getOrElse(key, defaultValue)
-  }
+  def get(key: String, defaultValue: String): String = all.getOrElse(key, defaultValue)
 
   /**
    * Return all build properties.
    */
-  def all: Map[String, String] = {
-    combinedInfo
-  }
+  def all: Map[String, String] = properties
 }
