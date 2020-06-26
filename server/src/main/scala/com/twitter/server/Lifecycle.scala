@@ -1,6 +1,6 @@
 package com.twitter.server
 
-import com.twitter.app.{App, GlobalFlag}
+import com.twitter.app.GlobalFlag
 import com.twitter.finagle.http.Method.Post
 import com.twitter.finagle.http.{HttpMuxer, Route, RouteIndex}
 import com.twitter.server.handler._
@@ -8,7 +8,7 @@ import java.lang.management.ManagementFactory
 import java.util.concurrent.atomic.AtomicBoolean
 import scala.collection.JavaConverters._
 
-trait Lifecycle { self: App =>
+trait Lifecycle { self: TwitterServer =>
   // Mesos/Aurora lifecycle endpoints
   val group = "Misc"
   HttpMuxer.addHandler(
@@ -76,6 +76,51 @@ object Lifecycle {
     }
   }
 
+  private[Lifecycle] object Warmup {
+
+    /**
+     * Initialize warmup code. Ensures that the /health endpoint will not return on "OK" response.
+     */
+    def initializeWarmup(): Unit =
+      HttpMuxer.addHandler(Route("/health", new ReplyHandler("")))
+
+    /**
+     * Prebind warmup code. Used for warmup tasks that we want to run before we
+     * accept traffic.
+     */
+    def prebindWarmup(): Unit = new PromoteToOldGen().beforeServing()
+
+    /**
+     * The service is bound to a port and warmed up, announce health.
+     */
+    def warmupComplete(): Unit =
+      HttpMuxer.addHandler(Route("/health", new ReplyHandler("OK\n")))
+
+  }
+
+  /**
+   * A [[Warmup]] that is detached from a [[TwitterServer]] lifecycle. As there is no guarantee that
+   * this trait is used within the context of a [[TwitterServer]], the behavior and expectations of
+   * this warmup are determined by the implementor.
+   */
+  @deprecated(
+    "Warmup behavior is a TwitterServer lifecycle concern. Please mixin Warmup to your TwitterServer.",
+    "2020-06-25")
+  trait DetatchedWarmup {
+    Warmup.initializeWarmup()
+
+    /**
+     * Prebind warmup code. Used for warmup tasks that we want to run before we
+     * accept traffic.
+     */
+    def prebindWarmup(): Unit = Warmup.prebindWarmup()
+
+    /**
+     * The service is bound to a port and warmed up, announce health.
+     */
+    def warmupComplete(): Unit = Warmup.warmupComplete()
+  }
+
   /**
    * Give the application control over when to present to Mesos as being ready
    * for traffic. When the method `warmupComplete()` is invoked, the application
@@ -83,22 +128,18 @@ object Lifecycle {
    * @note Mesos doesn't gate traffic on /health so all pre-bind warmup needs to
    *       happen in `prebindWarmup()`
    */
-  trait Warmup {
-    HttpMuxer.addHandler(Route("/health", new ReplyHandler("")))
+  trait Warmup { self: TwitterServer =>
+    Warmup.initializeWarmup()
 
     /**
      * Prebind warmup code. Used for warmup tasks that we want to run before we
      * accept traffic.
      */
-    def prebindWarmup(): Unit = {
-      new PromoteToOldGen().beforeServing()
-    }
+    def prebindWarmup(): Unit = Warmup.prebindWarmup()
 
     /**
      * The service is bound to a port and warmed up, announce health.
      */
-    def warmupComplete(): Unit = {
-      HttpMuxer.addHandler(Route("/health", new ReplyHandler("OK\n")))
-    }
+    def warmupComplete(): Unit = Warmup.warmupComplete()
   }
 }

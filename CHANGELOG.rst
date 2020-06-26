@@ -7,6 +7,16 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+Breaking API Changes
+~~~~~~~~~~~~~~~~~~~~
+
+* Make `Lifecycle` and `Lifecycle.Warmup` self-typed to `TwitterServer`. `Lifecycle` was previously
+  self-typed to `c.t.app.App` and `Lifecycle.Warmup` previously had no self-type restrictions. These
+  traits can now only be mixed into instances of `TwitterServer`. The `Lifecycle.DetatchedWarmup`
+  trait is introduced to allow users to transition to it, where they were previously extending
+  `Lifecycle.Warmup` without mixing into a `TwitterServer`. `Lifecycle.DetatchedWarmup`
+  is immediately deprecated and will be removed in a future release. ``PHAB_ID=D507392``
+
 20.6.0
 ------
 
