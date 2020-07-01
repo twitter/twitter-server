@@ -1,6 +1,8 @@
 package com.twitter.server
 
 import com.twitter.app.GlobalFlag
+import com.twitter.app.lifecycle.Event
+import com.twitter.app.lifecycle.Event.{PrebindWarmup, WarmupComplete}
 import com.twitter.finagle.http.Method.Post
 import com.twitter.finagle.http.{HttpMuxer, Route, RouteIndex}
 import com.twitter.server.handler._
@@ -131,15 +133,21 @@ object Lifecycle {
   trait Warmup { self: TwitterServer =>
     Warmup.initializeWarmup()
 
+    override protected[twitter] def startupCompletionEvent: Event = WarmupComplete
+
     /**
      * Prebind warmup code. Used for warmup tasks that we want to run before we
      * accept traffic.
      */
-    def prebindWarmup(): Unit = Warmup.prebindWarmup()
+    def prebindWarmup(): Unit = observe(PrebindWarmup) {
+      Warmup.prebindWarmup()
+    }
 
     /**
      * The service is bound to a port and warmed up, announce health.
      */
-    def warmupComplete(): Unit = Warmup.warmupComplete()
+    def warmupComplete(): Unit = observe(WarmupComplete) {
+      Warmup.warmupComplete()
+    }
   }
 }

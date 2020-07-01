@@ -1,6 +1,8 @@
 package com.twitter.server
 
 import com.twitter.app.App
+import com.twitter.app.lifecycle.Event
+import com.twitter.app.lifecycle.Event.PreMain
 import com.twitter.finagle.DtabFlags
 import com.twitter.finagle.util.DefaultTimer
 import com.twitter.util.Timer
@@ -48,6 +50,10 @@ trait TwitterServer
 
   /** Use the Finagle DefaultTimer */
   override protected lazy val shutdownTimer: Timer = DefaultTimer
+
+  // The `main()` will block until `close()` is initiated, so we need
+  // to use the last phase that completes prior to Main, which is PreMain.
+  protected[twitter] def startupCompletionEvent: Event = PreMain
 }
 
 /**
