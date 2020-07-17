@@ -159,18 +159,18 @@ class ToggleHandlerTest extends FunSuite {
     val mut = ToggleMap.newMutable()
     val tog = mut(id)
     val handler = new ToggleHandler(() => Map(libName -> mut))
-    assert(!tog.isDefinedAt(30))
+    assert(tog.isUndefined)
 
     // mutate it
     val errors = handler.setToggle(libName, id, Some("1.0"))
     assert(errors.isEmpty, errors.mkString(", "))
-    assert(tog.isDefinedAt(30))
+    assert(tog.isDefined)
     assert(tog(30))
 
     // mutate it again.
     val errors2 = handler.setToggle(libName, id, Some("0.0"))
     assert(errors2.isEmpty, errors.mkString(", "))
-    assert(tog.isDefinedAt(30))
+    assert(tog.isDefined)
     assert(!tog(30))
   }
 
@@ -209,13 +209,13 @@ class ToggleHandlerTest extends FunSuite {
     mut.put(id, 1.0)
     val tog = mut(id)
     val handler = new ToggleHandler(() => Map(libName -> mut))
-    assert(tog.isDefinedAt(30))
+    assert(tog.isDefined)
     assert(tog(30))
 
     // delete it
     val errors = handler.deleteToggle(libName, id)
     assert(errors.isEmpty, errors.mkString(", "))
-    assert(!tog.isDefinedAt(30))
+    assert(tog.isUndefined)
   }
 
   test("parsePath") {
