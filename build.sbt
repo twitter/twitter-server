@@ -84,9 +84,9 @@ lazy val sharedSettings = Seq(
     "com.novocode" % "junit-interface" % "0.11" % "test",
     "org.mockito" % "mockito-all" % "1.9.5" % "test",
     "org.scalacheck" %% "scalacheck" % "1.14.3" % "test",
-    "org.scalatest" %% "scalatest" % "3.1.1" % "test"
-    "org.scalatestplus" %% "junit" % "3.1.2.0" % "test"
-    "org.scalatestplus" %% "mockito-1-10" % "3.1.1.0" % "test",
+    "org.scalatest" %% "scalatest" % "3.1.2" % "test",
+    "org.scalatestplus" %% "junit-4-12" % "3.1.2.0" % "test",
+    "org.scalatestplus" %% "mockito-1-10" % "3.1.0.0" % "test",
     "org.scalatestplus" %% "scalacheck-1-14" % "3.1.2.0" % "test"
   ),
   ScoverageKeys.coverageHighlighting := true,
