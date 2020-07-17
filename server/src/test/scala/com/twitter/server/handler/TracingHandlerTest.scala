@@ -4,8 +4,8 @@ import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.{Request, Status}
 import com.twitter.finagle.tracing.{Trace, Tracer}
 import com.twitter.util.{Await, Awaitable}
-import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSuite}
+import org.scalatestplus.mockito.MockitoSugar
 
 class TracingHandlerTest extends FunSuite with MockitoSugar with BeforeAndAfter {
   val service = new TracingHandler

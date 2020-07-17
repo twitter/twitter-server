@@ -5,6 +5,7 @@ junit_tests(
         "3rdparty/jvm/junit",
         "3rdparty/jvm/log4j",
         "3rdparty/jvm/org/scalatest",
+        "3rdparty/jvm/org/scalatestplus:junit",
         "3rdparty/jvm/org/slf4j:slf4j-api",
         "finagle/finagle-core/src/main",
         "twitter-server/server/src/main/scala",
