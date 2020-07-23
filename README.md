@@ -37,13 +37,13 @@ public API breaks and changes in runtime behavior.
 ## Contributing
 
 We feel that a welcoming community is important and we ask that you follow Twitter's
-[Open Source Code of Conduct](https://github.com/twitter/code-of-conduct/blob/master/code-of-conduct.md)
+[Open Source Code of Conduct](https://github.com/twitter/code-of-conduct/blob/release/code-of-conduct.md)
 in all interactions with the community.
 
-The `master` branch of this repository contains the latest stable release of
+The `release` branch of this repository contains the latest stable release of
 TwitterServer, and weekly snapshots are published to the `develop` branch. In general
 pull requests should be submitted against `develop`. See
-[CONTRIBUTING.md](https://github.com/twitter/twitter-server/blob/master/CONTRIBUTING.md)
+[CONTRIBUTING.md](https://github.com/twitter/twitter-server/blob/release/CONTRIBUTING.md)
 for more details about how to contribute.
 
 ## License
