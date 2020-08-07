@@ -21,7 +21,6 @@ scala_library(
     ],
     exports = [
         "3rdparty/jvm/org/slf4j:slf4j-api",
-        "3rdparty/jvm/org/slf4j:slf4j-jdk14",
         "util/util-logging/src/main/scala",
     ],
 )
