@@ -7,6 +7,9 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+* Check SecurityManager permissions in the `ContentHandler` to ensure that contention
+  snapshotting is allowed. ``PHAB_ID=D531873``
+
 20.8.0
 ------
 
