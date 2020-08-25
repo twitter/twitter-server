@@ -11,6 +11,7 @@ import com.twitter.util.{Await, Future, Time}
 import java.net.{InetSocketAddress, SocketAddress}
 import java.security.Principal
 import java.security.cert.X509Certificate
+import java.util.Date
 import javax.net.ssl.SSLSession
 import org.mockito.Mockito
 import org.scalatest.FunSuite
@@ -28,7 +29,16 @@ object AttachedClientsHandlerTest {
 
     val peerCertificate = Mockito.mock(classOf[X509Certificate])
     val remotePrincipal = Mockito.mock(classOf[Principal])
+    // We purposely use a date in the past here to validate the formatting
+    // of the json returned by this endpoint. Because it has already happened,
+    // it is not subject to any shenanigans regarding changes in leap seconds,
+    // leap years, or any other changes that might affect time values in the future.
+    // When running in production though, this endpoint should (almost) never return
+    // a timestamp from the past. Doing so would mean that a connection was established
+    // and then some time after, the certificate expired.
+    val remoteDate = new Date(1512295640000L) // Sun Dec 03 02:07:20 PST 2017
     Mockito.when(peerCertificate.getSubjectDN).thenReturn(remotePrincipal)
+    Mockito.when(peerCertificate.getNotAfter).thenReturn(remoteDate)
     Mockito.when(remotePrincipal.getName).thenReturn("remoteprincipal")
 
     registry
@@ -92,7 +102,8 @@ class AttachedClientsHandlerTest extends FunSuite {
         |            "session_id": "sessionid",
         |            "cipher_suite": "cipher?sweeeeet!",
         |            "peer_certificate": {
-        |              "common_name": "remoteprincipal"
+        |              "common_name": "remoteprincipal",
+        |              "expiry": "2017-12-03T10:07:20.000+0000"
         |            }
         |          }
         |        }
