@@ -7,6 +7,8 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+* Bump version of Jackson to 2.11.2. ``PHAB_ID=D538440``
+
 * If a client connecting to an instance of TwitterServer is sending a client certificate,
   its expiry date (i.e. `Not After`) is now included as part of the information listed.
   ``PHAB_ID=D528982``.
