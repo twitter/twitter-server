@@ -9,6 +9,9 @@ Unreleased
 
 * Bump version of Jackson to 2.11.2. ``PHAB_ID=D538440``
 
+* Encode the request URL names in /admin/clients/<client_name> and /admin/servers/<server_name>.
+  ``PHAB_ID=D540543``
+
 * If a client connecting to an instance of TwitterServer is sending a client certificate,
   its expiry date (i.e. `Not After`) is now included as part of the information listed.
   ``PHAB_ID=D528982``.

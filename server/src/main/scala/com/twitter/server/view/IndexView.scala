@@ -5,7 +5,7 @@ import com.twitter.finagle.http.Method
 import com.twitter.finagle.http.Method.{Get, Post}
 import com.twitter.finagle.{Service, SimpleFilter}
 import com.twitter.finagle.http.{Request, Response}
-import com.twitter.io.{Buf, BufReader, Reader, Pipe}
+import com.twitter.io.{Buf, BufReader, Pipe, Reader}
 import com.twitter.server.util.HtmlUtils.escapeHtml
 import com.twitter.server.util.HttpUtils.{expectsHtml, newResponse}
 import com.twitter.util.Future

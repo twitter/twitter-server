@@ -10,6 +10,8 @@ import com.twitter.server.util.HttpUtils.{new404, newResponse}
 import com.twitter.server.util.MetricSource
 import com.twitter.server.view.StackRegistryView
 import com.twitter.util.Future
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 private object ServerRegistryHandler {
   def render(servers: Seq[(String, StackRegistry.Entry)]): String =
@@ -96,7 +98,8 @@ class ServerRegistryHandler(
         )
 
       case name =>
-        val entries = registry.registrants filter { _.name == name }
+        val decodedName = URLDecoder.decode(name, StandardCharsets.UTF_8.name)
+        val entries = registry.registrants filter { _.name == decodedName }
         if (entries.isEmpty) new404(s"$name could not be found.")
         else {
           val server = entries.head

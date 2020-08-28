@@ -18,7 +18,8 @@ import com.twitter.server.view.{IndexView, NotFoundView}
 import com.twitter.util.lint.GlobalRules
 import com.twitter.util.registry.Library
 import com.twitter.util.{Future, Monitor, Time}
-import java.net.InetSocketAddress
+import java.net.{InetSocketAddress, URLEncoder}
+import java.nio.charset.StandardCharsets
 import org.slf4j.LoggerFactory
 import scala.language.reflectiveCalls
 
@@ -243,7 +244,8 @@ trait AdminHttpServer { self: App with Stats =>
   private[this] def listeningServers: IndexView.Group = {
     val serverLinks: Seq[IndexView.Entry] = ServerRegistry.registrants.collect {
       case server if server.name.nonEmpty =>
-        IndexView.Link(server.name, "/admin/servers/" + server.name)
+        val encodedName = URLEncoder.encode(server.name, StandardCharsets.UTF_8.name)
+        IndexView.Link(server.name, "/admin/servers/" + encodedName)
     }.toSeq
 
     IndexView.Group("Listening Servers", serverLinks.sorted(IndexView.EntryOrdering))
@@ -253,7 +255,8 @@ trait AdminHttpServer { self: App with Stats =>
   private[this] def downstreamClients: IndexView.Group = {
     val clientLinks: Seq[IndexView.Entry] = ClientRegistry.registrants.collect {
       case client if client.name.nonEmpty =>
-        IndexView.Link(client.name, "/admin/clients/" + client.name)
+        val encodedName = URLEncoder.encode(client.name, StandardCharsets.UTF_8.name)
+        IndexView.Link(client.name, "/admin/clients/" + encodedName)
     }.toSeq
 
     IndexView.Group("Downstream Clients", clientLinks.sorted(IndexView.EntryOrdering))

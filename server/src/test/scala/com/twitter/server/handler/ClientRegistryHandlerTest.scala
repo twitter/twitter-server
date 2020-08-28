@@ -7,6 +7,8 @@ import com.twitter.finagle.{Stack, param}
 import com.twitter.finagle.http.{Request, Status}
 import com.twitter.server.util.MetricSourceTest
 import com.twitter.util.{Await, Awaitable, Time}
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import org.scalatest.FunSuite
 
 class ClientRegistryHandlerTest extends FunSuite {
@@ -80,5 +82,25 @@ class ClientRegistryHandlerTest extends FunSuite {
       assert(html.contains("5 unavailable"))
       assert(html.contains("98.00%"))
     }
+  }
+
+  test("client name is decoded in handler") {
+    val metricsCtx = new MetricSourceTest.Ctx
+    import metricsCtx._
+
+    val registry = new StackRegistry {
+      def registryName: String = "client"
+    }
+    val clientName = "/srv#/abc/abc"
+    registry.register(
+      "localhost:8080",
+      StackClient.newStack,
+      Stack.Params.empty + param.Label(clientName)
+    )
+    val handler = new ClientRegistryHandler("/admin/clients/", source, registry)
+
+    val req =
+      Request("/admin/clients/" + URLEncoder.encode(clientName, StandardCharsets.UTF_8.name))
+    assert(await(handler(req)).status == Status.Ok)
   }
 }

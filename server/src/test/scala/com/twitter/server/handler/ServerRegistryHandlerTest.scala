@@ -2,10 +2,12 @@ package com.twitter.server.handler
 
 import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.server.StackServer
-import com.twitter.finagle.{http, Stack, param}
+import com.twitter.finagle.{Stack, http, param}
 import com.twitter.finagle.util.StackRegistry
 import com.twitter.server.util.MetricSourceTest
 import com.twitter.util.{Await, Awaitable}
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import org.scalatest.FunSuite
 
 class ServerRegistryHandlerTest extends FunSuite {
@@ -47,6 +49,21 @@ class ServerRegistryHandlerTest extends FunSuite {
     val handler = new ServerRegistryHandler("/admin/servers/", source, registry)
 
     val res = await(handler(http.Request("/admin/servers/index.html")))
+    assert(res.status == http.Status.Ok)
+  }
+
+  test("server name is decoded in handler") {
+    val metricsCtx = new MetricSourceTest.Ctx
+    import metricsCtx._
+
+    val registry = new StackRegistry { def registryName: String = "server" }
+    val serverName = "server@1"
+    registry.register(":8080", StackServer.newStack, Stack.Params.empty + param.Label(serverName))
+
+    val handler = new ServerRegistryHandler("/admin/servers/", source, registry)
+
+    val res = await(handler(
+      http.Request("/admin/servers/" + URLEncoder.encode(serverName, StandardCharsets.UTF_8.name))))
     assert(res.status == http.Status.Ok)
   }
 }

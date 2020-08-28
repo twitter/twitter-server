@@ -11,6 +11,8 @@ import com.twitter.server.util.HttpUtils.{new404, newResponse}
 import com.twitter.server.util.MetricSource
 import com.twitter.server.view.{BalancerHtmlView, EndpointRegistryView, StackRegistryView}
 import com.twitter.util.Future
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 private object ClientRegistryHandler {
 
@@ -139,7 +141,8 @@ class ClientRegistryHandler(
         )
 
       case name =>
-        val clientEntries = stackRegistry.registrants.filter(_.name == name)
+        val decodedName = URLDecoder.decode(name, StandardCharsets.UTF_8.name)
+        val clientEntries = stackRegistry.registrants.filter(_.name == decodedName)
         if (clientEntries.isEmpty) new404(s"$name could not be found.")
         else {
           val client = clientEntries.head
