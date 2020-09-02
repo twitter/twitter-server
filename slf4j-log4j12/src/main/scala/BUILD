@@ -10,10 +10,16 @@ scala_library(
     tags = ["logging_impl_check_whitelisted_target"],
     dependencies = [
         "3rdparty/jvm/log4j",
-        "3rdparty/jvm/org/slf4j:jcl-over-slf4j",
         "3rdparty/jvm/org/slf4j:jul-to-slf4j",
         "3rdparty/jvm/org/slf4j:slf4j-api",
-        "3rdparty/jvm/org/slf4j:slf4j-log4j12",
+        scoped(
+            "3rdparty/jvm/org/slf4j:jcl-over-slf4j",
+            scope = "runtime",
+        ),
+        scoped(
+            "3rdparty/jvm/org/slf4j:slf4j-log4j12",
+            scope = "runtime",
+        ),
         "finagle/finagle-base-http/src/main",
         "finagle/finagle-http/src/main/scala",
         "twitter-server/server/src/main/scala",

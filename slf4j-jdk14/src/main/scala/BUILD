@@ -9,9 +9,15 @@ scala_library(
     scope = "forced",  # Exposes a service-loaded class.
     tags = ["logging_impl_check_whitelisted_target"],
     dependencies = [
-        "3rdparty/jvm/org/slf4j:jcl-over-slf4j",
-        "3rdparty/jvm/org/slf4j:log4j-over-slf4j",
         "3rdparty/jvm/org/slf4j:slf4j-api",
+        scoped(
+            "3rdparty/jvm/org/slf4j:jcl-over-slf4j",
+            scope = "runtime",
+        ),
+        scoped(
+            "3rdparty/jvm/org/slf4j:log4j-over-slf4j",
+            scope = "runtime",
+        ),
         "3rdparty/jvm/org/slf4j:slf4j-jdk14",
         "finagle/finagle-base-http/src/main",
         "finagle/finagle-http/src/main/scala",
