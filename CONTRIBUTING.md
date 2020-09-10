@@ -2,16 +2,27 @@
 
 We'd love to get patches from you!
 
+## Nightly Snapshots
+
+Snapshots are published nightly for the current version in development and are
+available in the [Sonatype](https://oss.sonatype.org/) open source snapshot
+repository: [https://oss.sonatype.org/content/repositories/snapshots/](https://oss.sonatype.org/content/repositories/snapshots/). 
+
 ## Building dependencies
 
-We are not currently publishing snapshots for TwitterServer's dependencies, which
-means that it may be necessary to publish the `develop` branches of these
-libraries locally in order to work on TwitterServer's `develop` branch. To do so
-you can use our build tool, [dodo](https://github.com/twitter/dodo).
+If you want to manually build and publish the `develop` branches of TwitterServer's 
+dependencies locally, you can use our build tool, [dodo](https://github.com/twitter/dodo).
 
 ``` bash
 curl -s https://raw.githubusercontent.com/twitter/dodo/develop/bin/build | bash -s -- --no-test twitter-server
 ```
+
+This will clone, build, and publish locally the current `-SNAPSHOT` version 
+from the `develop` branch of TwitterServer's other Twitter open source dependencies.
+
+It is your choice to use the published nightly snapshot versions or to build 
+the snapshots locally from their respective `develop` branches via the
+[dodo](https://github.com/twitter/dodo) build tool.
 
 ## Building TwitterServer
 
@@ -28,7 +39,7 @@ the Finaglers [mailing list](https://groups.google.com/forum/#!forum/finaglers).
 
 The workflow that we support:
 
-1.  Fork finagle
+1.  Fork twitter-server
 1.  Check out the `develop` branch
 1.  Make a feature branch (use `git checkout -b "cool-new-feature"`)
 1.  Make your cool new feature or bugfix on your branch
