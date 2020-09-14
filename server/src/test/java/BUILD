@@ -1,4 +1,6 @@
-junit_tests(
+# The compilation of this target acts as a test to make sure scala APIs work in Java.
+# There is no test within this target.
+java_library(
     sources = ["**/*.java"],
     compiler_option_sets = [],
     dependencies = [
