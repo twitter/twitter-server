@@ -1,6 +1,6 @@
 # TwitterServer
 
-[![Build status](https://travis-ci.com/twitter/twitter-server.svg?branch=develop)](https://travis-ci.com/twitter/twitter-server)
+[![Build status](https://travis-ci.com/twitter/twitter-server.svg?branch=release)](https://travis-ci.com/twitter/twitter-server)
 [![Codecov](https://codecov.io/gh/twitter/twitter-server/branch/develop/graph/badge.svg)](https://codecov.io/gh/twitter/twitter-server)
 [![Project status](https://img.shields.io/badge/status-active-brightgreen.svg)](#status)
 [![Gitter](https://badges.gitter.im/twitter/finagle.svg)](https://gitter.im/twitter/finagle?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)

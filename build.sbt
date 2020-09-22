@@ -1,7 +1,7 @@
 import scoverage.ScoverageKeys
 
 // All Twitter library releases are date versioned as YY.MM.patch
-val releaseVersion = "20.9.0-SNAPSHOT"
+val releaseVersion = "20.9.0"
 
 val jacksonVersion = "2.11.2"
 val jacksonLibs = Seq(
