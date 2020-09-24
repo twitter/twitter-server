@@ -70,24 +70,26 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
   private[this] val unlatchedHandler =
     new MetricMetadataQueryHandler(unlatchedMetricSchemaSource)
 
-  val typeRequestNoArg = Request("http://$HOST:$PORT/admin/metric_metadata")
+  val typeRequestNoArg = Request("http://$HOST:$PORT/admin/metric_metadata.json")
 
   val typeRequestWithAnArg = Request(
-    "http://$HOST:$PORT/admin/metric_metadata?name=your/fine/gauge")
+    "http://$HOST:$PORT/admin/metric_metadata.json?name=your/fine/gauge")
 
   val typeRequestWithManyArgs = Request(
-    "http://$HOST:$PORT/admin/metric_metadata?name=my/cool/counter&name=your/fine/gauge")
+    "http://$HOST:$PORT/admin/metric_metadata.json?name=my/cool/counter&name=your/fine/gauge")
 
-  val typeRequestWithHisto = Request("http://$HOST:$PORT/admin/metric_metadata?name=my/only/histo")
+  val typeRequestWithHisto = Request(
+    "http://$HOST:$PORT/admin/metric_metadata.json?name=my/only/histo")
 
   val typeRequestWithHistoAndNon = Request(
-    "http://$HOST:$PORT/admin/metric_metadata?name=my/cool/counter&name=my/only/histo")
+    "http://$HOST:$PORT/admin/metric_metadata.json?name=my/cool/counter&name=my/only/histo")
 
   val responseToNoArg =
     """
       |   "metrics" : [
       |     {
       |      "name" : "my/cool/counter",
+      |      "relative_name" : ["my","cool","counter"],
       |      "kind" : "counter",
       |      "source" : {
       |        "class": "finagle.stats.cool",
@@ -101,6 +103,7 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
       |     },
       |     {
       |      "name" : "your/fine/gauge",
+      |      "relative_name" : ["your","fine","gauge"],
       |      "kind" : "gauge",
       |      "source" : {
       |        "class": "finagle.stats.your",
@@ -114,6 +117,7 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
       |     },
       |     {
       |      "name" : "my/only/histo",
+      |      "relative_name" : ["my","only","histo"],
       |      "kind" : "histogram",
       |      "source" : {
       |        "class": "Unspecified",
@@ -142,6 +146,7 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
       |   "metrics" : [
       |     {
       |      "name" : "your/fine/gauge",
+      |      "relative_name" : ["your","fine","gauge"],
       |      "kind" : "gauge",
       |      "source" : {
       |        "class": "finagle.stats.your",
@@ -161,6 +166,7 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
       |   "metrics" : [
       |     {
       |      "name" : "my/cool/counter",
+      |      "relative_name" : ["my","cool","counter"],
       |      "kind" : "counter",
       |      "source" : {
       |        "class": "finagle.stats.cool",
@@ -174,6 +180,7 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
       |     },
       |     {
       |      "name" : "your/fine/gauge",
+      |      "relative_name" : ["your","fine","gauge"],
       |      "kind" : "gauge",
       |      "source" : {
       |        "class": "finagle.stats.your",
@@ -194,6 +201,7 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
       |   "metrics" : [
       |     {
       |      "name" : "my/only/histo",
+      |      "relative_name" : ["my","only","histo"],
       |      "kind" : "histogram",
       |      "source" : {
       |        "class": "Unspecified",
@@ -221,6 +229,7 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
       |   "metrics" : [
       |     {
       |      "name" : "my/cool/counter",
+      |      "relative_name" : ["my","cool","counter"],
       |      "kind" : "counter",
       |      "source" : {
       |        "class": "finagle.stats.cool",
@@ -234,6 +243,7 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
       |     },
       |     {
       |      "name" : "my/only/histo",
+      |      "relative_name" : ["my","only","histo"],
       |      "kind" : "histogram",
       |      "source" : {
       |        "class": "Unspecified",
@@ -297,7 +307,7 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
       val responseStart =
         """
           | {
-          |   "@version" : 1.0,
+          |   "@version" : 2.0,
           |   "counters_latched" : true,
         """.stripMargin
       test(testName + " when using latched counters") {
@@ -310,7 +320,7 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
       val responseStart =
         """
           | {
-          |   "@version" : 1.0,
+          |   "@version" : 2.0,
           |   "counters_latched" : false,
         """.stripMargin
       test(testName + " when using unlatched counters") {

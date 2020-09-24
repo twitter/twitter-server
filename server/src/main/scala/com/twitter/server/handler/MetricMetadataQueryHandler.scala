@@ -20,11 +20,12 @@ import com.twitter.util.Future
  *
  * Response:
  *   {
- *   "@version" : 1.0,
+ *   "@version" : 2.0,
  *   "counters_latched" : false,
  *   "metrics" : [
  *     {
  *       "name" : "my/cool/counter",
+ *       "relative_name" : ["cool","counter"],
  *       "kind" : "counter",
  *       "source" : {
  *         "class": "finagle.stats.cool",
@@ -38,6 +39,7 @@ import com.twitter.util.Future
  *     },
  *     {
  *       "name" : "your/fine/gauge",
+ *       "relative_name" : ["fine","gauge"],
  *       "kind" : "gauge",
  *       "source" : {
  *         "class": "finagle.stats.your",
@@ -51,6 +53,7 @@ import com.twitter.util.Future
  *     },
  *     {
  *       "name" : "my/only/histo",
+ *       "relative_name" : ["histo"],
  *       "kind" : "histogram",
  *       "source" : {
  *         "class": "Unspecified",
@@ -92,7 +95,7 @@ class MetricMetadataQueryHandler(source: MetricSchemaSource = new MetricSchemaSo
       content = Buf.Utf8(
         JsonConverter.writeToString(
           Map(
-            "@version" -> 1.0,
+            "@version" -> 2.0,
             "counters_latched" -> latched,
             "metrics" -> metrics
           )))

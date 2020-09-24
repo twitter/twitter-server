@@ -21,6 +21,12 @@ No Changes
   its expiry date (i.e. `Not After`) is now included as part of the information listed.
   ``PHAB_ID=D528982``.
 
+Breaking API Changes
+~~~~~~~~~~~~~~~~~~~~
+
+* Add relative_name field to metrics in the Metrics Metadata endpoint and bump the
+  endpoints version number to 2.0. ``PHAB_ID=D552357``
+
 20.8.1
 ------
 

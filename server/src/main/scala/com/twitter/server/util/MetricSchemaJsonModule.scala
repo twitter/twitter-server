@@ -27,6 +27,13 @@ object SchemaSerializer extends StdSerializer[MetricSchema](classOf[MetricSchema
   ): Unit = {
     jsonGenerator.writeStartObject()
     jsonGenerator.writeStringField("name", metricSchema.metricBuilder.name.mkString("/"))
+    jsonGenerator.writeArrayFieldStart("relative_name")
+    if (metricSchema.metricBuilder.relativeName != Seq.empty) {
+      metricSchema.metricBuilder.relativeName.foreach(segment => jsonGenerator.writeString(segment))
+    } else {
+      metricSchema.metricBuilder.name.foreach(segment => jsonGenerator.writeString(segment))
+    }
+    jsonGenerator.writeEndArray()
     val dataType = metricSchema match {
       case _: CounterSchema => "counter"
       case _: GaugeSchema => "gauge"

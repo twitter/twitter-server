@@ -41,7 +41,15 @@ class MetricSchemaJsonModuleTest extends FunSuite {
     ))
 
   private val topLevelFieldNameSet =
-    Set("name", "kind", "source", "description", "unit", "verbosity", "key_indicator")
+    Set(
+      "name",
+      "relative_name",
+      "kind",
+      "source",
+      "description",
+      "unit",
+      "verbosity",
+      "key_indicator")
 
   def jsonStrToMap(jsonStr: String): Map[String, Any] = {
     val mapper = new ObjectMapper() with ScalaObjectMapper
