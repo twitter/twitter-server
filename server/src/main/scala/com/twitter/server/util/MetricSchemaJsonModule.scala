@@ -4,7 +4,13 @@ import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
-import com.twitter.finagle.stats.{CounterSchema, GaugeSchema, HistogramSchema, MetricSchema}
+import com.twitter.finagle.stats.{
+  CounterSchema,
+  GaugeSchema,
+  HistogramSchema,
+  MetricSchema,
+  metadataScopeSeparator
+}
 
 object SchemaSerializer extends StdSerializer[MetricSchema](classOf[MetricSchema]) {
 
@@ -26,7 +32,9 @@ object SchemaSerializer extends StdSerializer[MetricSchema](classOf[MetricSchema
     serializerProvider: SerializerProvider
   ): Unit = {
     jsonGenerator.writeStartObject()
-    jsonGenerator.writeStringField("name", metricSchema.metricBuilder.name.mkString("/"))
+    jsonGenerator.writeStringField(
+      "name",
+      metricSchema.metricBuilder.name.mkString(metadataScopeSeparator()))
     jsonGenerator.writeArrayFieldStart("relative_name")
     if (metricSchema.metricBuilder.relativeName != Seq.empty) {
       metricSchema.metricBuilder.relativeName.foreach(segment => jsonGenerator.writeString(segment))
