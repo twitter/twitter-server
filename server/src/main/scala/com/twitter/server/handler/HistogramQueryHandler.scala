@@ -198,7 +198,7 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails)
       content = {
         val text = histograms.get(query) match {
           case Some(h) => transform(h.counts)
-          case None => s"Key: $query is not a valid histogram."
+          case None => s"Key: ${escapeHtml(query)} is not a valid histogram."
         }
         Buf.Utf8(text)
       }
@@ -280,7 +280,7 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails)
         if (histograms.contains(query))
           render
         else
-          s"Key: $query is not a valid histogram."
+          s"Key: ${escapeHtml(query)} is not a valid histogram."
       }
     )
 
