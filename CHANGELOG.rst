@@ -41,8 +41,8 @@ Breaking API Changes
 * Check SecurityManager permissions in the `ContentHandler` to ensure that contention
   snapshotting is allowed. ``PHAB_ID=D531873``
 
-20.8.0
-------
+20.8.0 (DO NOT USE)
+-------------------
 
 No Changes
 
@@ -82,8 +82,8 @@ Runtime Behavior Changes
 
 No Changes
 
-20.4.0
-------
+20.4.0 (DO NOT USE)
+-------------------
 
 No Changes
 
