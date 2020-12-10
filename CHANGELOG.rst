@@ -7,6 +7,9 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+20.12.0
+-------
+
 * Escape user-provided string from the returned text.  This removes a potential vector for an XSS
   attack. ``PHAB_ID=D574844``
 
