@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Changelog &#8212; TwitterServer 20.10.0 documentation</title>
+    <title>Changelog &#8212; TwitterServer 20.12.0 documentation</title>
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '20.10.0',
+        VERSION:     '20.12.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -60,11 +60,18 @@
 <h2>Unreleased<a class="headerlink" href="#unreleased" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="id1">
-<h2>20.10.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p>No Changes</p>
+<h2>20.12.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Escape user-provided string from the returned text.  This removes a potential vector for an XSS
+attack. <code class="docutils literal"><span class="pre">PHAB_ID=D574844</span></code></li>
+</ul>
 </div>
 <div class="section" id="id2">
-<h2>20.9.0<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2>20.10.0<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>No Changes</p>
+</div>
+<div class="section" id="id3">
+<h2>20.9.0<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <p>No Changes</p>
 <ul class="simple">
 <li>Bump version of Jackson to 2.11.2. <code class="docutils literal"><span class="pre">PHAB_ID=D538440</span></code></li>
@@ -82,15 +89,15 @@ endpoints version number to 2.0. <code class="docutils literal"><span class="pre
 </ul>
 </div>
 </div>
-<div class="section" id="id3">
-<h2>20.8.1<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h2>20.8.1<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Check SecurityManager permissions in the <cite>ContentHandler</cite> to ensure that contention
 snapshotting is allowed. <code class="docutils literal"><span class="pre">PHAB_ID=D531873</span></code></li>
 </ul>
 </div>
-<div class="section" id="id4">
-<h2>20.8.0<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="do-not-use">
+<h2>20.8.0 (DO NOT USE)<a class="headerlink" href="#do-not-use" title="Permalink to this headline">¶</a></h2>
 <p>No Changes</p>
 </div>
 <div class="section" id="id5">
@@ -131,7 +138,7 @@ is located that the functionality is enabled. <code class="docutils literal"><sp
 <p>No Changes</p>
 </div>
 <div class="section" id="id10">
-<h2>20.4.0<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<h2>20.4.0 (DO NOT USE)<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
 <p>No Changes</p>
 </div>
 <div class="section" id="id11">
@@ -932,13 +939,14 @@ and frameworks built atop twitter-server.</li>
   <ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
 <li><a class="reference internal" href="#unreleased">Unreleased</a></li>
-<li><a class="reference internal" href="#id1">20.10.0</a></li>
-<li><a class="reference internal" href="#id2">20.9.0</a><ul>
+<li><a class="reference internal" href="#id1">20.12.0</a></li>
+<li><a class="reference internal" href="#id2">20.10.0</a></li>
+<li><a class="reference internal" href="#id3">20.9.0</a><ul>
 <li><a class="reference internal" href="#breaking-api-changes">Breaking API Changes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id3">20.8.1</a></li>
-<li><a class="reference internal" href="#id4">20.8.0</a></li>
+<li><a class="reference internal" href="#id4">20.8.1</a></li>
+<li><a class="reference internal" href="#do-not-use">20.8.0 (DO NOT USE)</a></li>
 <li><a class="reference internal" href="#id5">20.7.0</a><ul>
 <li><a class="reference internal" href="#id6">Breaking API Changes</a></li>
 </ul>
@@ -949,7 +957,7 @@ and frameworks built atop twitter-server.</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#id9">20.4.1</a></li>
-<li><a class="reference internal" href="#id10">20.4.0</a></li>
+<li><a class="reference internal" href="#id10">20.4.0 (DO NOT USE)</a></li>
 <li><a class="reference internal" href="#id11">20.3.0</a></li>
 <li><a class="reference internal" href="#id12">20.2.1</a></li>
 <li><a class="reference internal" href="#id13">20.1.0</a><ul>
