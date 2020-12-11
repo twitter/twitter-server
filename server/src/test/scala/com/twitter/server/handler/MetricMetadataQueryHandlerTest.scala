@@ -307,8 +307,9 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
       val responseStart =
         """
           | {
-          |   "@version" : 2.0,
+          |   "@version" : 2.1,
           |   "counters_latched" : true,
+          |   "separator_char" : "/",
         """.stripMargin
       test(testName + " when using latched counters") {
         assertJsonResponse(
@@ -320,8 +321,9 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
       val responseStart =
         """
           | {
-          |   "@version" : 2.0,
+          |   "@version" : 2.1,
           |   "counters_latched" : false,
+          |   "separator_char" : "/",
         """.stripMargin
       test(testName + " when using unlatched counters") {
         assertJsonResponse(

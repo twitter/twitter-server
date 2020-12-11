@@ -2,6 +2,7 @@ package com.twitter.server.handler
 
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{MediaType, Request, Response, Uri}
+import com.twitter.finagle.stats.metadataScopeSeparator
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.newResponse
 import com.twitter.server.util.{JsonConverter, MetricSchemaSource}
@@ -95,8 +96,9 @@ class MetricMetadataQueryHandler(source: MetricSchemaSource = new MetricSchemaSo
       content = Buf.Utf8(
         JsonConverter.writeToString(
           Map(
-            "@version" -> 2.0,
+            "@version" -> 2.1,
             "counters_latched" -> latched,
+            "separator_char" -> metadataScopeSeparator(),
             "metrics" -> metrics
           )))
     )
