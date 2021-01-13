@@ -7,6 +7,9 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+21.1.0
+------
+
 * Add separator_char field to the top level of the Metrics Metadata endpoint and bump the
   endpoints version number to 2.1. ``PHAB_ID=D591106``
 
