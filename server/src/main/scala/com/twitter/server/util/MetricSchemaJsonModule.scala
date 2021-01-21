@@ -37,9 +37,11 @@ object SchemaSerializer extends StdSerializer[MetricSchema](classOf[MetricSchema
       metricSchema.metricBuilder.name.mkString(metadataScopeSeparator()))
     jsonGenerator.writeArrayFieldStart("relative_name")
     if (metricSchema.metricBuilder.relativeName != Seq.empty) {
-      metricSchema.metricBuilder.relativeName.foreach(segment => jsonGenerator.writeString(segment))
+      metricSchema.metricBuilder.relativeName.foreach(segment =>
+        jsonGenerator.writeString(convertNullToString(segment)))
     } else {
-      metricSchema.metricBuilder.name.foreach(segment => jsonGenerator.writeString(segment))
+      metricSchema.metricBuilder.name.foreach(segment =>
+        jsonGenerator.writeString(convertNullToString(segment)))
     }
     jsonGenerator.writeEndArray()
     val dataType = metricSchema match {
@@ -67,6 +69,11 @@ object SchemaSerializer extends StdSerializer[MetricSchema](classOf[MetricSchema
       jsonGenerator.writeEndArray()
     }
     jsonGenerator.writeEndObject()
+  }
+
+  private def convertNullToString(segment: String): String = {
+    if (segment == null) "null"
+    else segment
   }
 }
 

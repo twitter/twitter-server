@@ -40,6 +40,19 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
         name = Seq("my", "only", "histo"),
         percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
         statsReceiver = null
+      )),
+    "my/bad/null/counter" -> CounterSchema(
+      new MetricBuilder(
+        keyIndicator = true,
+        description = "A counter scoped by null get deserialized correctly",
+        units = Requests,
+        role = Server,
+        verbosity = Verbosity.Default,
+        sourceClass = Some("finagle.stats.bad"),
+        name = Seq("my", "bad", null, "counter"),
+        processPath = Some("dc/role/zone/service"),
+        percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
+        statsReceiver = null
       ))
   )
 
@@ -136,6 +149,20 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
       |        0.999,
       |        0.9999
       |      ]
+      |     },
+      |     {
+      |      "name" : "my/bad/null/counter",
+      |      "relative_name" : ["my","bad", "null", "counter"],
+      |      "kind" : "counter",
+      |      "source" : {
+      |        "class": "finagle.stats.bad",
+      |        "category": "Server",
+      |        "process_path": "dc/role/zone/service"
+      |      },
+      |      "description" : "A counter scoped by null get deserialized correctly",
+      |      "unit" : "Requests",
+      |      "verbosity": "Verbosity(default)",
+      |      "key_indicator" : true
       |     }
       |   ]
       | }
