@@ -48,6 +48,6 @@ for more details about how to contribute.
 
 ## License
 
-Copyright 2013-2021 Twitter, Inc.
+Copyright 2013 Twitter, Inc.
 
 Licensed under the Apache License, Version 2.0: https://www.apache.org/licenses/LICENSE-2.0
