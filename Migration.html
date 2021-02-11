@@ -4,23 +4,16 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Migration from Ostrich &#8212; TwitterServer 21.1.0 documentation</title>
+    <title>Migration from Ostrich &#8212; TwitterServer 21.2.0 documentation</title>
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '21.1.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -30,8 +23,7 @@
   
   <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
 
-  </head>
-  <body>
+  </head><body>
   
   
 
@@ -65,25 +57,25 @@ TwitterServer.</p>
 replaces Ostrich’s stats library.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Ostrich stats are still present on <code class="docutils literal"><span class="pre">/stats</span></code> if <cite>finagle-ostrich4</cite> is
+<p class="last">Ostrich stats are still present on <code class="docutils literal notranslate"><span class="pre">/stats</span></code> if <cite>finagle-ostrich4</cite> is
 in your runtime classpath.</p>
 </div>
 <p>By using two
 <a class="reference external" href="https://github.com/twitter/util/blob/master/util-app/src/main/scala/com/twitter/app/Flag.scala">flags</a>,
-the admin HTTP endpoint <code class="docutils literal"><span class="pre">/admin/stats.json</span></code> supports an Ostrich
+the admin HTTP endpoint <code class="docutils literal notranslate"><span class="pre">/admin/stats.json</span></code> supports an Ostrich
 compatibility mode:</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>-com.twitter.finagle.stats.useCounterDeltas=true
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>-com.twitter.finagle.stats.useCounterDeltas=true
 -com.twitter.finagle.stats.format=ostrich
 </pre></div>
 </div>
 <p>If these flags are both set,
-HTTP requests to <code class="docutils literal"><span class="pre">/admin/stats.json</span></code> with the <code class="docutils literal"><span class="pre">period=60</span></code> query string
+HTTP requests to <code class="docutils literal notranslate"><span class="pre">/admin/stats.json</span></code> with the <code class="docutils literal notranslate"><span class="pre">period=60</span></code> query string
 parameter will replicate Ostrich’s behavior by computing deltas on counters
 every minute and formatting histograms with the same labels Ostrich uses.</p>
 <div class="section" id="stats-format">
 <h2>Stats format<a class="headerlink" href="#stats-format" title="Permalink to this headline">¶</a></h2>
 <p>Ostrich:</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>{
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{
   &quot;counters&quot;: {
     &quot;finagle/closes&quot;: 576,
 
@@ -115,7 +107,7 @@ every minute and formatting histograms with the same labels Ostrich uses.</p>
 </pre></div>
 </div>
 <p>Commons Metrics:</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>{
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{
   &quot;finagle/closes&quot;: 575,
   &quot;finagle/connection_duration.avg&quot;: 561,
   &quot;finagle/connection_duration.count&quot;: 592,
@@ -138,8 +130,8 @@ every minute and formatting histograms with the same labels Ostrich uses.</p>
 }
 </pre></div>
 </div>
-<p>With <code class="docutils literal"><span class="pre">-com.twitter.finagle.stats.format=ostrich</span></code>:</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>{
+<p>With <code class="docutils literal notranslate"><span class="pre">-com.twitter.finagle.stats.format=ostrich</span></code>:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{
   &quot;finagle/closes&quot;: 575,
   &quot;finagle/connection_duration.average&quot;: 561,
   &quot;finagle/connection_duration.count&quot;: 592,
@@ -172,7 +164,7 @@ Commons Metrics is <em>far</em> more precise than Ostrich.</p>
 </div>
 <p>For example, here are the difference between the two libraries for 10k
 random numbers between 1 and 10,000:</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>scala&gt; &quot;real p50:%d  ostrich:%d  metrics:%d&quot;.format(p50, op50, mp50)
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>scala&gt; &quot;real p50:%d  ostrich:%d  metrics:%d&quot;.format(p50, op50, mp50)
 res7: String = real p50:5066  ostrich:5210  metrics:5066
 
 scala&gt; &quot;real p90:%d  ostrich:%d  metrics:%d&quot;.format(p90, op90, mp90)
@@ -191,7 +183,7 @@ yourself.</p>
 <li>Convert your code to TwitterServer</li>
 </ul>
 <p>Your server will run as before and expose stats through Ostrich’s
-<code class="docutils literal"><span class="pre">/stats</span></code> endpoint.</p>
+<code class="docutils literal notranslate"><span class="pre">/stats</span></code> endpoint.</p>
 <ul class="simple">
 <li>Update your dashboard</li>
 </ul>
@@ -227,7 +219,7 @@ that your new alerts and dashboards are correct.</p>
   <li><a href="https://github.com/twitter/twitter-server">TwitterServer on GitHub</a></li>
   <li><a href="https://github.com/twitter/twitter-server/issues">Issue Tracker</a></li>
 </ul>
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Migration from Ostrich</a><ul>
 <li><a class="reference internal" href="#stats-format">Stats format</a></li>

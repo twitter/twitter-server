@@ -4,23 +4,16 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Features &#8212; TwitterServer 21.1.0 documentation</title>
+    <title>Features &#8212; TwitterServer 21.2.0 documentation</title>
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '21.1.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -30,8 +23,7 @@
   
   <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
 
-  </head>
-  <body>
+  </head><body>
   
   
 
@@ -61,7 +53,7 @@
 <p>We’ll walk through the features provided by TwitterServer by
 examining a slightly more advanced version of the example shown in the
 introduction.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">com.twitter.conversions.DurationOps._</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">com.twitter.conversions.DurationOps._</span>
 <span class="k">import</span> <span class="nn">com.twitter.finagle.http.</span><span class="o">{</span><span class="nc">HttpMuxer</span><span class="o">,</span> <span class="nc">Request</span><span class="o">,</span> <span class="nc">Response</span><span class="o">,</span> <span class="nc">Status</span><span class="o">}</span>
 <span class="k">import</span> <span class="nn">com.twitter.finagle.Service</span>
 <span class="k">import</span> <span class="nn">com.twitter.logging.Formatter</span>
@@ -105,17 +97,17 @@ introduction.</p>
 <p id="id1">The flags implementation, <a class="reference external" href="https://github.com/twitter/util/blob/master/util-app/src/main/scala/com/twitter/app/Flag.scala">found in Twitter’s util library</a>,
 focuses on simplicity and type safety, parsing flags into Scala values.</p>
 <p>You define your flag like this, in that case the flag type is <cite>String</cite>:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">what</span> <span class="k">=</span> <span class="n">flag</span><span class="o">(</span><span class="s">&quot;what&quot;</span><span class="o">,</span> <span class="s">&quot;hello&quot;</span><span class="o">,</span> <span class="s">&quot;String to return&quot;</span><span class="o">)</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">what</span> <span class="k">=</span> <span class="n">flag</span><span class="o">(</span><span class="s">&quot;what&quot;</span><span class="o">,</span> <span class="s">&quot;hello&quot;</span><span class="o">,</span> <span class="s">&quot;String to return&quot;</span><span class="o">)</span>
 </pre></div>
 </div>
 <p>But you can also define flags of composite type:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">addr</span> <span class="k">=</span> <span class="n">flag</span><span class="o">(</span><span class="s">&quot;bind&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="s">&quot;Bind address&quot;</span><span class="o">)</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">addr</span> <span class="k">=</span> <span class="n">flag</span><span class="o">(</span><span class="s">&quot;bind&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="s">&quot;Bind address&quot;</span><span class="o">)</span>
 <span class="k">val</span> <span class="n">durations</span> <span class="k">=</span> <span class="n">flag</span><span class="o">(</span><span class="s">&quot;alarms&quot;</span><span class="o">,</span> <span class="o">(</span><span class="mf">1.</span><span class="n">second</span><span class="o">,</span> <span class="mf">5.</span><span class="n">second</span><span class="o">),</span> <span class="s">&quot;2 alarm durations&quot;</span><span class="o">)</span>
 </pre></div>
 </div>
 <p>We also provide an automatic help entry that displays information about
 all the flags defined.</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>$ java -jar target/myserver-1.0.0-SNAPSHOT.jar -help
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ java -jar target/myserver-1.0.0-SNAPSHOT.jar -help
 AdvancedServer
   -alarm_durations=&#39;1.seconds,5.seconds&#39;: 2 alarm durations
   -help=&#39;false&#39;: Show this help
@@ -132,7 +124,7 @@ flag in the constructor, before the arguments have been parsed.</p>
 option within your server. Having this option turned on means that if
 a <cite>Flag</cite> is attempted to be accessed before the flag has been parsed,
 then an <cite>IllegalStateException</cite> will be thrown.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">override</span> <span class="k">def</span> <span class="n">failfastOnFlagsNotParsed</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">true</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="k">override</span> <span class="k">def</span> <span class="n">failfastOnFlagsNotParsed</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">true</span>
 </pre></div>
 </div>
 </div>
@@ -155,13 +147,13 @@ plug in the desired logging framework at deployment time.”</p>
 implementation and is the recommended logging implementation for <cite>TwitterServer</cite>.</p>
 </div>
 <p>Since <cite>TwitterServer</cite> uses the <a class="reference external" href="https://www.slf4j.org/">slf4j-api</a>  for logging it no
-longer provides the <a class="reference external" href="https://github.com/twitter/util/tree/develop/util-logging"><code class="docutils literal"><span class="pre">util-logging</span> <span class="pre">Logging</span></code></a> logging implementation directly. As such, logging
+longer provides the <a class="reference external" href="https://github.com/twitter/util/tree/develop/util-logging"><code class="docutils literal notranslate"><span class="pre">util-logging</span> <span class="pre">Logging</span></code></a> logging implementation directly. As such, logging
 configuration is handled on the choosen imlpementation and by default not through flags – except
 in the case of choosing the <cite>slf4j-jdk14</cite> logging implementation.</p>
 <p>See the <a class="reference external" href="#backwards-compatibility-via-slf4j-jdk14">Backwards Compatibility</a> section.</p>
 <div class="section" id="backwards-compatibility-via-slf4j-jdk14">
 <h3>Backwards Compatibility (via <cite>slf4j-jdk14</cite>)<a class="headerlink" href="#backwards-compatibility-via-slf4j-jdk14" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">com.twitter.conversions.DurationOps._</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">com.twitter.conversions.DurationOps._</span>
 <span class="k">import</span> <span class="nn">com.twitter.finagle.http.</span><span class="o">{</span><span class="nc">Request</span><span class="o">,</span> <span class="nc">Response</span><span class="o">,</span> <span class="nc">Status</span><span class="o">}</span>
 <span class="k">import</span> <span class="nn">com.twitter.finagle.Service</span>
 <span class="k">import</span> <span class="nn">com.twitter.server.TwitterServer</span>
@@ -192,26 +184,26 @@ in the case of choosing the <cite>slf4j-jdk14</cite> logging implementation.</p>
 </pre></div>
 </div>
 <p>To continue using <cite>TwitterServer</cite> with no changes to your logging, simply depend on the
-<a class="reference external" href="https://github.com/twitter/twitter-server/tree/develop/slf4j-jdk14"><code class="docutils literal"><span class="pre">twitter-server/slf4j-jdk14</span></code></a> library which will use <cite>slf4j-jdk14</cite> as the <a class="reference external" href="https://www.slf4j.org/"><cite>slf4j</cite></a> logging
-implementation, then mix in the <a class="reference external" href="https://github.com/twitter/twitter-server/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a> to your <cite>TwitterServer</cite>.</p>
+<a class="reference external" href="https://github.com/twitter/twitter-server/tree/develop/slf4j-jdk14"><code class="docutils literal notranslate"><span class="pre">twitter-server/slf4j-jdk14</span></code></a> library which will use <cite>slf4j-jdk14</cite> as the <a class="reference external" href="https://www.slf4j.org/"><cite>slf4j</cite></a> logging
+implementation, then mix in the <a class="reference external" href="https://github.com/twitter/twitter-server/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal notranslate"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a> to your <cite>TwitterServer</cite>.</p>
 <p>Example:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">object</span> <span class="nc">BackwardsCompatServer</span> <span class="k">extends</span> <span class="nc">TwitterServer</span> <span class="k">with</span> <span class="nc">JDK14Logging</span> <span class="o">{</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="k">object</span> <span class="nc">BackwardsCompatServer</span> <span class="k">extends</span> <span class="nc">TwitterServer</span> <span class="k">with</span> <span class="nc">JDK14Logging</span> <span class="o">{</span>
 </pre></div>
 </div>
-<p>In the above example, the <a class="reference external" href="https://github.com/twitter/twitter-server/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a> has been renamed to <code class="docutils literal"><span class="pre">JDK14Logging</span></code>
+<p>In the above example, the <a class="reference external" href="https://github.com/twitter/twitter-server/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal notranslate"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a> has been renamed to <code class="docutils literal notranslate"><span class="pre">JDK14Logging</span></code>
 for clarity.</p>
-<p>The <a class="reference external" href="https://github.com/twitter/twitter-server/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a> provides a logger named <cite>log</cite> which can be configured via
+<p>The <a class="reference external" href="https://github.com/twitter/twitter-server/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal notranslate"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a> provides a logger named <cite>log</cite> which can be configured via
 the command line flags: <cite>-log.level</cite> and <cite>-log.output</cite>.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="o">(</span><span class="s">&quot;Received a request at &quot;</span> <span class="o">+</span> <span class="nc">Time</span><span class="o">.</span><span class="n">now</span><span class="o">)</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="o">(</span><span class="s">&quot;Received a request at &quot;</span> <span class="o">+</span> <span class="nc">Time</span><span class="o">.</span><span class="n">now</span><span class="o">)</span>
 </pre></div>
 </div>
-<p>See: <a class="reference external" href="https://github.com/twitter/util/blob/70e19566e3f0a194a5364d95e04ce7fc6cf4827c/util-logging/src/main/scala/com/twitter/logging/Logging.scala#L20"><code class="docutils literal"><span class="pre">c.t.logging.Logging</span></code></a> for more details on what flags can be used for configuring JUL loggers.</p>
+<p>See: <a class="reference external" href="https://github.com/twitter/util/blob/70e19566e3f0a194a5364d95e04ce7fc6cf4827c/util-logging/src/main/scala/com/twitter/logging/Logging.scala#L20"><code class="docutils literal notranslate"><span class="pre">c.t.logging.Logging</span></code></a> for more details on what flags can be used for configuring JUL loggers.</p>
 <div class="section" id="log-format">
 <h4>Log Format<a class="headerlink" href="#log-format" title="Permalink to this headline">¶</a></h4>
 <p>To change the format of the log output, a custom <cite>Formatter</cite> is needed.
 This is best done by overriding the <cite>defaultFormatter</cite> provided by the
-<a class="reference external" href="https://github.com/twitter/twitter-server/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a>.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">override</span> <span class="k">def</span> <span class="n">defaultFormatter</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Formatter</span><span class="o">(</span>
+<a class="reference external" href="https://github.com/twitter/twitter-server/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal notranslate"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a>.</p>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="k">override</span> <span class="k">def</span> <span class="n">defaultFormatter</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Formatter</span><span class="o">(</span>
   <span class="n">timezone</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="s">&quot;UTC&quot;</span><span class="o">),</span>
   <span class="n">prefix</span> <span class="k">=</span> <span class="s">&quot;&lt;yyyy-MM-dd HH:mm:ss.SSS&gt; [%.3s] %s: &quot;</span>
 <span class="o">)</span>
@@ -219,7 +211,7 @@ This is best done by overriding the <cite>defaultFormatter</cite> provided by th
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">For more complicated logging schemes, you can extend the <a class="reference external" href="https://github.com/twitter/twitter-server/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a>
+<p class="last">For more complicated logging schemes, you can extend the <a class="reference external" href="https://github.com/twitter/twitter-server/blob/develop/slf4j-jdk14/src/main/scala/com/twitter/server/logging/Logging.scala"><code class="docutils literal notranslate"><span class="pre">com.twitter.server.logging.Logging</span></code> trait</a>
 and mix it back into a <cite>TwitterServer</cite>.</p>
 </div>
 </div>
@@ -243,13 +235,13 @@ implementation which will provide the appropriate logging handler.</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>java.util.logging (JUL)</td>
-<td><a class="reference external" href="https://github.com/twitter/twitter-server/tree/develop/slf4j-jdk14"><code class="docutils literal"><span class="pre">twitter-server/slf4j-jdk14</span></code></a></td>
+<td><a class="reference external" href="https://github.com/twitter/twitter-server/tree/develop/slf4j-jdk14"><code class="docutils literal notranslate"><span class="pre">twitter-server/slf4j-jdk14</span></code></a></td>
 </tr>
 <tr class="row-odd"><td>Log4j</td>
-<td><a class="reference external" href="https://github.com/twitter/twitter-server/tree/develop/slf4j-log4j12"><code class="docutils literal"><span class="pre">twitter-server/slf4j-log4j12</span></code></a></td>
+<td><a class="reference external" href="https://github.com/twitter/twitter-server/tree/develop/slf4j-log4j12"><code class="docutils literal notranslate"><span class="pre">twitter-server/slf4j-log4j12</span></code></a></td>
 </tr>
 <tr class="row-even"><td>Logback (recommended)</td>
-<td><a class="reference external" href="https://github.com/twitter/twitter-server/tree/develop/logback-classic"><code class="docutils literal"><span class="pre">twitter-server/logback-classic</span></code></a></td>
+<td><a class="reference external" href="https://github.com/twitter/twitter-server/tree/develop/logback-classic"><code class="docutils literal notranslate"><span class="pre">twitter-server/logback-classic</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -264,17 +256,17 @@ depended on libraries which can be found in the <a class="reference external" hr
 metrics. With it you can update counters and stats (histograms) or
 define gauges (instantaneous values) which are documented <a class="reference external" href="http://twitter.github.io/util/guide/util-stats/basics.html#gauges">here</a></p>
 <p>For instance, you define your stats:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">counter</span> <span class="k">=</span> <span class="n">statsReceiver</span><span class="o">.</span><span class="n">counter</span><span class="o">(</span><span class="s">&quot;requests_counter&quot;</span><span class="o">)</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">counter</span> <span class="k">=</span> <span class="n">statsReceiver</span><span class="o">.</span><span class="n">counter</span><span class="o">(</span><span class="s">&quot;requests_counter&quot;</span><span class="o">)</span>
 </pre></div>
 </div>
 <p>And update the value:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">counter</span><span class="o">.</span><span class="n">incr</span><span class="o">()</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="n">counter</span><span class="o">.</span><span class="n">incr</span><span class="o">()</span>
 </pre></div>
 </div>
 <p>The value of this counter will be exported by the HTTP server and
 accessible at /admin/metrics.json. To see an example of the counter
 incrementing run the following:</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>$ curl -s localhost:9990/admin/metrics.json | jq &#39;.requests_counter&#39;
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ curl -s localhost:9990/admin/metrics.json | jq &#39;.requests_counter&#39;
 0
 
 $ curl -s localhost:9990/echo
@@ -299,11 +291,11 @@ other words, you can still access all of the stats normally, but this
 adds the option to fetch the filtered list.</p>
 <p>For example, to filter out all stats starting with jvm and also any
 p90 stats, one can pass the following to TwitterServer:</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>-com.twitter.finagle.stats.statsFilter=&quot;jvm.*,.*\.p90&quot;
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>-com.twitter.finagle.stats.statsFilter=&quot;jvm.*,.*\.p90&quot;
 </pre></div>
 </div>
 <p>To query the reduced list:</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>/admin/metrics.json?filtered=true
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/admin/metrics.json?filtered=true
 </pre></div>
 </div>
 <p>Note that this only works with <cite>finagle-stats</cite> and doesn’t work with
@@ -315,7 +307,7 @@ to allowlist debug metrics, potentially without application restart.</p>
 <p>For example, the following JSON file placed in the resource folder (restart
 required) as <cite>com/twitter/tunables/finagle/instances.json</cite> will allowlist
 Netty 4 metrics for a given JVM process.</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>{
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{
   &quot;tunables&quot;:
   [
      {
@@ -329,7 +321,7 @@ Netty 4 metrics for a given JVM process.</p>
 </div>
 <p>If you would like a pretty version of the json output, add the
 parameter pretty=true or pretty=1, eg /admin/metrics.json?pretty=true</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>{
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{
   &quot;requests_counter&quot;: 234,
   &quot;finagle/closes&quot;: 575,
   &quot;finagle/connection_duration.avg&quot;: 561,
@@ -373,7 +365,7 @@ finagle-stats jar on your classpath.</p>
 <img alt="_images/HistogramHomepage.png" src="_images/HistogramHomepage.png" />
 <p>There are two endpoints for histograms, <cite>/admin/histograms.json</cite> and <cite>/admin/histograms</cite>.</p>
 <p><cite>/admin/histograms.json</cite> will always return the full list of histograms.</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>$ curl http://a.twitter.server/admin/histograms.json
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ curl http://a.twitter.server/admin/histograms.json
 
 {
   &quot;clnt/p2cslowservertest-server/request_latency_ms&quot; : [
@@ -435,7 +427,7 @@ to the count.</p>
 <p>Here’s an example where we query histogram counts for request latency. Each
 bucket is mapped to the number of requests which had a latency less than or
 equal to the bucket’s upper limit.</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>$ curl http://a.twitter.server/admin/histograms?h=clnt/p2cslowservertest-server/request_latency_ms&amp;fmt=raw
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ curl http://a.twitter.server/admin/histograms?h=clnt/p2cslowservertest-server/request_latency_ms&amp;fmt=raw
 
 {
   &quot;clnt/p2cslowservertest-server/request_latency_ms&quot; : [
@@ -461,7 +453,7 @@ equal to the bucket’s upper limit.</p>
 <p>Here’s an example where we query a cumulative distribution function (CDF). Each
 bucket is mapped to a percentage of requests which had a latency less than or
 equal to the bucket’s upper limit.</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>$ curl http://a.twitter.server/admin/histograms?h=clnt/p2cslowservertest-server/request_latency_ms&amp;fmt=cdf
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ curl http://a.twitter.server/admin/histograms?h=clnt/p2cslowservertest-server/request_latency_ms&amp;fmt=cdf
 
 {
   &quot;clnt/p2cslowservertest-server/request_latency_ms&quot; : [
@@ -495,7 +487,7 @@ equal to the bucket’s upper limit.</p>
 </pre></div>
 </div>
 <p>Plotting the “finagle/timer/deviation_ms” cumulative distribution function:</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>$ chrome http://a.twitter.server/admin/histograms?h=clnt/p2cslowservertest-server/request_latency_ms&amp;fmt=plot_cdf
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ chrome http://a.twitter.server/admin/histograms?h=clnt/p2cslowservertest-server/request_latency_ms&amp;fmt=plot_cdf
 </pre></div>
 </div>
 <img alt="_images/HistogramCDF.png" src="_images/HistogramCDF.png" />
@@ -526,7 +518,7 @@ the Lifecycle.Warmup trait with your server.</dd>
 <dd>Quit the process.</dd>
 </dl>
 <p>These entries are the default, but if you need you can add your own handler to this HTTP server:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">HttpMuxer</span><span class="o">.</span><span class="n">addHandler</span><span class="o">(</span><span class="s">&quot;/echo&quot;</span><span class="o">,</span> <span class="n">service</span><span class="o">)</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="nc">HttpMuxer</span><span class="o">.</span><span class="n">addHandler</span><span class="o">(</span><span class="s">&quot;/echo&quot;</span><span class="o">,</span> <span class="n">service</span><span class="o">)</span>
 <span class="nc">HttpMuxer</span><span class="o">.</span><span class="n">addHandler</span><span class="o">(</span><span class="s">&quot;/echo/&quot;</span><span class="o">,</span> <span class="n">service</span><span class="o">)</span>
 </pre></div>
 </div>
@@ -560,7 +552,7 @@ trait is built.</p>
   <li><a href="https://github.com/twitter/twitter-server">TwitterServer on GitHub</a></li>
   <li><a href="https://github.com/twitter/twitter-server/issues">Issue Tracker</a></li>
 </ul>
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Features</a><ul>
 <li><a class="reference internal" href="#flags">Flags</a></li>

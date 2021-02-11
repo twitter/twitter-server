@@ -4,23 +4,16 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>FAQ &#8212; TwitterServer 21.1.0 documentation</title>
+    <title>FAQ &#8212; TwitterServer 21.2.0 documentation</title>
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '21.1.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -30,8 +23,7 @@
   
   <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
 
-  </head>
-  <body>
+  </head><body>
   
   
 
@@ -65,11 +57,11 @@
 <div class="section" id="what-are-some-recommended-best-practices">
 <h2>What are some recommended best practices?<a class="headerlink" href="#what-are-some-recommended-best-practices" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
-<li>Override <code class="docutils literal"><span class="pre">com.twitter.app.App.failfastOnFlagsNotParsed</span></code> to <code class="docutils literal"><span class="pre">true</span></code>.
+<li>Override <code class="docutils literal notranslate"><span class="pre">com.twitter.app.App.failfastOnFlagsNotParsed</span></code> to <code class="docutils literal notranslate"><span class="pre">true</span></code>.
 This is so that you fail-fast instead of being surprised by code that is
 reading from flags before they have been parsed.</li>
 <li>Do not register application routes onto
-<code class="docutils literal"><span class="pre">com.twitter.server.HttpMuxer$</span></code> or <code class="docutils literal"><span class="pre">com.twitter.server.AdminHttpServer$</span></code>
+<code class="docutils literal notranslate"><span class="pre">com.twitter.server.HttpMuxer$</span></code> or <code class="docutils literal notranslate"><span class="pre">com.twitter.server.AdminHttpServer$</span></code>
 as that they are intended to be used for administration/internal pages.</li>
 </ol>
 </div>
@@ -95,7 +87,7 @@ However, some features are only available or work best when using that library.<
   <li><a href="https://github.com/twitter/twitter-server">TwitterServer on GitHub</a></li>
   <li><a href="https://github.com/twitter/twitter-server/issues">Issue Tracker</a></li>
 </ul>
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">FAQ</a><ul>
 <li><a class="reference internal" href="#is-it-twitterserver-or-twitter-server">Is it TwitterServer or twitter-server?</a></li>
