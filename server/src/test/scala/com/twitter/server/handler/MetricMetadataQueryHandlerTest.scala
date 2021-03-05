@@ -141,14 +141,19 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
       |      "unit" : "Unspecified",
       |      "verbosity": "Verbosity(default)",
       |      "key_indicator" : false,
-      |      "buckets" : [
-      |        0.5,
-      |        0.9,
-      |        0.95,
-      |        0.99,
-      |        0.999,
-      |        0.9999
-      |      ]
+      |      "buckets" : {
+      |        "count" : ".count",
+      |        "sum" : ".sum",
+      |        "average" : ".avg",
+      |        "minimum" : ".min",
+      |        "maximum" : ".max",
+      |        "0.5" : ".p50",
+      |        "0.9" : ".p90",
+      |        "0.95" : ".p95",
+      |        "0.99" : ".p99",
+      |        "0.999" : ".p9990",
+      |        "0.9999" : ".p9999"
+      |       }
       |     },
       |     {
       |      "name" : "my/bad/null/counter",
@@ -239,14 +244,19 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
       |      "unit" : "Unspecified",
       |      "verbosity": "Verbosity(default)",
       |      "key_indicator" : false,
-      |      "buckets" : [
-      |        0.5,
-      |        0.9,
-      |        0.95,
-      |        0.99,
-      |        0.999,
-      |        0.9999
-      |      ]
+      |      "buckets" : {
+      |        "count" : ".count",
+      |        "sum" : ".sum",
+      |        "average" : ".avg",
+      |        "minimum" : ".min",
+      |        "maximum" : ".max",
+      |        "0.5" : ".p50",
+      |        "0.9" : ".p90",
+      |        "0.95" : ".p95",
+      |        "0.99" : ".p99",
+      |        "0.999" : ".p9990",
+      |        "0.9999" : ".p9999"
+      |       }
       |     }
       |   ]
       | }    """.stripMargin
@@ -281,14 +291,19 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
       |      "unit" : "Unspecified",
       |      "verbosity": "Verbosity(default)",
       |      "key_indicator" : false,
-      |      "buckets" : [
-      |        0.5,
-      |        0.9,
-      |        0.95,
-      |        0.99,
-      |        0.999,
-      |        0.9999
-      |      ]
+      |      "buckets" : {
+      |        "count" : ".count",
+      |        "sum" : ".sum",
+      |        "average" : ".avg",
+      |        "minimum" : ".min",
+      |        "maximum" : ".max",
+      |        "0.5" : ".p50",
+      |        "0.9" : ".p90",
+      |        "0.95" : ".p95",
+      |        "0.99" : ".p99",
+      |        "0.999" : ".p9990",
+      |        "0.9999" : ".p9999"
+      |       }
       |     }
       |   ]
       | }
@@ -334,7 +349,7 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
       val responseStart =
         """
           | {
-          |   "@version" : 2.1,
+          |   "@version" : 3.0,
           |   "counters_latched" : true,
           |   "separator_char" : "/",
         """.stripMargin
@@ -348,7 +363,7 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
       val responseStart =
         """
           | {
-          |   "@version" : 2.1,
+          |   "@version" : 3.0,
           |   "counters_latched" : false,
           |   "separator_char" : "/",
         """.stripMargin

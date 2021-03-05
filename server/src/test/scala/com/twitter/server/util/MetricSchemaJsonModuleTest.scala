@@ -92,7 +92,20 @@ class MetricSchemaJsonModuleTest extends FunSuite {
         "category" -> "NoRoleSpecified",
         "process_path" -> "Unspecified"))
     assert(jsonMap.get("kind").get == "histogram")
-    assert(jsonMap.get("buckets").get == IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999))
+    assert(
+      jsonMap.get("buckets").get == Map(
+        "count" -> ".count",
+        "0.5" -> ".p50",
+        "0.99" -> ".p99",
+        "0.999" -> ".p9990",
+        "0.95" -> ".p95",
+        "0.9" -> ".p90",
+        "0.9999" -> ".p9999",
+        "maximum" -> ".max",
+        "average" -> ".avg",
+        "minimum" -> ".min",
+        "sum" -> ".sum"
+      ))
   }
 
 }

@@ -10,7 +10,9 @@ Unreleased
 21.2.0
 ------
 
-No Changes
+* Change Metrics Metadata histogram buckets field to be an object mapping from names (min, max, etc)
+  and percentiles to the suffix for the metric name representing that portion of the histogram.
+  Bump the endpoint's version number to 3.0. ``PHAB_ID=D627870``
 
 21.1.0
 ------

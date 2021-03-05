@@ -177,6 +177,7 @@ lazy val twitterServer = (project in file("server"))
       "org.slf4j" % "slf4j-api" % slf4jVersion,
       finagle("core"),
       finagle("http"),
+      finagle("stats-core"),
       finagle("toggle"),
       finagle("tunable"),
       util("app"),

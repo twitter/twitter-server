@@ -9,10 +9,13 @@ import com.twitter.finagle.stats.{
   GaugeSchema,
   HistogramSchema,
   MetricSchema,
+  StatsFormatter,
   metadataScopeSeparator
 }
 
 object SchemaSerializer extends StdSerializer[MetricSchema](classOf[MetricSchema]) {
+
+  private[this] val statsFormatter = StatsFormatter.default
 
   /**
    * This custom serializer is used to convert MetricSchemas to JSON for the metric_metadata
@@ -31,10 +34,9 @@ object SchemaSerializer extends StdSerializer[MetricSchema](classOf[MetricSchema
     jsonGenerator: JsonGenerator,
     serializerProvider: SerializerProvider
   ): Unit = {
+    val formattedName = metricSchema.metricBuilder.name.mkString(metadataScopeSeparator())
     jsonGenerator.writeStartObject()
-    jsonGenerator.writeStringField(
-      "name",
-      metricSchema.metricBuilder.name.mkString(metadataScopeSeparator()))
+    jsonGenerator.writeStringField("name", formattedName)
     jsonGenerator.writeArrayFieldStart("relative_name")
     if (metricSchema.metricBuilder.relativeName != Seq.empty) {
       metricSchema.metricBuilder.relativeName.foreach(segment =>
@@ -63,10 +65,22 @@ object SchemaSerializer extends StdSerializer[MetricSchema](classOf[MetricSchema
     jsonGenerator.writeStringField("unit", metricSchema.metricBuilder.units.toString)
     jsonGenerator.writeStringField("verbosity", metricSchema.metricBuilder.verbosity.toString)
     jsonGenerator.writeBooleanField("key_indicator", metricSchema.metricBuilder.keyIndicator)
+
     if (metricSchema.isInstanceOf[HistogramSchema]) {
-      jsonGenerator.writeArrayFieldStart("buckets")
-      metricSchema.metricBuilder.percentiles.foreach(bucket => jsonGenerator.writeNumber(bucket))
-      jsonGenerator.writeEndArray()
+      jsonGenerator.writeObjectFieldStart("buckets")
+      jsonGenerator.writeStringField("count", statsFormatter.separator + "count")
+      jsonGenerator.writeStringField("sum", statsFormatter.separator + "sum")
+      jsonGenerator.writeStringField(
+        "average",
+        statsFormatter.separator + statsFormatter.labelAverage)
+      jsonGenerator.writeStringField("minimum", statsFormatter.separator + statsFormatter.labelMin)
+      jsonGenerator.writeStringField("maximum", statsFormatter.separator + statsFormatter.labelMax)
+      metricSchema.metricBuilder.percentiles.foreach(bucket =>
+        jsonGenerator.writeStringField(
+          bucket.toString,
+          statsFormatter.separator + statsFormatter.labelPercentile(bucket)))
+
+      jsonGenerator.writeEndObject()
     }
     jsonGenerator.writeEndObject()
   }

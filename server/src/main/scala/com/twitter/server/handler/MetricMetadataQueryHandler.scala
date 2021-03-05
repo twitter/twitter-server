@@ -21,7 +21,7 @@ import com.twitter.util.Future
  *
  * Response:
  *   {
- *   "@version" : 2.0,
+ *   "@version" : 3.0,
  *   "counters_latched" : false,
  *   "metrics" : [
  *     {
@@ -65,13 +65,19 @@ import com.twitter.util.Future
  *       "unit" : "Unspecified",
  *       "verbosity": "Verbosity(default)",
  *       "key_indicator" : false,
- *       "buckets" : [
- *         0.5,
- *         0.9,
- *         0.99,
- *         0.999,
- *         0.9999
- *       ]
+ *       "buckets" : {
+ *         "count" : ".count",
+ *         "sum" : ".sum",
+ *         "average" : ".avg",
+ *         "minimum" : ".min",
+ *         "maximum" : ".max",
+ *         "0.5" : ".p50",
+ *         "0.9" : ".p90",
+ *         "0.95" : ".p95",
+ *         "0.99" : ".p99",
+ *         "0.999" : ".p9990",
+ *         "0.9999" : ".p9999"
+ *       }
  *     }
  *   ]}
  */
@@ -96,7 +102,7 @@ class MetricMetadataQueryHandler(source: MetricSchemaSource = new MetricSchemaSo
       content = Buf.Utf8(
         JsonConverter.writeToString(
           Map(
-            "@version" -> 2.1,
+            "@version" -> 3.0,
             "counters_latched" -> latched,
             "separator_char" -> metadataScopeSeparator(),
             "metrics" -> metrics
