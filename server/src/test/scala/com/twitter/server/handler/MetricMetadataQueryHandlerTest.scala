@@ -2,6 +2,7 @@ package com.twitter.server.handler
 
 import com.twitter.finagle.http.Request
 import com.twitter.finagle.stats._
+import com.twitter.finagle.stats.exp.ExpressionSchema
 import com.twitter.server.util.MetricSchemaSource
 import com.twitter.util.Await
 import org.scalatest.FunSuite
@@ -58,12 +59,14 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
 
   trait UnlatchedRegistry extends SchemaRegistry {
     val hasLatchedCounters = false
-    override def schemas(): Map[String, MetricSchema] = schemaMap
+    def schemas(): Map[String, MetricSchema] = schemaMap
+    def expressions(): Map[String, ExpressionSchema] = Map.empty
   }
 
   trait LatchedRegistry extends SchemaRegistry {
     val hasLatchedCounters = true
     override def schemas(): Map[String, MetricSchema] = schemaMap
+    def expressions(): Map[String, ExpressionSchema] = Map.empty
   }
 
   val latchedSchemaRegistry = new LatchedRegistry() {}

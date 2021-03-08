@@ -1,5 +1,6 @@
 package com.twitter.server.util
 
+import com.twitter.finagle.stats.exp.ExpressionSchema
 import com.twitter.finagle.stats.{MetricSchema, SchemaRegistry}
 import com.twitter.finagle.util.LoadService
 
@@ -44,5 +45,9 @@ private[server] class MetricSchemaSource(
   def keySet: Set[String] = synchronized {
     registry
       .foldLeft(Set[String]()) { (set, r) => set ++ r.schemas().keySet }
+  }
+
+  def expressionList: Iterable[ExpressionSchema] = synchronized {
+    registry.foldLeft(IndexedSeq[ExpressionSchema]()) { (seq, r) => seq ++ r.expressions().values }
   }
 }

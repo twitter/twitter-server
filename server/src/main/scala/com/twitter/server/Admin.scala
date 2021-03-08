@@ -169,6 +169,13 @@ object Admin {
         includeInIndex = true
       ),
       Route(
+        path = "/admin/metric/expressions.json",
+        handler = new MetricExpressionHandler(),
+        alias = "Metric Expressions",
+        group = Some(Grouping.Metrics),
+        includeInIndex = true
+      ),
+      Route(
         path = Path.Clients,
         handler = new ClientRegistryHandler(Path.Clients),
         alias = "Clients",
@@ -276,16 +283,6 @@ object Admin {
         }
         case None => Nil
       }
-    } ++ {
-      Seq(
-        Route(
-          path = "/admin/exp/metric_metadata",
-          handler = new MetricTypeQueryHandler(details = aggregate),
-          alias = "Metric Metadata",
-          group = Some(Grouping.Metrics),
-          includeInIndex = false
-        )
-      )
     }
   }
 

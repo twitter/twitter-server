@@ -1,6 +1,7 @@
 package com.twitter.server.util
 
 import com.twitter.finagle.stats._
+import com.twitter.finagle.stats.exp.ExpressionSchema
 import org.scalatest.FunSuite
 
 class MetricSchemaSourceTest extends FunSuite {
@@ -41,13 +42,15 @@ class MetricSchemaSourceTest extends FunSuite {
   )
 
   private val latchedPopulatedRegistry: SchemaRegistry = new SchemaRegistry {
-    override def hasLatchedCounters: Boolean = true
-    override def schemas(): Map[String, MetricSchema] = schemaMap
+    def hasLatchedCounters: Boolean = true
+    def schemas(): Map[String, MetricSchema] = schemaMap
+    def expressions(): Map[String, ExpressionSchema] = Map.empty
   }
 
   private val unlatchedPopulatedRegistry: SchemaRegistry = new SchemaRegistry {
-    override def hasLatchedCounters: Boolean = false
-    override def schemas(): Map[String, MetricSchema] = schemaMap
+    def hasLatchedCounters: Boolean = false
+    def schemas(): Map[String, MetricSchema] = schemaMap
+    def expressions(): Map[String, ExpressionSchema] = Map.empty
   }
 
   private val metricSchemaSource = new MetricSchemaSource(Seq(latchedPopulatedRegistry))
