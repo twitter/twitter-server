@@ -27,6 +27,7 @@ function graphLibLoaded() {
     if (selected != undefined) selected.removeClass("selected")
     li.addClass("selected")
     selected = li
+    window.location.hash = "#" + stat
     refreshStats(stat, new ChartRenderer($("#chart-div")[0], stat))
   }
 
