@@ -10,6 +10,9 @@ Unreleased
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
+* Revert to scala version 2.12.12 due to https://github.com/scoverage/sbt-scoverage/issues/319
+  ``PHAB_ID=D635917``
+
 * Bump scala version to 2.12.13 ``PHAB_ID=D632567``
 
 * Builds are now only supported for Scala 2.12+ ``PHAB_ID=D631091``
