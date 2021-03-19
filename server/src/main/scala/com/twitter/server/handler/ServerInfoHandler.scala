@@ -5,8 +5,8 @@ import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.stats.LoadedStatsReceiver
 import com.twitter.io.Buf
 import com.twitter.server.BuildProperties
+import com.twitter.server.util.AdminJsonConverter
 import com.twitter.server.util.HttpUtils.newResponse
-import com.twitter.server.util.JsonConverter
 import com.twitter.util.Future
 import com.twitter.util.registry.GlobalRegistry
 import java.lang.management.ManagementFactory
@@ -68,7 +68,7 @@ class ServerInfoHandler() extends Service[Request, Response] {
     newResponse(
       contentType = "application/json;charset=UTF-8",
       content =
-        Buf.Utf8(JsonConverter.writeToString(serverInfo + ("uptime" -> mxRuntime.getUptime)))
+        Buf.Utf8(AdminJsonConverter.writeToString(serverInfo + ("uptime" -> mxRuntime.getUptime)))
     )
   }
 }

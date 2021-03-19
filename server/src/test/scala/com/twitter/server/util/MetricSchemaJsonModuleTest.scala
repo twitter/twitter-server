@@ -58,7 +58,7 @@ class MetricSchemaJsonModuleTest extends FunSuite {
   }
 
   test("CounterGauge serializes with kind counter and the correct set of fields") {
-    val serializedString = JsonConverter.writeToString(counterSchema)
+    val serializedString = AdminJsonConverter.writeToString(counterSchema)
     val jsonMap = jsonStrToMap(serializedString)
     assert(jsonMap.keys == topLevelFieldNameSet)
     assert(
@@ -70,7 +70,7 @@ class MetricSchemaJsonModuleTest extends FunSuite {
   }
 
   test("GaugeSchema serializes with kind gauge and the correct set of fields") {
-    val serializedString = JsonConverter.writeToString(gaugeSchema)
+    val serializedString = AdminJsonConverter.writeToString(gaugeSchema)
     val jsonMap = jsonStrToMap(serializedString)
     assert(jsonMap.keys == topLevelFieldNameSet)
     assert(
@@ -83,7 +83,7 @@ class MetricSchemaJsonModuleTest extends FunSuite {
 
   test(
     "HistogramSchema serializes with kind histogram and the correct set of fields (includeing buckets)") {
-    val serializedString = JsonConverter.writeToString(histogramSchema)
+    val serializedString = AdminJsonConverter.writeToString(histogramSchema)
     val jsonMap = jsonStrToMap(serializedString)
     assert(jsonMap.keys == topLevelFieldNameSet ++ Seq("buckets"))
     assert(

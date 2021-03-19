@@ -3,7 +3,7 @@ package com.twitter.server.handler
 import com.twitter.finagle.http.{MediaType, Request, Response}
 import com.twitter.finagle.{Dtab, Service}
 import com.twitter.io.Buf
-import com.twitter.server.util.{HttpUtils, JsonConverter}
+import com.twitter.server.util.{AdminJsonConverter, HttpUtils}
 import com.twitter.util.Future
 
 /**
@@ -31,7 +31,7 @@ final class DtabHandler extends Service[Request, Response] {
     HttpUtils.newResponse(contentType = MediaType.Json, content = Buf.Utf8(jsonResponse))
 
   private[this] def jsonResponse: String = {
-    JsonConverter.writeToString(Map("dtab" -> formattedDtabEntries))
+    AdminJsonConverter.writeToString(Map("dtab" -> formattedDtabEntries))
   }
 
   private[this] def formattedDtabEntries: Seq[String] = {

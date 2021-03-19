@@ -4,8 +4,8 @@ import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Fields, Method, Request, Response, Status}
 import com.twitter.finagle.toggle.{StandardToggleMap, Toggle, ToggleMap}
 import com.twitter.io.Buf
+import com.twitter.server.util.AdminJsonConverter
 import com.twitter.server.util.HttpUtils.{newOk, newResponse}
-import com.twitter.server.util.JsonConverter
 import com.twitter.util.Future
 import com.twitter.util.logging.Logger
 import scala.collection.mutable
@@ -188,7 +188,7 @@ class ToggleHandler private[handler] (registeredLibrariesFn: () => Map[String, T
     headers: Iterable[(String, Object)] = Seq.empty
   ): Future[Response] = {
     // sort the errors to make the response more deterministic.
-    val body = JsonConverter.writeToString(GenericResponse(msg, errors.sorted))
+    val body = AdminJsonConverter.writeToString(GenericResponse(msg, errors.sorted))
     newResponse(
       status = status,
       contentType = "text/plain;charset=UTF-8",
@@ -281,7 +281,7 @@ class ToggleHandler private[handler] (registeredLibrariesFn: () => Map[String, T
 
   /** package protected for testing */
   private[handler] def getResponse(parsedPath: ParsedPath): String = {
-    JsonConverter.writeToString(toLibraries(parsedPath))
+    AdminJsonConverter.writeToString(toLibraries(parsedPath))
   }
 
   /** package protected for testing */

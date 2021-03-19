@@ -1,13 +1,13 @@
 package com.twitter.server.handler
 
-import com.fasterxml.jackson.annotation.{JsonFormat, JsonInclude}
 import com.fasterxml.jackson.annotation.JsonInclude.Include
+import com.fasterxml.jackson.annotation.{JsonFormat, JsonInclude}
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.annotation.JsonNaming
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.server.ServerRegistry
-import com.twitter.server.util.JsonConverter
+import com.twitter.server.util.AdminJsonConverter
 import com.twitter.util.Future
 import java.net.SocketAddress
 import java.security.cert.X509Certificate
@@ -95,6 +95,6 @@ class AttachedClientsHandler(serverRegistry: ServerRegistry = ServerRegistry)
     extends Service[Request, Response] {
   def apply(request: Request): Future[Response] = {
     val doc = AttachedClientsHandler.render(serverRegistry)
-    Future.value(JsonConverter(doc))
+    Future.value(AdminJsonConverter(doc))
   }
 }

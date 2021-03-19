@@ -1,7 +1,7 @@
 package com.twitter.server.view
 
 import com.twitter.finagle.loadbalancer.Metadata
-import com.twitter.server.util.JsonConverter
+import com.twitter.server.util.AdminJsonConverter
 
 private[server] class BalancersJsonView(balancers: Seq[Metadata]) extends View {
 
@@ -24,7 +24,7 @@ private[server] class BalancersJsonView(balancers: Seq[Metadata]) extends View {
   def render: String = {
     val clients = balancers.map(renderBalancer)
     val asMap: Map[String, Object] = Map("clients" -> clients)
-    JsonConverter.writeToString(asMap)
+    AdminJsonConverter.writeToString(asMap)
   }
 
 }

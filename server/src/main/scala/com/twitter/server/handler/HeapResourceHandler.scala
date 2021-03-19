@@ -1,13 +1,13 @@
 package com.twitter.server.handler
 
 import com.twitter.conversions.DurationOps._
-import com.twitter.finagle.http.{Request, Response, Status, Uri}
 import com.twitter.finagle.Service
+import com.twitter.finagle.http.{Request, Response, Status, Uri}
 import com.twitter.io.Buf
 import com.twitter.jvm.Heapster
 import com.twitter.server.util.HttpUtils.newResponse
-import com.twitter.util.{Duration, Future}
 import com.twitter.util.logging.Logger
+import com.twitter.util.{Duration, Future}
 
 class HeapResourceHandler extends Service[Request, Response] {
   private[this] val log = Logger[HeapResourceHandler]

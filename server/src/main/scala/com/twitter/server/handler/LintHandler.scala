@@ -1,14 +1,14 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{Response, Request}
+import com.twitter.finagle.http.{Request, Response}
 import com.twitter.io.Buf
 import com.twitter.server.handler.LintHandler.LintView
+import com.twitter.server.util.AdminJsonConverter
 import com.twitter.server.util.HtmlUtils.escapeHtml
 import com.twitter.server.util.HttpUtils._
-import com.twitter.server.util.JsonConverter
 import com.twitter.util.Future
-import com.twitter.util.lint.{Issue, Rule, GlobalRules}
+import com.twitter.util.lint.{GlobalRules, Issue, Rule}
 
 /**
  * UI for running the globally registered lint [[Rule Rules]].
@@ -49,7 +49,7 @@ class LintHandler extends Service[Request, Response] {
   private[this] def jsonResponse(req: Request): Future[Response] = {
     val rules = GlobalRules.get.iterable.toSeq
     val jsonMap = jsonMapFromRules(rules)
-    newOk(JsonConverter.writeToString(jsonMap), "application/json;charset=UTF-8")
+    newOk(AdminJsonConverter.writeToString(jsonMap), "application/json;charset=UTF-8")
   }
 
   /** exposed for testing */

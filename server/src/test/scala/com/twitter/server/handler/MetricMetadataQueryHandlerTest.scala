@@ -3,7 +3,7 @@ package com.twitter.server.handler
 import com.twitter.finagle.http.Request
 import com.twitter.finagle.stats._
 import com.twitter.finagle.stats.exp.ExpressionSchema
-import com.twitter.server.util.MetricSchemaSource
+import com.twitter.server.util.{JsonUtils, MetricSchemaSource}
 import com.twitter.util.Await
 import org.scalatest.FunSuite
 
@@ -314,16 +314,6 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
 
   val testNameStart = "MetricTypeQueryHandler generates reasonable json for "
 
-  // NOTE: these tests assume a specific iteration order over the registries
-  // and HashMaps which IS NOT a guarantee. should these tests begin to fail
-  // due to that, we will need a more robust approach to validation.
-  private[this] def assertJsonResponse(actual: String, expected: String) = {
-    assert(stripWhitespace(actual) == stripWhitespace(expected))
-  }
-
-  private[this] def stripWhitespace(string: String): String =
-    string.filter { case c => !c.isWhitespace }
-
   def testCase(latched: Boolean, request: Request): Unit = {
     if (request == typeRequestNoArg) {
       testCase(latched, request, testNameStart + "full set of metrics", responseToNoArg)
@@ -357,7 +347,7 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
           |   "separator_char" : "/",
         """.stripMargin
       test(testName + " when using latched counters") {
-        assertJsonResponse(
+        JsonUtils.assertJsonResponse(
           responseStart + responseMetrics,
           Await.result(latchedHandler(request)).contentString)
       }
@@ -371,7 +361,7 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
           |   "separator_char" : "/",
         """.stripMargin
       test(testName + " when using unlatched counters") {
-        assertJsonResponse(
+        JsonUtils.assertJsonResponse(
           responseStart + responseMetrics,
           Await.result(unlatchedHandler(request)).contentString)
       }

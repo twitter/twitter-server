@@ -7,6 +7,17 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+Breaking API Changes
+~~~~~~~~~~~~~~~~~~~~
+
+* com.twitter.server.util.JsonConverter is divided into two Json mappers, JsonConverter
+  and AdminJsonConverter. JsonConverter keeps the minimum configuration, for json mapping
+  to/from twitter-server admin endpoints, AdminJsonConverter is configured to do so.
+  ``PHAB_ID=D634550``
+
+* Json.scala and JsonConverter are merged, removed the Json.deserialize() methods.
+  ``PHAB_ID=D634550``
+
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 

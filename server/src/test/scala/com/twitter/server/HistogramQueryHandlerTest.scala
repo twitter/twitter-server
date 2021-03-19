@@ -1,6 +1,6 @@
 package com.twitter.server
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.{ObjectMapper, PropertyNamingStrategy}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.ScalaObjectMapper
 import com.twitter.conversions.DurationOps._
@@ -15,6 +15,7 @@ class HistogramQueryHandlerTest extends FunSuite {
   private[this] val mapper = new ObjectMapper with ScalaObjectMapper {
     registerModule(DefaultScalaModule)
   }
+  mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
 
   test("histograms.json works with no stats") {
     val sr = new InMemoryStatsReceiver
@@ -44,8 +45,8 @@ class HistogramQueryHandlerTest extends FunSuite {
     }
 
     assert(result.contains("my/cool/stat"))
-    assert(result.contains(raw""""lowerLimit" : 5,"""))
-    assert(result.contains(raw""""upperLimit" : 6,"""))
+    assert(result.contains(raw""""lower_limit" : 5,"""))
+    assert(result.contains(raw""""upper_limit" : 6,"""))
     assert(result.contains(raw""""count" : 1"""))
   }
 
@@ -74,8 +75,8 @@ class HistogramQueryHandlerTest extends FunSuite {
         assert(upperLimit == 1)
         assert(percentage == 1.0)
     }
-    assert(result.contains(raw""""lowerLimit" : 0,"""))
-    assert(result.contains(raw""""upperLimit" : 1,"""))
+    assert(result.contains(raw""""lower_limit" : 0,"""))
+    assert(result.contains(raw""""upper_limit" : 1,"""))
     assert(result.contains(raw""""percentage" : 1.0"""))
   }
 }

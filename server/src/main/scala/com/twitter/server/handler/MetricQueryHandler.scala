@@ -5,7 +5,7 @@ import com.twitter.finagle.http.{MediaType, Request, Response, Uri}
 import com.twitter.io.Buf
 import com.twitter.server.util.HtmlUtils.escapeHtml
 import com.twitter.server.util.HttpUtils.newResponse
-import com.twitter.server.util.{JsonConverter, MetricSource}
+import com.twitter.server.util.{AdminJsonConverter, MetricSource}
 import com.twitter.util.Future
 
 private object MetricQueryHandler {
@@ -45,7 +45,7 @@ class MetricQueryHandler(source: MetricSource = new MetricSource)
       val someKeys = uri.params.getAll("m")
       newResponse(
         contentType = MediaType.JsonUtf8,
-        content = Buf.Utf8(JsonConverter.writeToString(query(someKeys)))
+        content = Buf.Utf8(AdminJsonConverter.writeToString(query(someKeys)))
       )
     } else {
       newResponse(

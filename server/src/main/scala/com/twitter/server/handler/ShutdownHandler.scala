@@ -1,12 +1,12 @@
 package com.twitter.server.handler
 
 import com.twitter.app.App
-import com.twitter.finagle.http.{Method, Request, Response, Status, Uri}
 import com.twitter.finagle.Service
+import com.twitter.finagle.http.{Method, Request, Response, Status, Uri}
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.{newOk, newResponse}
-import com.twitter.util.{Duration, Future}
 import com.twitter.util.logging.Logger
+import com.twitter.util.{Duration, Future}
 
 class ShutdownHandler(app: App) extends Service[Request, Response] {
   private[this] val log = Logger[ShutdownHandler]

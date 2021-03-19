@@ -1,7 +1,8 @@
 package com.twitter.server.handler.exp
 
+import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.Request
-import com.twitter.finagle.stats.exp.{Expression, ExpressionSchema}
+import com.twitter.finagle.stats.exp.{Expression, ExpressionSchema, GreaterThan, MonotoneThresholds}
 import com.twitter.finagle.stats.{
   CounterSchema,
   HistogramSchema,
@@ -11,7 +12,7 @@ import com.twitter.finagle.stats.{
   SchemaRegistry
 }
 import com.twitter.server.handler.MetricExpressionHandler
-import com.twitter.server.util.MetricSchemaSource
+import com.twitter.server.util.{JsonUtils, MetricSchemaSource}
 import com.twitter.util.Await
 import org.scalatest.FunSuite
 
@@ -24,11 +25,15 @@ class MetricExpressionHandlerTest extends FunSuite {
     CounterSchema(new MetricBuilder(name = Seq("failures"), statsReceiver = sr))
   val latencyMb = HistogramSchema(new MetricBuilder(name = Seq("latency"), statsReceiver = sr))
 
-  val successRateExpression = ExpressionSchema(
-    "success_rate",
-    Expression(successMb).divide(Expression(successMb).plus(Expression(failuresMb))))
+  val successRateExpression =
+    ExpressionSchema(
+      "success_rate",
+      Expression(successMb).divide(Expression(successMb).plus(Expression(failuresMb))))
+      .withBounds(MonotoneThresholds(GreaterThan, 99.5, 99.97))
+
   val throughputExpression =
     ExpressionSchema("throughput", Expression(successMb).plus(Expression(failuresMb)))
+
   val latencyExpression = ExpressionSchema("latency", Expression(latencyMb))
 
   val expressionSchemaMap: Map[String, ExpressionSchema] = Map(
@@ -48,18 +53,13 @@ class MetricExpressionHandlerTest extends FunSuite {
 
   val testRequest = Request("http://$HOST:$PORT/admin/metric/expressions.json")
 
-  private[this] def assertJsonResponse(actual: String, expected: String) = {
-    assert(stripWhitespace(actual) == stripWhitespace(expected))
-  }
-
-  private[this] def stripWhitespace(string: String): String =
-    string.filter { case c => !c.isWhitespace }
-
   test("Get the all expressions") {
     val responseString =
       """
         |{
-        |  "@version" : 0.1,
+        |  "@version" : 0.2,
+        |  "counters_latched" : false,
+        |  "separator_char" : "/",
         |  "expressions" : [
         |    {
         |      "name" : "success_rate",
@@ -79,7 +79,14 @@ class MetricExpressionHandlerTest extends FunSuite {
         |          }
         |        }
         |      },
-        |      "bounds" : "Unbounded",
+        |      "bounds" : {
+        |        "kind" : "monotone",
+        |        "operator" : ">",
+        |        "bad_threshold" : 99.5,
+        |        "good_threshold" : 99.97,
+        |        "lower_bound_inclusive" : null,
+        |        "upper_bound_exclusive" : null
+        |      },
         |      "description" : "Unspecified",
         |      "unit" : "Unspecified"
         |    },
@@ -97,7 +104,9 @@ class MetricExpressionHandlerTest extends FunSuite {
         |          "metric-1" : "failures"
         |        }
         |      },
-        |      "bounds" : "Unbounded",
+        |      "bounds" : {
+        |        "kind" : "unbounded"
+        |      },
         |      "description" : "Unspecified",
         |      "unit" : "Unspecified"
         |    },
@@ -111,13 +120,17 @@ class MetricExpressionHandlerTest extends FunSuite {
         |      "expression" : {
         |        "metric" : "latency"
         |      },
-        |      "bounds" : "Unbounded",
+        |      "bounds" : {
+        |        "kind" : "unbounded"
+        |      },
         |      "description" : "Unspecified",
         |      "unit" : "Unspecified"
         |    }
         |  ]
         |}""".stripMargin
 
-    assertJsonResponse(responseString, Await.result(expressionHandler(testRequest)).contentString)
+    JsonUtils.assertJsonResponse(
+      Await.result(expressionHandler(testRequest), 5.seconds).contentString,
+      responseString)
   }
 }

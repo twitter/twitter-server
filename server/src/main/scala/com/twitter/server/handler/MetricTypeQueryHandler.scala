@@ -5,7 +5,7 @@ import com.twitter.finagle.http.{MediaType, Request, Response, Uri}
 import com.twitter.finagle.stats.{HistogramDetail, WithHistogramDetails}
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.newResponse
-import com.twitter.server.util.{JsonConverter, MetricSource}
+import com.twitter.server.util.{AdminJsonConverter, MetricSource}
 import com.twitter.util.Future
 
 /**
@@ -78,7 +78,7 @@ class MetricTypeQueryHandler(
     newResponse(
       contentType = MediaType.JsonUtf8,
       content = Buf.Utf8(
-        JsonConverter.writeToString(
+        AdminJsonConverter.writeToString(
           Map(
             "latched" -> latched,
             "metrics" -> metrics

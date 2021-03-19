@@ -5,8 +5,8 @@ import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.newResponse
-import com.twitter.util.{Future, Time}
 import com.twitter.util.lint.{GlobalRules, Rule}
+import com.twitter.util.{Future, Time}
 
 /**
  * Renders failed lint rule alert in an html fragment onto /admin/failedlint.

@@ -1,14 +1,14 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{Fields, MediaType, Status, Method, Response, Request}
+import com.twitter.finagle.http.{Fields, MediaType, Method, Request, Response, Status}
 import com.twitter.finagle.tunable.StandardTunableMap
 import com.twitter.io.Buf
+import com.twitter.server.util.AdminJsonConverter
 import com.twitter.server.util.HttpUtils._
-import com.twitter.server.util.JsonConverter
-import com.twitter.util.{Throw, Return, Future}
 import com.twitter.util.logging.Logger
 import com.twitter.util.tunable.{JsonTunableMapper, TunableMap}
+import com.twitter.util.{Future, Return, Throw}
 import scala.collection.mutable
 
 /**
@@ -105,7 +105,7 @@ class TunableHandler private[handler] (registeredIdsFn: () => Map[String, Tunabl
         respond(Status.NotFound, s"TunableMap not found for id: $id")
       case Some(map) =>
         val view = toTunableMapView(id, map)
-        respond(Status.Ok, JsonConverter.writeToString(view))
+        respond(Status.Ok, AdminJsonConverter.writeToString(view))
     }
   }
 
@@ -117,7 +117,7 @@ class TunableHandler private[handler] (registeredIdsFn: () => Map[String, Tunabl
       .map {
         case (id, map) => toTunableMapView(id, map)
       }
-    respond(Status.Ok, JsonConverter.writeToString(view))
+    respond(Status.Ok, AdminJsonConverter.writeToString(view))
   }
 
   private[this] def toTunableMapView(id: String, tunableMap: TunableMap): TunableMapView = {

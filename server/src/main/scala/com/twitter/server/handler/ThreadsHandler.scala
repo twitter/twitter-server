@@ -3,8 +3,8 @@ package com.twitter.server.handler
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.io.Buf
+import com.twitter.server.util.AdminJsonConverter
 import com.twitter.server.util.HttpUtils.{expectsHtml, expectsJson, newOk, newResponse}
-import com.twitter.server.util.JsonConverter
 import com.twitter.server.view.ThreadsView
 import com.twitter.util.Future
 import java.lang.management.ManagementFactory
@@ -53,7 +53,7 @@ class ThreadsHandler extends Service[Request, Response] {
           )
     }
     val msg = Map("threads" -> stacks)
-    newOk(JsonConverter.writeToString(msg), "application/json;charset=UTF-8")
+    newOk(AdminJsonConverter.writeToString(msg), "application/json;charset=UTF-8")
   }
 
   private def htmlResponse(req: Request): Future[Response] = {

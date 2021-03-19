@@ -4,9 +4,9 @@ import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response, Uri}
 import com.twitter.finagle.stats.{BucketAndCount, HistogramDetail, WithHistogramDetails}
 import com.twitter.io.Buf
+import com.twitter.server.util.AdminJsonConverter
 import com.twitter.server.util.HtmlUtils.escapeHtml
 import com.twitter.server.util.HttpUtils.newResponse
-import com.twitter.server.util.JsonConverter
 import com.twitter.util.Future
 
 object HistogramQueryHandler {
@@ -65,7 +65,7 @@ object HistogramQueryHandler {
   ): String =
     // ".toMap" is important here for scala 2.13 as otherwise it will be a MapView which
     // doesn't serialize correctly with Jackson
-    JsonConverter.writeToString(counts.mapValues(transform).toMap)
+    AdminJsonConverter.writeToString(counts.mapValues(transform).toMap)
 
   // Generates html for visualizing histograms
   private[HistogramQueryHandler] val render: String = {
@@ -205,7 +205,7 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails)
     )
 
   private[this] def renderHistogramsJson: String =
-    JsonConverter.writeToString(histograms.map {
+    AdminJsonConverter.writeToString(histograms.map {
       case (key, value) =>
         (key, value.counts)
     })
@@ -271,7 +271,7 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails)
   }
 
   private[this] def renderSummary(summary: Summary): String =
-    JsonConverter.writeToString(summary)
+    AdminJsonConverter.writeToString(summary)
 
   private[this] def htmlResponse(query: String): Future[Response] =
     newResponse(
