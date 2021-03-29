@@ -1,11 +1,10 @@
 package com.twitter.server.util.exp
 
 import com.fasterxml.jackson.core.{JsonGenerator, JsonParser}
-import com.fasterxml.jackson.databind.{DeserializationContext, SerializerProvider}
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
+import com.fasterxml.jackson.databind.{DeserializationContext, SerializerProvider}
 import com.twitter.finagle.stats.exp._
-import com.twitter.finagle.stats.metadataScopeSeparator
 
 /**
  * A set of serializers, deserializers used to serve admin/metrics/expressions endpoint
@@ -36,37 +35,13 @@ object ExpressionJson {
       gen.writeStringField("role", expressionSchema.labels.role.toString)
       gen.writeEndObject()
 
-      gen.writeObjectFieldStart("expression")
-      writeExpression(expressionSchema.expr, gen)
-      gen.writeEndObject()
+      gen.writeStringField("expression", expressionSchema.exprQuery)
 
       provider.defaultSerializeField("bounds", expressionSchema.bounds, gen)
 
       gen.writeStringField("description", expressionSchema.description)
       gen.writeStringField("unit", expressionSchema.unit.toString)
       gen.writeEndObject()
-    }
-
-    // Temporary, this is the most customized ser/deserialization in expression endpoint.
-    // Revisit if we need the serializer for ExpressionSchema or Expression.
-    def writeExpression(
-      expr: Expression,
-      gen: JsonGenerator,
-      name: String = "metric"
-    ): Unit = {
-      expr match {
-        case MetricExpression(schema) =>
-          gen.writeStringField(name, schema.metricBuilder.name.mkString(metadataScopeSeparator()))
-        case FunctionExpression(funcName, exprs) =>
-          gen.writeStringField("operator", funcName)
-          gen.writeObjectFieldStart("metrics")
-          exprs.zipWithIndex.map {
-            case (expr, index) => writeExpression(expr, gen, name + "-" + index.toString)
-          }
-          gen.writeEndObject()
-        case ConstantExpression(repr, _) =>
-          gen.writeStringField("constant", repr)
-      }
     }
   }
 
