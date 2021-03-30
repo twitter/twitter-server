@@ -379,6 +379,65 @@ stats to your `statsReceiver` variable.
 This endpoint is available when you are using the `finagle-stats` library.
 See the :ref:`metrics <metrics_label>` section for more information.
 
+/admin/metric_metadata.json
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Export metadata information about metrics in json. By default, this exports metadata for every metric. An optional argument `name` can be added to query for a single metric's metadata.
+
+::
+
+  /admin/metric_metadata.json?name=http/requests
+
+::
+
+  {
+    "@version" : 3.0,
+    "counters_latched" : true,
+    "separator_char" : "/",
+    "metrics" : [
+      {
+        "name" : "http/requests",
+        "relative_name" : [
+          "requests"
+        ],
+        "kind" : "counter",
+        "source" : {
+          "class" : "Unspecified",
+          "category" : "Server",
+          "process_path" : "Unspecified"
+        },
+        "description" : "No description provided",
+        "unit" : "Unspecified",
+        "verbosity" : "Verbosity(default)",
+        "key_indicator" : false
+      }
+    ]
+  }
+
+Top-level/instance-wide Fields:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+:@version: the current version of the response document (format: Major.minor).
+:counters_latched: a bool indicating whether or not the service is using latched counters.
+:separator_char: the character used to separate path fields in a metric name.
+:metrics: an array containing Metadata objects for each metric.
+
+Metadata Object Fields:
+^^^^^^^^^^^^^^^^^^^^^^^
+:name: the fully-qualified name of the metric for this particular Metadata object.
+:relative_name: an array containing the field names constituting a suffix which is common across all library users. While the prefix may be configurable, metrics with a shared `relative_name` can be considered alike.
+:kind: a string representing the metric type (counter, gauge or histogram).
+:source: an object which describes where the metric comes from (see next section for source-level fields).
+:description: text description of the metric intended for human consumption.
+:unit: the appropriate unit for this metric (ex, milliseconds, megabytes, count).
+:verbosity: the metrics logging verbosity level.
+:key_indicator: a bool indicating whether or not this metric is part of this services top-level indicators or golden metrics.
+:buckets: a map from histogram components (percentiles, max, min, sum, etc) to the suffix which completes this metrics name in metrics.json (only present for histograms).
+
+Source Object Fields:
+^^^^^^^^^^^^^^^^^^^^^
+:class: a string containing the name of the scala/java class that generated this metric (not currently populated).
+:category: currently either "Server" or "Client" indicating whether the metric pertains to this server or one of its downstreams, but may be expanded in the future. Should be treated as a string.
+:process_path: a string indicating the relevant downstream, when there is one.
+
 Profiling
 ---------
 
