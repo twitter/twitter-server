@@ -65,21 +65,31 @@ object SchemaSerializer extends StdSerializer[MetricSchema](classOf[MetricSchema
     jsonGenerator.writeStringField("verbosity", metricSchema.metricBuilder.verbosity.toString)
     jsonGenerator.writeBooleanField("key_indicator", metricSchema.metricBuilder.keyIndicator)
 
-    if (metricSchema.isInstanceOf[HistogramSchema]) {
-      jsonGenerator.writeObjectFieldStart("buckets")
-      jsonGenerator.writeStringField("count", statsFormatter.separator + "count")
-      jsonGenerator.writeStringField("sum", statsFormatter.separator + "sum")
-      jsonGenerator.writeStringField(
-        "average",
-        statsFormatter.separator + statsFormatter.labelAverage)
-      jsonGenerator.writeStringField("minimum", statsFormatter.separator + statsFormatter.labelMin)
-      jsonGenerator.writeStringField("maximum", statsFormatter.separator + statsFormatter.labelMax)
-      metricSchema.metricBuilder.percentiles.foreach(bucket =>
+    metricSchema match {
+      case _: GaugeSchema =>
+        if (metricSchema.metricBuilder.isCounterishGauge) {
+          jsonGenerator.writeBooleanField("counterish_gauge", true)
+        }
+      case _: HistogramSchema =>
+        jsonGenerator.writeObjectFieldStart("buckets")
+        jsonGenerator.writeStringField("count", statsFormatter.separator + "count")
+        jsonGenerator.writeStringField("sum", statsFormatter.separator + "sum")
         jsonGenerator.writeStringField(
-          bucket.toString,
-          statsFormatter.separator + statsFormatter.labelPercentile(bucket)))
+          "average",
+          statsFormatter.separator + statsFormatter.labelAverage)
+        jsonGenerator.writeStringField(
+          "minimum",
+          statsFormatter.separator + statsFormatter.labelMin)
+        jsonGenerator.writeStringField(
+          "maximum",
+          statsFormatter.separator + statsFormatter.labelMax)
+        metricSchema.metricBuilder.percentiles.foreach(bucket =>
+          jsonGenerator.writeStringField(
+            bucket.toString,
+            statsFormatter.separator + statsFormatter.labelPercentile(bucket)))
 
-      jsonGenerator.writeEndObject()
+        jsonGenerator.writeEndObject()
+      case _ => // nop
     }
     jsonGenerator.writeEndObject()
   }

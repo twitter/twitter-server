@@ -108,4 +108,15 @@ class MetricSchemaJsonModuleTest extends FunSuite {
       ))
   }
 
+  test("GaugeSchema does not include counterishGauge unless it is true") {
+    val counterish = gaugeSchema.copy(metricBuilder = gaugeSchema.metricBuilder.withCounterishGauge)
+
+    for (schema <- Seq(gaugeSchema, counterish)) {
+      val serializedString = AdminJsonConverter.writeToString(schema)
+      val jsonMap = jsonStrToMap(serializedString)
+      val expected = if (schema.metricBuilder.isCounterishGauge) Some(true) else None
+      assert(jsonMap.get("counterish_gauge") == expected)
+    }
+  }
+
 }
