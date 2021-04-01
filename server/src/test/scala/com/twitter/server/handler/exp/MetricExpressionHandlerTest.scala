@@ -32,7 +32,7 @@ class MetricExpressionHandlerTest extends FunSuite {
   val successRateExpression =
     ExpressionSchema(
       "success_rate",
-      Expression(100, sr).multiply(
+      Expression(100).multiply(
         Expression(successMb).divide(Expression(successMb).plus(Expression(failuresMb))))
     ).withBounds(MonotoneThresholds(GreaterThan, 99.5, 99.97))
 

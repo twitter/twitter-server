@@ -37,7 +37,7 @@ object MetricExpressionHandler {
     expr match {
       case HistogramExpression(schema, component) => getHisto(schema, component)
       case MetricExpression(schema) => getMetric(schema, latched)
-      case ConstantExpression(repr, _) => repr
+      case ConstantExpression(repr) => repr
       case FunctionExpression(funcName, exprs) =>
         s"$funcName(${exprs.map { expr => translateToQuery(expr, latched) }.mkString(",")})"
     }
