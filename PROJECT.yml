@@ -2,11 +2,13 @@
 
 owners:
   - banderson
-  - hallam
   - ccoco
+  - hallam
   - ibennett
   - koliver
+  - mdannenberg
   - mnakamura
   - roanta
+  - yufang
 watchers:
   - csl-team:ldap
