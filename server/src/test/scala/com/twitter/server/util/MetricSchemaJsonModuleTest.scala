@@ -8,7 +8,7 @@ import org.scalatest.FunSuite
 class MetricSchemaJsonModuleTest extends FunSuite {
 
   private val counterSchema = CounterSchema(
-    new MetricBuilder(
+    MetricBuilder(
       keyIndicator = true,
       description = "Counts how many cools are seen",
       units = Requests,
@@ -21,7 +21,7 @@ class MetricSchemaJsonModuleTest extends FunSuite {
       statsReceiver = null
     ))
   private val gaugeSchema = GaugeSchema(
-    new MetricBuilder(
+    MetricBuilder(
       keyIndicator = false,
       description = "Measures how fine the downstream system is",
       units = Percentage,
@@ -34,7 +34,7 @@ class MetricSchemaJsonModuleTest extends FunSuite {
       statsReceiver = null
     ))
   private val histogramSchema = HistogramSchema(
-    new MetricBuilder(
+    MetricBuilder(
       name = Seq("my", "only", "histo"),
       percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
       statsReceiver = null

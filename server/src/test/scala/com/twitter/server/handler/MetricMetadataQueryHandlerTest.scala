@@ -11,7 +11,7 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
 
   val schemaMap: Map[String, MetricSchema] = Map(
     "my/cool/counter" -> CounterSchema(
-      new MetricBuilder(
+      MetricBuilder(
         keyIndicator = true,
         description = "Counts how many cools are seen",
         units = Requests,
@@ -24,7 +24,7 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
         statsReceiver = null
       )),
     "your/fine/gauge" -> GaugeSchema(
-      new MetricBuilder(
+      MetricBuilder(
         keyIndicator = false,
         description = "Measures how fine the downstream system is",
         units = Percentage,
@@ -37,13 +37,13 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
         statsReceiver = null
       )),
     "my/only/histo" -> HistogramSchema(
-      new MetricBuilder(
+      MetricBuilder(
         name = Seq("my", "only", "histo"),
         percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
         statsReceiver = null
       )),
     "my/bad/null/counter" -> CounterSchema(
-      new MetricBuilder(
+      MetricBuilder(
         keyIndicator = true,
         description = "A counter scoped by null get deserialized correctly",
         units = Requests,

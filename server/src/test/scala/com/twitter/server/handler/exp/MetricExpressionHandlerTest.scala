@@ -24,10 +24,10 @@ class MetricExpressionHandlerTest extends FunSuite {
 
   val sr = new InMemoryStatsReceiver
 
-  val successMb = CounterSchema(new MetricBuilder(name = Seq("success"), statsReceiver = sr))
+  val successMb = CounterSchema(MetricBuilder(name = Seq("success"), statsReceiver = sr))
   val failuresMb =
-    CounterSchema(new MetricBuilder(name = Seq("failures"), statsReceiver = sr))
-  val latencyMb = HistogramSchema(new MetricBuilder(name = Seq("latency"), statsReceiver = sr))
+    CounterSchema(MetricBuilder(name = Seq("failures"), statsReceiver = sr))
+  val latencyMb = HistogramSchema(MetricBuilder(name = Seq("latency"), statsReceiver = sr))
 
   val successRateExpression =
     ExpressionSchema(
@@ -82,7 +82,7 @@ class MetricExpressionHandlerTest extends FunSuite {
     val expectedResponse =
       """
         |{
-        |  "@version" : 0.4,
+        |  "@version" : 0.6,
         |  "counters_latched" : false,
         |  "separator_char" : "/",
         |  "expressions" : [
@@ -183,7 +183,7 @@ class MetricExpressionHandlerTest extends FunSuite {
 
   test("translate expressions - gauges") {
     val connMb =
-      GaugeSchema(new MetricBuilder(name = Seq("client", "connections"), statsReceiver = sr))
+      GaugeSchema(MetricBuilder(name = Seq("client", "connections"), statsReceiver = sr))
     val result = MetricExpressionHandler.translateToQuery(Expression(connMb))
     assert(result == "client/connections")
   }
