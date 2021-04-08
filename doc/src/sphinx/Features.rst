@@ -14,7 +14,7 @@ Flags
 .. _flags:
 
 The flags implementation, `found in Twitter's util library
-<https://github.com/twitter/util/blob/master/util-app/src/main/scala/com/twitter/app/Flag.scala>`_,
+<https://github.com/twitter/util/blob/release/util-app/src/main/scala/com/twitter/app/Flag.scala>`_,
 focuses on simplicity and type safety, parsing flags into Scala values.
 
 You define your flag like this, in that case the flag type is `String`:
@@ -487,12 +487,12 @@ you want to alter the behavior of a trait that is already mixed into
 `TwitterServer`, you can override methods that you want to have
 different behavior and then mix it in again. For example, in the
 `Logging
-<https://github.com/twitter/util/blob/master/util-logging/src/main/scala/com/twitter/logging/App.scala>`_
+<https://github.com/twitter/util/blob/release/util-logging/src/main/scala/com/twitter/logging/App.scala>`_
 trait, you can override loggers to change where you send logs.
 
 If you want finer grained control over your server, you can remix
 traits however you like in the same way that the `TwitterServer
-<https://github.com/twitter/twitter-server/blob/master/src/main/scala/com/twitter/server/TwitterServer.scala>`_
+<https://github.com/twitter/twitter-server/blob/release/src/main/scala/com/twitter/server/TwitterServer.scala>`_
 trait is built.
 
 .. _debug metrics: https://twitter.github.io/util/guide/util-stats/basics.html#verbosity-levels

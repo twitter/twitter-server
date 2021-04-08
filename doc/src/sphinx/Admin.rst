@@ -243,7 +243,7 @@ registered for `$id`.
 `PUT` and `DELETE` requests to `/admin/tunables/$id` update the in-memory Tunables for `$id`
 and should have a JSON body in the same format as a `Tunable` configuration file,
 detailed in
-`JsonTunableMapper <https://github.com/twitter/util/blob/master/util-tunable/src/main/scala/com/twitter/util/tunable/JsonTunableMapper.scala>`_:
+`JsonTunableMapper <https://github.com/twitter/util/blob/release/util-tunable/src/main/scala/com/twitter/util/tunable/JsonTunableMapper.scala>`_:
 
 ::
 
@@ -265,7 +265,7 @@ will *not* cause any existing `Tunables` to be removed.
 For a `DELETE` request, these `Tunables` will cleared from the `TunableMap`. The `Tunables` are keyed
 by "id" and "type"; the "value" for each of `Tunables` to delete can be any valid value for this
 `Tunable`. Because the value of a `Tunable` is the result of a composition of `TunableMaps`
-(see `StandardTunableMap <https://github.com/twitter/finagle/blob/master/finagle-tunable/src/main/scala/com/twitter/finagle/tunable/StandardTunableMap.scala>`_), deleting an in-memory Tunable will cause the value from the
+(see `StandardTunableMap <https://github.com/twitter/finagle/blob/release/finagle-tunable/src/main/scala/com/twitter/finagle/tunable/StandardTunableMap.scala>`_), deleting an in-memory Tunable will cause the value from the
 composition of the other TunableMaps to be used.
 
 Metrics
