@@ -2,7 +2,7 @@ package com.twitter.server.handler
 
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{MediaType, Request, Response, Uri}
-import com.twitter.finagle.stats.metadataScopeSeparator
+import com.twitter.finagle.stats.{StatsFormatter, metadataScopeSeparator}
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.newResponse
 import com.twitter.server.util.{AdminJsonConverter, MetricSchemaSource}
@@ -84,8 +84,25 @@ import com.twitter.util.Future
 class MetricMetadataQueryHandler(source: MetricSchemaSource = new MetricSchemaSource)
     extends Service[Request, Response] {
 
-  private[this] def query(keys: Iterable[String]) =
-    for (k <- keys; e <- source.getSchema(k)) yield e
+  private[this] val statsFormatter = StatsFormatter.default
+
+  private[this] def query(keys: Iterable[String]) = {
+    keys.flatMap(k => {
+      // histogram metric.
+      if (k.lastIndexOf(statsFormatter.histogramSeparator) > k.lastIndexOf(
+          metadataScopeSeparator())) {
+        val trimmedMetricName =
+          if (k.endsWith("percentile")) { // see StatsFormatter.CommonsStats
+            val intermediate = k.substring(0, k.lastIndexOf(statsFormatter.histogramSeparator))
+            intermediate.substring(0, intermediate.lastIndexOf(statsFormatter.histogramSeparator))
+          } else k.substring(0, k.lastIndexOf(statsFormatter.histogramSeparator))
+        val metric = source.getSchema(trimmedMetricName)
+        if (metric.isEmpty) source.getSchema(k) else metric
+      } else {
+        source.getSchema(k)
+      }
+    })
+  }
 
   def apply(req: Request): Future[Response] = {
     val uri = Uri.fromRequest(req)
@@ -102,7 +119,7 @@ class MetricMetadataQueryHandler(source: MetricSchemaSource = new MetricSchemaSo
       content = Buf.Utf8(
         AdminJsonConverter.writeToString(
           Map(
-            "@version" -> 3.0,
+            "@version" -> 3.1,
             "counters_latched" -> latched,
             "separator_char" -> metadataScopeSeparator(),
             "metrics" -> metrics

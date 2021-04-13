@@ -381,16 +381,18 @@ See the :ref:`metrics <metrics_label>` section for more information.
 
 /admin/metric_metadata.json
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Export metadata information about metrics in json. By default, this exports metadata for every metric. An optional argument `name` can be added to query for a single metric's metadata.
+Export metadata information about metrics in json. By default, this exports metadata for every metric. An optional argument `name` can be added to query for a single metric's metadata. Multiple names may be passed in using that argument multiple times. 
+
+NB: for a histogram, it may be looked up with our without its metrics.json suffix (.sum, .p95, .max, etc).
 
 ::
 
-  /admin/metric_metadata.json?name=http/requests
+  /admin/metric_metadata.json?name=http/requests&name=strato_rpc_client/latency_ms.p95
 
 ::
 
   {
-    "@version" : 3.0,
+    "@version" : 3.1,
     "counters_latched" : true,
     "separator_char" : "/",
     "metrics" : [
@@ -409,6 +411,35 @@ Export metadata information about metrics in json. By default, this exports meta
         "unit" : "Unspecified",
         "verbosity" : "Verbosity(default)",
         "key_indicator" : false
+      },
+      {
+        "name" : "strato_rpc_client/latency_ms",
+        "relative_name" : [
+          "latency_ms"
+        ],
+        "kind" : "histogram",
+        "source" : {
+          "class" : "Unspecified",
+          "category" : "Client",
+          "process_path" : "Unspecified"
+        },
+        "description" : "No description provided",
+        "unit" : "Unspecified",
+        "verbosity" : "Verbosity(default)",
+        "key_indicator" : false,
+        "buckets" : {
+          "count" : ".count",
+          "sum" : ".sum",
+          "average" : ".avg",
+          "minimum" : ".min",
+          "maximum" : ".max",
+          "0.5" : ".p50",
+          "0.9" : ".p90",
+          "0.95" : ".p95",
+          "0.99" : ".p99",
+          "0.999" : ".p9990",
+          "0.9999" : ".p9999"
+        }
       }
     ]
   }

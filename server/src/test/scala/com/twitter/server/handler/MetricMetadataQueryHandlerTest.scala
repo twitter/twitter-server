@@ -4,7 +4,7 @@ import com.twitter.finagle.http.Request
 import com.twitter.finagle.stats._
 import com.twitter.finagle.stats.exp.ExpressionSchema
 import com.twitter.server.util.{JsonUtils, MetricSchemaSource}
-import com.twitter.util.Await
+import com.twitter.util.{Await, Duration}
 import org.scalatest.FunSuite
 
 class MetricMetadataQueryHandlerTest extends FunSuite {
@@ -98,7 +98,7 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
     "http://$HOST:$PORT/admin/metric_metadata.json?name=my/only/histo")
 
   val typeRequestWithHistoAndNon = Request(
-    "http://$HOST:$PORT/admin/metric_metadata.json?name=my/cool/counter&name=my/only/histo")
+    "http://$HOST:$PORT/admin/metric_metadata.json?name=my/cool/counter&name=my/only/histo.p99")
 
   val responseToNoArg =
     """
@@ -342,7 +342,7 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
       val responseStart =
         """
           | {
-          |   "@version" : 3.0,
+          |   "@version" : 3.1,
           |   "counters_latched" : true,
           |   "separator_char" : "/",
         """.stripMargin
@@ -356,7 +356,7 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
       val responseStart =
         """
           | {
-          |   "@version" : 3.0,
+          |   "@version" : 3.1,
           |   "counters_latched" : false,
           |   "separator_char" : "/",
         """.stripMargin
@@ -381,4 +381,111 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
     testCase(false, typeRequestWithHisto),
     testCase(false, typeRequestWithHistoAndNon)
   )
+
+  /**
+   * Histogram Metric Querying cases.
+   */
+  trait SchemalessRegistry extends SchemaRegistry {
+    val hasLatchedCounters = false
+    def expressions(): Map[String, ExpressionSchema] = Map.empty
+  }
+
+  def histoSuffixTestCase(
+    testName: String,
+    metricName: String,
+    requestParam: String,
+    metricType: String,
+    useCommonsStats: Boolean = false
+  ): Unit = {
+    test(testName) {
+      trait registry extends SchemalessRegistry {
+        def schemas(): Map[String, MetricSchema] = if (metricType == "counter") {
+          Map(
+            metricName -> CounterSchema(
+              MetricBuilder(
+                name = metricName.split("\\/"),
+                percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
+                statsReceiver = null
+              )))
+        } else {
+          Map(
+            metricName -> HistogramSchema(
+              MetricBuilder(
+                name = metricName.split("\\/"),
+                percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
+                statsReceiver = null
+              )))
+        }
+      }
+      val request = Request("http://$HOST:$PORT/admin/metric_metadata.json?name=" + requestParam)
+      if (useCommonsStats) {
+        format.let("commonsstats") {
+          val handler =
+            new MetricMetadataQueryHandler(new MetricSchemaSource(Seq(new registry() {})))
+          assert(
+            Await
+              .result(handler(request), Duration.fromSeconds(10))
+              .contentString
+              .contains("kind\" : \"%s\"".format(metricType)))
+        }
+      } else {
+        val handler =
+          new MetricMetadataQueryHandler(new MetricSchemaSource(Seq(new registry() {})))
+        assert(
+          Await
+            .result(handler(request), Duration.fromSeconds(10)).contentString.contains(
+              "kind\" : \"%s\"".format(metricType)))
+      }
+    }
+  }
+
+  histoSuffixTestCase(
+    "counter with histo separator in name querability test",
+    "foo/bar.baz",
+    "foo/bar.baz",
+    "counter"
+  )
+
+  histoSuffixTestCase(
+    "counter with histobucket-like name querability test",
+    "foo/bar.p999",
+    "foo/bar.p999",
+    "counter"
+  )
+
+  histoSuffixTestCase(
+    "histogram querability via bucket name test",
+    "foo",
+    "foo.p999",
+    "histogram"
+  )
+
+  histoSuffixTestCase(
+    "histogram querability via raw name test",
+    "foo",
+    "foo",
+    "histogram"
+  )
+
+  histoSuffixTestCase(
+    "counter with less common histo separator in name querability test",
+    "foo/bar_baz",
+    "foo/bar_baz",
+    "counter",
+    true)
+
+  histoSuffixTestCase(
+    "histo with less common histo separator in name querability test",
+    "foo/bar_baz",
+    "foo/bar_baz",
+    "histogram",
+    true)
+
+  histoSuffixTestCase(
+    "histo with less common histo separator in name percentile querability test",
+    "foo/bar_baz",
+    "foo/bar_baz_99_percentile",
+    "histogram",
+    true)
+
 }

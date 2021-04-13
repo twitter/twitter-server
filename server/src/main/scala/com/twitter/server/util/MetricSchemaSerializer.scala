@@ -72,21 +72,21 @@ object SchemaSerializer extends StdSerializer[MetricSchema](classOf[MetricSchema
         }
       case _: HistogramSchema =>
         jsonGenerator.writeObjectFieldStart("buckets")
-        jsonGenerator.writeStringField("count", statsFormatter.separator + "count")
-        jsonGenerator.writeStringField("sum", statsFormatter.separator + "sum")
+        jsonGenerator.writeStringField("count", statsFormatter.histogramSeparator + "count")
+        jsonGenerator.writeStringField("sum", statsFormatter.histogramSeparator + "sum")
         jsonGenerator.writeStringField(
           "average",
-          statsFormatter.separator + statsFormatter.labelAverage)
+          statsFormatter.histogramSeparator + statsFormatter.labelAverage)
         jsonGenerator.writeStringField(
           "minimum",
-          statsFormatter.separator + statsFormatter.labelMin)
+          statsFormatter.histogramSeparator + statsFormatter.labelMin)
         jsonGenerator.writeStringField(
           "maximum",
-          statsFormatter.separator + statsFormatter.labelMax)
+          statsFormatter.histogramSeparator + statsFormatter.labelMax)
         metricSchema.metricBuilder.percentiles.foreach(bucket =>
           jsonGenerator.writeStringField(
             bucket.toString,
-            statsFormatter.separator + statsFormatter.labelPercentile(bucket)))
+            statsFormatter.histogramSeparator + statsFormatter.labelPercentile(bucket)))
 
         jsonGenerator.writeEndObject()
       case _ => // nop
