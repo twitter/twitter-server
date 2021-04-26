@@ -7,6 +7,9 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+21.4.0
+------
+
 * Change Metrics Metadata Endpoint to return a histogram's metadata when queried using the /admin/metrics.json
   full (suffixed) histogram name as the value for the name argument. ``PHAB_ID=D640725``
 
