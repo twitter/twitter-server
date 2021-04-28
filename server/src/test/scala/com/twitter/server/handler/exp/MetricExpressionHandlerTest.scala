@@ -38,8 +38,10 @@ class MetricExpressionHandlerTest extends FunSuite {
 
   val throughputExpression =
     ExpressionSchema("throughput", Expression(successMb).plus(Expression(failuresMb)))
+      .withNamespaces("path", "to", "tenantName")
 
-  val latencyP99 = ExpressionSchema("latency_p99", Expression(latencyMb, Right(0.99)))
+  val latencyP99 =
+    ExpressionSchema("latency_p99", Expression(latencyMb, Right(0.99))).withNamespaces("tenantName")
 
   val expressionSchemaMap: Map[String, ExpressionSchema] = Map(
     "success_rate" -> successRateExpression,
@@ -82,7 +84,7 @@ class MetricExpressionHandlerTest extends FunSuite {
     val expectedResponse =
       """
         |{
-        |  "@version" : 0.6,
+        |  "@version" : 0.7,
         |  "counters_latched" : false,
         |  "separator_char" : "/",
         |  "expressions" : [
@@ -112,6 +114,7 @@ class MetricExpressionHandlerTest extends FunSuite {
         |        "service_name" : "Unspecified",
         |        "role" : "NoRoleSpecified"
         |      },
+        |      "namespaces" : ["path","to","tenantName"],
         |      "expression" : "plus(rate(success),rate(failures))",
         |      "bounds" : {
         |        "kind" : "unbounded"
@@ -126,6 +129,7 @@ class MetricExpressionHandlerTest extends FunSuite {
         |        "service_name" : "Unspecified",
         |        "role" : "NoRoleSpecified"
         |      },
+        |      "namespaces" : ["tenantName"],
         |      "expression" :  "latency.p99",
         |      "bounds" : {
         |        "kind" : "unbounded"

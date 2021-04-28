@@ -35,6 +35,12 @@ object ExpressionJson {
       gen.writeStringField("role", expressionSchema.labels.role.toString)
       gen.writeEndObject()
 
+      if (expressionSchema.namespaces.nonEmpty) {
+        gen.writeArrayFieldStart("namespaces")
+        expressionSchema.namespaces.foreach { p => gen.writeString(p) }
+        gen.writeEndArray()
+      }
+
       gen.writeStringField("expression", expressionSchema.exprQuery)
 
       provider.defaultSerializeField("bounds", expressionSchema.bounds, gen)
