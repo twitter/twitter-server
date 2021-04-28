@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Features &#8212; TwitterServer 21.3.0 documentation</title>
+    <title>Features &#8212; TwitterServer 21.4.0 documentation</title>
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -94,7 +94,7 @@ introduction.</p>
 </div>
 <div class="section" id="flags">
 <h2>Flags<a class="headerlink" href="#flags" title="Permalink to this headline">¶</a></h2>
-<p id="id1">The flags implementation, <a class="reference external" href="https://github.com/twitter/util/blob/master/util-app/src/main/scala/com/twitter/app/Flag.scala">found in Twitter’s util library</a>,
+<p id="id1">The flags implementation, <a class="reference external" href="https://github.com/twitter/util/blob/release/util-app/src/main/scala/com/twitter/app/Flag.scala">found in Twitter’s util library</a>,
 focuses on simplicity and type safety, parsing flags into Scala values.</p>
 <p>You define your flag like this, in that case the flag type is <cite>String</cite>:</p>
 <div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">what</span> <span class="k">=</span> <span class="n">flag</span><span class="o">(</span><span class="s">&quot;what&quot;</span><span class="o">,</span> <span class="s">&quot;hello&quot;</span><span class="o">,</span> <span class="s">&quot;String to return&quot;</span><span class="o">)</span>
@@ -529,10 +529,10 @@ the Lifecycle.Warmup trait with your server.</dd>
 you want to alter the behavior of a trait that is already mixed into
 <cite>TwitterServer</cite>, you can override methods that you want to have
 different behavior and then mix it in again. For example, in the
-<a class="reference external" href="https://github.com/twitter/util/blob/master/util-logging/src/main/scala/com/twitter/logging/App.scala">Logging</a>
+<a class="reference external" href="https://github.com/twitter/util/blob/release/util-logging/src/main/scala/com/twitter/logging/App.scala">Logging</a>
 trait, you can override loggers to change where you send logs.</p>
 <p>If you want finer grained control over your server, you can remix
-traits however you like in the same way that the <a class="reference external" href="https://github.com/twitter/twitter-server/blob/master/src/main/scala/com/twitter/server/TwitterServer.scala">TwitterServer</a>
+traits however you like in the same way that the <a class="reference external" href="https://github.com/twitter/twitter-server/blob/release/src/main/scala/com/twitter/server/TwitterServer.scala">TwitterServer</a>
 trait is built.</p>
 </div>
 </div>

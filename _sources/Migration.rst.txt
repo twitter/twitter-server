@@ -14,7 +14,7 @@ replaces Ostrich’s stats library.
   in your runtime classpath.
 
 By using two
-`flags <https://github.com/twitter/util/blob/master/util-app/src/main/scala/com/twitter/app/Flag.scala>`_,
+`flags <https://github.com/twitter/util/blob/release/util-app/src/main/scala/com/twitter/app/Flag.scala>`_,
 the admin HTTP endpoint ``/admin/stats.json`` supports an Ostrich
 compatibility mode:
 
