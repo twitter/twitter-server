@@ -12,10 +12,6 @@ junit_tests(
             "twitter-server/slf4j-jdk14/src/main/scala",
             scope = "runtime",
         ),
-        scoped(
-           "twitter-server/slf4j-jdk14/src/main/scala/com/twitter/server/handler/slf4j/jdk14",
-           scope = "runtime"
-        ),
         "finagle/finagle-base-http/src/main",
         "finagle/finagle-core/src/main",
         "finagle/finagle-http/src/main/scala",

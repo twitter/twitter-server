@@ -1,5 +1,5 @@
 scala_library(
-    sources = ["**/*.scala"],
+    sources = ["com/twitter/server/handler/slf4j/jdk14/*.scala"],
     compiler_option_sets = ["fatal_warnings"],
     provides = scala_artifact(
         org = "com.twitter",
@@ -7,6 +7,7 @@ scala_library(
         repo = artifactory,
     ),
     scope = "forced",  # Exposes a service-loaded class.
+    strict_deps = True,
     tags = ["logging_impl_check_whitelisted_target"],
     dependencies = [
         "3rdparty/jvm/org/slf4j:slf4j-api",
@@ -23,6 +24,7 @@ scala_library(
         "finagle/finagle-http/src/main/scala",
         "twitter-server/server/src/main/scala",
         "twitter-server/slf4j-jdk14/src/main/resources",
+        "util/util-core/src/main/scala/com/twitter/io",
         "util/util-logging/src/main/scala",
     ],
     exports = [
