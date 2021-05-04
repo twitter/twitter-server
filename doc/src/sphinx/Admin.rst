@@ -461,6 +461,7 @@ Metadata Object Fields:
 :unit: the appropriate unit for this metric (ex, milliseconds, megabytes, count).
 :verbosity: the metrics logging verbosity level.
 :key_indicator: a bool indicating whether or not this metric is part of this services top-level indicators or golden metrics.
+:counterish_gauge: a bool indicating if a gauge represents a count of something over the lifetime of the instance. Note that it does not follow the same latching rules as standard counters. This key will not be present unless it is true. It can only be present on gauge-type metrics.
 :buckets: a map from histogram components (percentiles, max, min, sum, etc) to the suffix which completes this metrics name in metrics.json (only present for histograms).
 
 Source Object Fields:
