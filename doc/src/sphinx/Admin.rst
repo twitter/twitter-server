@@ -470,6 +470,75 @@ Source Object Fields:
 :category: currently either "Server" or "Client" indicating whether the metric pertains to this server or one of its downstreams, but may be expanded in the future. Should be treated as a string.
 :process_path: a string indicating the relevant downstream, when there is one.
 
+/admin/metric/expressions.json
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Export metadata information about metric expressions in json. These metadata represent commonly used metric queries for the service.
+
+::
+
+  /admin/metric/expressions.json?name=http/requests&name=strato_rpc_client/latency_ms.p95
+
+::
+
+  {
+    "@version" : 0.7,
+    "counters_latched" : true,
+    "separator_char" : "/",
+    "expressions" : [
+      {
+        "name" : "success_rate",
+        "labels" : {
+          "process_path" : "Unspecified",
+          "service_name" : "thrift",
+          "role" : "Client"
+        },
+        "expression" : "multiply(100.0,divide(rate(clnt/thrift/success),plus(rate(clnt/thrift/success),rate(clnt/thrift/failures))))",
+        "bounds" : {
+          "kind" : "monotone",
+          "operator" : ">",
+          "bad_threshold" : 99.5,
+          "good_threshold" : 99.97,
+          "lower_bound_inclusive" : null,
+          "upper_bound_exclusive" : null
+        },
+        "description" : "The Success Rate",
+        "unit" : "Percentage"
+      },
+    ]
+  }
+
+Top-level/instance-wide Fields:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+:@version: the current version of the response document (format: Major.minor).
+:counters_latched: a bool indicating whether or not the service is using latched counters.
+:separator_char: the character used to separate path fields in a metric name.
+:expressions: an array containing a Metadata object for each metric expression.
+
+Expression Object Fields:
+^^^^^^^^^^^^^^^^^^^^^^^^^
+:name: a string representing the name or significance of the expression.
+:labels: an object which describes where the metric comes from (see next section for labels-level fields).
+:expresssion: a string representation illustrating how to aggregate metrics into the expression value.
+:bounds: an object which describes the bounds for what values resulting from the expression should be considered "healthy" for the service.
+:description: text description of the expression, intended for human consumption.
+:unit: the appropriate unit for this metric (ex, milliseconds, megabytes, count).
+
+Labels Object Fields:
+^^^^^^^^^^^^^^^^^^^^^
+This object is likely to change content and even become more flexible in the future. It is safest to treat it as a Map[String, String].
+:process_path: a string indicating the relevant downstream, when there is one.
+:service_name: a string representing the finagle service name. particularly helpful for services containing multiple internal servers (ex, thrift and http).
+:role: either "Server" or "Client" indicating whether the expression pertains to this server or one of its downstreams. Should be treated as a string.
+
+Bounds Object Fields:
+^^^^^^^^^^^^^^^^^^^^^
+:kind: a string indicating what type of bounds these are: "unbounded" (no bounds), "monotone" (only considered unhealthy in one direction), or "range" (there is a range of healthy values, above or below them is unhealthy).
+:operator: a string indicating which whether the bounds should be treated as floors or ceilings (ex, ">", "<").
+:bad_threshold: the value that represents the boundary between a bad and an ok value for the expression.
+:good_threshold: the value that represents the boundary between an ok and a good value for the expression.
+:lower_bound_inclusive: an optional value below the bad_threshold which indicates a boundry below which values are considered invalid or erroneous rather than unhealthy.
+:upper_bound_exclusive: an optional value above the good_threshold which indicates a boundry above which values are considered invalid or erroneous rather than unhealthy.
+
 Profiling
 ---------
 
