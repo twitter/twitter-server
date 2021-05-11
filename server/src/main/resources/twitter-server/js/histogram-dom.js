@@ -143,7 +143,7 @@ function refreshHistogram(updatedValues) {
   addColumns();
   for (var i = 0; i < updatedValues.length; i++) {
     var p = updatedValues[i];
-    var midpoint = (p.lowerLimit + p.upperLimit) / 2;
+    var midpoint = (p.lower_limit + p.upper_limit) / 2;
     data.addRow([midpoint, p.percentage]);
   }
 }
