@@ -2,7 +2,13 @@ package com.twitter.server.handler.exp
 
 import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.Request
-import com.twitter.finagle.stats.exp.{Expression, ExpressionSchema, GreaterThan, MonotoneThresholds}
+import com.twitter.finagle.stats.exp.{
+  Expression,
+  ExpressionSchema,
+  ExpressionSchemaKey,
+  GreaterThan,
+  MonotoneThresholds
+}
 import com.twitter.finagle.stats.{
   CounterSchema,
   GaugeSchema,
@@ -43,16 +49,20 @@ class MetricExpressionHandlerTest extends FunSuite {
   val latencyP99 =
     ExpressionSchema("latency_p99", Expression(latencyMb, Right(0.99))).withNamespaces("tenantName")
 
-  val expressionSchemaMap: Map[String, ExpressionSchema] = Map(
-    "success_rate" -> successRateExpression,
-    "throughput" -> throughputExpression,
-    "latency" -> latencyP99
+  val expressionSchemaMap: Map[ExpressionSchemaKey, ExpressionSchema] = Map(
+    ExpressionSchemaKey("success_rate", None, Seq()) -> successRateExpression,
+    ExpressionSchemaKey("throughput", None, Seq()) -> throughputExpression,
+    ExpressionSchemaKey("latency", None, Seq("path", "to", "tenantName")) -> latencyP99
   )
 
   val expressionRegistry = new SchemaRegistry {
     def hasLatchedCounters: Boolean = false
     def schemas(): Map[String, MetricSchema] = Map.empty
-    val expressions: Map[String, ExpressionSchema] = expressionSchemaMap
+
+    val expressions: _root_.scala.Predef.Map[
+      _root_.com.twitter.finagle.stats.exp.ExpressionSchemaKey,
+      _root_.com.twitter.finagle.stats.exp.ExpressionSchema
+    ] = expressionSchemaMap
   }
   val expressionSource = new MetricSchemaSource(Seq(expressionRegistry))
   val expressionHandler = new MetricExpressionHandler(expressionSource)
@@ -60,7 +70,8 @@ class MetricExpressionHandlerTest extends FunSuite {
   val latchedRegistry = new SchemaRegistry {
     def hasLatchedCounters: Boolean = true
     def schemas(): Map[String, MetricSchema] = Map.empty
-    def expressions(): Map[String, ExpressionSchema] = expressionSchemaMap
+    def expressions(): Map[ExpressionSchemaKey, ExpressionSchema] =
+      expressionSchemaMap
   }
   val latchedSource = new MetricSchemaSource(Seq(latchedRegistry))
   val latchedHandler = new MetricExpressionHandler(latchedSource)

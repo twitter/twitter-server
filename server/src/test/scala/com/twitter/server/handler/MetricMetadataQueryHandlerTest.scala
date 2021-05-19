@@ -2,7 +2,7 @@ package com.twitter.server.handler
 
 import com.twitter.finagle.http.Request
 import com.twitter.finagle.stats._
-import com.twitter.finagle.stats.exp.ExpressionSchema
+import com.twitter.finagle.stats.exp.{ExpressionSchema, ExpressionSchemaKey}
 import com.twitter.server.util.{JsonUtils, MetricSchemaSource}
 import com.twitter.util.{Await, Duration}
 import org.scalatest.FunSuite
@@ -60,13 +60,13 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
   trait UnlatchedRegistry extends SchemaRegistry {
     val hasLatchedCounters = false
     def schemas(): Map[String, MetricSchema] = schemaMap
-    def expressions(): Map[String, ExpressionSchema] = Map.empty
+    def expressions(): Map[ExpressionSchemaKey, ExpressionSchema] = Map.empty
   }
 
   trait LatchedRegistry extends SchemaRegistry {
     val hasLatchedCounters = true
     override def schemas(): Map[String, MetricSchema] = schemaMap
-    def expressions(): Map[String, ExpressionSchema] = Map.empty
+    def expressions(): Map[ExpressionSchemaKey, ExpressionSchema] = Map.empty
   }
 
   val latchedSchemaRegistry = new LatchedRegistry() {}
@@ -387,7 +387,7 @@ class MetricMetadataQueryHandlerTest extends FunSuite {
    */
   trait SchemalessRegistry extends SchemaRegistry {
     val hasLatchedCounters = false
-    def expressions(): Map[String, ExpressionSchema] = Map.empty
+    def expressions(): Map[ExpressionSchemaKey, ExpressionSchema] = Map.empty
   }
 
   def histoSuffixTestCase(
