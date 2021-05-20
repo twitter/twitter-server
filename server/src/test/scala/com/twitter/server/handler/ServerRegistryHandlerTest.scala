@@ -8,9 +8,9 @@ import com.twitter.server.util.MetricSourceTest
 import com.twitter.util.{Await, Awaitable}
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class ServerRegistryHandlerTest extends FunSuite {
+class ServerRegistryHandlerTest extends AnyFunSuite {
 
   private[this] def await[T](a: Awaitable[T]): T = Await.result(a, 2.seconds)
 

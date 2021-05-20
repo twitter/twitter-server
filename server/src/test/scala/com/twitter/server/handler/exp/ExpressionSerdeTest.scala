@@ -9,9 +9,9 @@ import com.twitter.finagle.stats.exp.{
   Unbounded
 }
 import com.twitter.server.util.{JsonUtils, AdminJsonConverter}
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class ExpressionSerdeTest extends FunSuite {
+class ExpressionSerdeTest extends AnyFunSuite {
   trait BoundsCtx {
     val unbounded = Unbounded.get
     val monotoneWithUnset = MonotoneThresholds(GreaterThan, 10, 20)

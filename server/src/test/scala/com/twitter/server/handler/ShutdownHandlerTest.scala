@@ -4,9 +4,9 @@ import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.{Status, Request, Method}
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Awaitable, Closable, Future, Time}
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class ShutdownHandlerTest extends FunSuite {
+class ShutdownHandlerTest extends AnyFunSuite {
 
   private[this] def await[T](a: Awaitable[T]): T = Await.result(a, 2.seconds)
 

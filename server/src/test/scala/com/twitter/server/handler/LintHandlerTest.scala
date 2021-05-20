@@ -4,9 +4,9 @@ import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.Request
 import com.twitter.util.Await
 import com.twitter.util.lint.{Category, Issue, Rule}
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class LintHandlerTest extends FunSuite {
+class LintHandlerTest extends AnyFunSuite {
 
   private val ruleOk = Rule(Category.Performance, "ok", "desc") { Nil }
   private def nFailed(n: Int): Rule = Rule(Category.Performance, "failures", "desc") {

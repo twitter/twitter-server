@@ -5,9 +5,9 @@ import com.twitter.finagle.stats._
 import com.twitter.finagle.stats.exp.{ExpressionSchema, ExpressionSchemaKey}
 import com.twitter.server.util.{JsonUtils, MetricSchemaSource}
 import com.twitter.util.{Await, Duration}
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class MetricMetadataQueryHandlerTest extends FunSuite {
+class MetricMetadataQueryHandlerTest extends AnyFunSuite {
 
   val schemaMap: Map[String, MetricSchema] = Map(
     "my/cool/counter" -> CounterSchema(

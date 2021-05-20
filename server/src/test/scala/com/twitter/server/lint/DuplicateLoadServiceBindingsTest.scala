@@ -1,8 +1,8 @@
 package com.twitter.server.lint
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class DuplicateLoadServiceBindingsTest extends FunSuite {
+class DuplicateLoadServiceBindingsTest extends AnyFunSuite {
 
   private trait TestTrait
 

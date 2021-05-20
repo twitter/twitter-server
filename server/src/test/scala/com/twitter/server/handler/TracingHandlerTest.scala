@@ -4,10 +4,11 @@ import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.{Request, Status}
 import com.twitter.finagle.tracing.{Trace, Tracer}
 import com.twitter.util.{Await, Awaitable}
-import org.scalatest.{BeforeAndAfter, FunSuite}
+import org.scalatest.BeforeAndAfter
 import org.scalatestplus.mockito.MockitoSugar
+import org.scalatest.funsuite.AnyFunSuite
 
-class TracingHandlerTest extends FunSuite with MockitoSugar with BeforeAndAfter {
+class TracingHandlerTest extends AnyFunSuite with MockitoSugar with BeforeAndAfter {
   val service = new TracingHandler
 
   private[this] def await[T](a: Awaitable[T]): T = Await.result(a, 2.seconds)

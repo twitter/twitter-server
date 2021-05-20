@@ -2,8 +2,8 @@ package com.twitter.server
 
 import com.twitter.conversions.DurationOps._
 import com.twitter.util.Duration
-import org.scalatest.FunSuite
 import scala.collection.mutable
+import org.scalatest.funsuite.AnyFunSuite
 
 class OnExitHook1 extends Hook {
   override def onExit(): Unit = {
@@ -54,7 +54,7 @@ class HookTestTwitterServer(hooks: Seq[Hook]) extends TwitterServer {
   }
 }
 
-class HookTest extends FunSuite {
+class HookTest extends AnyFunSuite {
 
   val hooks: Seq[Hook] = Seq(new OnExitHook1(), new OnExitHook2())
 

@@ -4,9 +4,9 @@ import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util.{Await, Future}
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class AdminThreadPoolFilterTest extends FunSuite {
+class AdminThreadPoolFilterTest extends AnyFunSuite {
   test("work done in the dedicated admin thread pool") {
     @volatile var workingThreadId: Long = -1
 

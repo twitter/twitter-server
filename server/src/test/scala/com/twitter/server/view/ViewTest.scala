@@ -1,8 +1,8 @@
 package com.twitter.server.view
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class ViewTest extends FunSuite {
+class ViewTest extends AnyFunSuite {
 
   class TestView extends View {
     def render: String = "Hello"

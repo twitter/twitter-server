@@ -3,9 +3,9 @@ package com.twitter.server.handler
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, ScalaObjectMapper}
 import com.twitter.util.registry.{GlobalRegistry, SimpleRegistry}
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class RegistryHandlerTest extends FunSuite {
+class RegistryHandlerTest extends AnyFunSuite {
 
   private[this] val mapper = new ObjectMapper with ScalaObjectMapper {
     registerModule(DefaultScalaModule)

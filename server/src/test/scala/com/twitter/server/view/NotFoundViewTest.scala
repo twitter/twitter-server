@@ -6,9 +6,9 @@ import com.twitter.finagle.Service
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.newResponse
 import com.twitter.util.{Await, Awaitable}
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class NotFoundViewTest extends FunSuite {
+class NotFoundViewTest extends AnyFunSuite {
 
   private[this] def await[T](a: Awaitable[T]): T = Await.result(a, 2.seconds)
 

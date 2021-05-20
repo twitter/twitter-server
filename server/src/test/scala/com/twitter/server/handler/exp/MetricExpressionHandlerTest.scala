@@ -21,9 +21,9 @@ import com.twitter.finagle.stats.{
 import com.twitter.server.handler.MetricExpressionHandler
 import com.twitter.server.util.{AdminJsonConverter, JsonUtils, MetricSchemaSource}
 import com.twitter.util.{Await, Awaitable, Duration}
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class MetricExpressionHandlerTest extends FunSuite {
+class MetricExpressionHandlerTest extends AnyFunSuite {
 
   private[this] def await[T](awaitable: Awaitable[T], timeout: Duration = 5.second): T =
     Await.result(awaitable, timeout)

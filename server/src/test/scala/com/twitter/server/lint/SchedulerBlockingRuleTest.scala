@@ -3,10 +3,11 @@ package com.twitter.server.lint
 import com.twitter.concurrent.Scheduler
 import com.twitter.conversions.DurationOps._
 import org.mockito.Mockito._
-import org.scalatest.{FunSuite, Matchers}
 import org.scalatestplus.mockito.MockitoSugar
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
-class SchedulerBlockingRuleTest extends FunSuite with Matchers with MockitoSugar {
+class SchedulerBlockingRuleTest extends AnyFunSuite with Matchers with MockitoSugar {
 
   test("low amount of blocking is not an issue") {
     val cutoff = 10.seconds

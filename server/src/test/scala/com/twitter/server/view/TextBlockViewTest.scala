@@ -6,9 +6,9 @@ import com.twitter.finagle.http.{Request, Response}
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils._
 import com.twitter.util.{Await, Awaitable}
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class TextBlockViewTest extends FunSuite {
+class TextBlockViewTest extends AnyFunSuite {
 
   private[this] def await[T](a: Awaitable[T]): T = Await.result(a, 2.seconds)
 

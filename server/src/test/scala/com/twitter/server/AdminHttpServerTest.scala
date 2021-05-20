@@ -6,8 +6,8 @@ import com.twitter.finagle.http._
 import com.twitter.server.util.HttpUtils._
 import com.twitter.util._
 import java.net.InetSocketAddress
-import org.scalatest.FunSuite
 import org.scalatest.concurrent.{Eventually, IntegrationPatience}
+import org.scalatest.funsuite.AnyFunSuite
 
 class MockMetricsExporter extends HttpMuxHandler {
   val pattern = "/admin/metrics.json"
@@ -55,7 +55,7 @@ class MockClosableHandler extends HttpMuxHandler {
   }
 }
 
-class AdminHttpServerTest extends FunSuite with Eventually with IntegrationPatience {
+class AdminHttpServerTest extends AnyFunSuite with Eventually with IntegrationPatience {
 
   def checkServer(server: ListeningServer, shadow: Boolean = false): Unit = {
     val port = server.boundAddress.asInstanceOf[InetSocketAddress].getPort

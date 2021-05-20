@@ -1,9 +1,9 @@
 package com.twitter.server.lint
 
 import com.twitter.util.lint.Issue
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class LoggingRulesTest extends FunSuite {
+class LoggingRulesTest extends AnyFunSuite {
   val validUrl = "file:/jars/slf4j-jdk14-1.7.7.jar!/org/slf4j/impl/StaticLoggerBinder.class"
   val invalidUrl = "/classes/org/slf4j/impl/StaticLoggerBinder.class"
 

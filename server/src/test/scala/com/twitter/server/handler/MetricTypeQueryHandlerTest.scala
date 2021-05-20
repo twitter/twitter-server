@@ -8,9 +8,9 @@ import java.util.concurrent.TimeUnit
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, ScalaObjectMapper}
-import org.scalatest.FunSuite
 
 import scala.collection.mutable
+import org.scalatest.funsuite.AnyFunSuite
 
 object MetricTypeQueryHandlerTest {
   // Needs to be in companion object because of Jackson. We use `Set` to avoid ordering issues here.
@@ -18,7 +18,7 @@ object MetricTypeQueryHandlerTest {
   case class Metric(name: String, kind: String)
 }
 
-class MetricTypeQueryHandlerTest extends FunSuite {
+class MetricTypeQueryHandlerTest extends AnyFunSuite {
   import MetricTypeQueryHandlerTest._
 
   private[this] val mapper = new ObjectMapper with ScalaObjectMapper {

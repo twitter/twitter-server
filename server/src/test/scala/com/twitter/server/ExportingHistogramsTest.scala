@@ -1,9 +1,9 @@
 package com.twitter.server
 
 import com.twitter.finagle.stats.BucketAndCount
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class ExportingHistogramsTest extends FunSuite {
+class ExportingHistogramsTest extends AnyFunSuite {
   import handler.HistogramQueryHandler.{pdf, cdf, BucketAndPercentage}
 
   val empty = Seq.empty

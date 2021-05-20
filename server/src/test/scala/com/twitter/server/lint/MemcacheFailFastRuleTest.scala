@@ -5,9 +5,9 @@ import com.twitter.finagle.client.StackClient
 import com.twitter.finagle.param.ProtocolLibrary
 import com.twitter.finagle.service.FailFastFactory
 import com.twitter.finagle.util.StackRegistry
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class MemcacheFailFastRuleTest extends FunSuite {
+class MemcacheFailFastRuleTest extends AnyFunSuite {
 
   def newRegistry(): StackRegistry =
     new StackRegistry { def registryName: String = "client" }

@@ -7,10 +7,10 @@ import com.twitter.util.{Await, Awaitable}
 import java.io.{ByteArrayInputStream, File, FileWriter, InputStream}
 import java.nio.charset.StandardCharsets.ISO_8859_1
 import java.nio.file.Files
-import org.scalatest.FunSuite
 import scala.io.Source
+import org.scalatest.funsuite.AnyFunSuite
 
-class ResourceHandlerTest extends FunSuite {
+class ResourceHandlerTest extends AnyFunSuite {
 
   private[this] def await[T](a: Awaitable[T]): T = Await.result(a, 2.seconds)
 

@@ -3,11 +3,11 @@ package com.twitter.server.handler
 import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.toggle.{Toggle, ToggleMap}
 import com.twitter.server.handler.ToggleHandler._
-import org.scalatest.FunSuite
 import scala.collection.immutable
 import scala.collection.mutable.ArrayBuffer
+import org.scalatest.funsuite.AnyFunSuite
 
-class ToggleHandlerTest extends FunSuite {
+class ToggleHandlerTest extends AnyFunSuite {
 
   test("renders empty registeredLibraries") {
     val handler = new ToggleHandler(() => Map.empty)

@@ -4,7 +4,7 @@ import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.{Announcer, Announcement, Resolver}
 import com.twitter.util.{Await, Awaitable, Future}
 import java.net.{InetAddress, InetSocketAddress}
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
 case class TestAnnouncement(addr: InetSocketAddress, target: String) extends Announcement {
   def unannounce() = Future.Done
@@ -17,7 +17,7 @@ class TestAnnouncer extends Announcer {
 }
 
 // Called InternalResolverTest to avoid conflict with twitter-server
-class ResolverTest extends FunSuite {
+class ResolverTest extends AnyFunSuite {
 
   private[this] def await[T](a: Awaitable[T]): T = Await.result(a, 2.seconds)
 

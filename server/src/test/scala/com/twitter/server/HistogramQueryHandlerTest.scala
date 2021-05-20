@@ -8,9 +8,9 @@ import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.stats.{BucketAndCount, InMemoryStatsReceiver}
 import com.twitter.server.handler.HistogramQueryHandler
 import com.twitter.util.{Await, Future}
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class HistogramQueryHandlerTest extends FunSuite {
+class HistogramQueryHandlerTest extends AnyFunSuite {
   def await[A](f: Future[A]): A = Await.result(f, 5.seconds)
   private[this] val mapper = new ObjectMapper with ScalaObjectMapper {
     registerModule(DefaultScalaModule)

@@ -6,7 +6,7 @@ import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.{MediaType, Method, Request, Status}
 import com.twitter.util.Await
 import com.twitter.util.tunable.TunableMap
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
 object TunableHandlerTest {
   // Needs to be in companion object because of Jackson. We use `Set` to avoid ordering issues here.
@@ -15,7 +15,7 @@ object TunableHandlerTest {
   case class Component(source: String, value: String)
 }
 
-class TunableHandlerTest extends FunSuite {
+class TunableHandlerTest extends AnyFunSuite {
   import TunableHandlerTest._
 
   private[this] val mapper = new ObjectMapper with ScalaObjectMapper {

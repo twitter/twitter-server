@@ -6,9 +6,9 @@ import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util._
 import java.util.concurrent.Executors
-import org.scalatest.FunSuite
 import scala.collection.mutable
 import scala.util.control.NonFatal
+import org.scalatest.funsuite.AnyFunSuite
 
 class TestTwitterServer(await: Boolean = false) extends TwitterServer {
   override val defaultAdminPort = 0
@@ -54,7 +54,7 @@ class MockExceptionHandler extends Service[Request, Response] {
     throw new Exception("test exception")
   }
 }
-class TwitterServerTest extends FunSuite {
+class TwitterServerTest extends AnyFunSuite {
   test("TwitterServer does not prematurely execute lifecycle hooks") {
     val twitterServer = new TestTwitterServer()
     assert(twitterServer.bootstrapSeq.isEmpty)

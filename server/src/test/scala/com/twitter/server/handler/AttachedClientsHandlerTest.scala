@@ -14,7 +14,7 @@ import java.security.cert.X509Certificate
 import java.util.Date
 import javax.net.ssl.SSLSession
 import org.mockito.Mockito
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
 object AttachedClientsHandlerTest {
   def await[A](f: Future[A]): A = Await.result(f, 2.seconds)
@@ -59,7 +59,7 @@ object AttachedClientsHandlerTest {
   }
 }
 
-class AttachedClientsHandlerTest extends FunSuite {
+class AttachedClientsHandlerTest extends AnyFunSuite {
   import AttachedClientsHandlerTest._
 
   private[this] def assertJsonResponse(actualResponse: String, expectedResponse: String) = {

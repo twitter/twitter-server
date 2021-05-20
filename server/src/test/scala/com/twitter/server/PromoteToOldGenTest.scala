@@ -1,8 +1,8 @@
 package com.twitter.server
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class PromoteToOldGenTest extends FunSuite {
+class PromoteToOldGenTest extends AnyFunSuite {
 
   test("beforeServing does nothing if flag is disabled") {
     val promote = new Lifecycle.PromoteToOldGen(Nil)

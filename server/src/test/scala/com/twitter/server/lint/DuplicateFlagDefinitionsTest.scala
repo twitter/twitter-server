@@ -1,7 +1,7 @@
 package com.twitter.server.lint
 
 import com.twitter.app.App
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
 /** does not have any duplicate flags */
 class FlagApp extends App {
@@ -31,7 +31,7 @@ class SameFlagDuplicateFlagApp extends App {
   flag[String]("flag2", "Same flag name, different type.")
 }
 
-class DuplicateFlagDefinitionsTest extends FunSuite {
+class DuplicateFlagDefinitionsTest extends AnyFunSuite {
 
   test("no duplicates") {
     val app = new FlagApp

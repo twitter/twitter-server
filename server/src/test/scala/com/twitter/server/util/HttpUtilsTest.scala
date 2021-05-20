@@ -6,9 +6,9 @@ import com.twitter.finagle.http.{HttpMuxer, Request, Response, Status, Version}
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils._
 import com.twitter.util.{Await, Future, Time}
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class HttpUtilsTest extends FunSuite {
+class HttpUtilsTest extends AnyFunSuite {
   private[this] def await[A](a: Future[A]): A = Await.result(a, 5.seconds)
 
   test("combine can combine two muxers") {

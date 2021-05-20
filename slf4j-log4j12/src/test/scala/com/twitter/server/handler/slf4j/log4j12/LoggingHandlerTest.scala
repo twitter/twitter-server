@@ -6,10 +6,10 @@ import com.twitter.util.Await
 import com.twitter.util.logging.{Logger => UtilLogger}
 
 import org.apache.log4j.{Level, LogManager}
-import org.scalatest.FunSuite
 import org.slf4j.LoggerFactory
+import org.scalatest.funsuite.AnyFunSuite
 
-class LoggingHandlerTest extends FunSuite {
+class LoggingHandlerTest extends AnyFunSuite {
 
   private val handler = new LoggingHandler()
 

@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.twitter.finagle.http.Request
 import com.twitter.util.{Await, Awaitable}
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class ThreadsHandlerTest extends FunSuite {
+class ThreadsHandlerTest extends AnyFunSuite {
   type Threads = Map[String, Map[String, Map[String, Any]]]
 
   private[this] def await[T](a: Awaitable[T]): T = Await.result(a, 2.seconds)

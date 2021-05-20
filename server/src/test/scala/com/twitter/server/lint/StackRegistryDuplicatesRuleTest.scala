@@ -4,9 +4,9 @@ import com.twitter.finagle.Stack
 import com.twitter.finagle.client.StackClient
 import com.twitter.finagle.param.{Label, ProtocolLibrary}
 import com.twitter.finagle.util.StackRegistry
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class StackRegistryDuplicatesRuleTest extends FunSuite {
+class StackRegistryDuplicatesRuleTest extends AnyFunSuite {
 
   def newRegistry(): StackRegistry =
     new StackRegistry { def registryName: String = "client" }

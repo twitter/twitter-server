@@ -5,10 +5,10 @@ import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.Request
 import com.twitter.util.Await
 import com.twitter.util.logging.{Logger => UtilLogger}
-import org.scalatest.FunSuite
 import org.slf4j.LoggerFactory
+import org.scalatest.funsuite.AnyFunSuite
 
-class LoggingHandlerTest extends FunSuite {
+class LoggingHandlerTest extends AnyFunSuite {
 
   private val handler = new LoggingHandler()
 

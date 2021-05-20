@@ -1,9 +1,9 @@
 package com.twitter.server.lint
 
 import com.twitter.finagle.stats.InMemoryStatsReceiver
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class NumberOfStatsReceiversRuleTest extends FunSuite {
+class NumberOfStatsReceiversRuleTest extends AnyFunSuite {
 
   test("One stats receiver doesn't create issues") {
     val statsReceivers = Seq(new InMemoryStatsReceiver)

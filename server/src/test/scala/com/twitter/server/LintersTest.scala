@@ -1,8 +1,8 @@
 package com.twitter.server
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class LintersTest extends FunSuite {
+class LintersTest extends AnyFunSuite {
 
   val server = new TestTwitterServer
   val ruleIdsSet = server.linterRules.map(_.id).toSet

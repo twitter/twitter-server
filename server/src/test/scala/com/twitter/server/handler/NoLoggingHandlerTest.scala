@@ -3,9 +3,9 @@ package com.twitter.server.handler
 import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.{Request, Status}
 import com.twitter.util.Await
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class NoLoggingHandlerTest extends FunSuite {
+class NoLoggingHandlerTest extends AnyFunSuite {
 
   test("NoLoggingHandler responds with correct message") {
     val handler = new NoLoggingHandler
