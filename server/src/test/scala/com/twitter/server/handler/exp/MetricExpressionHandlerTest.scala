@@ -95,7 +95,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
     val expectedResponse =
       """
         |{
-        |  "@version" : 0.7,
+        |  "@version" : 1.0,
         |  "counters_latched" : false,
         |  "separator_char" : "/",
         |  "expressions" : [
