@@ -44,10 +44,10 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
 
   val throughputExpression =
     ExpressionSchema("throughput", Expression(successMb).plus(Expression(failuresMb)))
-      .withNamespaces("path", "to", "tenantName")
+      .withNamespace("path", "to", "tenantName")
 
   val latencyP99 =
-    ExpressionSchema("latency_p99", Expression(latencyMb, Right(0.99))).withNamespaces("tenantName")
+    ExpressionSchema("latency_p99", Expression(latencyMb, Right(0.99))).withNamespace("tenantName")
 
   val expressionSchemaMap: Map[ExpressionSchemaKey, ExpressionSchema] = Map(
     ExpressionSchemaKey("success_rate", None, Seq()) -> successRateExpression,
@@ -79,6 +79,14 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
   val testRequest = Request("http://$HOST:$PORT/admin/metric/expressions.json")
   val latchedStyleRequest = Request(
     "http://$HOST:$PORT/admin/metric/expressions.json?latching_style=true")
+  val testRequestWithName = Request(
+    "http://$HOST:$PORT/admin/metric/expressions.json?name=success_rate")
+  val testRequestWithNamespace = Request(
+    "http://$HOST:$PORT/admin/metric/expressions.json?namespace=tenantName")
+  val testRequestWithNamespacePath = Request(
+    "http://$HOST:$PORT/admin/metric/expressions.json?namespace=path:to:tenantName")
+  val testRequestWithNamespaces = Request(
+    "http://$HOST:$PORT/admin/metric/expressions.json?namespace=path:to:tenantName&namespace=tenantName")
 
   private def getSucessRateExpression(json: String): String = {
     val expressions =
@@ -201,5 +209,148 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
       GaugeSchema(MetricBuilder(name = Seq("client", "connections"), statsReceiver = sr))
     val result = MetricExpressionHandler.translateToQuery(Expression(connMb))
     assert(result == "client/connections")
+  }
+
+  test("Get expression with name param filters to expressions with that name") {
+    val expectedResponse =
+      """
+        |{
+        |  "@version" : 1.0,
+        |  "counters_latched" : false,
+        |  "separator_char" : "/",
+        |  "expressions" : [
+        |    {
+        |      "name" : "success_rate",
+        |      "labels" : {
+        |        "process_path" : "Unspecified",
+        |        "service_name" : "Unspecified",
+        |        "role" : "NoRoleSpecified"
+        |      },
+        |      "expression" : "multiply(100.0,divide(rate(success),plus(rate(success),rate(failures))))",
+        |      "bounds" : {
+        |        "kind" : "monotone",
+        |        "operator" : ">",
+        |        "bad_threshold" : 99.5,
+        |        "good_threshold" : 99.97,
+        |        "lower_bound_inclusive" : null,
+        |        "upper_bound_exclusive" : null
+        |      },
+        |      "description" : "Unspecified",
+        |      "unit" : "Unspecified"
+        |    }
+        |  ]
+        |}""".stripMargin
+
+    JsonUtils.assertJsonResponse(
+      await(expressionHandler(testRequestWithName)).contentString,
+      expectedResponse)
+  }
+
+  test("Get expression with namespace param filters to expressions with that namespace") {
+    val expectedResponse =
+      """
+        |{
+        |  "@version" : 1.0,
+        |  "counters_latched" : false,
+        |  "separator_char" : "/",
+        |  "expressions" : [
+        |    {
+        |      "name" : "throughput",
+        |      "labels" : {
+        |        "process_path" : "Unspecified",
+        |        "service_name" : "Unspecified",
+        |        "role" : "NoRoleSpecified"
+        |      },
+        |      "namespaces" : ["path","to","tenantName"],
+        |      "expression" : "plus(rate(success),rate(failures))",
+        |      "bounds" : {
+        |        "kind" : "unbounded"
+        |      },
+        |      "description" : "Unspecified",
+        |      "unit" : "Unspecified"
+        |    },
+        |    {
+        |      "name" : "latency_p99",
+        |      "labels" : {
+        |        "process_path" : "Unspecified",
+        |        "service_name" : "Unspecified",
+        |        "role" : "NoRoleSpecified"
+        |      },
+        |      "namespaces" : ["tenantName"],
+        |      "expression" :  "latency.p99",
+        |      "bounds" : {
+        |        "kind" : "unbounded"
+        |      },
+        |      "description" : "Unspecified",
+        |      "unit" : "Unspecified"
+        |    }        
+        |  ]
+        |}""".stripMargin
+
+    JsonUtils.assertJsonResponse(
+      await(expressionHandler(testRequestWithNamespaces)).contentString,
+      expectedResponse)
+  }
+
+  test("Get expression with namespace params filters to expression with that namespace") {
+    val expectedResponse =
+      """
+        |{
+        |  "@version" : 1.0,
+        |  "counters_latched" : false,
+        |  "separator_char" : "/",
+        |  "expressions" : [
+        |    {
+        |      "name" : "latency_p99",
+        |      "labels" : {
+        |        "process_path" : "Unspecified",
+        |        "service_name" : "Unspecified",
+        |        "role" : "NoRoleSpecified"
+        |      },
+        |      "namespaces" : ["tenantName"],
+        |      "expression" :  "latency.p99",
+        |      "bounds" : {
+        |        "kind" : "unbounded"
+        |      },
+        |      "description" : "Unspecified",
+        |      "unit" : "Unspecified"
+        |    }        
+        |  ]
+        |}""".stripMargin
+
+    JsonUtils.assertJsonResponse(
+      await(expressionHandler(testRequestWithNamespace)).contentString,
+      expectedResponse)
+  }
+
+  test("Get expression with namespace path param filters to expression with that namespace") {
+    val expectedResponse =
+      """
+        |{
+        |  "@version" : 1.0,
+        |  "counters_latched" : false,
+        |  "separator_char" : "/",
+        |  "expressions" : [
+        |    {
+        |      "name" : "throughput",
+        |      "labels" : {
+        |        "process_path" : "Unspecified",
+        |        "service_name" : "Unspecified",
+        |        "role" : "NoRoleSpecified"
+        |      },
+        |      "namespaces" : ["path","to","tenantName"],
+        |      "expression" : "plus(rate(success),rate(failures))",
+        |      "bounds" : {
+        |        "kind" : "unbounded"
+        |      },
+        |      "description" : "Unspecified",
+        |      "unit" : "Unspecified"
+        |    }        
+        |  ]
+        |}""".stripMargin
+
+    JsonUtils.assertJsonResponse(
+      await(expressionHandler(testRequestWithNamespacePath)).contentString,
+      expectedResponse)
   }
 }

@@ -76,11 +76,19 @@ object MetricExpressionHandler {
 
 /**
  * A handler for metric expression queries at admin/metric/expressions.json.
+ *
  * @queryParam ?latching_style=boolean Set true to let expression respect the latchedness of counters,
  *             which means it does not wrap the latched counters in `rate()`.
- *
+ * @queryParam ?name=string only return expressions whose name matches the value of name
+ * @queryParam ?namespace=string only return expressions whose namespace matches the value of namespace.
+ *             note that the namespace is a sequence of strings, which will be joined into a string,
+ *             separated by :s
  * @example http://$HOST:$PORT/admin/metric/expressions.json?latching_style=true
  *          http://$HOST:$PORT/admin/metric/expressions.json  (by default latching_style is false)
+ *          http://$HOST:$PORT/admin/metric/expressions.json?name=success_rate
+ *              (grab all expressions named "success_rate")
+ *          http://$HOST:$PORT/admin/metric/expressions.json?namespace=path:to:namespace
+ *              (grab all expressions of the namespace ["path", "to", "namespace"]
  */
 class MetricExpressionHandler(source: MetricSchemaSource = new MetricSchemaSource)
     extends Service[Request, Response] {
@@ -88,11 +96,20 @@ class MetricExpressionHandler(source: MetricSchemaSource = new MetricSchemaSourc
   private[this] lazy val sourceLatched = source.hasLatchedCounters
 
   def apply(request: Request): Future[Response] = {
-    val keyParam = Uri.fromRequest(request).params.getAll("latching_style")
+    val uri = Uri.fromRequest(request)
+    val latchParam = uri.params.getAll("latching_style")
+    val nameParam = uri.params.getAll("name").toSet
+    val namespaceParam = uri.params.getAll("namespace").toSet
 
-    val latched = keyParam.exists { value => value == "true" || value == "1" } && sourceLatched
+    val expressionSchemas = source.expressionList
+    val filteredSchemas = expressionSchemas.filter(expressionSchema =>
+      // namespace match if namespace param is present
+      (namespaceParam.isEmpty || namespaceParam.contains(expressionSchema.namespace.mkString(":")))
+      // name match if name param is present
+        && (nameParam.isEmpty || nameParam.contains(expressionSchema.name)))
 
-    val expressions = source.expressionList.map { expressionSchema =>
+    val latched = latchParam.exists { value => value == "true" || value == "1" } && sourceLatched
+    val expressions = filteredSchemas.map { expressionSchema =>
       expressionSchema.copy(exprQuery = translateToQuery(expressionSchema.expr, latched))
     }
 

@@ -35,9 +35,9 @@ object ExpressionJson {
       gen.writeStringField("role", expressionSchema.labels.role.toString)
       gen.writeEndObject()
 
-      if (expressionSchema.namespaces.nonEmpty) {
+      if (expressionSchema.namespace.nonEmpty) {
         gen.writeArrayFieldStart("namespaces")
-        expressionSchema.namespaces.foreach { p => gen.writeString(p) }
+        expressionSchema.namespace.foreach { p => gen.writeString(p) }
         gen.writeEndArray()
       }
 
