@@ -307,35 +307,35 @@ There are two endpoints for histograms, `/admin/histograms.json` and `/admin/his
   {
     "clnt/p2cslowservertest-server/request_latency_ms" : [
       {
-        "lowerLimit" : 5,
-        "upperLimit" : 6,
+        "lower_limit" : 5,
+        "upper_limit" : 6,
         "count" : 28
       },
       {
-        "lowerLimit" : 6,
-        "upperLimit" : 7,
+        "lower_limit" : 6,
+        "upper_limit" : 7,
         "count" : 9188
       },
       {
-        "lowerLimit" : 7,
-        "upperLimit" : 8,
+        "lower_limit" : 7,
+        "upper_limit" : 8,
         "count" : 25164
       }
     ],
     "jvm/gc/eden/pause_msec" : [
       {
-        "lowerLimit" : 8,
-        "upperLimit" : 9,
+        "lower_limit" : 8,
+        "upper_limit" : 9,
         "count" : 1
       },
       {
-        "lowerLimit" : 9,
-        "upperLimit" : 10,
+        "lower_limit" : 9,
+        "upper_limit" : 10,
         "count" : 1
       },
       {
-        "lowerLimit" : 53,
-        "upperLimit" : 54,
+        "lower_limit" : 53,
+        "upper_limit" : 54,
         "count" : 1
       }
     ]
@@ -373,18 +373,18 @@ equal to the bucket's upper limit.
   {
     "clnt/p2cslowservertest-server/request_latency_ms" : [
       {
-        "lowerLimit" : 5,
-        "upperLimit" : 6,
+        "lower_limit" : 5,
+        "upper_limit" : 6,
         "count" : 28
       },
       {
-        "lowerLimit" : 6,
-        "upperLimit" : 7,
+        "lower_limit" : 6,
+        "upper_limit" : 7,
         "count" : 9188
       },
       {
-        "lowerLimit" : 7,
-        "upperLimit" : 8,
+        "lower_limit" : 7,
+        "upper_limit" : 8,
         "count" : 25164
       }
     ]
@@ -401,28 +401,28 @@ equal to the bucket's upper limit.
   {
     "clnt/p2cslowservertest-server/request_latency_ms" : [
       {
-        "lowerLimit" : 5,
-        "upperLimit" : 6,
+        "lower_limit" : 5,
+        "upper_limit" : 6,
         "percentage" : 6.444885E-5
       },
       {
-        "lowerLimit" : 6,
-        "upperLimit" : 7,
+        "lower_limit" : 6,
+        "upper_limit" : 7,
         "percentage" : 0.03286891
       },
       {
-        "lowerLimit" : 7,
-        "upperLimit" : 8,
+        "lower_limit" : 7,
+        "upper_limit" : 8,
         "percentage" : 0.15292539
       },
       {
-        "lowerLimit" : 8,
-        "upperLimit" : 9,
+        "lower_limit" : 8,
+        "upper_limit" : 9,
         "percentage" : 0.26998794
       },
       {
-        "lowerLimit" : 9,
-        "upperLimit" : 10,
+        "lower_limit" : 9,
+        "upper_limit" : 10,
         "percentage" : 0.41753477
       }
     ]

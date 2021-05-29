@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>HTTP Admin interface &#8212; TwitterServer 21.4.0 documentation</title>
+    <title>HTTP Admin interface &#8212; TwitterServer 21.5.0 documentation</title>
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -430,8 +430,7 @@ See the <a class="reference internal" href="Features.html#metrics-label"><span c
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">&#64;version:</th><td class="field-body">the current version of the response document (format: Major.minor).</td>
 </tr>
-<tr class="field-even field"><th class="field-name" colspan="2">counters_latched:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">a bool indicating whether or not the service is using latched counters.</td>
+<tr class="field-even field"><th class="field-name">counters_latched:</th><td class="field-body">a bool indicating whether or not the service is using latched counters.</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">separator_char:</th><td class="field-body">the character used to separate path fields in a metric name.</td>
 </tr>
@@ -462,7 +461,9 @@ See the <a class="reference internal" href="Features.html#metrics-label"><span c
 </tr>
 <tr class="field-even field"><th class="field-name">key_indicator:</th><td class="field-body">a bool indicating whether or not this metric is part of this services top-level indicators or golden metrics.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">buckets:</th><td class="field-body">a map from histogram components (percentiles, max, min, sum, etc) to the suffix which completes this metrics name in metrics.json (only present for histograms).</td>
+<tr class="field-odd field"><th class="field-name">counterish_gauge:</th><td class="field-body">a bool indicating if a gauge represents a count of something over the lifetime of the instance. Note that it does not follow the same latching rules as standard counters. This key will not be present unless it is true. It can only be present on gauge-type metrics.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">buckets:</th><td class="field-body">a map from histogram components (percentiles, max, min, sum, etc) to the suffix which completes this metrics name in metrics.json (only present for histograms).</td>
 </tr>
 </tbody>
 </table>
@@ -478,6 +479,107 @@ See the <a class="reference internal" href="Features.html#metrics-label"><span c
 <tr class="field-even field"><th class="field-name">category:</th><td class="field-body">currently either “Server” or “Client” indicating whether the metric pertains to this server or one of its downstreams, but may be expanded in the future. Should be treated as a string.</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">process_path:</th><td class="field-body">a string indicating the relevant downstream, when there is one.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="admin-metric-expressions-json">
+<h3>/admin/metric/expressions.json<a class="headerlink" href="#admin-metric-expressions-json" title="Permalink to this headline">¶</a></h3>
+<p>Export metadata information about metric expressions in json. These metadata represent commonly used metric queries for the service.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/admin/metric/expressions.json?name=http/requests&amp;name=strato_rpc_client/latency_ms.p95
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{
+  &quot;@version&quot; : 0.7,
+  &quot;counters_latched&quot; : true,
+  &quot;separator_char&quot; : &quot;/&quot;,
+  &quot;expressions&quot; : [
+    {
+      &quot;name&quot; : &quot;success_rate&quot;,
+      &quot;labels&quot; : {
+        &quot;process_path&quot; : &quot;Unspecified&quot;,
+        &quot;service_name&quot; : &quot;thrift&quot;,
+        &quot;role&quot; : &quot;Client&quot;
+      },
+      &quot;expression&quot; : &quot;multiply(100.0,divide(rate(clnt/thrift/success),plus(rate(clnt/thrift/success),rate(clnt/thrift/failures))))&quot;,
+      &quot;bounds&quot; : {
+        &quot;kind&quot; : &quot;monotone&quot;,
+        &quot;operator&quot; : &quot;&gt;&quot;,
+        &quot;bad_threshold&quot; : 99.5,
+        &quot;good_threshold&quot; : 99.97,
+        &quot;lower_bound_inclusive&quot; : null,
+        &quot;upper_bound_exclusive&quot; : null
+      },
+      &quot;description&quot; : &quot;The Success Rate&quot;,
+      &quot;unit&quot; : &quot;Percentage&quot;
+    },
+  ]
+}
+</pre></div>
+</div>
+<div class="section" id="id2">
+<h4>Top-level/instance-wide Fields:<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">&#64;version:</th><td class="field-body">the current version of the response document (format: Major.minor).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">counters_latched:</th><td class="field-body">a bool indicating whether or not the service is using latched counters.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">separator_char:</th><td class="field-body">the character used to separate path fields in a metric name.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">expressions:</th><td class="field-body">an array containing a Metadata object for each metric expression.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="expression-object-fields">
+<h4>Expression Object Fields:<a class="headerlink" href="#expression-object-fields" title="Permalink to this headline">¶</a></h4>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">name:</th><td class="field-body">a string representing the name or significance of the expression.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">labels:</th><td class="field-body">an object which describes where the metric comes from (see next section for labels-level fields).</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">expresssion:</th><td class="field-body">a string representation illustrating how to aggregate metrics into the expression value.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">bounds:</th><td class="field-body">an object which describes the bounds for what values resulting from the expression should be considered “healthy” for the service.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">description:</th><td class="field-body">text description of the expression, intended for human consumption.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">unit:</th><td class="field-body">the appropriate unit for this metric (ex, milliseconds, megabytes, count).</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="labels-object-fields">
+<h4>Labels Object Fields:<a class="headerlink" href="#labels-object-fields" title="Permalink to this headline">¶</a></h4>
+<p>This object is likely to change content and even become more flexible in the future. It is safest to treat it as a Map[String, String].
+:process_path: a string indicating the relevant downstream, when there is one.
+:service_name: a string representing the finagle service name. particularly helpful for services containing multiple internal servers (ex, thrift and http).
+:role: either “Server” or “Client” indicating whether the expression pertains to this server or one of its downstreams. Should be treated as a string.</p>
+</div>
+<div class="section" id="bounds-object-fields">
+<h4>Bounds Object Fields:<a class="headerlink" href="#bounds-object-fields" title="Permalink to this headline">¶</a></h4>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">kind:</th><td class="field-body">a string indicating what type of bounds these are: “unbounded” (no bounds), “monotone” (only considered unhealthy in one direction), or “range” (there is a range of healthy values, above or below them is unhealthy).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">operator:</th><td class="field-body">a string indicating which whether the bounds should be treated as floors or ceilings (ex, “&gt;”, “&lt;”).</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">bad_threshold:</th><td class="field-body">the value that represents the boundary between a bad and an ok value for the expression.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">good_threshold:</th><td class="field-body">the value that represents the boundary between an ok and a good value for the expression.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">lower_bound_inclusive:</th><td class="field-body">an optional value below the bad_threshold which indicates a boundry below which values are considered invalid or erroneous rather than unhealthy.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">upper_bound_exclusive:</th><td class="field-body">an optional value above the good_threshold which indicates a boundry above which values are considered invalid or erroneous rather than unhealthy.</td>
 </tr>
 </tbody>
 </table>
@@ -558,8 +660,8 @@ Total: 2001520 samples
 <h2>Downstream Clients<a class="headerlink" href="#downstream-clients" title="Permalink to this headline">¶</a></h2>
 <p id="admin-clients">The <a class="reference external" href="https://twitter.github.io/finagle/guide/Clients.html">Finagle clients</a>
 that your service depends on.</p>
-<div class="section" id="id4">
-<h3>/admin/clients<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id5">
+<h3>/admin/clients<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>Surface client information exposed by Finagle. Per-client configuration parameters and
 values for each module are available at <cite>/admin/clients/&lt;client name&gt;</cite>.</p>
 </div>
@@ -568,8 +670,8 @@ values for each module are available at <cite>/admin/clients/&lt;client name&gt;
 <h2>Listening Servers<a class="headerlink" href="#listening-servers" title="Permalink to this headline">¶</a></h2>
 <p id="admin-servers">The <a class="reference external" href="https://twitter.github.io/finagle/guide/Servers.html">Finagle servers</a>
 that your service is running.</p>
-<div class="section" id="id5">
-<h3>/admin/servers<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id6">
+<h3>/admin/servers<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <p>Surface server information exposed by Finagle. Per-server configuration parameters and
 values for each module are available at <cite>/admin/servers/&lt;server name&gt;</cite>.</p>
 </div>
@@ -626,6 +728,13 @@ if available.</p>
 <li><a class="reference internal" href="#source-object-fields">Source Object Fields:</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#admin-metric-expressions-json">/admin/metric/expressions.json</a><ul>
+<li><a class="reference internal" href="#id2">Top-level/instance-wide Fields:</a></li>
+<li><a class="reference internal" href="#expression-object-fields">Expression Object Fields:</a></li>
+<li><a class="reference internal" href="#labels-object-fields">Labels Object Fields:</a></li>
+<li><a class="reference internal" href="#bounds-object-fields">Bounds Object Fields:</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#profiling">Profiling</a><ul>
@@ -636,11 +745,11 @@ if available.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#downstream-clients">Downstream Clients</a><ul>
-<li><a class="reference internal" href="#id4">/admin/clients</a></li>
+<li><a class="reference internal" href="#id5">/admin/clients</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#listening-servers">Listening Servers</a><ul>
-<li><a class="reference internal" href="#id5">/admin/servers</a></li>
+<li><a class="reference internal" href="#id6">/admin/servers</a></li>
 <li><a class="reference internal" href="#admin-servers-connections">/admin/servers/connections</a></li>
 </ul>
 </li>
