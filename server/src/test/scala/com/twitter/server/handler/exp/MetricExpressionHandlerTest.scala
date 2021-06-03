@@ -2,6 +2,7 @@ package com.twitter.server.handler.exp
 
 import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.Request
+import com.twitter.finagle.stats.MetricBuilder.{CounterType, GaugeType, HistogramType}
 import com.twitter.finagle.stats.exp.{
   Expression,
   ExpressionSchema,
@@ -9,15 +10,7 @@ import com.twitter.finagle.stats.exp.{
   GreaterThan,
   MonotoneThresholds
 }
-import com.twitter.finagle.stats.{
-  CounterSchema,
-  GaugeSchema,
-  HistogramSchema,
-  InMemoryStatsReceiver,
-  MetricBuilder,
-  MetricSchema,
-  SchemaRegistry
-}
+import com.twitter.finagle.stats.{InMemoryStatsReceiver, MetricBuilder, SchemaRegistry}
 import com.twitter.server.handler.MetricExpressionHandler
 import com.twitter.server.util.{AdminJsonConverter, JsonUtils, MetricSchemaSource}
 import com.twitter.util.{Await, Awaitable, Duration}
@@ -30,10 +23,11 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
 
   val sr = new InMemoryStatsReceiver
 
-  val successMb = CounterSchema(MetricBuilder(name = Seq("success"), statsReceiver = sr))
+  val successMb = MetricBuilder(name = Seq("success"), metricType = CounterType, statsReceiver = sr)
   val failuresMb =
-    CounterSchema(MetricBuilder(name = Seq("failures"), statsReceiver = sr))
-  val latencyMb = HistogramSchema(MetricBuilder(name = Seq("latency"), statsReceiver = sr))
+    MetricBuilder(name = Seq("failures"), metricType = CounterType, statsReceiver = sr)
+  val latencyMb =
+    MetricBuilder(name = Seq("latency"), metricType = HistogramType, statsReceiver = sr)
 
   val successRateExpression =
     ExpressionSchema(
@@ -57,7 +51,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
 
   val expressionRegistry = new SchemaRegistry {
     def hasLatchedCounters: Boolean = false
-    def schemas(): Map[String, MetricSchema] = Map.empty
+    def schemas(): Map[String, MetricBuilder] = Map.empty
 
     val expressions: _root_.scala.Predef.Map[
       _root_.com.twitter.finagle.stats.exp.ExpressionSchemaKey,
@@ -69,7 +63,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
 
   val latchedRegistry = new SchemaRegistry {
     def hasLatchedCounters: Boolean = true
-    def schemas(): Map[String, MetricSchema] = Map.empty
+    def schemas(): Map[String, MetricBuilder] = Map.empty
     def expressions(): Map[ExpressionSchemaKey, ExpressionSchema] =
       expressionSchemaMap
   }
@@ -206,7 +200,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
 
   test("translate expressions - gauges") {
     val connMb =
-      GaugeSchema(MetricBuilder(name = Seq("client", "connections"), statsReceiver = sr))
+      MetricBuilder(name = Seq("client", "connections"), metricType = GaugeType, statsReceiver = sr)
     val result = MetricExpressionHandler.translateToQuery(Expression(connMb))
     assert(result == "client/connections")
   }

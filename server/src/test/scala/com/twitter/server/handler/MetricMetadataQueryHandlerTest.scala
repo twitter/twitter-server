@@ -1,6 +1,7 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.http.Request
+import com.twitter.finagle.stats.MetricBuilder.{CounterType, GaugeType, HistogramType}
 import com.twitter.finagle.stats._
 import com.twitter.finagle.stats.exp.{ExpressionSchema, ExpressionSchemaKey}
 import com.twitter.server.util.{JsonUtils, MetricSchemaSource}
@@ -9,8 +10,8 @@ import org.scalatest.funsuite.AnyFunSuite
 
 class MetricMetadataQueryHandlerTest extends AnyFunSuite {
 
-  val schemaMap: Map[String, MetricSchema] = Map(
-    "my/cool/counter" -> CounterSchema(
+  val schemaMap: Map[String, MetricBuilder] = Map(
+    "my/cool/counter" ->
       MetricBuilder(
         keyIndicator = true,
         description = "Counts how many cools are seen",
@@ -21,9 +22,10 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
         name = Seq("my", "cool", "counter"),
         processPath = Some("dc/role/zone/service"),
         percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
+        metricType = CounterType,
         statsReceiver = null
-      )),
-    "your/fine/gauge" -> GaugeSchema(
+      ),
+    "your/fine/gauge" ->
       MetricBuilder(
         keyIndicator = false,
         description = "Measures how fine the downstream system is",
@@ -34,15 +36,17 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
         name = Seq("your", "fine", "gauge"),
         processPath = Some("dc/your_role/zone/your_service"),
         percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
+        metricType = GaugeType,
         statsReceiver = null
-      )),
-    "my/only/histo" -> HistogramSchema(
+      ),
+    "my/only/histo" ->
       MetricBuilder(
         name = Seq("my", "only", "histo"),
         percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
+        metricType = HistogramType,
         statsReceiver = null
-      )),
-    "my/bad/null/counter" -> CounterSchema(
+      ),
+    "my/bad/null/counter" ->
       MetricBuilder(
         keyIndicator = true,
         description = "A counter scoped by null get deserialized correctly",
@@ -53,19 +57,20 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
         name = Seq("my", "bad", null, "counter"),
         processPath = Some("dc/role/zone/service"),
         percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
+        metricType = CounterType,
         statsReceiver = null
-      ))
+      )
   )
 
   trait UnlatchedRegistry extends SchemaRegistry {
     val hasLatchedCounters = false
-    def schemas(): Map[String, MetricSchema] = schemaMap
+    def schemas(): Map[String, MetricBuilder] = schemaMap
     def expressions(): Map[ExpressionSchemaKey, ExpressionSchema] = Map.empty
   }
 
   trait LatchedRegistry extends SchemaRegistry {
     val hasLatchedCounters = true
-    override def schemas(): Map[String, MetricSchema] = schemaMap
+    override def schemas(): Map[String, MetricBuilder] = schemaMap
     def expressions(): Map[ExpressionSchemaKey, ExpressionSchema] = Map.empty
   }
 
@@ -399,22 +404,24 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
   ): Unit = {
     test(testName) {
       trait registry extends SchemalessRegistry {
-        def schemas(): Map[String, MetricSchema] = if (metricType == "counter") {
+        def schemas(): Map[String, MetricBuilder] = if (metricType == "counter") {
           Map(
-            metricName -> CounterSchema(
+            metricName ->
               MetricBuilder(
                 name = metricName.split("\\/"),
                 percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
+                metricType = CounterType,
                 statsReceiver = null
-              )))
+              ))
         } else {
           Map(
-            metricName -> HistogramSchema(
+            metricName ->
               MetricBuilder(
                 name = metricName.split("\\/"),
                 percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
+                metricType = HistogramType,
                 statsReceiver = null
-              )))
+              ))
         }
       }
       val request = Request("http://$HOST:$PORT/admin/metric_metadata.json?name=" + requestParam)

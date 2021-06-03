@@ -1,13 +1,14 @@
 package com.twitter.server.util
 
+import com.twitter.finagle.stats.MetricBuilder.{CounterType, GaugeType, HistogramType}
 import com.twitter.finagle.stats._
 import com.twitter.finagle.stats.exp.{ExpressionSchema, ExpressionSchemaKey}
 import org.scalatest.funsuite.AnyFunSuite
 
 class MetricSchemaSourceTest extends AnyFunSuite {
 
-  private val schemaMap: Map[String, MetricSchema] = Map(
-    "my/cool/counter" -> CounterSchema(
+  private val schemaMap: Map[String, MetricBuilder] = Map(
+    "my/cool/counter" ->
       MetricBuilder(
         keyIndicator = true,
         description = "Counts how many cools are seen",
@@ -18,9 +19,10 @@ class MetricSchemaSourceTest extends AnyFunSuite {
         name = Seq("my", "cool", "counter"),
         processPath = Some("dc/role/zone/service"),
         percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
+        metricType = CounterType,
         statsReceiver = null
-      )),
-    "your/fine/gauge" -> GaugeSchema(
+      ),
+    "your/fine/gauge" ->
       MetricBuilder(
         keyIndicator = false,
         description = "Measures how fine the downstream system is",
@@ -31,25 +33,27 @@ class MetricSchemaSourceTest extends AnyFunSuite {
         name = Seq("your", "fine", "gauge"),
         processPath = Some("dc/your_role/zone/your_service"),
         percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
+        metricType = GaugeType,
         statsReceiver = null
-      )),
-    "my/only/histo" -> HistogramSchema(
+      ),
+    "my/only/histo" ->
       MetricBuilder(
         name = Seq("my", "only", "histo"),
         percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
+        metricType = HistogramType,
         statsReceiver = null
-      ))
+      )
   )
 
   private val latchedPopulatedRegistry: SchemaRegistry = new SchemaRegistry {
     def hasLatchedCounters: Boolean = true
-    def schemas(): Map[String, MetricSchema] = schemaMap
+    def schemas(): Map[String, MetricBuilder] = schemaMap
     def expressions(): Map[ExpressionSchemaKey, ExpressionSchema] = Map.empty
   }
 
   private val unlatchedPopulatedRegistry: SchemaRegistry = new SchemaRegistry {
     def hasLatchedCounters: Boolean = false
-    def schemas(): Map[String, MetricSchema] = schemaMap
+    def schemas(): Map[String, MetricBuilder] = schemaMap
     def expressions(): Map[ExpressionSchemaKey, ExpressionSchema] = Map.empty
   }
 

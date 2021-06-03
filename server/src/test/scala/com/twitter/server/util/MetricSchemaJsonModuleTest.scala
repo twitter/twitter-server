@@ -2,12 +2,13 @@ package com.twitter.server.util
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, ScalaObjectMapper}
+import com.twitter.finagle.stats.MetricBuilder.{CounterType, GaugeType, HistogramType}
 import com.twitter.finagle.stats._
 import org.scalatest.funsuite.AnyFunSuite
 
 class MetricSchemaJsonModuleTest extends AnyFunSuite {
 
-  private val counterSchema = CounterSchema(
+  private val counterSchema =
     MetricBuilder(
       keyIndicator = true,
       description = "Counts how many cools are seen",
@@ -18,9 +19,10 @@ class MetricSchemaJsonModuleTest extends AnyFunSuite {
       name = Seq("my", "cool", "counter"),
       processPath = Some("dc/role/zone/service"),
       percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
+      metricType = CounterType,
       statsReceiver = null
-    ))
-  private val gaugeSchema = GaugeSchema(
+    )
+  private val gaugeSchema =
     MetricBuilder(
       keyIndicator = false,
       description = "Measures how fine the downstream system is",
@@ -31,14 +33,16 @@ class MetricSchemaJsonModuleTest extends AnyFunSuite {
       name = Seq("your", "fine", "gauge"),
       processPath = Some("dc/your_role/zone/your_service"),
       percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
+      metricType = GaugeType,
       statsReceiver = null
-    ))
-  private val histogramSchema = HistogramSchema(
+    )
+  private val histogramSchema =
     MetricBuilder(
       name = Seq("my", "only", "histo"),
       percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
+      metricType = HistogramType,
       statsReceiver = null
-    ))
+    )
 
   private val topLevelFieldNameSet =
     Set(
@@ -109,12 +113,12 @@ class MetricSchemaJsonModuleTest extends AnyFunSuite {
   }
 
   test("GaugeSchema does not include counterishGauge unless it is true") {
-    val counterish = gaugeSchema.copy(metricBuilder = gaugeSchema.metricBuilder.withCounterishGauge)
+    val counterish = gaugeSchema.withCounterishGauge
 
     for (schema <- Seq(gaugeSchema, counterish)) {
       val serializedString = AdminJsonConverter.writeToString(schema)
       val jsonMap = jsonStrToMap(serializedString)
-      val expected = if (schema.metricBuilder.isCounterishGauge) Some(true) else None
+      val expected = if (schema.isCounterishGauge) Some(true) else None
       assert(jsonMap.get("counterish_gauge") == expected)
     }
   }

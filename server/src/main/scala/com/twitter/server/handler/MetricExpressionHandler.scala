@@ -2,6 +2,7 @@ package com.twitter.server.handler
 
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{MediaType, Request, Response, Uri}
+import com.twitter.finagle.stats.MetricBuilder.CounterType
 import com.twitter.finagle.stats.exp.Expression._
 import com.twitter.finagle.stats.exp.{
   ConstantExpression,
@@ -10,13 +11,7 @@ import com.twitter.finagle.stats.exp.{
   HistogramExpression,
   MetricExpression
 }
-import com.twitter.finagle.stats.{
-  CounterSchema,
-  HistogramSchema,
-  MetricSchema,
-  StatsFormatter,
-  metadataScopeSeparator
-}
+import com.twitter.finagle.stats.{MetricBuilder, StatsFormatter, metadataScopeSeparator}
 import com.twitter.io.Buf
 import com.twitter.server.handler.MetricExpressionHandler.{Version, translateToQuery}
 import com.twitter.server.util.HttpUtils.newResponse
@@ -46,10 +41,10 @@ object MetricExpressionHandler {
   // the returned metric is styled the same way as admin/metrics.json
   // e.g.request_latency.p9999 or request_latency.min
   private def getHisto(
-    histoSchema: HistogramSchema,
+    metricBuilder: MetricBuilder,
     histoComponent: Either[HistogramComponent, Double]
   ): String = {
-    val name = histoSchema.metricBuilder.name.mkString(metadataScopeSeparator())
+    val name = metricBuilder.name.mkString(metadataScopeSeparator())
     val component = histoComponent match {
       case Right(percentile) => statsFormatter.labelPercentile(percentile)
       case Left(Min) => statsFormatter.labelMin
@@ -63,13 +58,13 @@ object MetricExpressionHandler {
 
   // Form metrics other than histograms, rate() for unlatched counters
   private def getMetric(
-    metricSchema: MetricSchema,
+    metricBuilder: MetricBuilder,
     latched: Boolean,
   ): String = {
-    metricSchema match {
-      case CounterSchema(metricBuilder) if !latched =>
+    metricBuilder.metricType match {
+      case CounterType if !latched =>
         s"rate(${metricBuilder.name.mkString(metadataScopeSeparator())})"
-      case other => other.metricBuilder.name.mkString(metadataScopeSeparator())
+      case other => metricBuilder.name.mkString(metadataScopeSeparator())
     }
   }
 }

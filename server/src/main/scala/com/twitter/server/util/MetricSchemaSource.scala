@@ -1,7 +1,7 @@
 package com.twitter.server.util
 
 import com.twitter.finagle.stats.exp.ExpressionSchema
-import com.twitter.finagle.stats.{MetricSchema, SchemaRegistry}
+import com.twitter.finagle.stats.{MetricBuilder, SchemaRegistry}
 import com.twitter.finagle.util.LoadService
 
 private[server] object MetricSchemaSource {
@@ -26,14 +26,14 @@ private[server] class MetricSchemaSource(
   }
 
   /** Returns the entry for `key` if it exists */
-  def getSchema(key: String): Option[MetricSchema] = synchronized {
+  def getSchema(key: String): Option[MetricBuilder] = synchronized {
     registry.map(_.schemas()).find(_.contains(key)).flatMap(_.get(key))
   }
 
   /** Returns all schemas */
-  def schemaList(): Iterable[MetricSchema] = synchronized {
+  def schemaList(): Iterable[MetricBuilder] = synchronized {
     registry
-      .foldLeft(IndexedSeq[MetricSchema]()) { (seq, r) => seq ++ r.schemas().values }
+      .foldLeft(IndexedSeq[MetricBuilder]()) { (seq, r) => seq ++ r.schemas().values }
   }
 
   /** Returns true if the map contains `key` and false otherwise. */

@@ -3,16 +3,10 @@ package com.twitter.server.util
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
-import com.twitter.finagle.stats.{
-  CounterSchema,
-  GaugeSchema,
-  HistogramSchema,
-  MetricSchema,
-  StatsFormatter,
-  metadataScopeSeparator
-}
+import com.twitter.finagle.stats.MetricBuilder.{CounterType, GaugeType, HistogramType}
+import com.twitter.finagle.stats.{MetricBuilder, StatsFormatter, metadataScopeSeparator}
 
-object SchemaSerializer extends StdSerializer[MetricSchema](classOf[MetricSchema]) {
+object SchemaSerializer extends StdSerializer[MetricBuilder](classOf[MetricBuilder]) {
 
   private[this] val statsFormatter = StatsFormatter.default
 
@@ -29,48 +23,45 @@ object SchemaSerializer extends StdSerializer[MetricSchema](classOf[MetricSchema
   //    3) The MetricBuilder class would need to be reworked to have a Source case class
   //       nested in it which would contain a few of the currently MetricBuilder level values.
   def serialize(
-    metricSchema: MetricSchema,
+    metricBuilder: MetricBuilder,
     jsonGenerator: JsonGenerator,
     serializerProvider: SerializerProvider
   ): Unit = {
-    val formattedName = metricSchema.metricBuilder.name.mkString(metadataScopeSeparator())
+    val formattedName = metricBuilder.name.mkString(metadataScopeSeparator())
     jsonGenerator.writeStartObject()
     jsonGenerator.writeStringField("name", formattedName)
     jsonGenerator.writeArrayFieldStart("relative_name")
-    if (metricSchema.metricBuilder.relativeName != Seq.empty) {
-      metricSchema.metricBuilder.relativeName.foreach(segment =>
+    if (metricBuilder.relativeName != Seq.empty) {
+      metricBuilder.relativeName.foreach(segment =>
         jsonGenerator.writeString(convertNullToString(segment)))
     } else {
-      metricSchema.metricBuilder.name.foreach(segment =>
-        jsonGenerator.writeString(convertNullToString(segment)))
+      metricBuilder.name.foreach(segment => jsonGenerator.writeString(convertNullToString(segment)))
     }
     jsonGenerator.writeEndArray()
-    val dataType = metricSchema match {
-      case _: CounterSchema => "counter"
-      case _: GaugeSchema => "gauge"
-      case _: HistogramSchema => "histogram"
+    val dataType = metricBuilder.metricType match {
+      case CounterType => "counter"
+      case GaugeType => "gauge"
+      case HistogramType => "histogram"
     }
     jsonGenerator.writeStringField("kind", dataType)
     jsonGenerator.writeObjectFieldStart("source")
-    jsonGenerator.writeStringField(
-      "class",
-      metricSchema.metricBuilder.sourceClass.getOrElse("Unspecified"))
-    jsonGenerator.writeStringField("category", metricSchema.metricBuilder.role.toString)
+    jsonGenerator.writeStringField("class", metricBuilder.sourceClass.getOrElse("Unspecified"))
+    jsonGenerator.writeStringField("category", metricBuilder.role.toString)
     jsonGenerator.writeStringField(
       "process_path",
-      metricSchema.metricBuilder.processPath.getOrElse("Unspecified"))
+      metricBuilder.processPath.getOrElse("Unspecified"))
     jsonGenerator.writeEndObject()
-    jsonGenerator.writeStringField("description", metricSchema.metricBuilder.description)
-    jsonGenerator.writeStringField("unit", metricSchema.metricBuilder.units.toString)
-    jsonGenerator.writeStringField("verbosity", metricSchema.metricBuilder.verbosity.toString)
-    jsonGenerator.writeBooleanField("key_indicator", metricSchema.metricBuilder.keyIndicator)
+    jsonGenerator.writeStringField("description", metricBuilder.description)
+    jsonGenerator.writeStringField("unit", metricBuilder.units.toString)
+    jsonGenerator.writeStringField("verbosity", metricBuilder.verbosity.toString)
+    jsonGenerator.writeBooleanField("key_indicator", metricBuilder.keyIndicator)
 
-    metricSchema match {
-      case _: GaugeSchema =>
-        if (metricSchema.metricBuilder.isCounterishGauge) {
+    metricBuilder.metricType match {
+      case GaugeType =>
+        if (metricBuilder.isCounterishGauge) {
           jsonGenerator.writeBooleanField("counterish_gauge", true)
         }
-      case _: HistogramSchema =>
+      case HistogramType =>
         jsonGenerator.writeObjectFieldStart("buckets")
         jsonGenerator.writeStringField("count", statsFormatter.histogramSeparator + "count")
         jsonGenerator.writeStringField("sum", statsFormatter.histogramSeparator + "sum")
@@ -83,7 +74,7 @@ object SchemaSerializer extends StdSerializer[MetricSchema](classOf[MetricSchema
         jsonGenerator.writeStringField(
           "maximum",
           statsFormatter.histogramSeparator + statsFormatter.labelMax)
-        metricSchema.metricBuilder.percentiles.foreach(bucket =>
+        metricBuilder.percentiles.foreach(bucket =>
           jsonGenerator.writeStringField(
             bucket.toString,
             statsFormatter.histogramSeparator + statsFormatter.labelPercentile(bucket)))
