@@ -1,5 +1,8 @@
 import scoverage.ScoverageKeys
 
+Global / onChangedBuildSource := ReloadOnSourceChanges
+Global / excludeLintKeys += scalacOptions
+
 // All Twitter library releases are date versioned as YY.MM.patch
 val releaseVersion = "21.6.0-SNAPSHOT"
 
@@ -16,7 +19,7 @@ def util(which: String) = "com.twitter" %% ("util-" + which) % releaseVersion
 def finagle(which: String) = "com.twitter" %% ("finagle-" + which) % releaseVersion
 
 lazy val noPublishSettings = Seq(
-  skip in publish := true
+  publish / skip := true
 )
 
 def gcJavaOptions: Seq[String] = {
@@ -78,7 +81,7 @@ lazy val sharedSettings = Seq(
   organization := "com.twitter",
   scalaVersion := "2.12.12",
   crossScalaVersions := Seq("2.12.12", "2.13.1"),
-  fork in Test := true, // We have to fork to get the JavaOptions
+  Test / fork := true, // We have to fork to get the JavaOptions
   libraryDependencies ++= Seq(
     // See https://www.scala-sbt.org/0.13/docs/Testing.html#JUnit
     "com.novocode" % "junit-interface" % "0.11" % "test",
@@ -106,20 +109,20 @@ lazy val sharedSettings = Seq(
     "utf8"
   ),
   javacOptions ++= Seq("-Xlint:unchecked", "-source", "1.8", "-target", "1.8"),
-  javacOptions in doc := Seq("-source", "1.8"),
+  doc / javacOptions := Seq("-source", "1.8"),
   javaOptions ++= Seq(
     "-Djava.net.preferIPv4Stack=true",
     "-XX:+AggressiveOpts",
     "-server"
   ),
   javaOptions ++= gcJavaOptions,
-  javaOptions in Test ++= travisTestJavaOptions,
+  Test / javaOptions ++= travisTestJavaOptions,
   // This is bad news for things like com.twitter.util.Time
-  parallelExecution in Test := false,
+  Test / parallelExecution := false,
   // -a: print stack traces for failing asserts
   testOptions += Tests.Argument(TestFrameworks.JUnit, "-a"),
   // Sonatype publishing
-  publishArtifact in Test := false,
+  Test / publishArtifact := false,
   pomIncludeRepository := { _ => false },
   publishMavenStyle := true,
   publishConfiguration := publishConfiguration.value.withOverwrite(true),
@@ -260,15 +263,15 @@ lazy val twitterServerDoc = (project in file("doc"))
     name := "twitter-server-doc",
     sharedSettings,
     Seq(
-      scalacOptions in doc ++= Seq("-doc-title", "TwitterServer", "-doc-version", version.value),
-      includeFilter in Sphinx := ("*.html" | "*.png" | "*.js" | "*.css" | "*.gif" | "*.txt")
+      doc / scalacOptions ++= Seq("-doc-title", "TwitterServer", "-doc-version", version.value),
+      Sphinx / includeFilter := ("*.html" | "*.png" | "*.js" | "*.css" | "*.gif" | "*.txt")
     )
   )
   .configs(DocTest).settings(inConfig(DocTest)(Defaults.testSettings): _*)
   .settings(
-    unmanagedSourceDirectories in DocTest += baseDirectory.value / "src/sphinx/code",
+    DocTest / unmanagedSourceDirectories += baseDirectory.value / "src/sphinx/code",
     // Make the "test" command run both, test and doctest:test
-    test := Seq(test in Test, test in DocTest).dependOn.value
+    test := Seq(Test / test, DocTest / test).dependOn.value
   )
   .dependsOn(twitterServer)
 
