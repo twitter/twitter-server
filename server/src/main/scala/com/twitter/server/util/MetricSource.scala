@@ -5,6 +5,7 @@ import com.twitter.finagle.stats.{StatEntry, StatsRegistry}
 import com.twitter.finagle.util.LoadService
 import com.twitter.server.util.MetricSource.MetricTypeInfo
 import com.twitter.util.{Duration, Time}
+import java.util.concurrent.atomic.AtomicReference
 
 private[server] object MetricSource {
   lazy val registry: Seq[StatsRegistry] = LoadService[StatsRegistry]()
@@ -19,14 +20,19 @@ private[server] object MetricSource {
 private[server] class MetricSource(
   registry: () => Seq[StatsRegistry] = { () => MetricSource.registry },
   refreshInterval: Duration = 1.second) {
-  private[this] var lastRefresh = Time.now - refreshInterval
-  private[this] var underlying: Map[String, StatEntry] = Map.empty
+
+  // null while the map is being refreshed
+  private[this] val lastRefresh = new AtomicReference(Time.now - refreshInterval)
+
+  @volatile private[this] var underlying: Map[String, StatEntry] = Map.empty
 
   private[this] def refresh(): Unit = {
-    if (Time.now - lastRefresh > refreshInterval) {
+    val last = lastRefresh.get()
+    if (last != null && Time.now - last > refreshInterval &&
+      lastRefresh.compareAndSet(last, null)) {
       val newStats = registry().foldLeft(Map[String, StatEntry]()) { (map, r) => map ++ r() }
       underlying = newStats
-      lastRefresh = Time.now
+      lastRefresh.set(Time.now)
     }
   }
 
@@ -34,7 +40,7 @@ private[server] class MetricSource(
    * @note this relies on the fact that there is only one StatsRegistry and that it is
    *       the finagle implementation.
    */
-  def hasLatchedCounters(): Boolean = synchronized {
+  def hasLatchedCounters(): Boolean = {
     val statsRegistry = registry().headOption.getOrElse {
       throw new RuntimeException("No StatsRegistries available")
     }
@@ -42,32 +48,32 @@ private[server] class MetricSource(
   }
 
   /** Returns the entry for `key` if it exists */
-  def get(key: String): Option[MetricSource.Entry] = synchronized {
+  def get(key: String): Option[MetricSource.Entry] = {
     refresh()
     for (s <- underlying.get(key)) yield MetricSource.Entry(key, s.delta, s.value)
   }
 
   /** Returns the entry for `key` with type info if the entry exists */
-  def getType(key: String): Option[MetricSource.MetricTypeInfo] = synchronized {
+  def getType(key: String): Option[MetricSource.MetricTypeInfo] = {
     refresh()
     for (s <- underlying.get(key))
       yield MetricSource.MetricTypeInfo(key, s.metricType)
   }
 
   /** Returns true if the map contains `key` and false otherwise. */
-  def contains(key: String): Boolean = synchronized {
+  def contains(key: String): Boolean = {
     refresh()
     underlying.contains(key)
   }
 
   /** Returns the set of stat keys. */
-  def keySet: Set[String] = synchronized {
+  def keySet: Set[String] = {
     refresh()
     underlying.keySet
   }
 
   /** Returns a map of metric names to their types */
-  def typeMap: Iterable[MetricTypeInfo] = synchronized {
+  def typeMap: Iterable[MetricTypeInfo] = {
     refresh()
     underlying.map {
       case (name, statEntry) => MetricSource.MetricTypeInfo(name, statEntry.metricType)
