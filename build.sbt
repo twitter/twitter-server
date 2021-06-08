@@ -79,8 +79,8 @@ def travisTestJavaOptions: Seq[String] = {
 lazy val sharedSettings = Seq(
   version := releaseVersion,
   organization := "com.twitter",
-  scalaVersion := "2.12.12",
-  crossScalaVersions := Seq("2.12.12", "2.13.1"),
+  scalaVersion := "2.13.6",
+  crossScalaVersions := Seq("2.12.12", "2.13.6"),
   Test / fork := true, // We have to fork to get the JavaOptions
   libraryDependencies ++= Seq(
     // See https://www.scala-sbt.org/0.13/docs/Testing.html#JUnit
