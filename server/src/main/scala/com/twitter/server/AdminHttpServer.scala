@@ -272,7 +272,7 @@ trait AdminHttpServer { self: App with Stats =>
       .groupBy(_.group)
       .flatMap {
         case (groupOpt, rts) =>
-          val links = rts.map(routeToIndexLink)
+          val links = rts.map(routeToIndexLink).sorted(IndexView.EntryOrdering)
           groupOpt match {
             case Some(group) => Seq(IndexView.Group(group, links))
             case None => links

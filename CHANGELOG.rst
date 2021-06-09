@@ -7,6 +7,12 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+Runtime Behavior Changes
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Sort sublinks from Admin UI alphabetically. ``PHAB_ID=D684429``
+
+
 21.5.0
 ------
 
