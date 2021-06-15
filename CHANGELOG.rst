@@ -12,6 +12,8 @@ Runtime Behavior Changes
 
 * Sort sublinks from Admin UI alphabetically. ``PHAB_ID=D684429``
 
+* Added more information on how to enable/disable tracing in admin/tracing UI.
+  ``PHAB_ID=D687337``
 
 21.5.0
 ------

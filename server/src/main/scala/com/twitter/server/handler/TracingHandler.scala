@@ -54,15 +54,22 @@ class TracingHandler extends Service[Request, Response] {
     }
 
     val tracing = FinagleTracing.instance.get
-    val msg = if (params.getOrElse("enable", "") == "true") {
-      tracing.enable()
-      "Enabled Finagle tracing"
-    } else if (params.getOrElse("disable", "") == "true") {
-      tracing.disable()
-      "Disabling Finagle tracing"
-    } else {
-      "Could not figure out what you wanted to do with tracing. " +
-        "Either enable or disable it. This is what we got: " + params
+
+    val msg = (params.get("enable"), params.get("disable")) match {
+      case (Some("true"), Some("true")) =>
+        """You set tracing to be enabled and disabled at the same time.
+          |Either enable (/admin/tracing?enable=true) or disable (/admin/tracing?disable=true) it.
+          |""".stripMargin
+      case (Some("true"), _) =>
+        tracing.enable()
+        "Enabled Finagle tracing"
+      case (_, Some("true")) =>
+        tracing.disable()
+        "Disabling Finagle tracing"
+      case _ =>
+        """You did not set the parameter for tracing.
+          |Either enable (/admin/tracing?enable=true) or disable (/admin/tracing?disable=true) it.
+          |""".stripMargin
     }
 
     log.info(msg)
