@@ -18,7 +18,7 @@ private[server] object StackRegistryView {
       (for ((field, value) <- params) yield {
         s"""<tr>
               <td>${escapeHtml(field)}</td>
-              <td>${escapeHtml(value)}</td>
+              <td class="stack-value">${escapeHtml(value)}</td>
             </tr>"""
       }).mkString("\n")
 
@@ -45,7 +45,7 @@ private[server] object StackRegistryView {
             <a name="stack"></a>
             <div class="row">
               <!-- tab nav -->
-              <div class="tabbable tabs-left">
+              <div class="tabtable tabs-left col-xs-6 col-sm-6 col-md-4 col-lg-3">
                 <ul class="nav nav-tabs">
                   <li>Stack Modules</li>
                   ${(for (StackRegistry.Module(role, _, _) <- modules) yield {
@@ -54,10 +54,10 @@ private[server] object StackRegistryView {
                 </ul>
               </div>
               <!-- tab content -->
-              <div class="tab-content">
+              <div class="tab-content col-xs-6 col-sm-6 col-md-8 col-lg-9">
                 ${(for (StackRegistry.Module(role, desc, params) <- modules) yield {
       s"""<div class="tab-pane" id="${toUri(role)}-module">
-                          <div style="display:inline-block; min-width:50%">
+                          <div class="stack-module-panel">
                             <div class="panel panel-default">
                               <div class="panel-heading">${escapeHtml(role)}</div>
                               <div class="panel-body"><p>${escapeHtml(desc)}</p></div>

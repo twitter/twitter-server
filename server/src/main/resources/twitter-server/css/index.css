@@ -150,6 +150,16 @@ nav .subnav-title {
   cursor: pointer;
 }
 
+/** Client Stack Registry and Server Stack Registry */
+.stack-value {
+  word-break: break-all;
+}
+
+.stack-module-panel {
+  display:inline-block;
+  min-width:70%;
+}
+
 /** Shared */
 
 pre {

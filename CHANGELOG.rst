@@ -15,6 +15,9 @@ Runtime Behavior Changes
 * Added more information on how to enable/disable tracing in admin/tracing UI.
   ``PHAB_ID=D687337``
 
+* Resize stack module description table based on the width of the window in
+  Downstream Clients and Listening Servers pages in Admin UI. ``PHAB_ID=D686836``
+
 21.5.0
 ------
 
