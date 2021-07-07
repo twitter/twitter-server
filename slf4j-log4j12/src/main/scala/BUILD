@@ -7,7 +7,10 @@ scala_library(
         repo = artifactory,
     ),
     scope = "forced",  # Exposes a service-loaded class.
-    tags = ["logging_impl_check_whitelisted_target"],
+    tags = [
+        "bazel-compatible",
+        "logging_impl_check_whitelisted_target",
+    ],
     dependencies = [
         "3rdparty/jvm/log4j",
         "3rdparty/jvm/org/slf4j:jul-to-slf4j",

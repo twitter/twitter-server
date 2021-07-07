@@ -1,6 +1,7 @@
 scala_library(
     sources = ["*.scala"],
     compiler_option_sets = ["fatal_warnings"],
+    tags = ["bazel-compatible"],
     dependencies = [
         "3rdparty/jvm/io/opencensus:opencensus-api",
         "3rdparty/jvm/io/opencensus:opencensus-contrib-zpages",

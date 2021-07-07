@@ -7,6 +7,7 @@ scala_library(
         repo = artifactory,
     ),
     strict_deps = True,
+    tags = ["bazel-compatible"],
     dependencies = [
         "twitter-server/server/src/main/scala",
         "twitter-server/slf4j-jdk14/src/main/scala/com/twitter/server/logging",
