@@ -9,7 +9,7 @@ Unreleased
 
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
-* Update Scalatest to version 1.15.4 ``PHAB_ID=D691691``
+* Update ScalaCheck to version 1.15.4 ``PHAB_ID=D691691``
 
 21.6.0
 ------
