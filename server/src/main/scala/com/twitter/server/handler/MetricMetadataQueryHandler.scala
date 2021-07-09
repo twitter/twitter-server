@@ -119,7 +119,7 @@ class MetricMetadataQueryHandler(source: MetricSchemaSource = new MetricSchemaSo
       content = Buf.Utf8(
         AdminJsonConverter.writeToString(
           Map(
-            "@version" -> 3.1,
+            "@version" -> 3.2,
             "counters_latched" -> latched,
             "separator_char" -> metadataScopeSeparator(),
             "metrics" -> metrics

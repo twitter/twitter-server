@@ -347,7 +347,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       val responseStart =
         """
           | {
-          |   "@version" : 3.1,
+          |   "@version" : 3.2,
           |   "counters_latched" : true,
           |   "separator_char" : "/",
         """.stripMargin
@@ -361,7 +361,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       val responseStart =
         """
           | {
-          |   "@version" : 3.1,
+          |   "@version" : 3.2,
           |   "counters_latched" : false,
           |   "separator_char" : "/",
         """.stripMargin

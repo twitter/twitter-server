@@ -7,8 +7,16 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+Admin Endpoint Versions
+~~~~~~~~~~~~~~~~~~~~~~~
+
+* Bump metric_metadata.json to version 3.2: CounterishGauge now exports with 
+  "kind": "counterish_gauge", instead of "counterish_gauge": "true"
+  ``PHAB_ID=D700353``.
+
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
+
 * Update ScalaCheck to version 1.15.4 ``PHAB_ID=D691691``
 
 21.6.0

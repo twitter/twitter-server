@@ -2,7 +2,12 @@ package com.twitter.server.util
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, ScalaObjectMapper}
-import com.twitter.finagle.stats.MetricBuilder.{CounterType, GaugeType, HistogramType}
+import com.twitter.finagle.stats.MetricBuilder.{
+  CounterType,
+  CounterishGaugeType,
+  GaugeType,
+  HistogramType
+}
 import com.twitter.finagle.stats._
 import org.scalatest.funsuite.AnyFunSuite
 
@@ -112,14 +117,15 @@ class MetricSchemaJsonModuleTest extends AnyFunSuite {
       ))
   }
 
-  test("GaugeSchema does not include counterishGauge unless it is true") {
+  test("GaugeSchema and CounterishGaugeSchema are recorded as different types") {
     val counterish = gaugeSchema.withCounterishGauge
 
     for (schema <- Seq(gaugeSchema, counterish)) {
       val serializedString = AdminJsonConverter.writeToString(schema)
       val jsonMap = jsonStrToMap(serializedString)
-      val expected = if (schema.isCounterishGauge) Some(true) else None
-      assert(jsonMap.get("counterish_gauge") == expected)
+      val expected =
+        if (schema.metricType == CounterishGaugeType) Some("counterish_gauge") else Some("gauge")
+      assert(jsonMap.get("kind") == expected)
     }
   }
 

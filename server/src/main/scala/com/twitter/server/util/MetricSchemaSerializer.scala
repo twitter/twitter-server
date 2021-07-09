@@ -3,7 +3,12 @@ package com.twitter.server.util
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
-import com.twitter.finagle.stats.MetricBuilder.{CounterType, GaugeType, HistogramType}
+import com.twitter.finagle.stats.MetricBuilder.{
+  CounterType,
+  CounterishGaugeType,
+  GaugeType,
+  HistogramType
+}
 import com.twitter.finagle.stats.{MetricBuilder, StatsFormatter, metadataScopeSeparator}
 
 object SchemaSerializer extends StdSerializer[MetricBuilder](classOf[MetricBuilder]) {
@@ -40,6 +45,7 @@ object SchemaSerializer extends StdSerializer[MetricBuilder](classOf[MetricBuild
     jsonGenerator.writeEndArray()
     val dataType = metricBuilder.metricType match {
       case CounterType => "counter"
+      case CounterishGaugeType => "counterish_gauge"
       case GaugeType => "gauge"
       case HistogramType => "histogram"
     }
@@ -57,10 +63,6 @@ object SchemaSerializer extends StdSerializer[MetricBuilder](classOf[MetricBuild
     jsonGenerator.writeBooleanField("key_indicator", metricBuilder.keyIndicator)
 
     metricBuilder.metricType match {
-      case GaugeType =>
-        if (metricBuilder.isCounterishGauge) {
-          jsonGenerator.writeBooleanField("counterish_gauge", true)
-        }
       case HistogramType =>
         jsonGenerator.writeObjectFieldStart("buckets")
         jsonGenerator.writeStringField("count", statsFormatter.histogramSeparator + "count")
