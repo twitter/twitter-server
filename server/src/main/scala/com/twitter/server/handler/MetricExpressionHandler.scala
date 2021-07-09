@@ -9,7 +9,8 @@ import com.twitter.finagle.stats.exp.{
   Expression,
   FunctionExpression,
   HistogramExpression,
-  MetricExpression
+  MetricExpression,
+  NoExpression
 }
 import com.twitter.finagle.stats.{MetricBuilder, StatsFormatter, metadataScopeSeparator}
 import com.twitter.io.Buf
@@ -35,6 +36,7 @@ object MetricExpressionHandler {
       case ConstantExpression(repr) => repr
       case FunctionExpression(funcName, exprs) =>
         s"$funcName(${exprs.map { expr => translateToQuery(expr, latched) }.mkString(",")})"
+      case NoExpression => "null"
     }
 
   // Form a fully formatted name of the histogram with components
