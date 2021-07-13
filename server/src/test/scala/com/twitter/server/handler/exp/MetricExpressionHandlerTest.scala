@@ -93,7 +93,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
       .filter(m => m.getOrElse("name", "") == "success_rate").head.getOrElse("expression", "")
   }
 
-  test("Get the all expressions") {
+  test("Get all expressions") {
     val expectedResponse =
       """
         |{
@@ -108,7 +108,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
         |        "service_name" : "Unspecified",
         |        "role" : "NoRoleSpecified"
         |      },
-        |      "expression" : "multiply(100.0,divide(rate(success),plus(rate(success),rate(failures))))",
+        |      "expression" : "multiply(100.0,divide(success,plus(success,failures)))",
         |      "bounds" : {
         |        "kind" : "monotone",
         |        "operator" : ">",
@@ -128,7 +128,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
         |        "role" : "NoRoleSpecified"
         |      },
         |      "namespaces" : ["path","to","tenantName"],
-        |      "expression" : "plus(rate(success),rate(failures))",
+        |      "expression" : "plus(success,failures)",
         |      "bounds" : {
         |        "kind" : "unbounded"
         |      },
@@ -169,31 +169,34 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
   test("Get the latched expression without latched_style") {
     val responseString = await(latchedHandler(testRequest)).contentString
 
-    assert(getSucessRateExpression(
-      responseString) == "multiply(100.0,divide(rate(success),plus(rate(success),rate(failures))))")
+    assert(
+      getSucessRateExpression(
+        responseString) == "multiply(100.0,divide(success,plus(success,failures)))")
   }
 
   test("translate expressions - counters") {
     val latchedResult =
-      MetricExpressionHandler.translateToQuery(successRateExpression.expr, latched = true)
+      MetricExpressionHandler.translateToQuery(successRateExpression.expr, shouldRate = false)
     assert(latchedResult == "multiply(100.0,divide(success,plus(success,failures)))")
 
     val unlatchedResult =
-      MetricExpressionHandler.translateToQuery(successRateExpression.expr)
+      MetricExpressionHandler.translateToQuery(successRateExpression.expr, shouldRate = true)
     assert(
       unlatchedResult == "multiply(100.0,divide(rate(success),plus(rate(success),rate(failures))))")
   }
 
   test("translate histogram expressions - latched does not affect result") {
-    val latchedResult = MetricExpressionHandler.translateToQuery(latencyP99.expr, latched = true)
-    val unLatchedResult = MetricExpressionHandler.translateToQuery(latencyP99.expr)
+    val latchedResult =
+      MetricExpressionHandler.translateToQuery(latencyP99.expr, shouldRate = false)
+    val unLatchedResult =
+      MetricExpressionHandler.translateToQuery(latencyP99.expr, shouldRate = true)
     assert(latchedResult == unLatchedResult)
   }
 
   test("translate histogram expressions - components") {
     val latencyMinExpr = Expression(latencyMb, Left(Expression.Min))
-    val min = MetricExpressionHandler.translateToQuery(latencyMinExpr)
-    val p99 = MetricExpressionHandler.translateToQuery(latencyP99.expr)
+    val min = MetricExpressionHandler.translateToQuery(latencyMinExpr, shouldRate = false)
+    val p99 = MetricExpressionHandler.translateToQuery(latencyP99.expr, shouldRate = false)
     assert(min == "latency.min")
     assert(p99 == "latency.p99")
   }
@@ -201,7 +204,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
   test("translate expressions - gauges") {
     val connMb =
       MetricBuilder(name = Seq("client", "connections"), metricType = GaugeType, statsReceiver = sr)
-    val result = MetricExpressionHandler.translateToQuery(Expression(connMb))
+    val result = MetricExpressionHandler.translateToQuery(Expression(connMb), shouldRate = false)
     assert(result == "client/connections")
   }
 
@@ -220,7 +223,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
         |        "service_name" : "Unspecified",
         |        "role" : "NoRoleSpecified"
         |      },
-        |      "expression" : "multiply(100.0,divide(rate(success),plus(rate(success),rate(failures))))",
+        |      "expression" : "multiply(100.0,divide(success,plus(success,failures)))",
         |      "bounds" : {
         |        "kind" : "monotone",
         |        "operator" : ">",
@@ -256,7 +259,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
         |        "role" : "NoRoleSpecified"
         |      },
         |      "namespaces" : ["path","to","tenantName"],
-        |      "expression" : "plus(rate(success),rate(failures))",
+        |      "expression" : "plus(success,failures)",
         |      "bounds" : {
         |        "kind" : "unbounded"
         |      },
@@ -333,7 +336,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
         |        "role" : "NoRoleSpecified"
         |      },
         |      "namespaces" : ["path","to","tenantName"],
-        |      "expression" : "plus(rate(success),rate(failures))",
+        |      "expression" : "plus(success,failures)",
         |      "bounds" : {
         |        "kind" : "unbounded"
         |      },

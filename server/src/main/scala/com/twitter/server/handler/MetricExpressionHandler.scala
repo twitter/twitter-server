@@ -26,16 +26,16 @@ object MetricExpressionHandler {
   /**
    * Translate the [[Expression]] object to a single line string which represents generic
    * query language.
-   * @param latched For unlatched counter, we wrap the metric within `rate`
+   * @param shouldRate If true, we wrap the metric with `rate`
    */
   // exposed for testing
-  private[server] def translateToQuery(expr: Expression, latched: Boolean = false): String =
+  private[server] def translateToQuery(expr: Expression, shouldRate: Boolean): String =
     expr match {
       case HistogramExpression(schema, component) => getHisto(schema, component)
-      case MetricExpression(schema) => getMetric(schema, latched)
+      case MetricExpression(schema) => getMetric(schema, shouldRate)
       case ConstantExpression(repr) => repr
       case FunctionExpression(funcName, exprs) =>
-        s"$funcName(${exprs.map { expr => translateToQuery(expr, latched) }.mkString(",")})"
+        s"$funcName(${exprs.map { expr => translateToQuery(expr, shouldRate) }.mkString(",")})"
       case NoExpression => "null"
     }
 
@@ -61,10 +61,10 @@ object MetricExpressionHandler {
   // Form metrics other than histograms, rate() for unlatched counters
   private def getMetric(
     metricBuilder: MetricBuilder,
-    latched: Boolean,
+    shouldRate: Boolean,
   ): String = {
     metricBuilder.metricType match {
-      case CounterType if !latched =>
+      case CounterType if shouldRate =>
         s"rate(${metricBuilder.name.mkString(metadataScopeSeparator())})"
       case other => metricBuilder.name.mkString(metadataScopeSeparator())
     }
@@ -105,9 +105,11 @@ class MetricExpressionHandler(source: MetricSchemaSource = new MetricSchemaSourc
       // name match if name param is present
         && (nameParam.isEmpty || nameParam.contains(expressionSchema.name)))
 
-    val latched = latchParam.exists { value => value == "true" || value == "1" } && sourceLatched
+    val shouldRate = latchParam.exists { value =>
+      value == "true" || value == "1"
+    } && !sourceLatched
     val expressions = filteredSchemas.map { expressionSchema =>
-      expressionSchema.copy(exprQuery = translateToQuery(expressionSchema.expr, latched))
+      expressionSchema.copy(exprQuery = translateToQuery(expressionSchema.expr, shouldRate))
     }
 
     newResponse(
