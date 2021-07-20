@@ -7,7 +7,8 @@ import com.twitter.finagle.stats.MetricBuilder.{
   CounterType,
   CounterishGaugeType,
   GaugeType,
-  HistogramType
+  HistogramType,
+  UnlatchedCounter
 }
 import com.twitter.finagle.stats.{MetricBuilder, StatsFormatter, metadataScopeSeparator}
 
@@ -44,6 +45,7 @@ object SchemaSerializer extends StdSerializer[MetricBuilder](classOf[MetricBuild
     }
     jsonGenerator.writeEndArray()
     val dataType = metricBuilder.metricType match {
+      case UnlatchedCounter => "unlatched_counter"
       case CounterType => "counter"
       case CounterishGaugeType => "counterish_gauge"
       case GaugeType => "gauge"
