@@ -17,6 +17,11 @@ Admin Endpoint Versions
   "kind": "counterish_gauge", instead of "counterish_gauge": "true"
   ``PHAB_ID=D700353``.
 
+* Bump expressions.json to version 1.1: the `labels` field in the Metric
+  Metadata Expressions output to return a dictionary instead of a well-defined
+  JSON object. However, the existing fields in `labels` will be preserved for
+  now. ``PHAB_ID=D700065``
+
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 

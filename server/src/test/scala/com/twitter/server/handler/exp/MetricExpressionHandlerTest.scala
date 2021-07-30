@@ -44,9 +44,9 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
     ExpressionSchema("latency_p99", Expression(latencyMb, Right(0.99))).withNamespace("tenantName")
 
   val expressionSchemaMap: Map[ExpressionSchemaKey, ExpressionSchema] = Map(
-    ExpressionSchemaKey("success_rate", None, Seq()) -> successRateExpression,
-    ExpressionSchemaKey("throughput", None, Seq()) -> throughputExpression,
-    ExpressionSchemaKey("latency", None, Seq("path", "to", "tenantName")) -> latencyP99
+    ExpressionSchemaKey("success_rate", Map(), Seq()) -> successRateExpression,
+    ExpressionSchemaKey("throughput", Map(), Seq()) -> throughputExpression,
+    ExpressionSchemaKey("latency", Map(), Seq("path", "to", "tenantName")) -> latencyP99
   )
 
   val expressionRegistry = new SchemaRegistry {
@@ -97,7 +97,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
     val expectedResponse =
       """
         |{
-        |  "@version" : 1.0,
+        |  "@version" : 1.1,
         |  "counters_latched" : false,
         |  "separator_char" : "/",
         |  "expressions" : [
@@ -212,7 +212,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
     val expectedResponse =
       """
         |{
-        |  "@version" : 1.0,
+        |  "@version" : 1.1,
         |  "counters_latched" : false,
         |  "separator_char" : "/",
         |  "expressions" : [
@@ -247,7 +247,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
     val expectedResponse =
       """
         |{
-        |  "@version" : 1.0,
+        |  "@version" : 1.1,
         |  "counters_latched" : false,
         |  "separator_char" : "/",
         |  "expressions" : [
@@ -293,7 +293,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
     val expectedResponse =
       """
         |{
-        |  "@version" : 1.0,
+        |  "@version" : 1.1,
         |  "counters_latched" : false,
         |  "separator_char" : "/",
         |  "expressions" : [
@@ -324,7 +324,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
     val expectedResponse =
       """
         |{
-        |  "@version" : 1.0,
+        |  "@version" : 1.1,
         |  "counters_latched" : false,
         |  "separator_char" : "/",
         |  "expressions" : [

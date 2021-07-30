@@ -20,7 +20,7 @@ import com.twitter.server.util.{AdminJsonConverter, MetricSchemaSource}
 import com.twitter.util.Future
 
 object MetricExpressionHandler {
-  private val Version = 1.0
+  private val Version = 1.1
   private val statsFormatter = StatsFormatter.default
 
   /**

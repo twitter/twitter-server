@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.{JsonGenerator, JsonParser}
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import com.fasterxml.jackson.databind.{DeserializationContext, SerializerProvider}
+import com.twitter.finagle.stats.NoRoleSpecified
 import com.twitter.finagle.stats.exp._
 
 /**
@@ -26,13 +27,17 @@ object ExpressionJson {
       gen.writeStringField("name", expressionSchema.name)
 
       gen.writeObjectFieldStart("labels")
-      gen.writeStringField(
-        "process_path",
-        expressionSchema.labels.processPath.getOrElse("Unspecified"))
-      gen.writeStringField(
-        "service_name",
-        expressionSchema.labels.serviceName.getOrElse("Unspecified"))
-      gen.writeStringField("role", expressionSchema.labels.role.toString)
+
+      // we need this to evolve the expressions format compatibly
+      // in the future, we will only export labels that are set
+      val labels = Map(
+        ExpressionSchema.ProcessPath -> "Unspecified",
+        ExpressionSchema.ServiceName -> "Unspecified",
+        ExpressionSchema.Role -> NoRoleSpecified.toString
+      ) ++ expressionSchema.labels
+      for ((key, value) <- labels) {
+        gen.writeStringField(key, value)
+      }
       gen.writeEndObject()
 
       if (expressionSchema.namespace.nonEmpty) {
