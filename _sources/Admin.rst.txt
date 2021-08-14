@@ -517,17 +517,18 @@ Top-level/instance-wide Fields:
 Expression Object Fields:
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 :name: a string representing the name or significance of the expression.
-:labels: an object which describes where the metric comes from (see next section for labels-level fields).
+:labels: a dictionary (string -> string) with additional metadata about the metric
 :expresssion: a string representation illustrating how to aggregate metrics into the expression value.
 :bounds: an object which describes the bounds for what values resulting from the expression should be considered "healthy" for the service.
 :description: text description of the expression, intended for human consumption.
 :unit: the appropriate unit for this metric (ex, milliseconds, megabytes, count).
 
-Labels Object Fields:
-^^^^^^^^^^^^^^^^^^^^^
-This object is likely to change content and even become more flexible in the future. It is safest to treat it as a Map[String, String].
+Labels Entries:
+^^^^^^^^^^^^^^^
+Although it should be interpreted as a dictionary, not as an object, there are some common fields that are often relevant, especially for Finagle services.
+
 :process_path: a string indicating the relevant downstream, when there is one.
-:service_name: a string representing the finagle service name. particularly helpful for services containing multiple internal servers (ex, thrift and http).
+:service_name: a string representing the Finagle service name. particularly helpful for services containing multiple internal servers (ex, thrift and http).
 :role: either "Server" or "Client" indicating whether the expression pertains to this server or one of its downstreams. Should be treated as a string.
 
 Bounds Object Fields:
