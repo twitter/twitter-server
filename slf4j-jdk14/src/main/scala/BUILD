@@ -8,7 +8,10 @@ scala_library(
     ),
     scope = "forced",  # Exposes a service-loaded class.
     strict_deps = True,
-    tags = ["logging_impl_check_whitelisted_target"],
+    tags = [
+        "bazel-compatible",
+        "logging_impl_check_whitelisted_target",
+    ],
     dependencies = [
         "3rdparty/jvm/org/slf4j:slf4j-api",
         scoped(
