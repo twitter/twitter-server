@@ -6,7 +6,7 @@ Global / excludeLintKeys += scalacOptions
 // All Twitter library releases are date versioned as YY.MM.patch
 val releaseVersion = "21.9.0-SNAPSHOT"
 
-val jacksonVersion = "2.11.2"
+val jacksonVersion = "2.11.4"
 val jacksonLibs = Seq(
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
   "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
