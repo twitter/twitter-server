@@ -12,6 +12,7 @@ val jacksonLibs = Seq(
   "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion exclude ("com.google.guava", "guava")
 )
+val logbackVersion = "1.2.5"
 val opencensusVersion = "0.19.1"
 val slf4jVersion = "1.7.30"
 
@@ -245,8 +246,8 @@ lazy val twitterServerSlf4jLogbackClassic = (project in file("logback-classic"))
     moduleName := "twitter-server-logback-classic",
     sharedSettings)
   .settings(libraryDependencies ++= Seq(
-    "ch.qos.logback" % "logback-classic" % "1.2.3" % "provided",
-    "ch.qos.logback" % "logback-core" % "1.2.3" % "provided",
+    "ch.qos.logback" % "logback-classic" % logbackVersion % "provided",
+    "ch.qos.logback" % "logback-core" % logbackVersion % "provided",
     "org.slf4j" % "slf4j-api" % slf4jVersion,
     "org.slf4j" % "jcl-over-slf4j" % slf4jVersion,
     "org.slf4j" % "jul-to-slf4j" % slf4jVersion,
