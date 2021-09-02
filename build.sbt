@@ -6,12 +6,6 @@ Global / excludeLintKeys += scalacOptions
 // All Twitter library releases are date versioned as YY.MM.patch
 val releaseVersion = "21.9.0-SNAPSHOT"
 
-val jacksonVersion = "2.11.4"
-val jacksonLibs = Seq(
-  "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
-  "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
-  "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion exclude ("com.google.guava", "guava")
-)
 val logbackVersion = "1.2.5"
 val opencensusVersion = "0.19.1"
 val slf4jVersion = "1.7.30"
@@ -186,14 +180,14 @@ lazy val twitterServer = (project in file("server"))
       finagle("tunable"),
       util("app"),
       util("core"),
+      util("jackson"),
       util("jvm"),
       util("lint"),
       util("registry"),
       util("slf4j-api"),
       util("slf4j-jul-bridge"),
       util("tunable")
-    ),
-    libraryDependencies ++= jacksonLibs
+    )
   )
 
 lazy val twitterServerOpenCensus = (project in file("opencensus"))

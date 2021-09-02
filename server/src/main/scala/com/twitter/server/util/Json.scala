@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.{
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.twitter.finagle.http.{Response, Status, Version}
 import com.twitter.io.Buf
+import com.twitter.util.jackson.ScalaObjectMapper
 import java.lang.reflect.{ParameterizedType, Type}
 
 sealed trait JsonConverterBase {
@@ -22,7 +23,7 @@ sealed trait JsonConverterBase {
     factory.disable(JsonFactory.Feature.USE_THREAD_LOCAL_FOR_BUFFER_RECYCLING)
   }
 
-  private final val writer: ObjectWriter = {
+  private final lazy val writer: ObjectWriter = {
     val printer = new DefaultPrettyPrinter
     printer.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE)
 
@@ -63,7 +64,7 @@ sealed trait JsonConverterBase {
  * @note Use [[AdminJsonConverter]] for twitter-server endpoints
  */
 object JsonConverter extends JsonConverterBase {
-  protected[this] def mapper: ObjectMapper =
+  protected[this] val mapper: ObjectMapper =
     new ObjectMapper(factory)
       .registerModule(DefaultScalaModule)
 }
@@ -73,7 +74,15 @@ object JsonConverter extends JsonConverterBase {
  * consistent naming strategy.
  */
 object AdminJsonConverter extends JsonConverterBase {
-  protected[this] def mapper: ObjectMapper =
+  // We define this writer alongside `mapper` until we migrate
+  // all of the admin endpoints
+  private[server] val prettyObjectMapper: ObjectWriter =
+    ScalaObjectMapper.builder
+      .withAdditionalJacksonModules(Seq(MetricSchemaJsonModule))
+      .objectMapper(factory)
+      .prettyObjectMapper
+
+  protected[this] val mapper: ObjectMapper =
     new ObjectMapper(factory)
       .registerModule(DefaultScalaModule)
       .registerModule(MetricSchemaJsonModule)

@@ -9,10 +9,6 @@ scala_library(
     scope = "forced",  # Exposes a service-loaded class.
     tags = ["bazel-compatible"],
     dependencies = [
-        "3rdparty/jvm/com/fasterxml/jackson/core:jackson-annotations",
-        "3rdparty/jvm/com/fasterxml/jackson/core:jackson-core",
-        "3rdparty/jvm/com/fasterxml/jackson/core:jackson-databind",
-        "3rdparty/jvm/com/fasterxml/jackson/module:jackson-module-scala",
         "3rdparty/jvm/io/netty:netty4",
         "3rdparty/jvm/io/netty:netty4-codec-http",
         "3rdparty/jvm/org/slf4j:slf4j-api",
@@ -27,6 +23,7 @@ scala_library(
         "twitter-server/server/src/main/resources",
         "util/util-app/src/main/scala",
         "util/util-core:scala",
+        "util/util-jackson/src/main/scala/com/twitter/util/jackson",
         "util/util-jvm/src/main/scala",
         "util/util-lint/src/main/scala",
         "util/util-registry/src/main/scala",
@@ -36,13 +33,12 @@ scala_library(
         "util/util-tunable/src/main/scala",
     ],
     exports = [
-        "3rdparty/jvm/com/fasterxml/jackson/core:jackson-annotations",
-        "3rdparty/jvm/com/fasterxml/jackson/core:jackson-databind",
         "3rdparty/jvm/org/slf4j:slf4j-api",
         "finagle/finagle-base-http/src/main",
         "finagle/finagle-http/src/main/scala",
         "util/util-app/src/main/scala",
         "util/util-core:scala",
+        "util/util-jackson/src/main/scala/com/twitter/util/jackson",
         "util/util-lint/src/main/scala",
         "util/util-slf4j-api/src/main/scala",
     ],

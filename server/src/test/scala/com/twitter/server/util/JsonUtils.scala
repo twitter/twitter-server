@@ -1,17 +1,11 @@
 package com.twitter.server.util
 
-import org.scalatest
-import org.scalatest.Assertions
+import com.twitter.util.jackson.JsonDiff
+import org.scalatest.{Assertion, Assertions}
 
 private[server] object JsonUtils {
-
-  // NOTE: these tests assume a specific iteration order over the registries
-  // and HashMaps which IS NOT a guarantee. should these tests begin to fail
-  // due to that, we will need a more robust approach to validation.
-  def assertJsonResponse(actual: String, expected: String): scalatest.Assertion = {
-    Assertions.assert(stripWhitespace(actual) == stripWhitespace(expected))
+  def assertJsonResponse(actual: String, expected: String): Assertion = {
+    val result = JsonDiff.diff(expected, actual)
+    Assertions.assert(!result.isDefined, result.toString)
   }
-
-  private[this] def stripWhitespace(string: String): String =
-    string.filter { case c => !c.isWhitespace }
 }

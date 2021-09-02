@@ -3,28 +3,42 @@ package com.twitter.server.view
 import com.twitter.finagle.loadbalancer.Metadata
 import com.twitter.server.util.AdminJsonConverter
 
-private[server] class BalancersJsonView(balancers: Seq[Metadata]) extends View {
+private object BalancersJsonView {
+  case class Clients(clients: Seq[Balancer])
+  case class Balancer(label: String, info: BalancerInfo)
+  case class BalancerInfo(
+    balancerClass: String,
+    status: String,
+    numberAvailable: Int,
+    numberBusy: Int,
+    numberClosed: Int,
+    totalPending: Int,
+    totalLoad: Double,
+    size: Int,
+    additionalInfo: Map[String, Any])
 
-  private[view] def renderBalancer(balancer: Metadata): Map[String, Object] =
-    Map(
-      "label" -> balancer.label,
-      "info" -> Map(
-        "balancer_class" -> balancer.balancerClass,
-        "status" -> balancer.status,
-        "number_available" -> balancer.numAvailable,
-        "number_busy" -> balancer.numBusy,
-        "number_closed" -> balancer.numClosed,
-        "total_pending" -> balancer.totalPending,
-        "total_load" -> balancer.totalLoad,
-        "size" -> balancer.size,
-        "additional_info" -> balancer.additionalInfo
+  def convertMetadata(metadata: Metadata): Balancer =
+    Balancer(
+      label = metadata.label,
+      info = BalancerInfo(
+        balancerClass = metadata.balancerClass,
+        status = metadata.status,
+        numberAvailable = metadata.numAvailable,
+        numberBusy = metadata.numBusy,
+        numberClosed = metadata.numClosed,
+        totalPending = metadata.totalPending,
+        totalLoad = metadata.totalLoad,
+        size = metadata.size,
+        additionalInfo = metadata.additionalInfo
       )
     )
+}
+
+private[server] class BalancersJsonView(balancers: Seq[Metadata]) extends View {
+  import BalancersJsonView._
 
   def render: String = {
-    val clients = balancers.map(renderBalancer)
-    val asMap: Map[String, Object] = Map("clients" -> clients)
-    AdminJsonConverter.writeToString(asMap)
+    val clients = Clients(clients = balancers.map(convertMetadata))
+    AdminJsonConverter.prettyObjectMapper.writeValueAsString(clients)
   }
-
 }
