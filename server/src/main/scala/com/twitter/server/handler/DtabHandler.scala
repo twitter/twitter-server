@@ -6,6 +6,10 @@ import com.twitter.io.Buf
 import com.twitter.server.util.{AdminJsonConverter, HttpUtils}
 import com.twitter.util.Future
 
+private object DtabHandler {
+  case class Dtabs(dtab: Seq[String])
+}
+
 /**
  * Dumps a simple JSON string representation of the current [[com.twitter.finagle.Dtab.base]].
  *
@@ -27,14 +31,17 @@ import com.twitter.util.Future
  * @see [[com.twitter.finagle.Dtab]]
  */
 final class DtabHandler extends Service[Request, Response] {
+  import DtabHandler._
+
   def apply(req: Request): Future[Response] =
     HttpUtils.newResponse(contentType = MediaType.Json, content = Buf.Utf8(jsonResponse))
 
   private[this] def jsonResponse: String = {
-    AdminJsonConverter.writeToString(Map("dtab" -> formattedDtabEntries))
+    AdminJsonConverter.prettyObjectMapper.writeValueAsString(formattedDtabEntries)
   }
 
-  private[this] def formattedDtabEntries: Seq[String] = {
-    for (dentry <- Dtab.base) yield { s"${dentry.prefix.show} => ${dentry.dst.show}" }
+  private[this] def formattedDtabEntries: Dtabs = {
+    val dtabs = for (dentry <- Dtab.base) yield { s"${dentry.prefix.show} => ${dentry.dst.show}" }
+    Dtabs(dtabs)
   }
 }
