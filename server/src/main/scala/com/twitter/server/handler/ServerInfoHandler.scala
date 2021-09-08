@@ -67,8 +67,9 @@ class ServerInfoHandler() extends Service[Request, Response] {
   def apply(req: Request): Future[Response] = {
     newResponse(
       contentType = "application/json;charset=UTF-8",
-      content =
-        Buf.Utf8(AdminJsonConverter.writeToString(serverInfo + ("uptime" -> mxRuntime.getUptime)))
+      content = Buf.Utf8(
+        AdminJsonConverter.prettyObjectMapper.writeValueAsString(
+          serverInfo + ("uptime" -> mxRuntime.getUptime)))
     )
   }
 }
