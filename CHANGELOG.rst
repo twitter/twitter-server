@@ -10,6 +10,8 @@ Unreleased
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
+* Bump version of Logback to 1.2.6. ``PHAB_ID=D742405``
+
 * Bump version of Jackson to 2.11.4. ``PHAB_ID=D727879``
 
 * Bump version of logback to 1.2.5. ``PHAB_ID=D729767``
