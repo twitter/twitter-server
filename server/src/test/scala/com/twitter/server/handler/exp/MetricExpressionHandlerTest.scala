@@ -176,27 +176,45 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
 
   test("translate expressions - counters") {
     val latchedResult =
-      MetricExpressionHandler.translateToQuery(successRateExpression.expr, shouldRate = false)
+      MetricExpressionHandler.translateToQuery(
+        successRateExpression.expr,
+        shouldRate = false,
+        sourceLatched = false)
     assert(latchedResult == "multiply(100.0,divide(success,plus(success,failures)))")
 
     val unlatchedResult =
-      MetricExpressionHandler.translateToQuery(successRateExpression.expr, shouldRate = true)
+      MetricExpressionHandler.translateToQuery(
+        successRateExpression.expr,
+        shouldRate = true,
+        sourceLatched = false)
     assert(
       unlatchedResult == "multiply(100.0,divide(rate(success),plus(rate(success),rate(failures))))")
   }
 
   test("translate histogram expressions - latched does not affect result") {
     val latchedResult =
-      MetricExpressionHandler.translateToQuery(latencyP99.expr, shouldRate = false)
+      MetricExpressionHandler.translateToQuery(
+        latencyP99.expr,
+        shouldRate = false,
+        sourceLatched = false)
     val unLatchedResult =
-      MetricExpressionHandler.translateToQuery(latencyP99.expr, shouldRate = true)
+      MetricExpressionHandler.translateToQuery(
+        latencyP99.expr,
+        shouldRate = true,
+        sourceLatched = false)
     assert(latchedResult == unLatchedResult)
   }
 
   test("translate histogram expressions - components") {
     val latencyMinExpr = Expression(latencyMb, Left(Expression.Min))
-    val min = MetricExpressionHandler.translateToQuery(latencyMinExpr, shouldRate = false)
-    val p99 = MetricExpressionHandler.translateToQuery(latencyP99.expr, shouldRate = false)
+    val min = MetricExpressionHandler.translateToQuery(
+      latencyMinExpr,
+      shouldRate = false,
+      sourceLatched = false)
+    val p99 = MetricExpressionHandler.translateToQuery(
+      latencyP99.expr,
+      shouldRate = false,
+      sourceLatched = false)
     assert(min == "latency.min")
     assert(p99 == "latency.p99")
   }
@@ -204,7 +222,10 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
   test("translate expressions - gauges") {
     val connMb =
       MetricBuilder(name = Seq("client", "connections"), metricType = GaugeType, statsReceiver = sr)
-    val result = MetricExpressionHandler.translateToQuery(Expression(connMb), shouldRate = false)
+    val result = MetricExpressionHandler.translateToQuery(
+      Expression(connMb),
+      shouldRate = false,
+      sourceLatched = false)
     assert(result == "client/connections")
   }
 

@@ -2,7 +2,7 @@ package com.twitter.server.handler
 
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{MediaType, Request, Response, Uri}
-import com.twitter.finagle.stats.MetricBuilder.CounterType
+import com.twitter.finagle.stats.MetricBuilder.{CounterType, CounterishGaugeType}
 import com.twitter.finagle.stats.exp.Expression._
 import com.twitter.finagle.stats.exp.{
   ConstantExpression,
@@ -29,13 +29,17 @@ object MetricExpressionHandler {
    * @param shouldRate If true, we wrap the metric with `rate`
    */
   // exposed for testing
-  private[server] def translateToQuery(expr: Expression, shouldRate: Boolean): String =
+  private[server] def translateToQuery(
+    expr: Expression,
+    shouldRate: Boolean,
+    sourceLatched: Boolean
+  ): String =
     expr match {
       case HistogramExpression(schema, component) => getHisto(schema, component)
-      case MetricExpression(schema) => getMetric(schema, shouldRate)
+      case MetricExpression(schema) => getMetric(schema, shouldRate, sourceLatched)
       case ConstantExpression(repr) => repr
       case FunctionExpression(funcName, exprs) =>
-        s"$funcName(${exprs.map { expr => translateToQuery(expr, shouldRate) }.mkString(",")})"
+        s"$funcName(${exprs.map { expr => translateToQuery(expr, shouldRate, sourceLatched) }.mkString(",")})"
       case NoExpression => "null"
     }
 
@@ -62,9 +66,12 @@ object MetricExpressionHandler {
   private def getMetric(
     metricBuilder: MetricBuilder,
     shouldRate: Boolean,
+    sourceLatched: Boolean
   ): String = {
     metricBuilder.metricType match {
-      case CounterType if shouldRate =>
+      case CounterType if shouldRate && !sourceLatched =>
+        s"rate(${metricBuilder.name.mkString(metadataScopeSeparator())})"
+      case CounterishGaugeType if shouldRate =>
         s"rate(${metricBuilder.name.mkString(metadataScopeSeparator())})"
       case other => metricBuilder.name.mkString(metadataScopeSeparator())
     }
@@ -107,9 +114,10 @@ class MetricExpressionHandler(source: MetricSchemaSource = new MetricSchemaSourc
 
     val shouldRate = latchParam.exists { value =>
       value == "true" || value == "1"
-    } && !sourceLatched
+    }
     val expressions = filteredSchemas.map { expressionSchema =>
-      expressionSchema.copy(exprQuery = translateToQuery(expressionSchema.expr, shouldRate))
+      expressionSchema.copy(exprQuery =
+        translateToQuery(expressionSchema.expr, shouldRate, sourceLatched))
     }
 
     newResponse(
