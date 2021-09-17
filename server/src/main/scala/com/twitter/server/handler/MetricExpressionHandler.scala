@@ -1,22 +1,27 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{MediaType, Request, Response, Uri}
-import com.twitter.finagle.stats.MetricBuilder.{CounterType, CounterishGaugeType}
-import com.twitter.finagle.stats.exp.Expression._
-import com.twitter.finagle.stats.exp.{
-  ConstantExpression,
-  Expression,
-  FunctionExpression,
-  HistogramExpression,
-  MetricExpression,
-  NoExpression
-}
-import com.twitter.finagle.stats.{MetricBuilder, StatsFormatter, metadataScopeSeparator}
+import com.twitter.finagle.http.MediaType
+import com.twitter.finagle.http.Request
+import com.twitter.finagle.http.Response
+import com.twitter.finagle.http.Uri
+import com.twitter.finagle.stats.MetricBuilder.CounterType
+import com.twitter.finagle.stats.MetricBuilder.CounterishGaugeType
+import com.twitter.finagle.stats.exp.ConstantExpression
+import com.twitter.finagle.stats.exp.Expression
+import com.twitter.finagle.stats.exp.FunctionExpression
+import com.twitter.finagle.stats.exp.HistogramExpression
+import com.twitter.finagle.stats.exp.MetricExpression
+import com.twitter.finagle.stats.exp.NoExpression
+import com.twitter.finagle.stats.MetricBuilder
+import com.twitter.finagle.stats.StatsFormatter
+import com.twitter.finagle.stats.metadataScopeSeparator
 import com.twitter.io.Buf
-import com.twitter.server.handler.MetricExpressionHandler.{Version, translateToQuery}
+import com.twitter.server.handler.MetricExpressionHandler.Version
+import com.twitter.server.handler.MetricExpressionHandler.translateToQuery
 import com.twitter.server.util.HttpUtils.newResponse
-import com.twitter.server.util.{AdminJsonConverter, MetricSchemaSource}
+import com.twitter.server.util.AdminJsonConverter
+import com.twitter.server.util.MetricSchemaSource
 import com.twitter.util.Future
 
 object MetricExpressionHandler {
@@ -32,14 +37,16 @@ object MetricExpressionHandler {
   private[server] def translateToQuery(
     expr: Expression,
     shouldRate: Boolean,
-    sourceLatched: Boolean
+    sourceLatched: Boolean,
+    labels: Map[String, String]
   ): String =
     expr match {
-      case HistogramExpression(schema, component) => getHisto(schema, component)
+      case HistogramExpression(schema, _) => getHisto(schema, labels)
       case MetricExpression(schema) => getMetric(schema, shouldRate, sourceLatched)
       case ConstantExpression(repr) => repr
       case FunctionExpression(funcName, exprs) =>
-        s"$funcName(${exprs.map { expr => translateToQuery(expr, shouldRate, sourceLatched) }.mkString(",")})"
+        s"$funcName(${exprs
+          .map { expr => translateToQuery(expr, shouldRate, sourceLatched, labels) }.mkString(",")})"
       case NoExpression => "null"
     }
 
@@ -48,18 +55,10 @@ object MetricExpressionHandler {
   // e.g.request_latency.p9999 or request_latency.min
   private def getHisto(
     metricBuilder: MetricBuilder,
-    histoComponent: Either[HistogramComponent, Double]
+    labels: Map[String, String]
   ): String = {
     val name = metricBuilder.name.mkString(metadataScopeSeparator())
-    val component = histoComponent match {
-      case Right(percentile) => statsFormatter.labelPercentile(percentile)
-      case Left(Min) => statsFormatter.labelMin
-      case Left(Max) => statsFormatter.labelMax
-      case Left(Avg) => statsFormatter.labelAverage
-      case Left(Sum) => statsFormatter.labelSum
-      case Left(Count) => statsFormatter.labelCount
-    }
-    statsFormatter.histoName(name, component)
+    statsFormatter.histoName(name, labels("bucket"))
   }
 
   // Form metrics other than histograms, rate() for unlatched counters
@@ -117,7 +116,7 @@ class MetricExpressionHandler(source: MetricSchemaSource = new MetricSchemaSourc
     }
     val expressions = filteredSchemas.map { expressionSchema =>
       expressionSchema.copy(exprQuery =
-        translateToQuery(expressionSchema.expr, shouldRate, sourceLatched))
+        translateToQuery(expressionSchema.expr, shouldRate, sourceLatched, expressionSchema.labels))
     }
 
     newResponse(

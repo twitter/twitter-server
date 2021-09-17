@@ -2,18 +2,24 @@ package com.twitter.server.handler.exp
 
 import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.Request
-import com.twitter.finagle.stats.MetricBuilder.{CounterType, GaugeType, HistogramType}
-import com.twitter.finagle.stats.exp.{
-  Expression,
-  ExpressionSchema,
-  ExpressionSchemaKey,
-  GreaterThan,
-  MonotoneThresholds
-}
-import com.twitter.finagle.stats.{InMemoryStatsReceiver, MetricBuilder, SchemaRegistry}
+import com.twitter.finagle.stats.MetricBuilder.CounterType
+import com.twitter.finagle.stats.MetricBuilder.GaugeType
+import com.twitter.finagle.stats.MetricBuilder.HistogramType
+import com.twitter.finagle.stats.exp.Expression
+import com.twitter.finagle.stats.exp.ExpressionSchema
+import com.twitter.finagle.stats.exp.ExpressionSchemaKey
+import com.twitter.finagle.stats.exp.GreaterThan
+import com.twitter.finagle.stats.exp.MonotoneThresholds
+import com.twitter.finagle.stats.InMemoryStatsReceiver
+import com.twitter.finagle.stats.MetricBuilder
+import com.twitter.finagle.stats.SchemaRegistry
 import com.twitter.server.handler.MetricExpressionHandler
-import com.twitter.server.util.{AdminJsonConverter, JsonUtils, MetricSchemaSource}
-import com.twitter.util.{Await, Awaitable, Duration}
+import com.twitter.server.util.AdminJsonConverter
+import com.twitter.server.util.JsonUtils
+import com.twitter.server.util.MetricSchemaSource
+import com.twitter.util.Await
+import com.twitter.util.Awaitable
+import com.twitter.util.Duration
 import org.scalatest.funsuite.AnyFunSuite
 
 class MetricExpressionHandlerTest extends AnyFunSuite {
@@ -140,7 +146,8 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
         |      "labels" : {
         |        "process_path" : "Unspecified",
         |        "service_name" : "Unspecified",
-        |        "role" : "NoRoleSpecified"
+        |        "role" : "NoRoleSpecified",
+        |        "bucket": "p99"
         |      },
         |      "namespaces" : ["tenantName"],
         |      "expression" :  "latency.p99",
@@ -179,14 +186,16 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
       MetricExpressionHandler.translateToQuery(
         successRateExpression.expr,
         shouldRate = false,
-        sourceLatched = false)
+        sourceLatched = false,
+        successRateExpression.labels)
     assert(latchedResult == "multiply(100.0,divide(success,plus(success,failures)))")
 
     val unlatchedResult =
       MetricExpressionHandler.translateToQuery(
         successRateExpression.expr,
         shouldRate = true,
-        sourceLatched = false)
+        sourceLatched = false,
+        successRateExpression.labels)
     assert(
       unlatchedResult == "multiply(100.0,divide(rate(success),plus(rate(success),rate(failures))))")
   }
@@ -196,25 +205,30 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
       MetricExpressionHandler.translateToQuery(
         latencyP99.expr,
         shouldRate = false,
-        sourceLatched = false)
+        sourceLatched = false,
+        latencyP99.labels)
     val unLatchedResult =
       MetricExpressionHandler.translateToQuery(
         latencyP99.expr,
         shouldRate = true,
-        sourceLatched = false)
+        sourceLatched = false,
+        latencyP99.labels)
     assert(latchedResult == unLatchedResult)
   }
 
   test("translate histogram expressions - components") {
-    val latencyMinExpr = Expression(latencyMb, Left(Expression.Min))
+
+    val latencyMin = ExpressionSchema("min", Expression(latencyMb, Left(Expression.Min)))
     val min = MetricExpressionHandler.translateToQuery(
-      latencyMinExpr,
+      latencyMin.expr,
       shouldRate = false,
-      sourceLatched = false)
+      sourceLatched = false,
+      latencyMin.labels)
     val p99 = MetricExpressionHandler.translateToQuery(
       latencyP99.expr,
       shouldRate = false,
-      sourceLatched = false)
+      sourceLatched = false,
+      latencyP99.labels)
     assert(min == "latency.min")
     assert(p99 == "latency.p99")
   }
@@ -225,7 +239,8 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
     val result = MetricExpressionHandler.translateToQuery(
       Expression(connMb),
       shouldRate = false,
-      sourceLatched = false)
+      sourceLatched = false,
+      labels = Map())
     assert(result == "client/connections")
   }
 
@@ -292,7 +307,8 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
         |      "labels" : {
         |        "process_path" : "Unspecified",
         |        "service_name" : "Unspecified",
-        |        "role" : "NoRoleSpecified"
+        |        "role" : "NoRoleSpecified",
+        |        "bucket": "p99"
         |      },
         |      "namespaces" : ["tenantName"],
         |      "expression" :  "latency.p99",
@@ -323,7 +339,8 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
         |      "labels" : {
         |        "process_path" : "Unspecified",
         |        "service_name" : "Unspecified",
-        |        "role" : "NoRoleSpecified"
+        |        "role" : "NoRoleSpecified",
+        |        "bucket": "p99"
         |      },
         |      "namespaces" : ["tenantName"],
         |      "expression" :  "latency.p99",
