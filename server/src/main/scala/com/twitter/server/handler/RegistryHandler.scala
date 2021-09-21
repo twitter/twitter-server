@@ -1,11 +1,15 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{Request, Response}
+import com.twitter.finagle.http.Request
+import com.twitter.finagle.http.Response
 import com.twitter.server.util.AdminJsonConverter
 import com.twitter.server.util.HttpUtils.newOk
 import com.twitter.util.Future
-import com.twitter.util.registry.{Formatter, GlobalRegistry, Registry, SimpleRegistry}
+import com.twitter.util.registry.Formatter
+import com.twitter.util.registry.GlobalRegistry
+import com.twitter.util.registry.Registry
+import com.twitter.util.registry.SimpleRegistry
 
 private object RegistryHandler {
   sealed trait Matcher {
@@ -76,7 +80,7 @@ class RegistryHandler extends Service[Request, Response] {
   private[handler] def jsonResponse(filter: Option[String]): String = {
     val filtered: Registry = filterRegistry(filter)
     val asMap: Map[String, Object] = Formatter.asMap(filtered)
-    AdminJsonConverter.writeToString(asMap)
+    AdminJsonConverter.prettyObjectMapper.writeValueAsString(asMap)
   }
 
 }

@@ -1,11 +1,18 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{Fields, Method, Request, Response, Status}
-import com.twitter.finagle.toggle.{StandardToggleMap, Toggle, ToggleMap}
+import com.twitter.finagle.http.Fields
+import com.twitter.finagle.http.Method
+import com.twitter.finagle.http.Request
+import com.twitter.finagle.http.Response
+import com.twitter.finagle.http.Status
+import com.twitter.finagle.toggle.StandardToggleMap
+import com.twitter.finagle.toggle.Toggle
+import com.twitter.finagle.toggle.ToggleMap
 import com.twitter.io.Buf
 import com.twitter.server.util.AdminJsonConverter
-import com.twitter.server.util.HttpUtils.{newOk, newResponse}
+import com.twitter.server.util.HttpUtils.newOk
+import com.twitter.server.util.HttpUtils.newResponse
 import com.twitter.util.Future
 import com.twitter.util.logging.Logger
 import scala.collection.mutable
@@ -188,7 +195,8 @@ class ToggleHandler private[handler] (registeredLibrariesFn: () => Map[String, T
     headers: Iterable[(String, Object)] = Seq.empty
   ): Future[Response] = {
     // sort the errors to make the response more deterministic.
-    val body = AdminJsonConverter.writeToString(GenericResponse(msg, errors.sorted))
+    val body =
+      AdminJsonConverter.prettyObjectMapper.writeValueAsString(GenericResponse(msg, errors.sorted))
     newResponse(
       status = status,
       contentType = "text/plain;charset=UTF-8",
