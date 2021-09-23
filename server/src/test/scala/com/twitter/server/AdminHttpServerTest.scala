@@ -1,12 +1,14 @@
 package com.twitter.server
 
 import com.twitter.conversions.DurationOps._
-import com.twitter.finagle.{Http, ListeningServer}
+import com.twitter.finagle.Http
+import com.twitter.finagle.ListeningServer
 import com.twitter.finagle.http._
 import com.twitter.server.util.HttpUtils._
 import com.twitter.util._
 import java.net.InetSocketAddress
-import org.scalatest.concurrent.{Eventually, IntegrationPatience}
+import org.scalatest.concurrent.Eventually
+import org.scalatest.concurrent.IntegrationPatience
 import org.scalatest.funsuite.AnyFunSuite
 
 class MockMetricsExporter extends HttpMuxHandler {
