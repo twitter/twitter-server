@@ -1,8 +1,12 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{Request, Response, Uri}
-import com.twitter.finagle.stats.{BucketAndCount, HistogramDetail, WithHistogramDetails}
+import com.twitter.finagle.http.Request
+import com.twitter.finagle.http.Response
+import com.twitter.finagle.http.Uri
+import com.twitter.finagle.stats.BucketAndCount
+import com.twitter.finagle.stats.HistogramDetail
+import com.twitter.finagle.stats.WithHistogramDetails
 import com.twitter.io.Buf
 import com.twitter.server.util.AdminJsonConverter
 import com.twitter.server.util.HtmlUtils.escapeHtml
@@ -14,7 +18,7 @@ object HistogramQueryHandler {
   private val ContentTypeJson = "application/json;charset=UTF-8"
   private val ContentTypeHtml = "text/html;charset=UTF-8"
 
-  private case class Summary(
+  private[handler] case class Summary(
     name: String,
     count: Long,
     sum: Long,
@@ -215,7 +219,7 @@ private[server] class HistogramQueryHandler(details: WithHistogramDetails)
     if (bc.upperLimit >= Int.MaxValue) bc.lowerLimit
     else (bc.upperLimit + bc.lowerLimit) / 2.0
 
-  private[this] def generateSummary(histoName: String): Option[Summary] = {
+  private[handler] def generateSummary(histoName: String): Option[Summary] = {
     histograms.get(histoName).map { detail =>
       val bcs = detail.counts.sortBy(_.lowerLimit)
 

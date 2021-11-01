@@ -1,11 +1,16 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{MediaType, Request, Response, Uri}
-import com.twitter.finagle.stats.{HistogramDetail, WithHistogramDetails}
+import com.twitter.finagle.http.MediaType
+import com.twitter.finagle.http.Request
+import com.twitter.finagle.http.Response
+import com.twitter.finagle.http.Uri
+import com.twitter.finagle.stats.HistogramDetail
+import com.twitter.finagle.stats.WithHistogramDetails
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.newResponse
-import com.twitter.server.util.{AdminJsonConverter, MetricSource}
+import com.twitter.server.util.AdminJsonConverter
+import com.twitter.server.util.MetricSource
 import com.twitter.util.Future
 
 /**
@@ -44,22 +49,22 @@ class MetricTypeQueryHandler(
   details: Option[WithHistogramDetails] = None)
     extends Service[Request, Response] {
 
-  private[this] def histograms: Map[String, HistogramDetail] =
+  protected def histograms: Map[String, HistogramDetail] =
     details match {
       case Some(histos) => histos.histogramDetails
       case None => Map.empty
     }
 
-  private[this] def query(keys: Iterable[String]) =
+  protected def query(keys: Iterable[String]): Iterable[MetricSource.MetricTypeInfo] =
     for (k <- keys; e <- source.getType(k)) yield e
 
-  private[this] def getHistos(): Iterable[MetricSource.MetricTypeInfo] = {
+  protected def getHistos(): Iterable[MetricSource.MetricTypeInfo] = {
     histograms.map {
       case (name, _) => MetricSource.MetricTypeInfo(name, "histogram")
     }
   }
 
-  private[this] def queryHistos(keys: Set[String]): Iterable[MetricSource.MetricTypeInfo] = {
+  protected def queryHistos(keys: Set[String]): Iterable[MetricSource.MetricTypeInfo] = {
     histograms.filterKeys(keys.contains).map {
       case (name, _) => MetricSource.MetricTypeInfo(name, "histogram")
     }

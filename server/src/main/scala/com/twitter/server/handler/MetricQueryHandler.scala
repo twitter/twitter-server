@@ -1,11 +1,15 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{MediaType, Request, Response, Uri}
+import com.twitter.finagle.http.MediaType
+import com.twitter.finagle.http.Request
+import com.twitter.finagle.http.Response
+import com.twitter.finagle.http.Uri
 import com.twitter.io.Buf
 import com.twitter.server.util.HtmlUtils.escapeHtml
 import com.twitter.server.util.HttpUtils.newResponse
-import com.twitter.server.util.{AdminJsonConverter, MetricSource}
+import com.twitter.server.util.AdminJsonConverter
+import com.twitter.server.util.MetricSource
 import com.twitter.util.Future
 
 private object MetricQueryHandler {
