@@ -7,11 +7,6 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
-Runtime Behavior Changes
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-* Bump version of Jackson to 2.13.0. ``PHAB_ID=D744627``
-
 21.10.0
 -------
 
