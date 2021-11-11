@@ -15,6 +15,7 @@ import com.twitter.finagle.stats.exp.MetricExpression
 import com.twitter.finagle.stats.exp.NoExpression
 import com.twitter.finagle.stats.MetricBuilder
 import com.twitter.finagle.stats.StatsFormatter
+import com.twitter.finagle.stats.exp.StringExpression
 import com.twitter.finagle.stats.metadataScopeSeparator
 import com.twitter.io.Buf
 import com.twitter.server.handler.MetricExpressionHandler.Version
@@ -47,6 +48,7 @@ object MetricExpressionHandler {
       case FunctionExpression(funcName, exprs) =>
         s"$funcName(${exprs
           .map { expr => translateToQuery(expr, shouldRate, sourceLatched, labels) }.mkString(",")})"
+      case StringExpression(expr) => expr.mkString(metadataScopeSeparator())
       case NoExpression => "null"
     }
 
