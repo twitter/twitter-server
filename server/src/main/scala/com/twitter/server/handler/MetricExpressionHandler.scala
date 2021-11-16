@@ -28,6 +28,7 @@ import com.twitter.util.Future
 object MetricExpressionHandler {
   private val Version = 1.1
   private val statsFormatter = StatsFormatter.default
+  private val Wildcard = "/*"
 
   /**
    * Translate the [[Expression]] object to a single line string which represents generic
@@ -43,7 +44,8 @@ object MetricExpressionHandler {
   ): String =
     expr match {
       case HistogramExpression(schema, _) => getHisto(schema, labels)
-      case MetricExpression(schema) => getMetric(schema, shouldRate, sourceLatched)
+      case MetricExpression(schema, showRollup) =>
+        getMetric(schema, showRollup, shouldRate, sourceLatched)
       case ConstantExpression(repr) => repr
       case FunctionExpression(funcName, exprs) =>
         s"$funcName(${exprs
@@ -66,15 +68,20 @@ object MetricExpressionHandler {
   // Form metrics other than histograms, rate() for unlatched counters
   private def getMetric(
     metricBuilder: MetricBuilder,
+    showRollUp: Boolean,
     shouldRate: Boolean,
     sourceLatched: Boolean
   ): String = {
+    val metric = metricBuilder.name.mkString(metadataScopeSeparator()) + {
+      if (showRollUp) Wildcard
+      else ""
+    }
     metricBuilder.metricType match {
       case CounterType if shouldRate && !sourceLatched =>
-        s"rate(${metricBuilder.name.mkString(metadataScopeSeparator())})"
+        s"rate($metric)"
       case CounterishGaugeType if shouldRate =>
-        s"rate(${metricBuilder.name.mkString(metadataScopeSeparator())})"
-      case other => metricBuilder.name.mkString(metadataScopeSeparator())
+        s"rate($metric)"
+      case _ => metric
     }
   }
 }

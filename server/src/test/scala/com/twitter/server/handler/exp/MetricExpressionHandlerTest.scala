@@ -49,10 +49,14 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
   val latencyP99 =
     ExpressionSchema("latency_p99", Expression(latencyMb, Right(0.99))).withNamespace("tenantName")
 
+  val failureExpression =
+    ExpressionSchema("failures", Expression(failuresMb, true))
+
   val expressionSchemaMap: Map[ExpressionSchemaKey, ExpressionSchema] = Map(
     ExpressionSchemaKey("success_rate", Map(), Seq()) -> successRateExpression,
     ExpressionSchemaKey("throughput", Map(), Seq()) -> throughputExpression,
-    ExpressionSchemaKey("latency", Map(), Seq("path", "to", "tenantName")) -> latencyP99
+    ExpressionSchemaKey("latency", Map(), Seq("path", "to", "tenantName")) -> latencyP99,
+    ExpressionSchemaKey("failures", Map(), Seq()) -> failureExpression
   )
 
   val expressionRegistry = new SchemaRegistry {
@@ -150,7 +154,21 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
         |        "bucket": "p99"
         |      },
         |      "namespaces" : ["tenantName"],
-        |      "expression" :  "latency.p99",
+        |      "expression" : "latency.p99",
+        |      "bounds" : {
+        |        "kind" : "unbounded"
+        |      },
+        |      "description" : "Unspecified",
+        |      "unit" : "Unspecified"
+        |    },
+        |    {
+        |      "name" : "failures",
+        |      "labels" : {
+        |        "process_path" : "Unspecified",
+        |        "service_name" : "Unspecified",
+        |        "role" : "NoRoleSpecified"
+        |      },
+        |      "expression" : "failures/*",
         |      "bounds" : {
         |        "kind" : "unbounded"
         |      },
