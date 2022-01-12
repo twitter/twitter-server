@@ -1,5 +1,5 @@
-TwitterServer `slf4j-log4j12`
-============================
+[DEPRECATED] TwitterServer `slf4j-log4j12`
+==========================================
 
 This library provides a wrapper over the [`slf4j-log4j12`](https://www.slf4j.org/manual.html#swapping) logging 
 implementation for use in `TwitterServer` along with the appropriate [SLF4J bridges](https://www.slf4j.org/legacy.html)

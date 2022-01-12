@@ -9,6 +9,7 @@ scala_library(
     scope = "forced",  # Exposes a service-loaded class.
     tags = [
         "bazel-compatible",
+        "deprecated",  # Users are encouraged to use twitter-server/logback-classic instead
         "logging_impl_check_whitelisted_target",
     ],
     dependencies = [

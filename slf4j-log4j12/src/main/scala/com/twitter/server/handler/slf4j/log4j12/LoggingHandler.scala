@@ -8,9 +8,12 @@ import com.twitter.server.util.HttpUtils._
 import com.twitter.util.Future
 import com.twitter.util.logging.Logging
 import java.net.URLEncoder
-import org.apache.log4j.{Level, LogManager, Logger}
+import org.apache.log4j.Level
+import org.apache.log4j.LogManager
+import org.apache.log4j.Logger
 import scala.collection.JavaConverters._
 
+@deprecated("Users are encouraged to use twitter-server/logback-classic.", "2022-01-12")
 private class LoggingHandler extends com.twitter.server.handler.LoggingHandler with Logging {
 
   /** Implementation name */

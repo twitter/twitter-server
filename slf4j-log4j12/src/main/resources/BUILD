@@ -4,5 +4,8 @@ resources(
         "!BUILD*",
         "**/*",
     ],
-    tags = ["bazel-compatible"],
+    tags = [
+        "bazel-compatible",
+        "deprecated",  # Users are encouraged to use twitter-server/logback-classic instead
+    ],
 )
