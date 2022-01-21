@@ -383,7 +383,7 @@ See the :ref:`metrics <metrics_label>` section for more information.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Export metadata information about metrics in json. By default, this exports metadata for every metric. An optional argument `name` can be added to query for a single metric's metadata. Multiple names may be passed in using that argument multiple times. 
 
-NB: for a histogram, it may be looked up with our without its metrics.json suffix (.sum, .p95, .max, etc).
+NB: for a histogram, it may be looked up with or without its metrics.json suffix (.sum, .p95, .max, etc).
 
 ::
 
@@ -476,7 +476,7 @@ Export metadata information about metric expressions in json. These metadata rep
 
 ::
 
-  /admin/metric/expressions.json?name=http/requests&name=strato_rpc_client/latency_ms.p95
+  /admin/metric/expressions.json?name=success_rate
 
 ::
 
