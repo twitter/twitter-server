@@ -7,6 +7,7 @@ import com.twitter.finagle.DtabFlags
 import com.twitter.finagle.util.DefaultTimer
 import com.twitter.util.Timer
 import com.twitter.util.logging.Logging
+import com.twitter.util.logging.Slf4jBridge
 
 /**
  * Twitter Server defines a template from which servers at Twitter are built.

@@ -41,5 +41,6 @@ scala_library(
         "util/util-jackson/src/main/scala/com/twitter/util/jackson",
         "util/util-lint/src/main/scala",
         "util/util-slf4j-api/src/main/scala",
+        "util/util-slf4j-jul-bridge/src/main/scala",
     ],
 )
