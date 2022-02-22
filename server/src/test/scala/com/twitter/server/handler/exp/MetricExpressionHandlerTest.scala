@@ -52,11 +52,18 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
   val failureExpression =
     ExpressionSchema("failures", Expression(failuresMb, true))
 
+  val uptimeExpression =
+    ExpressionSchema("uptime", Expression(Seq("jvm", "uptime"), isCounter = true))
+  val pendingExpression =
+    ExpressionSchema("pending", Expression(Seq("srv", "pending"), isCounter = false))
+
   val expressionSchemaMap: Map[ExpressionSchemaKey, ExpressionSchema] = Map(
     ExpressionSchemaKey("success_rate", Map(), Seq()) -> successRateExpression,
     ExpressionSchemaKey("throughput", Map(), Seq()) -> throughputExpression,
     ExpressionSchemaKey("latency", Map(), Seq("path", "to", "tenantName")) -> latencyP99,
-    ExpressionSchemaKey("failures", Map(), Seq()) -> failureExpression
+    ExpressionSchemaKey("failures", Map(), Seq()) -> failureExpression,
+    ExpressionSchemaKey("uptime", Map(), Seq()) -> uptimeExpression,
+    ExpressionSchemaKey("pending", Map(), Seq()) -> pendingExpression
   )
 
   val expressionRegistry = new SchemaRegistry {
@@ -106,77 +113,111 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
   test("Get all expressions") {
     val expectedResponse =
       """
-        |{
-        |  "@version" : 1.1,
-        |  "counters_latched" : false,
-        |  "separator_char" : "/",
-        |  "expressions" : [
-        |    {
-        |      "name" : "success_rate",
-        |      "labels" : {
-        |        "process_path" : "Unspecified",
-        |        "service_name" : "Unspecified",
-        |        "role" : "NoRoleSpecified"
-        |      },
-        |      "expression" : "multiply(100.0,divide(success,plus(success,failures)))",
-        |      "bounds" : {
-        |        "kind" : "monotone",
-        |        "operator" : ">",
-        |        "bad_threshold" : 99.5,
-        |        "good_threshold" : 99.97,
-        |        "lower_bound_inclusive" : null,
-        |        "upper_bound_exclusive" : null
-        |      },
-        |      "description" : "Unspecified",
-        |      "unit" : "Unspecified"
-        |    },
-        |    {
-        |      "name" : "throughput",
-        |      "labels" : {
-        |        "process_path" : "Unspecified",
-        |        "service_name" : "Unspecified",
-        |        "role" : "NoRoleSpecified"
-        |      },
-        |      "namespaces" : ["path","to","tenantName"],
-        |      "expression" : "plus(success,failures)",
-        |      "bounds" : {
-        |        "kind" : "unbounded"
-        |      },
-        |      "description" : "Unspecified",
-        |      "unit" : "Unspecified"
-        |    },
-        |    {
-        |      "name" : "latency_p99",
-        |      "labels" : {
-        |        "process_path" : "Unspecified",
-        |        "service_name" : "Unspecified",
-        |        "role" : "NoRoleSpecified",
-        |        "bucket": "p99"
-        |      },
-        |      "namespaces" : ["tenantName"],
-        |      "expression" : "latency.p99",
-        |      "bounds" : {
-        |        "kind" : "unbounded"
-        |      },
-        |      "description" : "Unspecified",
-        |      "unit" : "Unspecified"
-        |    },
-        |    {
-        |      "name" : "failures",
-        |      "labels" : {
-        |        "process_path" : "Unspecified",
-        |        "service_name" : "Unspecified",
-        |        "role" : "NoRoleSpecified"
-        |      },
-        |      "expression" : "failures/*",
-        |      "bounds" : {
-        |        "kind" : "unbounded"
-        |      },
-        |      "description" : "Unspecified",
-        |      "unit" : "Unspecified"
-        |    }
-        |  ]
-        |}""".stripMargin
+      |{
+      |  "@version": 1.1,
+      |  "counters_latched": false,
+      |  "expressions": [
+      |    {
+      |      "bounds": {
+      |        "kind": "unbounded"
+      |      },
+      |      "description": "Unspecified",
+      |      "expression": "latency.p99",
+      |      "labels": {
+      |        "bucket": "p99",
+      |        "process_path": "Unspecified",
+      |        "role": "NoRoleSpecified",
+      |        "service_name": "Unspecified"
+      |      },
+      |      "name": "latency_p99",
+      |      "namespaces": [
+      |        "tenantName"
+      |      ],
+      |      "unit": "Unspecified"
+      |    },
+      |    {
+      |      "bounds": {
+      |        "kind": "unbounded"
+      |      },
+      |      "description": "Unspecified",
+      |      "expression": "srv/pending",
+      |      "labels": {
+      |        "process_path": "Unspecified",
+      |        "role": "NoRoleSpecified",
+      |        "service_name": "Unspecified"
+      |      },
+      |      "name": "pending",
+      |      "unit": "Unspecified"
+      |    },
+      |    {
+      |      "bounds": {
+      |        "kind": "unbounded"
+      |      },
+      |      "description": "Unspecified",
+      |      "expression": "plus(success,failures)",
+      |      "labels": {
+      |        "process_path": "Unspecified",
+      |        "role": "NoRoleSpecified",
+      |        "service_name": "Unspecified"
+      |      },
+      |      "name": "throughput",
+      |      "namespaces": [
+      |        "path",
+      |        "to",
+      |        "tenantName"
+      |      ],
+      |      "unit": "Unspecified"
+      |    },
+      |    {
+      |      "bounds": {
+      |        "kind": "unbounded"
+      |      },
+      |      "description": "Unspecified",
+      |      "expression": "failures/*",
+      |      "labels": {
+      |        "process_path": "Unspecified",
+      |        "role": "NoRoleSpecified",
+      |        "service_name": "Unspecified"
+      |      },
+      |      "name": "failures",
+      |      "unit": "Unspecified"
+      |    },
+      |    {
+      |      "bounds": {
+      |        "kind": "unbounded"
+      |      },
+      |      "description": "Unspecified",
+      |      "expression": "jvm/uptime",
+      |      "labels": {
+      |        "process_path": "Unspecified",
+      |        "role": "NoRoleSpecified",
+      |        "service_name": "Unspecified"
+      |      },
+      |      "name": "uptime",
+      |      "unit": "Unspecified"
+      |    },
+      |    {
+      |      "bounds": {
+      |        "bad_threshold": 99.5,
+      |        "good_threshold": 99.97,
+      |        "kind": "monotone",
+      |        "lower_bound_inclusive": null,
+      |        "operator": ">",
+      |        "upper_bound_exclusive": null
+      |      },
+      |      "description": "Unspecified",
+      |      "expression": "multiply(100.0,divide(success,plus(success,failures)))",
+      |      "labels": {
+      |        "process_path": "Unspecified",
+      |        "role": "NoRoleSpecified",
+      |        "service_name": "Unspecified"
+      |      },
+      |      "name": "success_rate",
+      |      "unit": "Unspecified"
+      |    }
+      |  ],
+      |  "separator_char": "/"
+      |}""".stripMargin
 
     JsonUtils.assertJsonResponse(
       await(expressionHandler(testRequest)).contentString,
@@ -200,38 +241,37 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
   }
 
   test("translate expressions - counters") {
-    val latchedResult =
+    val unratedStyle =
       MetricExpressionHandler.translateToQuery(
         successRateExpression.expr,
         shouldRate = false,
         sourceLatched = false,
         successRateExpression.labels)
-    assert(latchedResult == "multiply(100.0,divide(success,plus(success,failures)))")
+    assert(unratedStyle == "multiply(100.0,divide(success,plus(success,failures)))")
 
-    val unlatchedResult =
+    val ratedStyle =
       MetricExpressionHandler.translateToQuery(
         successRateExpression.expr,
         shouldRate = true,
         sourceLatched = false,
         successRateExpression.labels)
-    assert(
-      unlatchedResult == "multiply(100.0,divide(rate(success),plus(rate(success),rate(failures))))")
+    assert(ratedStyle == "multiply(100.0,divide(rate(success),plus(rate(success),rate(failures))))")
   }
 
   test("translate histogram expressions - latched does not affect result") {
-    val latchedResult =
+    val unratedStyle =
       MetricExpressionHandler.translateToQuery(
         latencyP99.expr,
         shouldRate = false,
         sourceLatched = false,
         latencyP99.labels)
-    val unLatchedResult =
+    val ratedStyle =
       MetricExpressionHandler.translateToQuery(
         latencyP99.expr,
         shouldRate = true,
         sourceLatched = false,
         latencyP99.labels)
-    assert(latchedResult == unLatchedResult)
+    assert(ratedStyle == ratedStyle)
   }
 
   test("translate histogram expressions - components") {
@@ -260,6 +300,40 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
       sourceLatched = false,
       labels = Map())
     assert(result == "client/connections")
+  }
+
+  test("translate expressions - strings") {
+    val unratedStyle =
+      MetricExpressionHandler.translateToQuery(
+        pendingExpression.expr,
+        shouldRate = false,
+        sourceLatched = false,
+        pendingExpression.labels)
+    val ratedStyle =
+      MetricExpressionHandler.translateToQuery(
+        pendingExpression.expr,
+        shouldRate = true,
+        sourceLatched = false,
+        pendingExpression.labels)
+    assert(ratedStyle == unratedStyle)
+  }
+
+  test("translate expressions - counter-style strings") {
+    val unratedStyle =
+      MetricExpressionHandler.translateToQuery(
+        uptimeExpression.expr,
+        shouldRate = false,
+        sourceLatched = false,
+        uptimeExpression.labels)
+    assert(unratedStyle == "jvm/uptime")
+
+    val ratedStyle =
+      MetricExpressionHandler.translateToQuery(
+        uptimeExpression.expr,
+        shouldRate = true,
+        sourceLatched = false,
+        uptimeExpression.labels)
+    assert(ratedStyle == "rate(jvm/uptime)")
   }
 
   test("Get expression with name param filters to expressions with that name") {
@@ -306,21 +380,6 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
         |  "separator_char" : "/",
         |  "expressions" : [
         |    {
-        |      "name" : "throughput",
-        |      "labels" : {
-        |        "process_path" : "Unspecified",
-        |        "service_name" : "Unspecified",
-        |        "role" : "NoRoleSpecified"
-        |      },
-        |      "namespaces" : ["path","to","tenantName"],
-        |      "expression" : "plus(success,failures)",
-        |      "bounds" : {
-        |        "kind" : "unbounded"
-        |      },
-        |      "description" : "Unspecified",
-        |      "unit" : "Unspecified"
-        |    },
-        |    {
         |      "name" : "latency_p99",
         |      "labels" : {
         |        "process_path" : "Unspecified",
@@ -335,7 +394,22 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
         |      },
         |      "description" : "Unspecified",
         |      "unit" : "Unspecified"
-        |    }        
+        |    },
+        |    {
+        |      "name" : "throughput",
+        |      "labels" : {
+        |        "process_path" : "Unspecified",
+        |        "service_name" : "Unspecified",
+        |        "role" : "NoRoleSpecified"
+        |      },
+        |      "namespaces" : ["path","to","tenantName"],
+        |      "expression" : "plus(success,failures)",
+        |      "bounds" : {
+        |        "kind" : "unbounded"
+        |      },
+        |      "description" : "Unspecified",
+        |      "unit" : "Unspecified"
+        |    }
         |  ]
         |}""".stripMargin
 

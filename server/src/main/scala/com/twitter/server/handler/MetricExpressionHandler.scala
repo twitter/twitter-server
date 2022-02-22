@@ -50,7 +50,9 @@ object MetricExpressionHandler {
       case FunctionExpression(funcName, exprs) =>
         s"$funcName(${exprs
           .map { expr => translateToQuery(expr, shouldRate, sourceLatched, labels) }.mkString(",")})"
-      case StringExpression(expr) => expr.mkString(metadataScopeSeparator())
+      case StringExpression(expr, isCounter) =>
+        val metric = expr.mkString(metadataScopeSeparator())
+        if (isCounter && shouldRate && !sourceLatched) s"rate($metric)" else metric
       case NoExpression => "null"
     }
 
