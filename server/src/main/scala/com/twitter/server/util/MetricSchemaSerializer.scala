@@ -3,14 +3,10 @@ package com.twitter.server.util
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
-import com.twitter.finagle.stats.MetricBuilder.{
-  CounterType,
-  CounterishGaugeType,
-  GaugeType,
-  HistogramType,
-  UnlatchedCounter
-}
-import com.twitter.finagle.stats.{MetricBuilder, StatsFormatter, metadataScopeSeparator}
+import com.twitter.finagle.stats.MetricBuilder.HistogramType
+import com.twitter.finagle.stats.MetricBuilder
+import com.twitter.finagle.stats.StatsFormatter
+import com.twitter.finagle.stats.metadataScopeSeparator
 
 object SchemaSerializer extends StdSerializer[MetricBuilder](classOf[MetricBuilder]) {
 
@@ -44,13 +40,7 @@ object SchemaSerializer extends StdSerializer[MetricBuilder](classOf[MetricBuild
       metricBuilder.name.foreach(segment => jsonGenerator.writeString(convertNullToString(segment)))
     }
     jsonGenerator.writeEndArray()
-    val dataType = metricBuilder.metricType match {
-      case UnlatchedCounter => "unlatched_counter"
-      case CounterType => "counter"
-      case CounterishGaugeType => "counterish_gauge"
-      case GaugeType => "gauge"
-      case HistogramType => "histogram"
-    }
+    val dataType = metricBuilder.metricType.toJsonString
     jsonGenerator.writeStringField("kind", dataType)
     jsonGenerator.writeObjectFieldStart("source")
     jsonGenerator.writeStringField("class", metricBuilder.sourceClass.getOrElse("Unspecified"))
