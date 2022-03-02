@@ -20,6 +20,7 @@ private[server] class BalancerHtmlView(balancer: Option[Metadata], routePath: St
     |  <tr><td>Total pending requests</td><td>${md.totalPending}</td></tr>
     |  <tr><td>Total load</td><td>${md.totalLoad}</td></tr>
     |  <tr><td>Size</td><td>${md.size}</td></tr>
+    | <tr><td>Panic Mode</td><td>${md.panicMode}</td></tr>
     |  <tr><td><a href="$routePath?label=${escapeHtml(md.label)}">More details</a></td><td></td></tr>
     |</table>
      """.stripMargin

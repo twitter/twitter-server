@@ -15,6 +15,7 @@ private object BalancersJsonView {
     totalPending: Int,
     totalLoad: Double,
     size: Int,
+    panicMode: String,
     additionalInfo: Map[String, Any])
 
   def convertMetadata(metadata: Metadata): Balancer =
@@ -29,6 +30,7 @@ private object BalancersJsonView {
         totalPending = metadata.totalPending,
         totalLoad = metadata.totalLoad,
         size = metadata.size,
+        panicMode = metadata.panicMode,
         additionalInfo = metadata.additionalInfo
       )
     )

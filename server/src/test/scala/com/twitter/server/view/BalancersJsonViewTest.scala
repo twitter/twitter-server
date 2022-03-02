@@ -1,10 +1,15 @@
 package com.twitter.server.view
 
-import com.twitter.finagle.{Http, Name, Service}
-import com.twitter.finagle.http.{Request, Response}
-import com.twitter.finagle.loadbalancer.{BalancerRegistry, Balancers}
+import com.twitter.finagle.Http
+import com.twitter.finagle.Name
+import com.twitter.finagle.Service
+import com.twitter.finagle.http.Request
+import com.twitter.finagle.http.Response
+import com.twitter.finagle.loadbalancer.BalancerRegistry
+import com.twitter.finagle.loadbalancer.Balancers
 import com.twitter.server.util.JsonUtils
-import com.twitter.util.{Await, Future}
+import com.twitter.util.Await
+import com.twitter.util.Future
 import org.scalatest.funsuite.AnyFunSuite
 
 class BalancersJsonViewTest extends AnyFunSuite {
@@ -35,6 +40,7 @@ class BalancersJsonViewTest extends AnyFunSuite {
     |        "total_pending" : 0,
     |        "total_load" : 0.0,
     |        "size" : 1,
+    |        "panic_mode" : "MajorityUnhealthy",
     |        "additional_info" : { }
     |      }
     |    }
