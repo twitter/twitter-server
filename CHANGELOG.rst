@@ -7,6 +7,9 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+* Update the twitter-server/slf4j-jdk14 Logging trait to ensure it defines a Logger to
+  handle the cases where a class the trait is mixed into has redefined the logger. ``PHAB_ID=D854365``
+
 Runtime Behavior Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 

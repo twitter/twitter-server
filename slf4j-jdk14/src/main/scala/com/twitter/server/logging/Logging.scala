@@ -6,6 +6,9 @@ import java.util.logging.Logger
 
 trait Logging extends ctl.Logging { self: App =>
 
+  /** ensure when this trait is used there is a defined logger */
+  override lazy val log: ctl.Logger = ctl.Logger(name)
+
   /**
    * Note: we are applying the `defaultFormatter` to any
    * configured handlers on the ROOT logger in the constructor
