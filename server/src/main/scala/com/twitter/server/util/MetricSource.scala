@@ -1,10 +1,12 @@
 package com.twitter.server.util
 
 import com.twitter.conversions.DurationOps._
-import com.twitter.finagle.stats.{StatEntry, StatsRegistry}
+import com.twitter.finagle.stats.StatEntry
+import com.twitter.finagle.stats.StatsRegistry
 import com.twitter.finagle.util.LoadService
 import com.twitter.server.util.MetricSource.MetricTypeInfo
-import com.twitter.util.{Duration, Time}
+import com.twitter.util.Duration
+import com.twitter.util.Time
 import java.util.concurrent.atomic.AtomicReference
 
 private[server] object MetricSource {
@@ -30,7 +32,9 @@ private[server] class MetricSource(
     val last = lastRefresh.get()
     if (last != null && Time.now - last > refreshInterval &&
       lastRefresh.compareAndSet(last, null)) {
-      val newStats = registry().foldLeft(Map[String, StatEntry]()) { (map, r) => map ++ r() }
+      val newStats = registry().foldLeft(Map[String, StatEntry]()) { (map, r) =>
+        map ++ r().iterator
+      }
       underlying = newStats
       lastRefresh.set(Time.now)
     }
