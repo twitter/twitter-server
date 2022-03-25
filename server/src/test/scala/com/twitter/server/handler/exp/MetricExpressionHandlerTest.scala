@@ -9,6 +9,7 @@ import com.twitter.finagle.stats.exp.Expression
 import com.twitter.finagle.stats.exp.ExpressionSchema
 import com.twitter.finagle.stats.exp.ExpressionSchemaKey
 import com.twitter.finagle.stats.exp.GreaterThan
+import com.twitter.finagle.stats.exp.HistogramComponent
 import com.twitter.finagle.stats.exp.MonotoneThresholds
 import com.twitter.finagle.stats.InMemoryStatsReceiver
 import com.twitter.finagle.stats.MetricBuilder
@@ -47,7 +48,8 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
       .withNamespace("path", "to", "tenantName")
 
   val latencyP99 =
-    ExpressionSchema("latency_p99", Expression(latencyMb, Right(0.99))).withNamespace("tenantName")
+    ExpressionSchema("latency_p99", Expression(latencyMb, HistogramComponent.Percentile(0.99)))
+      .withNamespace("tenantName")
 
   val failureExpression =
     ExpressionSchema("failures", Expression(failuresMb, true))
@@ -276,7 +278,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
 
   test("translate histogram expressions - components") {
 
-    val latencyMin = ExpressionSchema("min", Expression(latencyMb, Left(Expression.Min)))
+    val latencyMin = ExpressionSchema("min", Expression(latencyMb, HistogramComponent.Min))
     val min = MetricExpressionHandler.translateToQuery(
       latencyMin.expr,
       shouldRate = false,
