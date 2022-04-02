@@ -2,18 +2,18 @@ package com.twitter.server.handler.exp
 
 import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.Request
+import com.twitter.finagle.stats.InMemoryStatsReceiver
+import com.twitter.finagle.stats.MetricBuilder
 import com.twitter.finagle.stats.MetricBuilder.CounterType
 import com.twitter.finagle.stats.MetricBuilder.GaugeType
 import com.twitter.finagle.stats.MetricBuilder.HistogramType
+import com.twitter.finagle.stats.SchemaRegistry
 import com.twitter.finagle.stats.exp.Expression
 import com.twitter.finagle.stats.exp.ExpressionSchema
 import com.twitter.finagle.stats.exp.ExpressionSchemaKey
 import com.twitter.finagle.stats.exp.GreaterThan
 import com.twitter.finagle.stats.exp.HistogramComponent
 import com.twitter.finagle.stats.exp.MonotoneThresholds
-import com.twitter.finagle.stats.InMemoryStatsReceiver
-import com.twitter.finagle.stats.MetricBuilder
-import com.twitter.finagle.stats.SchemaRegistry
 import com.twitter.server.handler.MetricExpressionHandler
 import com.twitter.server.util.AdminJsonConverter
 import com.twitter.server.util.JsonUtils
@@ -77,7 +77,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
       _root_.com.twitter.finagle.stats.exp.ExpressionSchema
     ] = expressionSchemaMap
   }
-  val expressionSource = new MetricSchemaSource(Seq(expressionRegistry))
+  val expressionSource = new MetricSchemaSource(Seq(expressionRegistry), sort = true)
   val expressionHandler = new MetricExpressionHandler(expressionSource)
 
   val latchedRegistry = new SchemaRegistry {
@@ -115,111 +115,111 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
   test("Get all expressions") {
     val expectedResponse =
       """
-      |{
-      |  "@version": 1.1,
-      |  "counters_latched": false,
-      |  "expressions": [
-      |    {
-      |      "bounds": {
-      |        "kind": "unbounded"
-      |      },
-      |      "description": "Unspecified",
-      |      "expression": "latency.p99",
-      |      "labels": {
-      |        "bucket": "p99",
-      |        "process_path": "Unspecified",
-      |        "role": "NoRoleSpecified",
-      |        "service_name": "Unspecified"
-      |      },
-      |      "name": "latency_p99",
-      |      "namespaces": [
-      |        "tenantName"
-      |      ],
-      |      "unit": "Unspecified"
-      |    },
-      |    {
-      |      "bounds": {
-      |        "kind": "unbounded"
-      |      },
-      |      "description": "Unspecified",
-      |      "expression": "srv/pending",
-      |      "labels": {
-      |        "process_path": "Unspecified",
-      |        "role": "NoRoleSpecified",
-      |        "service_name": "Unspecified"
-      |      },
-      |      "name": "pending",
-      |      "unit": "Unspecified"
-      |    },
-      |    {
-      |      "bounds": {
-      |        "kind": "unbounded"
-      |      },
-      |      "description": "Unspecified",
-      |      "expression": "plus(success,failures)",
-      |      "labels": {
-      |        "process_path": "Unspecified",
-      |        "role": "NoRoleSpecified",
-      |        "service_name": "Unspecified"
-      |      },
-      |      "name": "throughput",
-      |      "namespaces": [
-      |        "path",
-      |        "to",
-      |        "tenantName"
-      |      ],
-      |      "unit": "Unspecified"
-      |    },
-      |    {
-      |      "bounds": {
-      |        "kind": "unbounded"
-      |      },
-      |      "description": "Unspecified",
-      |      "expression": "failures/*",
-      |      "labels": {
-      |        "process_path": "Unspecified",
-      |        "role": "NoRoleSpecified",
-      |        "service_name": "Unspecified"
-      |      },
-      |      "name": "failures",
-      |      "unit": "Unspecified"
-      |    },
-      |    {
-      |      "bounds": {
-      |        "kind": "unbounded"
-      |      },
-      |      "description": "Unspecified",
-      |      "expression": "jvm/uptime",
-      |      "labels": {
-      |        "process_path": "Unspecified",
-      |        "role": "NoRoleSpecified",
-      |        "service_name": "Unspecified"
-      |      },
-      |      "name": "uptime",
-      |      "unit": "Unspecified"
-      |    },
-      |    {
-      |      "bounds": {
-      |        "bad_threshold": 99.5,
-      |        "good_threshold": 99.97,
-      |        "kind": "monotone",
-      |        "lower_bound_inclusive": null,
-      |        "operator": ">",
-      |        "upper_bound_exclusive": null
-      |      },
-      |      "description": "Unspecified",
-      |      "expression": "multiply(100.0,divide(success,plus(success,failures)))",
-      |      "labels": {
-      |        "process_path": "Unspecified",
-      |        "role": "NoRoleSpecified",
-      |        "service_name": "Unspecified"
-      |      },
-      |      "name": "success_rate",
-      |      "unit": "Unspecified"
-      |    }
-      |  ],
-      |  "separator_char": "/"
-      |}""".stripMargin
+        |{
+        |  "@version": 1.1,
+        |  "counters_latched": false,
+        |  "expressions": [
+        |    {
+        |      "bounds": {
+        |        "kind": "unbounded"
+        |      },
+        |      "description": "Unspecified",
+        |      "expression": "failures/*",
+        |      "labels": {
+        |        "process_path": "Unspecified",
+        |        "role": "NoRoleSpecified",
+        |        "service_name": "Unspecified"
+        |      },
+        |      "name": "failures",
+        |      "unit": "Unspecified"
+        |    },
+        |    {
+        |      "bounds": {
+        |        "kind": "unbounded"
+        |      },
+        |      "description": "Unspecified",
+        |      "expression": "latency.p99",
+        |      "labels": {
+        |        "bucket": "p99",
+        |        "process_path": "Unspecified",
+        |        "role": "NoRoleSpecified",
+        |        "service_name": "Unspecified"
+        |      },
+        |      "name": "latency_p99",
+        |      "namespaces": [
+        |        "tenantName"
+        |      ],
+        |      "unit": "Unspecified"
+        |    },
+        |    {
+        |      "bounds": {
+        |        "kind": "unbounded"
+        |      },
+        |      "description": "Unspecified",
+        |      "expression": "srv/pending",
+        |      "labels": {
+        |        "process_path": "Unspecified",
+        |        "role": "NoRoleSpecified",
+        |        "service_name": "Unspecified"
+        |      },
+        |      "name": "pending",
+        |      "unit": "Unspecified"
+        |    },
+        |    {
+        |      "bounds": {
+        |        "bad_threshold": 99.5,
+        |        "good_threshold": 99.97,
+        |        "kind": "monotone",
+        |        "lower_bound_inclusive": null,
+        |        "operator": ">",
+        |        "upper_bound_exclusive": null
+        |      },
+        |      "description": "Unspecified",
+        |      "expression": "multiply(100.0,divide(success,plus(success,failures)))",
+        |      "labels": {
+        |        "process_path": "Unspecified",
+        |        "role": "NoRoleSpecified",
+        |        "service_name": "Unspecified"
+        |      },
+        |      "name": "success_rate",
+        |      "unit": "Unspecified"
+        |    },
+        |    {
+        |      "bounds": {
+        |        "kind": "unbounded"
+        |      },
+        |      "description": "Unspecified",
+        |      "expression": "plus(success,failures)",
+        |      "labels": {
+        |        "process_path": "Unspecified",
+        |        "role": "NoRoleSpecified",
+        |        "service_name": "Unspecified"
+        |      },
+        |      "name": "throughput",
+        |      "namespaces": [
+        |        "path",
+        |        "to",
+        |        "tenantName"
+        |      ],
+        |      "unit": "Unspecified"
+        |    },
+        |    {
+        |      "bounds": {
+        |        "kind": "unbounded"
+        |      },
+        |      "description": "Unspecified",
+        |      "expression": "jvm/uptime",
+        |      "labels": {
+        |        "process_path": "Unspecified",
+        |        "role": "NoRoleSpecified",
+        |        "service_name": "Unspecified"
+        |      },
+        |      "name": "uptime",
+        |      "unit": "Unspecified"
+        |    }
+        |  ],
+        |  "separator_char": "/"
+        |}""".stripMargin
 
     JsonUtils.assertJsonResponse(
       await(expressionHandler(testRequest)).contentString,

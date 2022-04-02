@@ -1,8 +1,10 @@
 package com.twitter.server.util
 
 import com.twitter.finagle.stats.exp.ExpressionSchema
-import com.twitter.finagle.stats.{MetricBuilder, SchemaRegistry}
+import com.twitter.finagle.stats.MetricBuilder
+import com.twitter.finagle.stats.SchemaRegistry
 import com.twitter.finagle.util.LoadService
+import scala.collection.immutable.ListMap
 
 private[server] object MetricSchemaSource {
   lazy val registry: Seq[SchemaRegistry] = LoadService[SchemaRegistry]()
@@ -11,9 +13,12 @@ private[server] object MetricSchemaSource {
 /**
  * A map from stats names to [[com.twitter.finagle.stats.StatEntry StatsEntries]]
  * which allows for stale StatEntries up to `refreshInterval`.
+ * @param registry Seq of schema registries
+ * @param sort if true, sort ExpressionSchema by name for deterministic test outputs
  */
 private[server] class MetricSchemaSource(
-  registry: Seq[SchemaRegistry] = MetricSchemaSource.registry) {
+  registry: Seq[SchemaRegistry] = MetricSchemaSource.registry,
+  sort: Boolean = false) {
 
   /**
    * Indicates whether or not the MetricSource is using latched Counters.
@@ -48,6 +53,14 @@ private[server] class MetricSchemaSource(
   }
 
   def expressionList: Iterable[ExpressionSchema] = synchronized {
-    registry.foldLeft(IndexedSeq[ExpressionSchema]()) { (seq, r) => seq ++ r.expressions().values }
+    if (!sort) {
+      registry.foldLeft(IndexedSeq[ExpressionSchema]()) { (seq, r) =>
+        seq ++ r.expressions().values
+      }
+    } else {
+      registry.foldLeft(IndexedSeq[ExpressionSchema]()) { (seq, r) =>
+        seq ++ ListMap(r.expressions().toSeq.sortBy(_._1.name): _*).values
+      }
+    }
   }
 }
