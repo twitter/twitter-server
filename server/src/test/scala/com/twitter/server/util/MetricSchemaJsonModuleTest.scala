@@ -1,13 +1,12 @@
 package com.twitter.server.util
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, ScalaObjectMapper}
-import com.twitter.finagle.stats.MetricBuilder.{
-  CounterType,
-  CounterishGaugeType,
-  GaugeType,
-  HistogramType
-}
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.ScalaObjectMapper
+import com.twitter.finagle.stats.MetricBuilder.CounterType
+import com.twitter.finagle.stats.MetricBuilder.CounterishGaugeType
+import com.twitter.finagle.stats.MetricBuilder.GaugeType
+import com.twitter.finagle.stats.MetricBuilder.HistogramType
 import com.twitter.finagle.stats._
 import org.scalatest.funsuite.AnyFunSuite
 
@@ -53,6 +52,8 @@ class MetricSchemaJsonModuleTest extends AnyFunSuite {
     Set(
       "name",
       "relative_name",
+      "labels",
+      "dimensional_support",
       "kind",
       "source",
       "description",

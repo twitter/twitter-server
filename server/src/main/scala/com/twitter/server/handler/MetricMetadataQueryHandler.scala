@@ -1,11 +1,17 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{MediaType, Request, Response, Uri}
-import com.twitter.finagle.stats.{StatsFormatter, metadataScopeSeparator}
+import com.twitter.finagle.http.MediaType
+import com.twitter.finagle.http.Request
+import com.twitter.finagle.http.Response
+import com.twitter.finagle.http.Uri
+import com.twitter.finagle.stats.MetricBuilder
+import com.twitter.finagle.stats.StatsFormatter
+import com.twitter.finagle.stats.metadataScopeSeparator
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils.newResponse
-import com.twitter.server.util.{AdminJsonConverter, MetricSchemaSource}
+import com.twitter.server.util.AdminJsonConverter
+import com.twitter.server.util.MetricSchemaSource
 import com.twitter.util.Future
 
 /**
@@ -86,8 +92,8 @@ class MetricMetadataQueryHandler(source: MetricSchemaSource = new MetricSchemaSo
 
   private[this] val statsFormatter = StatsFormatter.default
 
-  private[this] def query(keys: Iterable[String]) = {
-    keys.flatMap(k => {
+  private[this] def query(keys: Iterable[String]): Iterable[MetricBuilder] = {
+    keys.flatMap { k =>
       // histogram metric.
       if (k.lastIndexOf(statsFormatter.histogramSeparator) > k.lastIndexOf(
           metadataScopeSeparator())) {
@@ -101,7 +107,7 @@ class MetricMetadataQueryHandler(source: MetricSchemaSource = new MetricSchemaSo
       } else {
         source.getSchema(k)
       }
-    })
+    }
   }
 
   def apply(req: Request): Future[Response] = {

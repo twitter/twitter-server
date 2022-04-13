@@ -5,12 +5,41 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import com.twitter.finagle.stats.MetricBuilder.HistogramType
 import com.twitter.finagle.stats.MetricBuilder
+import com.twitter.finagle.stats.MetricBuilder.Identity
 import com.twitter.finagle.stats.StatsFormatter
 import com.twitter.finagle.stats.metadataScopeSeparator
 
 object SchemaSerializer extends StdSerializer[MetricBuilder](classOf[MetricBuilder]) {
 
   private[this] val statsFormatter = StatsFormatter.default
+
+  private[this] def dimensionallyValid(identity: Identity): Boolean = identity match {
+    case Identity.Full(_, _) => true
+    case Identity.Hierarchical(_, _) => false
+  }
+
+  private[this] def writeArray(
+    jsonGenerator: JsonGenerator,
+    name: String,
+    strings: Iterator[String]
+  ): Unit = {
+    jsonGenerator.writeArrayFieldStart(name)
+    strings.foreach(s => jsonGenerator.writeString(convertNullToString(s)))
+    jsonGenerator.writeEndArray()
+  }
+
+  private[this] def writeDictionary(
+    jsonGenerator: JsonGenerator,
+    name: String,
+    entries: Iterable[(String, String)]
+  ): Unit = {
+    jsonGenerator.writeObjectFieldStart(name)
+    entries.foreach {
+      case (k, v) =>
+        jsonGenerator.writeStringField(k, v)
+    }
+    jsonGenerator.writeEndObject()
+  }
 
   /**
    * This custom serializer is used to convert MetricSchemas to JSON for the metric_metadata
@@ -32,14 +61,19 @@ object SchemaSerializer extends StdSerializer[MetricBuilder](classOf[MetricBuild
     val formattedName = metricBuilder.name.mkString(metadataScopeSeparator())
     jsonGenerator.writeStartObject()
     jsonGenerator.writeStringField("name", formattedName)
-    jsonGenerator.writeArrayFieldStart("relative_name")
-    if (metricBuilder.relativeName != Seq.empty) {
-      metricBuilder.relativeName.foreach(segment =>
-        jsonGenerator.writeString(convertNullToString(segment)))
-    } else {
-      metricBuilder.name.foreach(segment => jsonGenerator.writeString(convertNullToString(segment)))
-    }
-    jsonGenerator.writeEndArray()
+
+    writeArray(
+      jsonGenerator,
+      "relative_name",
+      (if (metricBuilder.relativeName.nonEmpty) metricBuilder.relativeName
+       else metricBuilder.name).iterator)
+
+    writeDictionary(jsonGenerator, "labels", metricBuilder.identity.labels)
+
+    jsonGenerator.writeBooleanField(
+      "dimensional_support",
+      dimensionallyValid(metricBuilder.identity))
+
     val dataType = metricBuilder.metricType.toJsonString
     jsonGenerator.writeStringField("kind", dataType)
     jsonGenerator.writeObjectFieldStart("source")
