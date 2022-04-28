@@ -1,10 +1,16 @@
 package com.twitter.server.handler
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, ScalaObjectMapper}
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.ScalaObjectMapper
 import com.twitter.conversions.DurationOps._
-import com.twitter.finagle.http.{MediaType, Method, Request, Status}
+import com.twitter.finagle.http.Fields.Allow
+import com.twitter.finagle.http.MediaType
+import com.twitter.finagle.http.Method
+import com.twitter.finagle.http.Request
+import com.twitter.finagle.http.Status
 import com.twitter.util.Await
+import com.twitter.util.Awaitable
 import com.twitter.util.tunable.TunableMap
 import org.scalatest.funsuite.AnyFunSuite
 
@@ -18,14 +24,24 @@ object TunableHandlerTest {
 class TunableHandlerTest extends AnyFunSuite {
   import TunableHandlerTest._
 
+  def await[T](t: Awaitable[T]): T = Await.result(t, 5.seconds)
+
   private[this] val mapper = new ObjectMapper with ScalaObjectMapper {
     registerModule(DefaultScalaModule)
   }
 
-  test("Non-{DELETE, GET, PUT} request returns 'MethodNotAllowed response") {
+  test("Non-{DELETE, GET, PUT} request returns 'MethodNotAllowed response and 'Allow' header") {
     val handler = new TunableHandler
-    val resp = handler(Request(Method.Post, "/"))
-    assert(Await.result(resp, 1.second).status == Status.MethodNotAllowed)
+    val resp = await(handler(Request(Method.Post, "/")))
+    assert(resp.status == Status.MethodNotAllowed)
+    assert(resp.headerMap.get(Allow) == Some("GET, PUT, DELETE"))
+  }
+
+  test("Non-{GET} request returns 'MethodNotAllowed response and 'Allow' header") {
+    val handler = new TunableHandler
+    val resp = await(handler(Request(Method.Post, TunableHandler.Path)))
+    assert(resp.status == Status.MethodNotAllowed)
+    assert(resp.headerMap.get(Allow) == Some("GET"))
   }
 
   def testJsonErrorHandling(method: Method): Unit = {
@@ -34,7 +50,7 @@ class TunableHandlerTest extends AnyFunSuite {
       val req = Request(method, "/")
       req.contentType = MediaType.Csv
       val resp = handler(req)
-      assert(Await.result(resp, 1.second).contentString.contains("Expected Content-Type"))
+      assert(Await.result(resp).contentString.contains("Expected Content-Type"))
     }
 
     test(method + ": Returns response with error if JSON cannot be parsed") {
@@ -43,7 +59,7 @@ class TunableHandlerTest extends AnyFunSuite {
       req.contentType = MediaType.Json
       req.contentString = "i am not valid json..."
       val resp = handler(req)
-      assert(Await.result(resp, 1.second).contentString.contains("Failed to parse JSON"))
+      assert(await(resp).contentString.contains("Failed to parse JSON"))
     }
   }
 
@@ -53,7 +69,7 @@ class TunableHandlerTest extends AnyFunSuite {
       val req = Request(method, "/admin/tunables/foo")
       req.contentType = MediaType.Json
       req.contentString = """{"tunables": [] }"""
-      val resp = Await.result(handler(req), 1.second)
+      val resp = await(handler(req))
       assert(resp.contentString.contains("TunableMap not found for id: foo"))
       assert(resp.status == Status.NotFound)
     }
@@ -80,7 +96,7 @@ class TunableHandlerTest extends AnyFunSuite {
 
     val req = Request(Method.Get, "/admin/tunables/foo")
 
-    val resp = Await.result(handler(req), 1.second)
+    val resp = await(handler(req))
     assert(resp.status == Status.Ok)
     val expected =
       """{
@@ -126,7 +142,7 @@ class TunableHandlerTest extends AnyFunSuite {
 
     val req = Request(Method.Get, "/admin/tunables")
 
-    val resp = Await.result(handler(req), 1.second)
+    val resp = await(handler(req))
     assert(resp.status == Status.Ok)
     val expected =
       """[
@@ -182,7 +198,7 @@ class TunableHandlerTest extends AnyFunSuite {
         |}""".stripMargin
     val resp = handler(req)
     assert(map(TunableMap.Key[String]("test_id"))().contains("hello"))
-    assert(Await.result(resp, 1.second).status == Status.Ok)
+    assert(await(resp).status == Status.Ok)
   }
 
   test("PUT: Updates existing tunable with new value") {
@@ -205,7 +221,7 @@ class TunableHandlerTest extends AnyFunSuite {
     assert(map(key)().contains("hello"))
     val resp = handler(req)
     assert(map(key)().contains("goodbye"))
-    assert(Await.result(resp, 1.second).status == Status.Ok)
+    assert(await(resp).status == Status.Ok)
   }
 
   test("PUT: Does not remove existing tunables") {
@@ -231,7 +247,7 @@ class TunableHandlerTest extends AnyFunSuite {
     val resp = handler(req)
     assert(map(key1)().contains("goodbye"))
     assert(map(key2)().contains("i'd better stick around"))
-    assert(Await.result(resp, 1.second).status == Status.Ok)
+    assert(await(resp).status == Status.Ok)
   }
 
   test("DELETE: Removes specified existing tunables") {
@@ -253,7 +269,7 @@ class TunableHandlerTest extends AnyFunSuite {
         |}""".stripMargin
     val resp = handler(req)
     assert(map(key)().isEmpty)
-    assert(Await.result(resp, 1.second).status == Status.Ok)
+    assert(await(resp).status == Status.Ok)
   }
 
   test("PUT: Does not remove existing tunables not present in update JSON") {
@@ -279,6 +295,6 @@ class TunableHandlerTest extends AnyFunSuite {
     val resp = handler(req)
     assert(map(key1)().isEmpty)
     assert(map(key2)().contains("i'd better stick around"))
-    assert(Await.result(resp, 1.second).status == Status.Ok)
+    assert(await(resp).status == Status.Ok)
   }
 }

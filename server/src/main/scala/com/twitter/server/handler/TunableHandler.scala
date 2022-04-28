@@ -1,14 +1,22 @@
 package com.twitter.server.handler
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{Fields, MediaType, Method, Request, Response, Status}
+import com.twitter.finagle.http.Fields
+import com.twitter.finagle.http.MediaType
+import com.twitter.finagle.http.Method
+import com.twitter.finagle.http.Request
+import com.twitter.finagle.http.Response
+import com.twitter.finagle.http.Status
 import com.twitter.finagle.tunable.StandardTunableMap
 import com.twitter.io.Buf
 import com.twitter.server.util.AdminJsonConverter
 import com.twitter.server.util.HttpUtils._
 import com.twitter.util.logging.Logger
-import com.twitter.util.tunable.{JsonTunableMapper, TunableMap}
-import com.twitter.util.{Future, Return, Throw}
+import com.twitter.util.tunable.JsonTunableMapper
+import com.twitter.util.tunable.TunableMap
+import com.twitter.util.Future
+import com.twitter.util.Return
+import com.twitter.util.Throw
 import scala.collection.mutable
 
 /**
@@ -86,6 +94,7 @@ class TunableHandler private[handler] (registeredIdsFn: () => Map[String, Tunabl
     newResponse(
       status = status,
       contentType = "text/plain;charset=UTF-8",
+      headers = headers,
       content = Buf.Utf8(content)
     )
 
@@ -164,7 +173,7 @@ class TunableHandler private[handler] (registeredIdsFn: () => Map[String, Tunabl
         case Throw(e) =>
           respond(Status.BadRequest, s"Failed to parse JSON for PUT request: ${e.getMessage}")
       }
-    case unsupported =>
+    case _ =>
       respond(Status.BadRequest, s"Expected Content-Type ${MediaType.Json} for PUT request")
   }
 
