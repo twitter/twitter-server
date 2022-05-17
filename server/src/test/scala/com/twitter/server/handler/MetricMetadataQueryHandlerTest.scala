@@ -29,7 +29,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
         percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
         metricType = CounterType,
         statsReceiver = null
-      ).withLabels(Map("label1" -> "value1", "label2" -> "value2")).withDimensionalSupport,
+      ).withLabels(Map("label1" -> "value1", "label2" -> "value2")),
     "your/fine/gauge" ->
       MetricBuilder(
         keyIndicator = false,
@@ -50,7 +50,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
         percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
         metricType = HistogramType,
         statsReceiver = null
-      ).withLabels(labels = Map("label1" -> "value1")).withDimensionalSupport,
+      ).withLabels(labels = Map("label1" -> "value1")),
     "my/bad/null/counter" ->
       MetricBuilder(
         keyIndicator = true,
@@ -115,6 +115,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |   "metrics" : [
       |     {
       |      "name" : "my/cool/counter",
+      |      "dimensional_name" : "my_cool_counter",
       |      "relative_name" : ["my","cool","counter"],
       |      "labels" : {
       |        "label1" : "value1",
@@ -134,9 +135,10 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |     },
       |     {
       |      "name" : "your/fine/gauge",
+      |      "dimensional_name" : "your_fine_gauge",
       |      "relative_name" : ["your","fine","gauge"],
       |      "labels" : {},
-      |      "dimensional_support" : false,
+      |      "dimensional_support" : true,
       |      "kind" : "gauge",
       |      "source" : {
       |        "class": "finagle.stats.your",
@@ -150,6 +152,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |     },
       |     {
       |      "name" : "my/only/histo",
+      |      "dimensional_name" : "my_only_histo",
       |      "relative_name" : ["my","only","histo"],
       |      "labels" : {
       |        "label1" : "value1"
@@ -181,9 +184,10 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |     },
       |     {
       |      "name" : "my/bad/null/counter",
+      |      "dimensional_name" : "my_bad_null_counter",
       |      "relative_name" : ["my","bad", "null", "counter"],
       |      "labels" : {},
-      |      "dimensional_support" : false,
+      |      "dimensional_support" : true,
       |      "kind" : "counter",
       |      "source" : {
       |        "class": "finagle.stats.bad",
@@ -204,9 +208,10 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |   "metrics" : [
       |     {
       |      "name" : "your/fine/gauge",
+      |      "dimensional_name" : "your_fine_gauge",
       |      "relative_name" : ["your","fine","gauge"],
       |      "labels" : {},
-      |      "dimensional_support" : false,
+      |      "dimensional_support" : true,
       |      "kind" : "gauge",
       |      "source" : {
       |        "class": "finagle.stats.your",
@@ -226,6 +231,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |   "metrics" : [
       |     {
       |      "name" : "my/cool/counter",
+      |      "dimensional_name": "my_cool_counter",
       |      "relative_name" : ["my","cool","counter"],
       |      "labels" : {
       |        "label1" : "value1",
@@ -245,9 +251,10 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |     },
       |     {
       |      "name" : "your/fine/gauge",
+      |      "dimensional_name" : "your_fine_gauge",
       |      "relative_name" : ["your","fine","gauge"],
       |      "labels" : {},
-      |      "dimensional_support" : false,
+      |      "dimensional_support" : true,
       |      "kind" : "gauge",
       |      "source" : {
       |        "class": "finagle.stats.your",
@@ -268,6 +275,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |   "metrics" : [
       |     {
       |      "name" : "my/only/histo",
+      |      "dimensional_name" : "my_only_histo",
       |      "relative_name" : ["my","only","histo"],
       |      "labels" : {
       |        "label1" : "value1"
@@ -305,6 +313,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |   "metrics" : [
       |     {
       |      "name" : "my/cool/counter",
+      |      "dimensional_name" : "my_cool_counter",
       |      "relative_name" : ["my","cool","counter"],
       |      "labels" : {
       |        "label1" : "value1",
@@ -324,6 +333,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |     },
       |     {
       |      "name" : "my/only/histo",
+      |      "dimensional_name" : "my_only_histo",
       |      "relative_name" : ["my","only","histo"],
       |      "labels" : {
       |        "label1" : "value1"

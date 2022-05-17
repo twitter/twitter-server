@@ -51,6 +51,7 @@ class MetricSchemaJsonModuleTest extends AnyFunSuite {
   private val topLevelFieldNameSet =
     Set(
       "name",
+      "dimensional_name",
       "relative_name",
       "labels",
       "dimensional_support",

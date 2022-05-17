@@ -5,18 +5,12 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import com.twitter.finagle.stats.MetricBuilder.HistogramType
 import com.twitter.finagle.stats.MetricBuilder
-import com.twitter.finagle.stats.MetricBuilder.Identity
 import com.twitter.finagle.stats.StatsFormatter
 import com.twitter.finagle.stats.metadataScopeSeparator
 
 object SchemaSerializer extends StdSerializer[MetricBuilder](classOf[MetricBuilder]) {
 
   private[this] val statsFormatter = StatsFormatter.default
-
-  private[this] def dimensionallyValid(identity: Identity): Boolean = identity match {
-    case Identity.Full(_, _) => true
-    case Identity.Hierarchical(_, _) => false
-  }
 
   private[this] def writeArray(
     jsonGenerator: JsonGenerator,
@@ -62,6 +56,10 @@ object SchemaSerializer extends StdSerializer[MetricBuilder](classOf[MetricBuild
     jsonGenerator.writeStartObject()
     jsonGenerator.writeStringField("name", formattedName)
 
+    jsonGenerator.writeStringField(
+      "dimensional_name",
+      metricBuilder.identity.dimensionalName.mkString(MetricBuilder.DimensionalNameScopeSeparator))
+
     writeArray(
       jsonGenerator,
       "relative_name",
@@ -70,9 +68,7 @@ object SchemaSerializer extends StdSerializer[MetricBuilder](classOf[MetricBuild
 
     writeDictionary(jsonGenerator, "labels", metricBuilder.identity.labels)
 
-    jsonGenerator.writeBooleanField(
-      "dimensional_support",
-      dimensionallyValid(metricBuilder.identity))
+    jsonGenerator.writeBooleanField("dimensional_support", !metricBuilder.identity.hierarchicalOnly)
 
     val dataType = metricBuilder.metricType.toJsonString
     jsonGenerator.writeStringField("kind", dataType)
