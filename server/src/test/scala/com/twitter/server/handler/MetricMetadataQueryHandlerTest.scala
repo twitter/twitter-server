@@ -27,8 +27,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
         name = Seq("my", "cool", "counter"),
         processPath = Some("dc/role/zone/service"),
         percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
-        metricType = CounterType,
-        statsReceiver = null
+        metricType = CounterType
       ).withLabels(Map("label1" -> "value1", "label2" -> "value2")),
     "your/fine/gauge" ->
       MetricBuilder(
@@ -41,15 +40,13 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
         name = Seq("your", "fine", "gauge"),
         processPath = Some("dc/your_role/zone/your_service"),
         percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
-        metricType = GaugeType,
-        statsReceiver = null
+        metricType = GaugeType
       ),
     "my/only/histo" ->
       MetricBuilder(
         name = Seq("my", "only", "histo"),
         percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
-        metricType = HistogramType,
-        statsReceiver = null
+        metricType = HistogramType
       ).withLabels(labels = Map("label1" -> "value1")),
     "my/bad/null/counter" ->
       MetricBuilder(
@@ -62,8 +59,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
         name = Seq("my", "bad", null, "counter"),
         processPath = Some("dc/role/zone/service"),
         percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
-        metricType = CounterType,
-        statsReceiver = null
+        metricType = CounterType
       )
   )
 
@@ -460,8 +456,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
               MetricBuilder(
                 name = metricName.split("\\/"),
                 percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
-                metricType = CounterType,
-                statsReceiver = null
+                metricType = CounterType
               ))
         } else {
           Map(
@@ -469,8 +464,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
               MetricBuilder(
                 name = metricName.split("\\/"),
                 percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
-                metricType = HistogramType,
-                statsReceiver = null
+                metricType = HistogramType
               ))
         }
       }

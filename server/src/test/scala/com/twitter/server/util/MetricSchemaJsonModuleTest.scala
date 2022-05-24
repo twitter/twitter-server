@@ -23,8 +23,7 @@ class MetricSchemaJsonModuleTest extends AnyFunSuite {
       name = Seq("my", "cool", "counter"),
       processPath = Some("dc/role/zone/service"),
       percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
-      metricType = CounterType,
-      statsReceiver = null
+      metricType = CounterType
     )
   private val gaugeSchema =
     MetricBuilder(
@@ -37,15 +36,13 @@ class MetricSchemaJsonModuleTest extends AnyFunSuite {
       name = Seq("your", "fine", "gauge"),
       processPath = Some("dc/your_role/zone/your_service"),
       percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
-      metricType = GaugeType,
-      statsReceiver = null
+      metricType = GaugeType
     )
   private val histogramSchema =
     MetricBuilder(
       name = Seq("my", "only", "histo"),
       percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
-      metricType = HistogramType,
-      statsReceiver = null
+      metricType = HistogramType
     )
 
   private val topLevelFieldNameSet =

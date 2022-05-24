@@ -1,8 +1,11 @@
 package com.twitter.server.util
 
-import com.twitter.finagle.stats.MetricBuilder.{CounterType, GaugeType, HistogramType}
+import com.twitter.finagle.stats.MetricBuilder.CounterType
+import com.twitter.finagle.stats.MetricBuilder.GaugeType
+import com.twitter.finagle.stats.MetricBuilder.HistogramType
 import com.twitter.finagle.stats._
-import com.twitter.finagle.stats.exp.{ExpressionSchema, ExpressionSchemaKey}
+import com.twitter.finagle.stats.exp.ExpressionSchema
+import com.twitter.finagle.stats.exp.ExpressionSchemaKey
 import org.scalatest.funsuite.AnyFunSuite
 
 class MetricSchemaSourceTest extends AnyFunSuite {
@@ -19,8 +22,7 @@ class MetricSchemaSourceTest extends AnyFunSuite {
         name = Seq("my", "cool", "counter"),
         processPath = Some("dc/role/zone/service"),
         percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
-        metricType = CounterType,
-        statsReceiver = null
+        metricType = CounterType
       ),
     "your/fine/gauge" ->
       MetricBuilder(
@@ -33,15 +35,13 @@ class MetricSchemaSourceTest extends AnyFunSuite {
         name = Seq("your", "fine", "gauge"),
         processPath = Some("dc/your_role/zone/your_service"),
         percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
-        metricType = GaugeType,
-        statsReceiver = null
+        metricType = GaugeType
       ),
     "my/only/histo" ->
       MetricBuilder(
         name = Seq("my", "only", "histo"),
         percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
-        metricType = HistogramType,
-        statsReceiver = null
+        metricType = HistogramType
       )
   )
 

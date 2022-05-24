@@ -30,11 +30,11 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
 
   val sr = new InMemoryStatsReceiver
 
-  val successMb = MetricBuilder(name = Seq("success"), metricType = CounterType, statsReceiver = sr)
+  val successMb = MetricBuilder(name = Seq("success"), metricType = CounterType)
   val failuresMb =
-    MetricBuilder(name = Seq("failures"), metricType = CounterType, statsReceiver = sr)
+    MetricBuilder(name = Seq("failures"), metricType = CounterType)
   val latencyMb =
-    MetricBuilder(name = Seq("latency"), metricType = HistogramType, statsReceiver = sr)
+    MetricBuilder(name = Seq("latency"), metricType = HistogramType)
 
   val successRateExpression =
     ExpressionSchema(
@@ -245,7 +245,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
 
   test("translate expressions - gauges") {
     val connMb =
-      MetricBuilder(name = Seq("client", "connections"), metricType = GaugeType, statsReceiver = sr)
+      MetricBuilder(name = Seq("client", "connections"), metricType = GaugeType)
     val result = MetricExpressionHandler.translateToQuery(
       Expression(connMb),
       shouldRate = false,
