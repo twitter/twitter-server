@@ -1,29 +1,58 @@
 package com.twitter.server
 
-import com.twitter.app.{App, Flag}
+import com.twitter.app.App
+import com.twitter.app.Flag
 import com.twitter.finagle.client.ClientRegistry
 import com.twitter.finagle.filter.ServerAdmissionControl
-import com.twitter.finagle.http.{HttpMuxer, Method, Request, Response, Route => HttpRoute}
+import com.twitter.finagle.http.HttpMuxer
+import com.twitter.finagle.http.Method
+import com.twitter.finagle.http.Request
+import com.twitter.finagle.http.Response
+import com.twitter.finagle.http.{Route => HttpRoute}
 import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.stats.NullStatsReceiver
 import com.twitter.finagle.tracing.NullTracer
 import com.twitter.finagle.util.LoadService
-import com.twitter.finagle.{Http, ListeningServer, NullServer, Service}
+import com.twitter.finagle.Http
+import com.twitter.finagle.ListeningServer
+import com.twitter.finagle.NullServer
+import com.twitter.finagle.Service
 import com.twitter.server.Admin.Grouping
 import com.twitter.server.filters.AdminThreadPoolFilter
-import com.twitter.server.handler.{AdminHttpMuxHandler, LoggingHandler, NoLoggingHandler}
+import com.twitter.server.handler.AdminHttpMuxHandler
+import com.twitter.server.handler.LoggingHandler
+import com.twitter.server.handler.NoLoggingHandler
 import com.twitter.server.lint.LoggingRules
 import com.twitter.server.util.HttpUtils
-import com.twitter.server.view.{IndexView, NotFoundView}
+import com.twitter.server.view.IndexView
+import com.twitter.server.view.NotFoundView
 import com.twitter.util.lint.GlobalRules
 import com.twitter.util.registry.Library
-import com.twitter.util.{Future, Monitor, Time}
-import java.net.{InetSocketAddress, URLEncoder}
+import com.twitter.util.Future
+import com.twitter.util.Monitor
+import com.twitter.util.Time
+import java.net.InetSocketAddress
+import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import org.slf4j.LoggerFactory
 import scala.language.reflectiveCalls
 
 object AdminHttpServer {
+
+  type GlobalConfigurator = Http.Server => Http.Server
+
+  @volatile private var globalConfigurator: Option[GlobalConfigurator] = None
+
+  private[twitter] def setGlobalConfigurator(config: GlobalConfigurator): Unit = {
+    globalConfigurator = Some(config)
+  }
+
+  // Only known use case is for testing
+  private[twitter] def resetGlobalConfigurator(): Unit = {
+    globalConfigurator = None
+  }
+
+  private[twitter] def getGlobalConfigurator: Option[GlobalConfigurator] = globalConfigurator
 
   /**
    * The name used for the finagle server.
@@ -221,6 +250,19 @@ trait AdminHttpServer { self: App with Stats =>
    */
   protected def configureAdminHttpServer(server: Http.Server): Http.Server = server
 
+  /**
+   * This method allows applying a global configuration, such as adding
+   * security/server authentication
+   * @param server the locally configured server
+   * @return the server with applied global settings
+   */
+  private def runGlobalConfigurator(server: Http.Server): Http.Server = {
+    AdminHttpServer.getGlobalConfigurator match {
+      case Some(f) => f(server)
+      case None => server
+    }
+  }
+
   private[this] def updateMuxer(): Unit = {
     // create a service which multiplexes across all endpoints.
     val localMuxer = allRoutes.foldLeft(new HttpMuxer) {
@@ -293,17 +335,18 @@ trait AdminHttpServer { self: App with Stats =>
     }
 
     log.info(s"Serving admin http on ${adminPort()}")
-    adminHttpServer = configureAdminHttpServer(
-      Http.server
-        .configured(Http.Netty4Impl)
-        .withStatsReceiver(NullStatsReceiver)
-        .withTracer(NullTracer)
-        .withMonitor(loggingMonitor)
-        .withLabel(ServerName)
-        // disable admission control, since we want the server to report stats
-        // especially when it's in a bad state.
-        .configured(ServerAdmissionControl.Param(false))
-    ).serve(adminPort(), new NotFoundView andThen adminHttpMuxer)
+    adminHttpServer = runGlobalConfigurator(
+      configureAdminHttpServer(
+        Http.server
+          .configured(Http.Netty4Impl)
+          .withStatsReceiver(NullStatsReceiver)
+          .withTracer(NullTracer)
+          .withMonitor(loggingMonitor)
+          .withLabel(ServerName)
+          // disable admission control, since we want the server to report stats
+          // especially when it's in a bad state.
+          .configured(ServerAdmissionControl.Param(false))
+      )).serve(adminPort(), new NotFoundView andThen adminHttpMuxer)
 
     closeOnExitLast(adminHttpServer)
     Library.register(libraryName, Map.empty)

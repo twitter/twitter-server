@@ -234,4 +234,114 @@ class AdminHttpServerTest extends AnyFunSuite with Eventually with IntegrationPa
     }
   }
 
+  test("Default global configurator is empty") {
+
+    var globalConfiguredServer: Option[Http.Server] = None
+
+    class SpyServer extends TestTwitterServer {
+      var localConfiguredServer: Option[Http.Server] = None
+
+      override def configureAdminHttpServer(server: Http.Server): Http.Server = {
+        localConfiguredServer = Some(
+          super
+            .configureAdminHttpServer(server))
+        localConfiguredServer.get
+      }
+    }
+
+    val server = new SpyServer {
+      override def main(): Unit = {
+        // not used
+      }
+    }
+    server.main(args = Array.empty[String])
+
+    assert(globalConfiguredServer == None)
+    assert(server.localConfiguredServer != None)
+  }
+
+  test("Set global configurator gets run") {
+
+    var globalConfiguredServer: Option[Http.Server] = None
+
+    class SpyServer extends TestTwitterServer {
+      var localConfiguredServer: Option[Http.Server] = None
+
+      override def configureAdminHttpServer(server: Http.Server): Http.Server = {
+        localConfiguredServer = Some(
+          super
+            .configureAdminHttpServer(server))
+        localConfiguredServer.get
+      }
+    }
+
+    AdminHttpServer.setGlobalConfigurator { srv =>
+      globalConfiguredServer = Some(srv)
+      srv
+    }
+
+    val server = new SpyServer {
+      override def main(): Unit = {
+        // not used
+      }
+    }
+    server.main(args = Array.empty[String])
+
+    assert(globalConfiguredServer == server.localConfiguredServer)
+    assert(server.localConfiguredServer != None)
+  }
+
+  test("Global configurator throws and does not recover") {
+
+    var globalConfiguredServer: Option[Http.Server] = None
+
+    class SpyServer extends TestTwitterServer {
+
+      private[this] var expectedThrowable: Option[Throwable] = None
+
+      def setExpectedThrowable(t: Throwable) = {
+        expectedThrowable = Some(t)
+      }
+
+      var localConfiguredServer: Option[Http.Server] = None
+
+      override def configureAdminHttpServer(server: Http.Server): Http.Server = {
+        localConfiguredServer = Some(
+          super
+            .configureAdminHttpServer(server))
+        localConfiguredServer.get
+      }
+
+      override protected def exitOnError(throwable: Throwable): Unit = {
+        expectedThrowable match {
+          case Some(t) => assert(throwable == t)
+          case None => super.exitOnError(throwable)
+        }
+      }
+    }
+
+    val badException = new Exception("Bad")
+    AdminHttpServer.setGlobalConfigurator { _ =>
+      throw badException
+    }
+
+    val server = new SpyServer {
+      override def main(): Unit = {
+        // not used
+      }
+    }
+
+    server.setExpectedThrowable(badException)
+    try {
+      server.main(args = Array.empty[String])
+      // server will have attempted to exit with error and asserted that error == expected
+      // verify state is as expected
+      assert(globalConfiguredServer == None)
+      assert(server.localConfiguredServer != None)
+    } finally {
+      // Reset here because this is global and can cause other tests to fail
+      AdminHttpServer.resetGlobalConfigurator()
+    }
+  }
+
 }
