@@ -10,6 +10,7 @@ scala_library(
     strict_deps = True,
     tags = [
         "bazel-compatible",
+        "logging_impl",
         "logging_impl_check_whitelisted_target",
     ],
     dependencies = [
