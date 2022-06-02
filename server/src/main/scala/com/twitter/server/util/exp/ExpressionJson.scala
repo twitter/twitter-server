@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.SerializerProvider
-import com.twitter.finagle.stats.Unspecified
+import com.twitter.finagle.stats.NoRoleSpecified
 import com.twitter.finagle.stats.exp._
 
 /**
@@ -30,7 +30,14 @@ object ExpressionJson {
 
       gen.writeObjectFieldStart("labels")
 
-      for ((key, value) <- expressionSchema.labels) {
+      // we need this to evolve the expressions format compatibly
+      // in the future, we will only export labels that are set
+      val labels = Map(
+        ExpressionSchema.ProcessPath -> "Unspecified",
+        ExpressionSchema.ServiceName -> "Unspecified",
+        ExpressionSchema.Role -> NoRoleSpecified.toString
+      ) ++ expressionSchema.labels
+      for ((key, value) <- labels) {
         gen.writeStringField(key, value)
       }
       gen.writeEndObject()
@@ -43,13 +50,10 @@ object ExpressionJson {
 
       gen.writeStringField("expression", expressionSchema.exprQuery)
 
-      if (expressionSchema.bounds != Unbounded.get)
-        provider.defaultSerializeField("bounds", expressionSchema.bounds, gen)
+      provider.defaultSerializeField("bounds", expressionSchema.bounds, gen)
 
-      if (expressionSchema.description != "Unspecified")
-        gen.writeStringField("description", expressionSchema.description)
-      if (expressionSchema.unit != Unspecified)
-        gen.writeStringField("unit", expressionSchema.unit.toString)
+      gen.writeStringField("description", expressionSchema.description)
+      gen.writeStringField("unit", expressionSchema.unit.toString)
       gen.writeEndObject()
     }
   }

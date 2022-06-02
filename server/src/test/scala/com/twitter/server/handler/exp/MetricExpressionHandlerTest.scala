@@ -120,24 +120,50 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
         |  "counters_latched": false,
         |  "expressions": [
         |    {
+        |      "bounds": {
+        |        "kind": "unbounded"
+        |      },
+        |      "description": "Unspecified",
         |      "expression": "failures/*",
-        |      "labels": {},
-        |      "name": "failures"
+        |      "labels": {
+        |        "process_path": "Unspecified",
+        |        "role": "NoRoleSpecified",
+        |        "service_name": "Unspecified"
+        |      },
+        |      "name": "failures",
+        |      "unit": "Unspecified"
         |    },
         |    {
+        |      "bounds": {
+        |        "kind": "unbounded"
+        |      },
+        |      "description": "Unspecified",
         |      "expression": "latency.p99",
         |      "labels": {
-        |        "bucket": "p99"
+        |        "bucket": "p99",
+        |        "process_path": "Unspecified",
+        |        "role": "NoRoleSpecified",
+        |        "service_name": "Unspecified"
         |      },
         |      "name": "latency_p99",
         |      "namespaces": [
         |        "tenantName"
-        |      ]
+        |      ],
+        |      "unit": "Unspecified"
         |    },
         |    {
+        |      "bounds": {
+        |        "kind": "unbounded"
+        |      },
+        |      "description": "Unspecified",
         |      "expression": "srv/pending",
-        |      "labels": {},
-        |      "name": "pending"
+        |      "labels": {
+        |        "process_path": "Unspecified",
+        |        "role": "NoRoleSpecified",
+        |        "service_name": "Unspecified"
+        |      },
+        |      "name": "pending",
+        |      "unit": "Unspecified"
         |    },
         |    {
         |      "bounds": {
@@ -148,24 +174,48 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
         |        "operator": ">",
         |        "upper_bound_exclusive": null
         |      },
+        |      "description": "Unspecified",
         |      "expression": "multiply(100.0,divide(success,plus(success,failures)))",
-        |      "labels": {},
-        |      "name": "success_rate"
+        |      "labels": {
+        |        "process_path": "Unspecified",
+        |        "role": "NoRoleSpecified",
+        |        "service_name": "Unspecified"
+        |      },
+        |      "name": "success_rate",
+        |      "unit": "Unspecified"
         |    },
         |    {
+        |      "bounds": {
+        |        "kind": "unbounded"
+        |      },
+        |      "description": "Unspecified",
         |      "expression": "plus(success,failures)",
-        |      "labels": {},
+        |      "labels": {
+        |        "process_path": "Unspecified",
+        |        "role": "NoRoleSpecified",
+        |        "service_name": "Unspecified"
+        |      },
         |      "name": "throughput",
         |      "namespaces": [
         |        "path",
         |        "to",
         |        "tenantName"
-        |      ]
+        |      ],
+        |      "unit": "Unspecified"
         |    },
         |    {
+        |      "bounds": {
+        |        "kind": "unbounded"
+        |      },
+        |      "description": "Unspecified",
         |      "expression": "jvm/uptime",
-        |      "labels": {},
-        |      "name": "uptime"
+        |      "labels": {
+        |        "process_path": "Unspecified",
+        |        "role": "NoRoleSpecified",
+        |        "service_name": "Unspecified"
+        |      },
+        |      "name": "uptime",
+        |      "unit": "Unspecified"
         |    }
         |  ],
         |  "separator_char": "/"
@@ -298,8 +348,12 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
         |  "expressions" : [
         |    {
         |      "name" : "success_rate",
+        |      "labels" : {
+        |        "process_path" : "Unspecified",
+        |        "service_name" : "Unspecified",
+        |        "role" : "NoRoleSpecified"
+        |      },
         |      "expression" : "multiply(100.0,divide(success,plus(success,failures)))",
-        |      "labels": {},
         |      "bounds" : {
         |        "kind" : "monotone",
         |        "operator" : ">",
@@ -307,7 +361,9 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
         |        "good_threshold" : 99.97,
         |        "lower_bound_inclusive" : null,
         |        "upper_bound_exclusive" : null
-        |      }
+        |      },
+        |      "description" : "Unspecified",
+        |      "unit" : "Unspecified"
         |    }
         |  ]
         |}""".stripMargin
@@ -328,16 +384,33 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
         |    {
         |      "name" : "latency_p99",
         |      "labels" : {
+        |        "process_path" : "Unspecified",
+        |        "service_name" : "Unspecified",
+        |        "role" : "NoRoleSpecified",
         |        "bucket": "p99"
         |      },
         |      "namespaces" : ["tenantName"],
-        |      "expression" :  "latency.p99"
+        |      "expression" :  "latency.p99",
+        |      "bounds" : {
+        |        "kind" : "unbounded"
+        |      },
+        |      "description" : "Unspecified",
+        |      "unit" : "Unspecified"
         |    },
         |    {
         |      "name" : "throughput",
+        |      "labels" : {
+        |        "process_path" : "Unspecified",
+        |        "service_name" : "Unspecified",
+        |        "role" : "NoRoleSpecified"
+        |      },
         |      "namespaces" : ["path","to","tenantName"],
         |      "expression" : "plus(success,failures)",
-        |      "labels": {}
+        |      "bounds" : {
+        |        "kind" : "unbounded"
+        |      },
+        |      "description" : "Unspecified",
+        |      "unit" : "Unspecified"
         |    }
         |  ]
         |}""".stripMargin
@@ -358,10 +431,18 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
         |    {
         |      "name" : "latency_p99",
         |      "labels" : {
+        |        "process_path" : "Unspecified",
+        |        "service_name" : "Unspecified",
+        |        "role" : "NoRoleSpecified",
         |        "bucket": "p99"
         |      },
         |      "namespaces" : ["tenantName"],
-        |      "expression" :  "latency.p99"
+        |      "expression" :  "latency.p99",
+        |      "bounds" : {
+        |        "kind" : "unbounded"
+        |      },
+        |      "description" : "Unspecified",
+        |      "unit" : "Unspecified"
         |    }        
         |  ]
         |}""".stripMargin
@@ -381,9 +462,18 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
         |  "expressions" : [
         |    {
         |      "name" : "throughput",
+        |      "labels" : {
+        |        "process_path" : "Unspecified",
+        |        "service_name" : "Unspecified",
+        |        "role" : "NoRoleSpecified"
+        |      },
         |      "namespaces" : ["path","to","tenantName"],
         |      "expression" : "plus(success,failures)",
-        |      "labels": {}
+        |      "bounds" : {
+        |        "kind" : "unbounded"
+        |      },
+        |      "description" : "Unspecified",
+        |      "unit" : "Unspecified"
         |    }        
         |  ]
         |}""".stripMargin
