@@ -317,7 +317,15 @@ trait AdminHttpServer { self: App with Stats =>
   private[this] def routeToIndexLink(route: Route): IndexView.Link =
     IndexView.Link(route.alias, route.path, route.method)
 
-  private[this] def startServer(): Unit = {
+  /**
+   * Starts the server.
+   *
+   * By default the server starts automatically.
+   * If this is not desirable (e.g. to postpone replies from the /health endpoint)
+   * the server can be disabled with [[disableAdminHttpServer]].
+   * In the latter case the server can still be started manually with this method.
+   */
+  protected def startAdminHttpServer(): Unit = {
     val loggingMonitor = new Monitor {
       def handle(exc: Throwable): Boolean = {
         log.error(s"Caught exception in AdminHttpServer: $exc", exc)
@@ -353,7 +361,7 @@ trait AdminHttpServer { self: App with Stats =>
     if (disableAdminHttpServer) {
       log.info("admin http is disabled and will not be started.")
     } else {
-      startServer()
+      startAdminHttpServer()
     }
   }
 }
