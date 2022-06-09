@@ -17,6 +17,7 @@ import com.twitter.finagle.Http
 import com.twitter.finagle.ListeningServer
 import com.twitter.finagle.NullServer
 import com.twitter.finagle.Service
+import com.twitter.finagle.Stack
 import com.twitter.server.Admin.Grouping
 import com.twitter.server.filters.AdminThreadPoolFilter
 import com.twitter.server.handler.AdminHttpMuxHandler
@@ -38,21 +39,6 @@ import org.slf4j.LoggerFactory
 import scala.language.reflectiveCalls
 
 object AdminHttpServer {
-
-  type GlobalConfigurator = Http.Server => Http.Server
-
-  @volatile private var globalConfigurator: Option[GlobalConfigurator] = None
-
-  private[twitter] def setGlobalConfigurator(config: GlobalConfigurator): Unit = {
-    globalConfigurator = Some(config)
-  }
-
-  // Only known use case is for testing
-  private[twitter] def resetGlobalConfigurator(): Unit = {
-    globalConfigurator = None
-  }
-
-  private[twitter] def getGlobalConfigurator: Option[GlobalConfigurator] = globalConfigurator
 
   /**
    * The name used for the finagle server.
@@ -145,6 +131,24 @@ object AdminHttpServer {
         includeInIndex = true
       )
     )
+}
+
+/**
+ * A marker stack param that this is an admin interface. This could be
+ * used by a StackTransformer or ServerParamsInjector to do specialized
+ * configuration of admin servers
+ */
+private[twitter] object AdminServerInterface {
+
+  case class Param(isAdmin: Boolean) {}
+
+  object Param {
+    implicit val param = Stack.Param(False)
+  }
+
+  def True = Param(true)
+  def False = Param(false)
+
 }
 
 trait AdminHttpServer { self: App with Stats =>
@@ -250,19 +254,6 @@ trait AdminHttpServer { self: App with Stats =>
    */
   protected def configureAdminHttpServer(server: Http.Server): Http.Server = server
 
-  /**
-   * This method allows applying a global configuration, such as adding
-   * security/server authentication
-   * @param server the locally configured server
-   * @return the server with applied global settings
-   */
-  private def runGlobalConfigurator(server: Http.Server): Http.Server = {
-    AdminHttpServer.getGlobalConfigurator match {
-      case Some(f) => f(server)
-      case None => server
-    }
-  }
-
   private[this] def updateMuxer(): Unit = {
     // create a service which multiplexes across all endpoints.
     val localMuxer = allRoutes.foldLeft(new HttpMuxer) {
@@ -335,18 +326,18 @@ trait AdminHttpServer { self: App with Stats =>
     }
 
     log.info(s"Serving admin http on ${adminPort()}")
-    adminHttpServer = runGlobalConfigurator(
-      configureAdminHttpServer(
-        Http.server
-          .configured(Http.Netty4Impl)
-          .withStatsReceiver(NullStatsReceiver)
-          .withTracer(NullTracer)
-          .withMonitor(loggingMonitor)
-          .withLabel(ServerName)
-          // disable admission control, since we want the server to report stats
-          // especially when it's in a bad state.
-          .configured(ServerAdmissionControl.Param(false))
-      )).serve(adminPort(), new NotFoundView andThen adminHttpMuxer)
+    adminHttpServer = configureAdminHttpServer(
+      Http.server
+        .configured(Http.Netty4Impl)
+        .withStatsReceiver(NullStatsReceiver)
+        .withTracer(NullTracer)
+        .withMonitor(loggingMonitor)
+        .withLabel(ServerName)
+        // disable admission control, since we want the server to report stats
+        // especially when it's in a bad state.
+        .configured(ServerAdmissionControl.Param(false))
+        .configured(AdminServerInterface.True)
+    ).serve(adminPort(), new NotFoundView andThen adminHttpMuxer)
 
     closeOnExitLast(adminHttpServer)
     Library.register(libraryName, Map.empty)
