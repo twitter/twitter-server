@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.SerializerProvider
-import com.twitter.finagle.stats.NoRoleSpecified
+import com.twitter.finagle.stats.SourceRole
 import com.twitter.finagle.stats.exp._
 
 /**
@@ -35,7 +35,7 @@ object ExpressionJson {
       val labels = Map(
         ExpressionSchema.ProcessPath -> "Unspecified",
         ExpressionSchema.ServiceName -> "Unspecified",
-        ExpressionSchema.Role -> NoRoleSpecified.toString
+        ExpressionSchema.Role -> SourceRole.NoRoleSpecified.toString
       ) ++ expressionSchema.labels
       for ((key, value) <- labels) {
         gen.writeStringField(key, value)
