@@ -4,6 +4,7 @@ import com.twitter.finagle.http.Request
 import com.twitter.finagle.stats.MetricBuilder.CounterType
 import com.twitter.finagle.stats.MetricBuilder.GaugeType
 import com.twitter.finagle.stats.MetricBuilder.HistogramType
+import com.twitter.finagle.stats.MetricBuilder.Identity
 import com.twitter.finagle.stats._
 import com.twitter.finagle.stats.exp.ExpressionSchema
 import com.twitter.finagle.stats.exp.ExpressionSchemaKey
@@ -28,7 +29,13 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
         processPath = Some("dc/role/zone/service"),
         percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
         metricType = CounterType
-      ).withLabels(Map("label1" -> "value1", "label2" -> "value2")),
+      ).withIdentity(
+        Identity(
+          Seq("my", "cool", "counter"),
+          Seq("my", "cool", "counter"),
+          Map("label1" -> "value1", "label2" -> "value2"),
+          hierarchicalOnly = false
+        )),
     "your/fine/gauge" ->
       MetricBuilder(
         keyIndicator = false,
@@ -44,10 +51,15 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       ),
     "my/only/histo" ->
       MetricBuilder(
-        name = Seq("my", "only", "histo"),
         percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
         metricType = HistogramType
-      ).withLabels(labels = Map("label1" -> "value1")),
+      ).withIdentity(
+        Identity(
+          Seq("my", "only", "histo"),
+          Seq("my", "only", "histo"),
+          Map("label1" -> "value1"),
+          hierarchicalOnly = false,
+        )),
     "my/bad/null/counter" ->
       MetricBuilder(
         keyIndicator = true,
@@ -134,7 +146,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |      "dimensional_name" : "your_fine_gauge",
       |      "relative_name" : ["your","fine","gauge"],
       |      "labels" : {},
-      |      "dimensional_support" : true,
+      |      "dimensional_support" : false,
       |      "kind" : "gauge",
       |      "source" : {
       |        "class": "finagle.stats.your",
@@ -183,7 +195,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |      "dimensional_name" : "my_bad_null_counter",
       |      "relative_name" : ["my","bad", "null", "counter"],
       |      "labels" : {},
-      |      "dimensional_support" : true,
+      |      "dimensional_support" : false,
       |      "kind" : "counter",
       |      "source" : {
       |        "class": "finagle.stats.bad",
@@ -207,7 +219,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |      "dimensional_name" : "your_fine_gauge",
       |      "relative_name" : ["your","fine","gauge"],
       |      "labels" : {},
-      |      "dimensional_support" : true,
+      |      "dimensional_support" : false,
       |      "kind" : "gauge",
       |      "source" : {
       |        "class": "finagle.stats.your",
@@ -250,7 +262,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |      "dimensional_name" : "your_fine_gauge",
       |      "relative_name" : ["your","fine","gauge"],
       |      "labels" : {},
-      |      "dimensional_support" : true,
+      |      "dimensional_support" : false,
       |      "kind" : "gauge",
       |      "source" : {
       |        "class": "finagle.stats.your",
