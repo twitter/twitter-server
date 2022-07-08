@@ -1,6 +1,7 @@
 scala_library(
     sources = ["com/twitter/server/handler/slf4j/jdk14/*.scala"],
     compiler_option_sets = ["fatal_warnings"],
+    platform = "java8",
     provides = scala_artifact(
         org = "com.twitter",
         name = "twitter-server-slf4j-jdk14",
