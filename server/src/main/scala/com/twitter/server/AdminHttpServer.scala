@@ -336,7 +336,6 @@ trait AdminHttpServer { self: App with Stats =>
     log.info(s"Serving admin http on ${adminPort()}")
     adminHttpServer = configureAdminHttpServer(
       Http.server
-        .configured(Http.Netty4Impl)
         .withStatsReceiver(NullStatsReceiver)
         .withTracer(NullTracer)
         .withMonitor(loggingMonitor)

@@ -3,7 +3,8 @@ package com.twitter.server
 import com.twitter.concurrent.NamedPoolThreadFactory
 import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{Request, Response}
+import com.twitter.finagle.http.Request
+import com.twitter.finagle.http.Response
 import com.twitter.util._
 import java.util.concurrent.Executors
 import scala.collection.mutable
@@ -13,7 +14,7 @@ import org.scalatest.funsuite.AnyFunSuite
 class TestTwitterServer(await: Boolean = false) extends TwitterServer {
   override val defaultAdminPort = 0
   /* ensure enough time to close resources */
-  override val defaultCloseGracePeriod: Duration = 30.seconds
+  override val defaultCloseGracePeriod: Duration = 1.second
 
   val bootstrapSeq: mutable.ArrayBuffer[Symbol] = mutable.ArrayBuffer.empty[Symbol]
   val value: Promise[Unit] = new Promise[Unit]
