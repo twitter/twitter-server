@@ -7,6 +7,9 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+22.7.0
+------
+
 * Admin HTTP server is now on Finagle's default HTTP protocol version, which supports
   HTTP/1.1, HTTP/2 cleartext protocol upgrade, HTTP/2 prior-knowledge, and ALPN.
   ``PHAB_ID=D920963``
