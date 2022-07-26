@@ -4,5 +4,5 @@ resolvers ++= Seq(
 )
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "1.4.1")
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.9.1")
-addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.4.3")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.0.0")
+addSbtPlugin("com.github.sbt" % "sbt-unidoc" % "0.5.0")
