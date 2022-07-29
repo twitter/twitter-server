@@ -1,7 +1,6 @@
 # TwitterServer
 
 [![Build Status](https://github.com/twitter/twitter-server/workflows/continuous%20integration/badge.svg?branch=develop)](https://github.com/twitter/twitter-server/actions?query=workflow%3A%22continuous+integration%22+branch%3Adevelop)
-[![Codecov](https://codecov.io/gh/twitter/twitter-server/branch/develop/graph/badge.svg)](https://codecov.io/gh/twitter/twitter-server)
 [![Project status](https://img.shields.io/badge/status-active-brightgreen.svg)](#status)
 [![Gitter](https://badges.gitter.im/twitter/finagle.svg)](https://gitter.im/twitter/finagle?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.twitter/twitter-server_2.12/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.twitter/twitter-server_2.12)
