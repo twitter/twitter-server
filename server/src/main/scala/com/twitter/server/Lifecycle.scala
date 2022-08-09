@@ -2,9 +2,12 @@ package com.twitter.server
 
 import com.twitter.app.GlobalFlag
 import com.twitter.app.lifecycle.Event
-import com.twitter.app.lifecycle.Event.{PrebindWarmup, WarmupComplete}
+import com.twitter.app.lifecycle.Event.PrebindWarmup
+import com.twitter.app.lifecycle.Event.WarmupComplete
 import com.twitter.finagle.http.Method.Post
-import com.twitter.finagle.http.{HttpMuxer, Route, RouteIndex}
+import com.twitter.finagle.http.HttpMuxer
+import com.twitter.finagle.http.Route
+import com.twitter.finagle.http.RouteIndex
 import com.twitter.server.handler._
 import java.lang.management.ManagementFactory
 import java.util.concurrent.atomic.AtomicBoolean
