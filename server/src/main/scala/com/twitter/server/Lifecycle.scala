@@ -87,7 +87,7 @@ object Lifecycle {
      * Initialize warmup code. Ensures that the /health endpoint will not return on "OK" response.
      */
     def initializeWarmup(): Unit =
-      HttpMuxer.addHandler(Route("/health", new ReplyHandler("")))
+      HttpMuxer.addHandler(Route("/health", new ReplyHandler("warming up\n")))
 
     /**
      * Prebind warmup code. Used for warmup tasks that we want to run before we

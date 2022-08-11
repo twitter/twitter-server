@@ -7,6 +7,9 @@ Note that ``PHAB_ID=#`` and ``RB_ID=#`` correspond to associated messages in com
 Unreleased
 ----------
 
+* During warmup, the /health route will respond with a more informative "warming up"
+  message, previously an empty message was used. ``PHAB_ID=D949333``
+
 22.7.0
 ------
 
