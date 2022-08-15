@@ -138,7 +138,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |      },
       |      "description" : "Counts how many cools are seen",
       |      "unit" : "Requests",
-      |      "verbosity": "Verbosity(default)",
+      |      "verbosity": "default",
       |      "key_indicator" : true
       |     },
       |     {
@@ -155,7 +155,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |      },
       |      "description" : "Measures how fine the downstream system is",
       |      "unit" : "Percentage",
-      |      "verbosity": "Verbosity(debug)",
+      |      "verbosity": "debug",
       |      "key_indicator" : false
       |     },
       |     {
@@ -174,7 +174,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |      },
       |      "description" : "No description provided",
       |      "unit" : "Unspecified",
-      |      "verbosity": "Verbosity(default)",
+      |      "verbosity": "default",
       |      "key_indicator" : false,
       |      "buckets" : {
       |        "count" : ".count",
@@ -204,7 +204,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |      },
       |      "description" : "A counter scoped by null get deserialized correctly",
       |      "unit" : "Requests",
-      |      "verbosity": "Verbosity(default)",
+      |      "verbosity": "default",
       |      "key_indicator" : true
       |     }
       |   ]
@@ -228,7 +228,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |      },
       |      "description" : "Measures how fine the downstream system is",
       |      "unit" : "Percentage",
-      |      "verbosity": "Verbosity(debug)",
+      |      "verbosity": "debug",
       |      "key_indicator" : false
       |     }
       |   ]
@@ -254,7 +254,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |      },
       |      "description" : "Counts how many cools are seen",
       |      "unit" : "Requests",
-      |      "verbosity": "Verbosity(default)",
+      |      "verbosity": "default",
       |      "key_indicator" : true
       |     },
       |     {
@@ -271,7 +271,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |      },
       |      "description" : "Measures how fine the downstream system is",
       |      "unit" : "Percentage",
-      |      "verbosity": "Verbosity(debug)",
+      |      "verbosity": "debug",
       |      "key_indicator" : false
       |     }
       |   ]
@@ -297,7 +297,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |      },
       |      "description" : "No description provided",
       |      "unit" : "Unspecified",
-      |      "verbosity": "Verbosity(default)",
+      |      "verbosity": "default",
       |      "key_indicator" : false,
       |      "buckets" : {
       |        "count" : ".count",
@@ -336,7 +336,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |      },
       |      "description" : "Counts how many cools are seen",
       |      "unit" : "Requests",
-      |      "verbosity": "Verbosity(default)",
+      |      "verbosity": "default",
       |      "key_indicator" : true
       |     },
       |     {
@@ -355,7 +355,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |      },
       |      "description" : "No description provided",
       |      "unit" : "Unspecified",
-      |      "verbosity": "Verbosity(default)",
+      |      "verbosity": "default",
       |      "key_indicator" : false,
       |      "buckets" : {
       |        "count" : ".count",

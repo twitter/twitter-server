@@ -41,7 +41,7 @@ import com.twitter.util.Future
  *       },
  *       "description" : "Counts how many cools are seen",
  *       "unit" : "Requests",
- *       "verbosity": "Verbosity(default)",
+ *       "verbosity": "default",
  *       "key_indicator" : true
  *     },
  *     {
@@ -55,7 +55,7 @@ import com.twitter.util.Future
  *       },
  *       "description" : "Measures how fine the downstream system is",
  *       "unit" : "Percentage",
- *       "verbosity": "Verbosity(debug)",
+ *       "verbosity": "debug",
  *       "key_indicator" : false
  *     },
  *     {
@@ -69,7 +69,7 @@ import com.twitter.util.Future
  *       },
  *       "description" : "No description provided",
  *       "unit" : "Unspecified",
- *       "verbosity": "Verbosity(default)",
+ *       "verbosity": "default",
  *       "key_indicator" : false,
  *       "buckets" : {
  *         "count" : ".count",
