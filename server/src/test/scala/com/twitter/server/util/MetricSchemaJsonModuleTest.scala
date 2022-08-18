@@ -42,7 +42,8 @@ class MetricSchemaJsonModuleTest extends AnyFunSuite {
     MetricBuilder(
       name = Seq("my", "only", "histo"),
       percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
-      metricType = HistogramType
+      metricType = HistogramType,
+      histogramFormat = HistogramFormat.ShortSummary
     )
 
   private val topLevelFieldNameSet =
@@ -90,16 +91,17 @@ class MetricSchemaJsonModuleTest extends AnyFunSuite {
   }
 
   test(
-    "HistogramSchema serializes with kind histogram and the correct set of fields (includeing buckets)") {
+    "HistogramSchema serializes with kind histogram and the correct set of fields (including buckets)") {
     val serializedString = AdminJsonConverter.writeToString(histogramSchema)
     val jsonMap = jsonStrToMap(serializedString)
-    assert(jsonMap.keys == topLevelFieldNameSet ++ Seq("buckets"))
+    assert(jsonMap.keys == topLevelFieldNameSet ++ Seq("histogram_format", "buckets"))
     assert(
       jsonMap.get("source").get == Map(
         "class" -> "Unspecified",
         "category" -> "NoRoleSpecified",
         "process_path" -> "Unspecified"))
     assert(jsonMap.get("kind").get == "histogram")
+    assert(jsonMap.get("histogram_format").get == "short_summary")
     assert(
       jsonMap.get("buckets").get == Map(
         "count" -> ".count",

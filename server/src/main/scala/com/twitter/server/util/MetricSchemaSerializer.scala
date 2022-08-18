@@ -86,6 +86,7 @@ object SchemaSerializer extends StdSerializer[MetricBuilder](classOf[MetricBuild
 
     metricBuilder.metricType match {
       case HistogramType =>
+        jsonGenerator.writeStringField("histogram_format", metricBuilder.histogramFormat.toString)
         jsonGenerator.writeObjectFieldStart("buckets")
         jsonGenerator.writeStringField("count", statsFormatter.histogramSeparator + "count")
         jsonGenerator.writeStringField("sum", statsFormatter.histogramSeparator + "sum")

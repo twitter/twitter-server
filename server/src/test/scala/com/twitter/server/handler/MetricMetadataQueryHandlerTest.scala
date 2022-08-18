@@ -52,7 +52,8 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
     "my/only/histo" ->
       MetricBuilder(
         percentiles = IndexedSeq(0.5, 0.9, 0.95, 0.99, 0.999, 0.9999),
-        metricType = HistogramType
+        metricType = HistogramType,
+        histogramFormat = HistogramFormat.ShortSummary,
       ).withIdentity(
         Identity(
           Seq("my", "only", "histo"),
@@ -176,6 +177,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |      "unit" : "Unspecified",
       |      "verbosity": "default",
       |      "key_indicator" : false,
+      |      "histogram_format": "short_summary",
       |      "buckets" : {
       |        "count" : ".count",
       |        "sum" : ".sum",
@@ -299,6 +301,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |      "unit" : "Unspecified",
       |      "verbosity": "default",
       |      "key_indicator" : false,
+      |      "histogram_format": "short_summary",
       |      "buckets" : {
       |        "count" : ".count",
       |        "sum" : ".sum",
@@ -357,6 +360,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
       |      "unit" : "Unspecified",
       |      "verbosity": "default",
       |      "key_indicator" : false,
+      |      "histogram_format": "short_summary",
       |      "buckets" : {
       |        "count" : ".count",
       |        "sum" : ".sum",
