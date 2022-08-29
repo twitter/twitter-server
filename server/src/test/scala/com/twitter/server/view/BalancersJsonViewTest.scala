@@ -25,7 +25,7 @@ class BalancersJsonViewTest extends AnyFunSuite {
     val registry = BalancerRegistry.get.allMetadata.filter(_.label == label)
     assert(registry.size == 1)
 
-    val json = (new BalancersJsonView(registry)).render
+    val json = new BalancersJsonView(registry).render
     val expected =
       s"""{
     |  "clients" : [
@@ -40,7 +40,7 @@ class BalancersJsonViewTest extends AnyFunSuite {
     |        "total_pending" : 0,
     |        "total_load" : 0.0,
     |        "size" : 1,
-    |        "panic_mode" : "MajorityUnhealthy",
+    |        "panic_mode" : "FiftyPercentUnhealthy",
     |        "additional_info" : { }
     |      }
     |    }
