@@ -5,11 +5,9 @@ junit_tests(
     tags = ["bazel-compatible"],
     dependencies = [
         "3rdparty/jvm/junit",
-        "3rdparty/jvm/org/mockito:mockito-all",
         "3rdparty/jvm/org/scalacheck",
         "3rdparty/jvm/org/scalatest",
         "3rdparty/jvm/org/scalatestplus:junit",
-        "3rdparty/jvm/org/scalatestplus:mockito-1-10",
         scoped(
             "twitter-server/slf4j-jdk14/src/main/scala",
             scope = "runtime",

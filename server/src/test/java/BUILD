@@ -5,11 +5,9 @@ java_library(
     compiler_option_sets = [],
     dependencies = [
         "3rdparty/jvm/junit",
-        "3rdparty/jvm/org/mockito:mockito-all",
         "3rdparty/jvm/org/scala-lang:scala-library",
         "3rdparty/jvm/org/scalacheck",
         "3rdparty/jvm/org/scalatestplus:junit",
-        "3rdparty/jvm/org/scalatestplus:mockito-1-10",
         "3rdparty/jvm/org/slf4j:slf4j-api",
         scoped(
             "3rdparty/jvm/org/slf4j:slf4j-nop",
