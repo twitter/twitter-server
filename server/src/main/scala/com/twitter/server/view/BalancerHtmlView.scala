@@ -17,7 +17,6 @@ private[server] class BalancerHtmlView(balancer: Option[Metadata], routePath: St
     |  <tr><td>Number Nodes Available</td><td>${md.numAvailable}</td></tr>
     |  <tr><td>Number Nodes Busy</td><td>${md.numBusy}</td></tr>
     |  <tr><td>Number Nodes Closed</td><td>${md.numClosed}</td></tr>
-    |  <tr><td>Total pending requests</td><td>${md.totalPending}</td></tr>
     |  <tr><td>Total load</td><td>${md.totalLoad}</td></tr>
     |  <tr><td>Size</td><td>${md.size}</td></tr>
     | <tr><td>Panic Mode</td><td>${md.panicMode}</td></tr>

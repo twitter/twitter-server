@@ -37,7 +37,6 @@ class BalancersJsonViewTest extends AnyFunSuite {
     |        "number_available" : 1,
     |        "number_busy" : 0,
     |        "number_closed" : 0,
-    |        "total_pending" : 0,
     |        "total_load" : 0.0,
     |        "size" : 1,
     |        "panic_mode" : "FiftyPercentUnhealthy",
