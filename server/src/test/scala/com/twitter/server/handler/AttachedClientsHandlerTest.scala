@@ -1,14 +1,23 @@
 package com.twitter.server.handler
 
 import com.twitter.conversions.DurationOps._
-import com.twitter.finagle.http.{Request, Status}
+import com.twitter.finagle.http.Request
+import com.twitter.finagle.http.Status
 import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.service.StatsFilter
 import com.twitter.finagle.ssl.session.SslSessionInfo
-import com.twitter.finagle.{ClientConnection, Service, ServiceFactory, Stack, param}
+import com.twitter.finagle.ssl.session.ServiceIdentity
+import com.twitter.finagle.ClientConnection
+import com.twitter.finagle.Service
+import com.twitter.finagle.ServiceFactory
+import com.twitter.finagle.Stack
+import com.twitter.finagle.param
 import com.twitter.io.Buf
-import com.twitter.util.{Await, Future, Time}
-import java.net.{InetSocketAddress, SocketAddress}
+import com.twitter.util.Await
+import com.twitter.util.Future
+import com.twitter.util.Time
+import java.net.InetSocketAddress
+import java.net.SocketAddress
 import java.security.Principal
 import java.security.cert.X509Certificate
 import java.util.Date
@@ -54,6 +63,8 @@ object AttachedClientsHandlerTest {
           override def cipherSuite: String = "cipher?sweeeeet!"
           override def localCertificates: Seq[X509Certificate] = ???
           override def peerCertificates: Seq[X509Certificate] = Seq(peerCertificate)
+          override def getLocalIdentity: Option[ServiceIdentity] = None
+          override def getPeerIdentity: Option[ServiceIdentity] = None
         }
       })
   }
