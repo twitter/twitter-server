@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import com.twitter.finagle.stats.MetricBuilder.HistogramType
 import com.twitter.finagle.stats.MetricBuilder
+import com.twitter.finagle.stats.MetricBuilder.IdentityType
 import com.twitter.finagle.stats.StatsFormatter
 import com.twitter.finagle.stats.metadataScopeSeparator
 
@@ -68,7 +69,9 @@ object SchemaSerializer extends StdSerializer[MetricBuilder](classOf[MetricBuild
 
     writeDictionary(jsonGenerator, "labels", metricBuilder.identity.labels)
 
-    jsonGenerator.writeBooleanField("dimensional_support", !metricBuilder.identity.hierarchicalOnly)
+    jsonGenerator.writeBooleanField(
+      "dimensional_support",
+      dimensionalSupport(metricBuilder.identity.identityType))
 
     val dataType = metricBuilder.metricType.toJsonString
     jsonGenerator.writeStringField("kind", dataType)
@@ -109,6 +112,9 @@ object SchemaSerializer extends StdSerializer[MetricBuilder](classOf[MetricBuild
     }
     jsonGenerator.writeEndObject()
   }
+
+  private[this] def dimensionalSupport(identityType: IdentityType): Boolean =
+    IdentityType.toResolvedIdentityType(identityType) == IdentityType.Full
 
   private def convertNullToString(segment: String): String = {
     if (segment == null) "null"

@@ -5,6 +5,7 @@ import com.twitter.finagle.stats.MetricBuilder.CounterType
 import com.twitter.finagle.stats.MetricBuilder.GaugeType
 import com.twitter.finagle.stats.MetricBuilder.HistogramType
 import com.twitter.finagle.stats.MetricBuilder.Identity
+import com.twitter.finagle.stats.MetricBuilder.IdentityType
 import com.twitter.finagle.stats._
 import com.twitter.finagle.stats.exp.ExpressionSchema
 import com.twitter.finagle.stats.exp.ExpressionSchemaKey
@@ -34,7 +35,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
           Seq("my", "cool", "counter"),
           Seq("my", "cool", "counter"),
           Map("label1" -> "value1", "label2" -> "value2"),
-          hierarchicalOnly = false
+          identityType = IdentityType.Full
         )),
     "your/fine/gauge" ->
       MetricBuilder(
@@ -59,7 +60,7 @@ class MetricMetadataQueryHandlerTest extends AnyFunSuite {
           Seq("my", "only", "histo"),
           Seq("my", "only", "histo"),
           Map("label1" -> "value1"),
-          hierarchicalOnly = false,
+          identityType = IdentityType.Full
         )),
     "my/bad/null/counter" ->
       MetricBuilder(
