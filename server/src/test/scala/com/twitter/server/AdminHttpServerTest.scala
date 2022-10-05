@@ -2,6 +2,7 @@ package com.twitter.server
 
 import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.Http
+import com.twitter.finagle.Service
 import com.twitter.finagle.ListeningServer
 import com.twitter.finagle.http._
 import com.twitter.server.util.HttpUtils._
@@ -58,25 +59,26 @@ class MockClosableHandler extends HttpMuxHandler {
 }
 
 class AdminHttpServerTest extends AnyFunSuite with Eventually with IntegrationPatience {
+  private[this] def await[A](a: Future[A]): A = Await.result(a, 5.seconds)
 
   def checkServer(server: ListeningServer, shadow: Boolean = false): Unit = {
     val port = server.boundAddress.asInstanceOf[InetSocketAddress].getPort
     val client = Http.client.newService(s"localhost:$port")
 
-    val ostrich = Await.result(client(Request("/stats.json")), 1.second)
+    val ostrich = await(client(Request("/stats.json")))
     assert(ostrich.contentString.contains("metrics!"))
 
-    val commons = Await.result(client(Request("/vars.json")), 1.second)
+    val commons = await(client(Request("/vars.json")))
     assert(commons.contentString.contains("commons stats!"))
 
-    val resp = Await.result(client(Request("/admin/metrics.json")), 1.second)
+    val resp = await(client(Request("/admin/metrics.json")))
     assert(resp.contentString.contains("standard metrics!"))
 
-    val resp1 = Await.result(client(Request("/admin/per_host_metrics.json")), 1.second)
+    val resp1 = await(client(Request("/admin/per_host_metrics.json")))
     assert(resp1.contentString.contains("per host metrics!"))
 
     if (!shadow) {
-      val resp2 = Await.result(client(Request("/admin/closable.json")), 1.second)
+      val resp2 = await(client(Request("/admin/closable.json")))
       assert(resp2.contentString.contains("closable!"))
     }
   }
@@ -85,7 +87,7 @@ class AdminHttpServerTest extends AnyFunSuite with Eventually with IntegrationPa
     val adminServerBoundPort = adminServer.boundAddress.asInstanceOf[InetSocketAddress].getPort
     assert(adminServerBoundPort == twitterServer.adminBoundAddress.getPort)
     val client = Http.client.newService(s"localhost:$adminServerBoundPort")
-    Await.result(client(Request(Method.Post, "/quitquitquit")), 1.second)
+    await(client(Request(Method.Post, "/quitquitquit")))
 
     // throws if adminHttpServer does not exit before the grace period,
     // which indicates that we have not closed it properly.
@@ -253,5 +255,135 @@ class AdminHttpServerTest extends AnyFunSuite with Eventually with IntegrationPa
     }
     server.main(args = Array.empty[String])
     assert(server.isAdminServer)
+  }
+
+  test("combine can combine two muxers") {
+    val hello = new Service[Request, Response] {
+      def apply(req: Request) = newOk("hello")
+    }
+
+    val world = new Service[Request, Response] {
+      def apply(req: Request) = newOk("world")
+    }
+
+    val muxer0 = new HttpMuxer().withHandler("/hello", hello)
+    val muxer1 = new HttpMuxer().withHandler("/world", world)
+
+    val svc = AdminHttpServer.combine(Seq(muxer0, muxer1), () => Seq.empty)
+
+    val res0 = await(svc(Request("/hello")))
+    assert(res0.contentString == "hello")
+
+    val res1 = await(svc(Request("/world")))
+    assert(res1.contentString == "world")
+  }
+
+  test("combine order doesn't matter for different paths") {
+    val hello = new Service[Request, Response] {
+      def apply(req: Request) = newOk("hello")
+    }
+
+    val world = new Service[Request, Response] {
+      def apply(req: Request) = newOk("world")
+    }
+
+    val muxer0 = new HttpMuxer().withHandler("/hello", hello)
+    val muxer1 = new HttpMuxer().withHandler("/world", world)
+
+    Seq(muxer0, muxer1).permutations.foreach { seq =>
+      val svc = AdminHttpServer.combine(seq, () => Seq.empty)
+
+      val res0 = await(svc(Request("/hello")))
+      assert(res0.contentString == "hello")
+
+      val res1 = await(svc(Request("/world")))
+      assert(res1.contentString == "world")
+    }
+  }
+
+  test("combine always chooses the longer prefix") {
+    val hello = new Service[Request, Response] {
+      def apply(req: Request) = newOk("hello")
+    }
+
+    val world = new Service[Request, Response] {
+      def apply(req: Request) = newOk("world")
+    }
+
+    val muxer0 = new HttpMuxer().withHandler("/hello", hello)
+    val muxer1 = new HttpMuxer().withHandler("/hello1", world)
+
+    Seq(muxer0, muxer1).permutations.foreach { seq =>
+      val svc = AdminHttpServer.combine(seq, () => Seq.empty)
+
+      val res = await(svc(Request("/hello1")))
+      assert(res.contentString == "world")
+    }
+  }
+
+  test("combine order is respected for identical paths") {
+    val hello = new Service[Request, Response] {
+      def apply(req: Request) = newOk("hello")
+    }
+
+    val world = new Service[Request, Response] {
+      def apply(req: Request) = newOk("world")
+    }
+    val muxer0 = new HttpMuxer().withHandler("/hello", hello)
+    val muxer1 = new HttpMuxer().withHandler("/hello", world)
+
+    val svcSeq0 = AdminHttpServer.combine(Seq(muxer0, muxer1), () => Seq.empty)
+    val res0 = await(svcSeq0(Request("/hello")))
+    assert(res0.contentString == "hello")
+
+    val svcSeq1 = AdminHttpServer.combine(Seq(muxer1, muxer0), () => Seq.empty)
+    val res1 = await(svcSeq1(Request("/hello")))
+    assert(res1.contentString == "world")
+  }
+
+  test("combine can 404 properly") {
+    val hello = new Service[Request, Response] {
+      def apply(req: Request) = newOk("hello")
+    }
+
+    val world = new Service[Request, Response] {
+      def apply(req: Request) = newOk("world")
+    }
+    val muxer0 = new HttpMuxer().withHandler("/hello", hello)
+    val muxer1 = new HttpMuxer().withHandler("/world", world)
+
+    val svc = AdminHttpServer.combine(Seq(muxer0, muxer1), () => Seq.empty)
+
+    val res = await(svc(Request("/an404")))
+    assert(res.status == Status.NotFound)
+  }
+
+  test("combine can close the underlying services") {
+    var closed1 = false
+    var closed2 = false
+
+    val hello = new Service[Request, Response] {
+      def apply(req: Request) = newOk("hello")
+      override def close(deadline: Time): Future[Unit] = {
+        closed1 = true
+        Future.Done
+      }
+    }
+
+    val world = new Service[Request, Response] {
+      def apply(req: Request) = newOk("world")
+      override def close(deadline: Time): Future[Unit] = {
+        closed2 = true
+        Future.Done
+      }
+    }
+    val muxer0 = new HttpMuxer().withHandler("/hello", hello)
+    val muxer1 = new HttpMuxer().withHandler("/world", world)
+
+    val svc = AdminHttpServer.combine(Seq(muxer0, muxer1), () => Seq.empty)
+    await(svc.close())
+
+    assert(closed1)
+    assert(closed2)
   }
 }

@@ -8,6 +8,7 @@ import com.twitter.finagle.http.HttpMuxer
 import com.twitter.finagle.http.Method
 import com.twitter.finagle.http.Request
 import com.twitter.finagle.http.Response
+import com.twitter.finagle.http.Status
 import com.twitter.finagle.http.{Route => HttpRoute}
 import com.twitter.finagle.server.ServerRegistry
 import com.twitter.finagle.stats.NullStatsReceiver
@@ -32,6 +33,7 @@ import com.twitter.util.registry.Library
 import com.twitter.util.Future
 import com.twitter.util.Monitor
 import com.twitter.util.Time
+import com.twitter.util.Closable
 import java.net.InetSocketAddress
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -131,6 +133,38 @@ object AdminHttpServer {
         includeInIndex = true
       )
     )
+
+  /**
+   * Creates a Finagle [[Service]] which dispatches requests across the given `muxers` based
+   * on path/pattern matching. This is used internally inside of `updateMuxers` and its semantics
+   * are coupled to the admin http server. For example, we apply an `IndexView` to each request
+   * which is dispatched.
+   *
+   * @note This has historically been done dynamically (i.e. per-dispatch) instead of snapshotting
+   * the contents of the muxers. We are dependent on this behavior in various places throughout
+   * are code.
+   */
+  private[server] def combine(
+    muxers: Seq[HttpMuxer],
+    indexEntries: () => Seq[IndexView.Entry]
+  ): Service[Request, Response] =
+    new Service[Request, Response] {
+      def apply(req: Request): Future[Response] = {
+        val routes = muxers.flatMap(_.route(req))
+        if (routes.isEmpty) {
+          Future.value(Response(req.version, Status.NotFound))
+        } else {
+          val route = routes.maxBy(_.pattern.length)
+          val alias = route.index.map(_.alias).getOrElse(route.pattern)
+          val indexFilter = new IndexView(alias, route.pattern, indexEntries)
+          val svc = indexFilter.andThen(route.handler)
+          svc(req)
+        }
+      }
+
+      override def close(deadline: Time): Future[Unit] =
+        Closable.all(muxers: _*).close(deadline)
+    }
 }
 
 /**
@@ -255,18 +289,14 @@ trait AdminHttpServer { self: App with Stats =>
   protected def configureAdminHttpServer(server: Http.Server): Http.Server = server
 
   private[this] def updateMuxer(): Unit = {
-    // create a service which multiplexes across all endpoints.
+    val endpoints = allRoutes.map { route => s"\t${route.path} => ${route.handler.toString}" }
+    log.debug(s"AdminHttpServer Muxer endpoints:\n" + endpoints.mkString("\n"))
+
     val localMuxer = allRoutes.foldLeft(new HttpMuxer) {
-      case (muxer, route) =>
-        val service =
-          new IndexView(route.alias, route.path, () => indexEntries).andThen(route.handler)
-        muxer.withHandler(route.path, service)
+      case (muxer, route) => muxer.withHandler(route.path, route.handler)
     }
 
-    val endpoints = allRoutes.map { route => s"\t${route.path} => ${route.handler.toString}" }
-
-    log.debug(s"AdminHttpServer Muxer endpoints:\n" + endpoints.mkString("\n"))
-    adminHttpMuxer.underlying = HttpUtils.combine(Seq(localMuxer, HttpMuxer))
+    adminHttpMuxer.underlying = combine(Seq(localMuxer, HttpMuxer), () => indexEntries)
   }
 
   /** create index with both the local and global muxer namespace and server/client registries. */

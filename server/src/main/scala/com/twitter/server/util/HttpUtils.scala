@@ -1,30 +1,15 @@
 package com.twitter.server.util
 
-import com.twitter.finagle.Service
-import com.twitter.finagle.http.{MediaType, Request, Response, Status, Version, HttpMuxer}
+import com.twitter.finagle.http.MediaType
+import com.twitter.finagle.http.Request
+import com.twitter.finagle.http.Response
+import com.twitter.finagle.http.Status
+import com.twitter.finagle.http.Version
 import com.twitter.io.Buf
-import com.twitter.util.{Future, Time, Closable}
+import com.twitter.util.Future
 import io.netty.handler.codec.http.QueryStringDecoder
 
 private[server] object HttpUtils {
-
-  /**
-   * Creates a http [[com.twitter.finagle.Service]] which attempts a
-   * request on the given `services`, in order, until a service returns
-   * a response with a non-404 status code. If none return a non-404,
-   * the response of the last service is used. If the given list of `services`
-   * is empty the resulting services will be always answering with 404.
-   */
-  def combine(services: Seq[HttpMuxer]): Service[Request, Response] =
-    new Service[Request, Response] {
-      def apply(req: Request): Future[Response] = {
-        val routes = services.flatMap(_.route(req))
-        if (routes.nonEmpty) routes.maxBy(_.pattern.length).handler(req)
-        else Future.value(Response(req.version, Status.NotFound))
-      }
-
-      override def close(deadline: Time): Future[Unit] = Closable.all(services: _*).close(deadline)
-    }
 
   /**
    * Determines (by examine the "Accept" header on `req`) if the client accepts given `contentType`.

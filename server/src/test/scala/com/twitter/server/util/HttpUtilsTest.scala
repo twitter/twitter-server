@@ -1,145 +1,17 @@
 package com.twitter.server.util
 
 import com.twitter.conversions.DurationOps._
-import com.twitter.finagle.Service
-import com.twitter.finagle.http.{HttpMuxer, Request, Response, Status, Version}
+import com.twitter.finagle.http.Request
+import com.twitter.finagle.http.Status
+import com.twitter.finagle.http.Version
 import com.twitter.io.Buf
 import com.twitter.server.util.HttpUtils._
-import com.twitter.util.{Await, Future, Time}
+import com.twitter.util.Await
+import com.twitter.util.Future
 import org.scalatest.funsuite.AnyFunSuite
 
 class HttpUtilsTest extends AnyFunSuite {
   private[this] def await[A](a: Future[A]): A = Await.result(a, 5.seconds)
-
-  test("combine can combine two muxers") {
-    val hello = new Service[Request, Response] {
-      def apply(req: Request) = newOk("hello")
-    }
-
-    val world = new Service[Request, Response] {
-      def apply(req: Request) = newOk("world")
-    }
-
-    val muxer0 = new HttpMuxer().withHandler("/hello", hello)
-    val muxer1 = new HttpMuxer().withHandler("/world", world)
-
-    val svc = combine(Seq(muxer0, muxer1))
-
-    val res0 = await(svc(Request("/hello")))
-    assert(res0.contentString == "hello")
-
-    val res1 = await(svc(Request("/world")))
-    assert(res1.contentString == "world")
-  }
-
-  test("combine order doesn't matter for different paths") {
-    val hello = new Service[Request, Response] {
-      def apply(req: Request) = newOk("hello")
-    }
-
-    val world = new Service[Request, Response] {
-      def apply(req: Request) = newOk("world")
-    }
-
-    val muxer0 = new HttpMuxer().withHandler("/hello", hello)
-    val muxer1 = new HttpMuxer().withHandler("/world", world)
-
-    Seq(muxer0, muxer1).permutations.foreach { seq =>
-      val svc = combine(seq)
-
-      val res0 = await(svc(Request("/hello")))
-      assert(res0.contentString == "hello")
-
-      val res1 = await(svc(Request("/world")))
-      assert(res1.contentString == "world")
-    }
-  }
-
-  test("combine always chooses the longer prefix") {
-    val hello = new Service[Request, Response] {
-      def apply(req: Request) = newOk("hello")
-    }
-
-    val world = new Service[Request, Response] {
-      def apply(req: Request) = newOk("world")
-    }
-
-    val muxer0 = new HttpMuxer().withHandler("/hello", hello)
-    val muxer1 = new HttpMuxer().withHandler("/hello1", world)
-
-    Seq(muxer0, muxer1).permutations.foreach { seq =>
-      val svc = combine(seq)
-
-      val res = await(svc(Request("/hello1")))
-      assert(res.contentString == "world")
-    }
-  }
-
-  test("combine order is respected for identical paths") {
-    val hello = new Service[Request, Response] {
-      def apply(req: Request) = newOk("hello")
-    }
-
-    val world = new Service[Request, Response] {
-      def apply(req: Request) = newOk("world")
-    }
-    val muxer0 = new HttpMuxer().withHandler("/hello", hello)
-    val muxer1 = new HttpMuxer().withHandler("/hello", world)
-
-    val svcSeq0 = combine(Seq(muxer0, muxer1))
-    val res0 = await(svcSeq0(Request("/hello")))
-    assert(res0.contentString == "hello")
-
-    val svcSeq1 = combine(Seq(muxer1, muxer0))
-    val res1 = await(svcSeq1(Request("/hello")))
-    assert(res1.contentString == "world")
-  }
-
-  test("combine can 404 properly") {
-    val hello = new Service[Request, Response] {
-      def apply(req: Request) = newOk("hello")
-    }
-
-    val world = new Service[Request, Response] {
-      def apply(req: Request) = newOk("world")
-    }
-    val muxer0 = new HttpMuxer().withHandler("/hello", hello)
-    val muxer1 = new HttpMuxer().withHandler("/world", world)
-
-    val svc = combine(Seq(muxer0, muxer1))
-
-    val res = await(svc(Request("/an404")))
-    assert(res.status == Status.NotFound)
-  }
-
-  test("combine can close the underlying services") {
-    var closed1 = false
-    var closed2 = false
-
-    val hello = new Service[Request, Response] {
-      def apply(req: Request) = newOk("hello")
-      override def close(deadline: Time): Future[Unit] = {
-        closed1 = true
-        Future.Done
-      }
-    }
-
-    val world = new Service[Request, Response] {
-      def apply(req: Request) = newOk("world")
-      override def close(deadline: Time): Future[Unit] = {
-        closed2 = true
-        Future.Done
-      }
-    }
-    val muxer0 = new HttpMuxer().withHandler("/hello", hello)
-    val muxer1 = new HttpMuxer().withHandler("/world", world)
-
-    val svc = combine(Seq(muxer0, muxer1))
-    await(svc.close())
-
-    assert(closed1)
-    assert(closed2)
-  }
 
   test("expects") {
     val req1 = Request("/")

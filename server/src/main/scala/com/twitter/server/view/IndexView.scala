@@ -2,12 +2,19 @@ package com.twitter.server.view
 
 import com.twitter.concurrent.AsyncStream
 import com.twitter.finagle.http.Method
-import com.twitter.finagle.http.Method.{Get, Post}
-import com.twitter.finagle.{Service, SimpleFilter}
-import com.twitter.finagle.http.{Request, Response}
-import com.twitter.io.{Buf, BufReader, Pipe, Reader}
+import com.twitter.finagle.http.Method.Get
+import com.twitter.finagle.http.Method.Post
+import com.twitter.finagle.Service
+import com.twitter.finagle.SimpleFilter
+import com.twitter.finagle.http.Request
+import com.twitter.finagle.http.Response
+import com.twitter.io.Buf
+import com.twitter.io.BufReader
+import com.twitter.io.Pipe
+import com.twitter.io.Reader
 import com.twitter.server.util.HtmlUtils.escapeHtml
-import com.twitter.server.util.HttpUtils.{expectsHtml, newResponse}
+import com.twitter.server.util.HttpUtils.expectsHtml
+import com.twitter.server.util.HttpUtils.newResponse
 import com.twitter.util.Future
 
 object IndexView {
@@ -84,7 +91,7 @@ object IndexView {
     Reader.concat(
       Reader.fromBuf(
         Buf.Utf8(
-          s"""<!doctype html>
+          s"""<!DOCTYPE html>
             <html>
               <head>
                 <title>${title} &middot; Twitter Server Admin</title>
@@ -119,6 +126,18 @@ object IndexView {
             </html>""")))
     )
   }
+
+  /**
+   * Returns "true" if the contents of the http response is determined to be a fragment (i.e.
+   * it can/should be nested in an IndexView). This is currently based on the "content-type"
+   * header and some heuristics on the `content`. We should consider making this explicit and
+   * set a header on the response from the twitter-server handlers.
+   */
+  private def isFragment(contentType: String, content: String): Boolean = {
+    contentType.toLowerCase.contains("text/html") &&
+    !content.contains("<!DOCTYPE html>") &&
+    !content.contains("<html>")
+  }
 }
 
 /**
@@ -130,10 +149,6 @@ object IndexView {
 class IndexView(title: String, uri: String, index: () => Seq[IndexView.Entry])
     extends SimpleFilter[Request, Response] {
   import IndexView._
-
-  private[this] def isFragment(contentType: String, content: String): Boolean = {
-    contentType.toLowerCase.contains("text/html") && !content.contains("<html>")
-  }
 
   def apply(req: Request, svc: Service[Request, Response]): Future[Response] =
     if (!expectsHtml(req)) svc(req)
@@ -151,7 +166,7 @@ class IndexView(title: String, uri: String, index: () => Seq[IndexView.Entry])
             Pipe.copy(reader, response.writer) ensure response.writer.close()
             Future.value(response)
 
-          case res =>
+          case _ =>
             val body = Reader.fromBuf(Buf.Utf8(content))
             val reader = render(title, uri, index().sorted, body)
             BufReader.readAll(reader).flatMap { html =>
