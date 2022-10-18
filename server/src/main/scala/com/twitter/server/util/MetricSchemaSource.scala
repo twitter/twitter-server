@@ -63,4 +63,10 @@ private[server] class MetricSchemaSource(
       }
     }
   }
+
+  def namespaces: Set[String] = synchronized {
+    registry.foldLeft(Set[String]()) { (set, r) =>
+      set ++ r.expressions().keySet.flatMap(_.namespaces)
+    }
+  }
 }

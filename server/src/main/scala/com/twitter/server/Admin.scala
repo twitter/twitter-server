@@ -2,12 +2,10 @@ package com.twitter.server
 
 import com.twitter.app.App
 import com.twitter.finagle.http.Method
-import com.twitter.finagle.stats.{
-  AggregateWithHistogramDetails,
-  DelegatingStatsReceiver,
-  StatsReceiver,
-  WithHistogramDetails
-}
+import com.twitter.finagle.stats.AggregateWithHistogramDetails
+import com.twitter.finagle.stats.DelegatingStatsReceiver
+import com.twitter.finagle.stats.StatsReceiver
+import com.twitter.finagle.stats.WithHistogramDetails
 import com.twitter.server.AdminHttpServer.Route
 import com.twitter.server.filters.AdminThreadPoolFilter
 import com.twitter.server.handler._
@@ -252,6 +250,13 @@ object Admin {
         alias = "Incoming Connections",
         group = Some(Grouping.Utilities),
         includeInIndex = true
+      ),
+      Route(
+        path = "admin/namespaces",
+        handler = new NamespaceHandler(),
+        alias = "Namespaces in chronological order",
+        group = None,
+        includeInIndex = false
       )
     ).map(AdminThreadPoolFilter.isolateRoute)
 
