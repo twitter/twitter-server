@@ -10,6 +10,12 @@ Unreleased
 * During warmup, the /health route will respond with a more informative "warming up"
   message, previously an empty message was used. ``PHAB_ID=D949333``
 
+Runtime Behavior Changes
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+* util: Bump version of logback to 1.2.11. ``PHAB_ID=D1026765``
+
+
 22.7.0
 ------
 
