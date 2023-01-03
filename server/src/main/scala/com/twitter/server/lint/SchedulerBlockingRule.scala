@@ -11,7 +11,7 @@ import com.twitter.util.lint.{Category, Issue, Rule}
 object SchedulerBlockingRule {
 
   /**
-   * The specific amount for the minumum is semi-arbitrary, but this allows
+   * The specific amount for the minimum is semi-arbitrary, but this allows
    * for minimal blocking in services, such as during startup, without
    * triggering this lint rule.
    */

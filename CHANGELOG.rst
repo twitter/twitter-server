@@ -215,9 +215,9 @@ Breaking API Changes
 
 * Make `Lifecycle` and `Lifecycle.Warmup` self-typed to `TwitterServer`. `Lifecycle` was previously
   self-typed to `c.t.app.App` and `Lifecycle.Warmup` previously had no self-type restrictions. These
-  traits can now only be mixed into instances of `TwitterServer`. The `Lifecycle.DetatchedWarmup`
+  traits can now only be mixed into instances of `TwitterServer`. The `Lifecycle.DetachedWarmup`
   trait is introduced to allow users to transition to it, where they were previously extending
-  `Lifecycle.Warmup` without mixing into a `TwitterServer`. `Lifecycle.DetatchedWarmup`
+  `Lifecycle.Warmup` without mixing into a `TwitterServer`. `Lifecycle.DetachedWarmup`
   is immediately deprecated and will be removed in a future release. ``PHAB_ID=D507392``
 
 20.6.0
@@ -487,7 +487,7 @@ No Changes
 Dependencies
 ~~~~~~~~~~~~
 
-* Removed 'finagle-zipkin-core' as a depdendency since there was no
+* Removed 'finagle-zipkin-core' as a dependency since there was no
   code in twitter-server which used it. ``PHAB_ID=D129515``
 
 18.1.0

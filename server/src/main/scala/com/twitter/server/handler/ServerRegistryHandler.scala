@@ -69,7 +69,7 @@ class ServerRegistryHandler(
   // Search the metrics source for the stat scope that includes `serverName`.
   // The search namespace includes both "$serverName/" and "srv/$serverName"
   // to take into account finagle's ServerStatsReceiver. Note, unnamed servers are
-  // ignored as we can't dissambiguate their stats.
+  // ignored as we can't disambiguate their stats.
   private[this] def findScope(serverName: String): Option[String] = {
     val k0 = s"$serverName"
     val k1 = s"srv/$serverName"

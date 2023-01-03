@@ -76,7 +76,7 @@ As such, in order to log with `TwitterServer` you must
 
 Since `TwitterServer` uses the `slf4j-api <https://www.slf4j.org/>`__  for logging it no 
 longer provides the |util-logging Logging|_ logging implementation directly. As such, logging 
-configuration is handled on the choosen imlpementation and by default not through flags -- except 
+configuration is handled on the chosen implementation and by default not through flags -- except 
 in the case of choosing the `slf4j-jdk14` logging implementation. 
 
 See the `Backwards Compatibility <#backwards-compatibility-via-slf4j-jdk14>`__ section.
