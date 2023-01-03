@@ -518,7 +518,7 @@ Expression Object Fields:
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 :name: a string representing the name or significance of the expression.
 :labels: a dictionary (string -> string) with additional metadata about the metric
-:expresssion: a string representation illustrating how to aggregate metrics into the expression value.
+:expression: a string representation illustrating how to aggregate metrics into the expression value.
 :bounds: an object which describes the bounds for what values resulting from the expression should be considered "healthy" for the service.
 :description: text description of the expression, intended for human consumption.
 :unit: the appropriate unit for this metric (ex, milliseconds, megabytes, count).
@@ -537,8 +537,8 @@ Bounds Object Fields:
 :operator: a string indicating which whether the bounds should be treated as floors or ceilings (ex, ">", "<").
 :bad_threshold: the value that represents the boundary between a bad and an ok value for the expression.
 :good_threshold: the value that represents the boundary between an ok and a good value for the expression.
-:lower_bound_inclusive: an optional value below the bad_threshold which indicates a boundry below which values are considered invalid or erroneous rather than unhealthy.
-:upper_bound_exclusive: an optional value above the good_threshold which indicates a boundry above which values are considered invalid or erroneous rather than unhealthy.
+:lower_bound_inclusive: an optional value below the bad_threshold which indicates a boundary below which values are considered invalid or erroneous rather than unhealthy.
+:upper_bound_exclusive: an optional value above the good_threshold which indicates a boundary above which values are considered invalid or erroneous rather than unhealthy.
 
 Profiling
 ---------

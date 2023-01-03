@@ -101,7 +101,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
   val testRequestWithNamespaces = Request(
     "http://$HOST:$PORT/admin/metric/expressions.json?namespace=path:to:tenantName&namespace=tenantName")
 
-  private def getSucessRateExpression(json: String): String = {
+  private def getSuccessRateExpression(json: String): String = {
     val expressions =
       AdminJsonConverter
         .parse[Map[String, Any]](json).get("expressions").get.asInstanceOf[List[
@@ -230,7 +230,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
     val responseString = await(latchedHandler(latchedStyleRequest)).contentString
 
     assert(
-      getSucessRateExpression(
+      getSuccessRateExpression(
         responseString) == "multiply(100.0,divide(success,plus(success,failures)))")
   }
 
@@ -238,7 +238,7 @@ class MetricExpressionHandlerTest extends AnyFunSuite {
     val responseString = await(latchedHandler(testRequest)).contentString
 
     assert(
-      getSucessRateExpression(
+      getSuccessRateExpression(
         responseString) == "multiply(100.0,divide(success,plus(success,failures)))")
   }
 

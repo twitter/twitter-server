@@ -111,7 +111,7 @@ object Lifecycle {
   @deprecated(
     "Warmup behavior is a TwitterServer lifecycle concern. Please mixin Warmup to your TwitterServer.",
     "2020-06-25")
-  trait DetatchedWarmup {
+  trait DetachedWarmup {
     Warmup.initializeWarmup()
 
     /**
