@@ -1,10 +1,21 @@
 package com.twitter.server.handler
 
 import com.twitter.conversions.DurationOps._
-import com.twitter.finagle.http.{Method, Request, Status}
+import com.twitter.finagle.http.Method
+import com.twitter.finagle.http.Request
+import com.twitter.finagle.http.Status
 import com.twitter.server.TwitterServer
-import com.twitter.util.{Await, Awaitable, Closable, Duration, Future, Time}
+import com.twitter.util.Await
+import com.twitter.util.Awaitable
+import com.twitter.util.Closable
+import com.twitter.util.Duration
+import com.twitter.util.Future
+import com.twitter.util.Time
+import org.scalatest.concurrent.Eventually.eventually
+import org.scalatest.concurrent.PatienceConfiguration.Timeout
 import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.time.Seconds
+import org.scalatest.time.Span
 
 class ShutdownHandlerTest extends AnyFunSuite {
 
@@ -38,7 +49,9 @@ class ShutdownHandlerTest extends AnyFunSuite {
     val handler = new ShutdownHandler(closer)
     val rsp = await(handler(Request(Method.Post, "/foo")))
     assert(rsp.status == Status.Ok)
-    assert(closer.closed)
+    eventually(Timeout(Span(5, Seconds))) {
+      assert(closer.closed)
+    }
   })
 
   test("close without a grace period, but closer overrides default grace")(
@@ -53,7 +66,9 @@ class ShutdownHandlerTest extends AnyFunSuite {
       val handler = new ShutdownHandler(closer)
       val rsp = await(handler(Request(Method.Post, "/foo")))
       assert(rsp.status == Status.Ok)
-      assert(closer.closed)
+      eventually(Timeout(Span(5, Seconds))) {
+        assert(closer.closed)
+      }
     })
 
   test("close with a grace period") {
@@ -66,7 +81,9 @@ class ShutdownHandlerTest extends AnyFunSuite {
     val handler = new ShutdownHandler(closer)
     val rsp = await(handler(Request(Method.Post, "/foo?grace=" + grace.toString)))
     assert(rsp.status == Status.Ok)
-    assert(closer.closed)
+    eventually(Timeout(Span(5, Seconds))) {
+      assert(closer.closed)
+    }
   }
 
   test("fail when an invalid grace parameter is specified") {
