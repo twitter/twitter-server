@@ -1,19 +1,18 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Migration from Ostrich &#8212; TwitterServer 22.4.0 documentation</title>
-    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Migration from Ostrich &#8212; TwitterServer 24.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/flasky.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -39,7 +38,8 @@
         <li class="right" >
           <a href="Java.html" title="Using TwitterServer from Java"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">TwitterServer</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">TwitterServer</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Migration from Ostrich</a></li> 
       </ul>
     </div>  
 
@@ -48,7 +48,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="migration-from-ostrich">
+  <section id="migration-from-ostrich">
 <h1>Migration from Ostrich<a class="headerlink" href="#migration-from-ostrich" title="Permalink to this headline">¶</a></h1>
 <p><a class="reference external" href="https://github.com/twitter/ostrich">Ostrich</a> is a library used to
 maintain and export statistics and track services. It is obsoleted by
@@ -56,8 +56,8 @@ TwitterServer.</p>
 <p><a class="reference external" href="https://github.com/twitter/commons/tree/master/src/java/com/twitter/common/metrics">Commons Metrics</a>
 replaces Ostrich’s stats library.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Ostrich stats are still present on <code class="docutils literal notranslate"><span class="pre">/stats</span></code> if <cite>finagle-ostrich4</cite> is
+<p class="admonition-title">Note</p>
+<p>Ostrich stats are still present on <code class="docutils literal notranslate"><span class="pre">/stats</span></code> if <cite>finagle-ostrich4</cite> is
 in your runtime classpath.</p>
 </div>
 <p>By using two
@@ -72,7 +72,7 @@ compatibility mode:</p>
 HTTP requests to <code class="docutils literal notranslate"><span class="pre">/admin/stats.json</span></code> with the <code class="docutils literal notranslate"><span class="pre">period=60</span></code> query string
 parameter will replicate Ostrich’s behavior by computing deltas on counters
 every minute and formatting histograms with the same labels Ostrich uses.</p>
-<div class="section" id="stats-format">
+<section id="stats-format">
 <h2>Stats format<a class="headerlink" href="#stats-format" title="Permalink to this headline">¶</a></h2>
 <p>Ostrich:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{
@@ -155,8 +155,8 @@ every minute and formatting histograms with the same labels Ostrich uses.</p>
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The stats exported by Ostrich will also be computed by the Ostrich
+<p class="admonition-title">Note</p>
+<p>The stats exported by Ostrich will also be computed by the Ostrich
 library. It’s not a format conversion but a real dual
 collection/export of stats. You can compare both stats, but note
 than you can have different results in histogram values because
@@ -176,35 +176,36 @@ res9: String = real p99:9911  ostrich:9498  metrics:9910
 </div>
 <p>You can <a class="reference external" href="https://gist.github.com/stevegury/261b0a204cd0726f47ea">run this code on your machine</a> to see by
 yourself.</p>
-</div>
-<div class="section" id="step-by-step-guide">
+</section>
+<section id="step-by-step-guide">
 <h2>Step by step guide<a class="headerlink" href="#step-by-step-guide" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Convert your code to TwitterServer</li>
+<li><p>Convert your code to TwitterServer</p></li>
 </ul>
 <p>Your server will run as before and expose stats through Ostrich’s
 <code class="docutils literal notranslate"><span class="pre">/stats</span></code> endpoint.</p>
 <ul class="simple">
-<li>Update your dashboard</li>
+<li><p>Update your dashboard</p></li>
 </ul>
 <p>Some stats generated by Ostrich will have
 change. For example, JVM stats in Ostrich are of the form
 “jvm_gc_ParNew_msec” and with TwitterServer will be “jvm/gc/ParNew/msec”.</p>
 <p>Update your collecting system to collect stats from the new URL.</p>
 <ul class="simple">
-<li>Disable the Ostrich stats</li>
+<li><p>Disable the Ostrich stats</p></li>
 </ul>
 <p>Exclude the finagle-ostrich4 dependency</p>
 <ul class="simple">
-<li>Enable the Commons Metrics stats</li>
+<li><p>Enable the Commons Metrics stats</p></li>
 </ul>
 <p>Add the finagle-stats dependency to your classpath. This can
 be done before removing Ostrich stats in order to ensure
 that your new alerts and dashboards are correct.</p>
-</div>
-</div>
+</section>
+</section>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -252,7 +253,7 @@ that your new alerts and dashboards are correct.</p>
       <div class="clearer"></div>
     </div>
   <div class="footer">
-    &copy; Copyright 2022 Twitter, Inc.
+    &copy; Copyright 2024 Twitter, Inc.
     Created using <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a>.
   </div>
   
