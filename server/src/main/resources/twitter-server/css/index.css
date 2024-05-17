@@ -18,10 +18,12 @@ h1,h2,h3,h4,h5,h6 {
   transition: all 0.5s ease;
 }
 
+/* Adjusts the margin to hide the sidebar when toggled for a responsive design. */
 #wrapper.toggled {
   margin-left: -250px;
 }
 
+/* Styles for the fixed sidebar including its background color, size, and scroll behavior. */
 #sidebar {
   position: fixed;
   height: 100%;
@@ -36,11 +38,15 @@ h1,h2,h3,h4,h5,h6 {
   z-index: 10;
 }
 
+/* Main Content */
+/* Ensures the main content area is correctly positioned and padded when the sidebar is visible. */
 #contents {
   margin-left: 270px;
   padding-top: 10px;
 }
 
+/* Sidebar Toggle Button */
+/* Styles the toggle button with a fixed position and transitions for visual effect. */
 #toggle {
   z-index: 1000;
   position: fixed;
@@ -58,10 +64,12 @@ h1,h2,h3,h4,h5,h6 {
   transition: all 0.5s ease;
 }
 
+/* Changes the toggle button's color on hover for a visual indicator. */
 #toggle:hover {
   background-color: rgb(83, 83, 83);
 }
 
+/* Adjusts the position of the toggle button when the sidebar is toggled. */
 #wrapper.toggled #toggle {
   left: 0;
 }
@@ -78,6 +86,7 @@ nav a:hover, nav a:visited, nav a:link, nav a:active {
   text-decoration: none;
 }
 
+/* Organizes navigation items in a list without default list styling for a clean appearance. */
 nav ul {
   list-style-type: none;
   padding-left: 0;
@@ -264,8 +273,8 @@ caption {
 }
 
 @keyframes spin {
-    from { transform: scale(1) rotate(0deg);}
-    to { transform: scale(1) rotate(360deg);}
+  from { transform: scale(1) rotate(0deg);}
+  to { transform: scale(1) rotate(360deg);}
 }
 
 /** Popover */
