@@ -84,10 +84,12 @@ object Lifecycle {
   private[Lifecycle] object Warmup {
 
     /**
-     * Initialize warmup code. Ensures that the /health endpoint will not return on "OK" response.
+     * Initialize warmup code. Ensures that the /health endpoint will not return an "OK" response.
      */
-    def initializeWarmup(): Unit =
+    def initializeWarmup(): Unit = {
       HttpMuxer.addHandler(Route("/health", new ReplyHandler("warming up\n")))
+      HttpMuxer.addHandler(Route("/ready", new ReadinessHandler(isReady = false)))
+    }
 
     /**
      * Prebind warmup code. Used for warmup tasks that we want to run before we
@@ -98,8 +100,10 @@ object Lifecycle {
     /**
      * The service is bound to a port and warmed up, announce health.
      */
-    def warmupComplete(): Unit =
+    def warmupComplete(): Unit = {
       HttpMuxer.addHandler(Route("/health", new ReplyHandler("OK\n")))
+      HttpMuxer.addHandler(Route("/ready", new ReadinessHandler(isReady = true)))
+    }
 
   }
 
