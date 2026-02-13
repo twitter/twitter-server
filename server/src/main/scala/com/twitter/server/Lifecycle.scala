@@ -37,7 +37,7 @@ trait Lifecycle { self: TwitterServer =>
       index = Some(RouteIndex(alias = "Health", group = group))
     )
   )
-
+  HttpMuxer.addHandler(Route("/ready", new ReadinessHandler(isReady = true)))
 }
 
 object promoteBeforeServing
